@@ -1,0 +1,38 @@
+services:
+  server:
+    image: 'orgatool-server:latest'
+    build:
+      context: ./server
+    container_name: orgatool-server
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/orgatool-postgres
+      - SPRING_DATASOURCE_USERNAME=orgatool-postgres
+      - SPRING_DATASOURCE_PASSWORD=postgress-orgatool
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+
+  db:
+    image: 'postgres:15.2-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=orgatool-postgres
+      - POSTGRES_PASSWORD=postgress-orgatool
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d orgatool-postgres -U orgatool-postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  client:
+    image: 'orgatool-client:latest'
+    build:
+      context: ./client
+    container_name: orgatool-client
+    depends_on:
+      - server
+    ports:
+      - "3000:80"
