@@ -30,12 +30,14 @@ public class User {
 
     @NotBlank
     @Size(max = 20)
+    @Column(unique = true)
     private String username;
 
     @NotBlank
     @Size(max = 50)
     @Email
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(unique = true)
     private String email;
 
     @NotBlank

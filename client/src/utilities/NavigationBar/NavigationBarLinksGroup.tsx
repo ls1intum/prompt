@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Group, Box, Collapse, ThemeIcon, UnstyledButton, Text, createStyles } from '@mantine/core'
-import { IconCalendarStats, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
 const useStyles = createStyles((theme) => ({
@@ -8,9 +8,10 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
     display: 'block',
     width: '100%',
-    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    padding: '0.5vh 0.5vw',
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     fontSize: theme.fontSizes.sm,
+    borderRadius: '0.8rem',
 
     '&:hover': {
       backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
@@ -22,10 +23,10 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
     display: 'block',
     textDecoration: 'none',
-    padding: '1vh 1vw',
-    marginLeft: '3vw',
+    padding: '0.5vh 0.5vw',
+    marginLeft: '4vw',
     fontSize: theme.fontSizes.sm,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+    borderRadius: '0.8rem',
 
     '&:hover': {
       backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
@@ -46,7 +47,7 @@ interface LinksGroupProps {
   links?: Array<{ label: string; link: string }>
 }
 
-export const LinksGroup = ({
+export const NavigationBarLinksGroup = ({
   icon: Icon,
   label,
   navigateTo,
@@ -81,7 +82,7 @@ export const LinksGroup = ({
         className={classes.control}
       >
         <Group position='apart' spacing={0}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '1vw' }}>
             <ThemeIcon variant='light' size={30}>
               <Icon size='1.1rem' />
             </ThemeIcon>
@@ -107,30 +108,5 @@ export const LinksGroup = ({
       </UnstyledButton>
       {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
     </>
-  )
-}
-
-const mockdata = {
-  label: 'Releases',
-  icon: IconCalendarStats,
-  navigateTo: '/path',
-  links: [
-    { label: 'Upcoming releases', link: '/' },
-    { label: 'Previous releases', link: '/' },
-    { label: 'Releases schedule', link: '/' },
-  ],
-}
-
-export const NavbarLinksGroup = (): JSX.Element => {
-  return (
-    <Box
-      sx={(theme) => ({
-        minHeight: '220rem',
-        padding: theme.spacing.md,
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-      })}
-    >
-      <LinksGroup {...mockdata} />
-    </Box>
   )
 }

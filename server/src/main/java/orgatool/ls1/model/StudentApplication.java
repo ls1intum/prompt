@@ -3,28 +3,12 @@ package orgatool.ls1.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Set;
 
 @Data
 @Entity
 @Table(name = "student_application")
-@NamedEntityGraph(
-        name = "student-application-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode(value = "notes", subgraph = "note-entity-subgraph"),
-                @NamedAttributeNode("student")
-        },
-        subgraphs = {
-                @NamedSubgraph(
-                        name = "note-entity-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("author")
-                        }
-                )
-        }
-)
-public class StudentApplication implements Serializable {
+public class StudentApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,9 +20,13 @@ public class StudentApplication implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "student_id"))
     private Student student;
 
+    @ManyToOne(targetEntity = ApplicationSemester.class)
+    @JoinColumn(name ="application_semester_id", referencedColumnName = "id")
+    private ApplicationSemester applicationSemester;
+
     private String studyDegree;
 
-    private short currentSemester;
+    private Short currentSemester;
 
     private String studyProgram;
 
@@ -48,18 +36,28 @@ public class StudentApplication implements Serializable {
     @Lob
     private String motivation;
 
-    private boolean suggestedAsCoach;
+    private Boolean suggestedAsCoach;
 
-    private boolean suggestedAsTutor;
+    private Boolean suggestedAsTutor;
 
-    private boolean blockedByPM;
+    private Boolean blockedByPM;
 
     private String reasonForBlockedByPM;
+
+    private Integer assessmentScore;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinTable(name = "note_student_application",
             joinColumns = @JoinColumn(name = "student_application_id"),
             inverseJoinColumns = @JoinColumn(name = "note_id"))
     private Set<StudentApplicationNote> notes;
+
+    private Boolean assessed;
+
+    private Boolean accepted;
+
+    @ManyToOne()
+    @JoinColumn(name = "project_team_id")
+    private ProjectTeam projectTeam;
 
 }

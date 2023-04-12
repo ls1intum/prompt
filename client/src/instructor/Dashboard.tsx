@@ -1,31 +1,32 @@
 import { AppShell } from '@mantine/core'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAppSelector } from '../redux/store'
 import { NavigationBar } from '../utilities/NavigationBar/NavigationBar'
-import { SignIn } from './SignIn/SignIn'
+import { WorkspaceSelectionDialog } from './WorkspaceSelectionDialog'
 
 interface DashboardProps {
   child: React.ReactNode
 }
 
 export const Dashboard = ({ child }: DashboardProps): JSX.Element => {
-  const [authenticated, setAuthenticated] = useState(false)
+  const navigate = useNavigate()
+  const currentState = useAppSelector((state) => state.applicationSemester.currentState)
 
   useEffect(() => {
-    if (localStorage.getItem('jwt_token')) {
-      setAuthenticated(true)
+    if (!localStorage.getItem('jwt_token')) {
+      navigate('/management/signin')
     }
   }, [localStorage.getItem('jwt_token')])
 
   return (
     <>
-      {authenticated ? (
-        <div>
-          <AppShell padding='md' navbar={<NavigationBar />}>
-            {child}
-          </AppShell>
-        </div>
+      {currentState ? (
+        <AppShell padding='md' navbar={<NavigationBar />}>
+          <div style={{ margin: '5vh 4vw' }}>{child}</div>
+        </AppShell>
       ) : (
-        <SignIn />
+        <WorkspaceSelectionDialog />
       )}
     </>
   )

@@ -5,7 +5,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import orgatool.ls1.model.Role;
 import orgatool.ls1.model.RoleType;
 import orgatool.ls1.repository.RoleRepository;
@@ -19,7 +18,7 @@ public class OrgaToolServerApplication implements ApplicationRunner {
 	public static void main(String[] args) {SpringApplication.run(OrgaToolServerApplication.class, args);}
 
 	@Override
-	public void run(ApplicationArguments applicationArguments) throws Exception {
+	public void run(ApplicationArguments applicationArguments) {
 
 		final Role roleCoach = new Role(RoleType.COACH);
 		final Role roleInstructor = new Role(RoleType.INSTRUCTOR);

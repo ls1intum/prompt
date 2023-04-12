@@ -8,17 +8,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import orgatool.ls1.service.UserDetailsImpl;
 
-import java.security.SignatureException;
 import java.util.Date;
 
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${orgatool.auth.jwtSecret}")
+    @Value("${prompt.auth.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${orgatool.auth.jwtExpirationMs}")
+    @Value("${prompt.auth.jwtExpirationMs}")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
@@ -32,6 +31,12 @@ public class JwtUtils {
 
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String generateTokenFromUsername(String username) {
+        return Jwts.builder().setSubject(username).setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
     }
 
     public boolean validateJwtToken(String authToken) {

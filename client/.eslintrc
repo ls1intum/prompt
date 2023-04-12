@@ -19,6 +19,7 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/return-await": "off",
     "prettier/prettier": [
       "error",
       {

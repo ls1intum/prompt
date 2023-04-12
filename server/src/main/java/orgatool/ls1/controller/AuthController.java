@@ -8,7 +8,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import orgatool.ls1.exception.TokenRefreshException;
+import orgatool.ls1.model.RefreshToken;
 import orgatool.ls1.model.Role;
 import orgatool.ls1.model.RoleType;
 import orgatool.ls1.model.User;
@@ -19,6 +25,9 @@ import orgatool.ls1.security.payload.JwtResponse;
 import orgatool.ls1.security.payload.LoginRequest;
 import orgatool.ls1.security.payload.MessageResponse;
 import orgatool.ls1.security.payload.SignUpRequest;
+import orgatool.ls1.security.payload.TokenRefreshRequest;
+import orgatool.ls1.security.payload.TokenRefreshResponse;
+import orgatool.ls1.service.RefreshTokenService;
 import orgatool.ls1.service.UserDetailsImpl;
 
 import java.util.HashSet;
@@ -45,6 +54,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    RefreshTokenService refreshTokenService;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -59,11 +71,29 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
         return ResponseEntity.ok(new JwtResponse(jwt,
+                        refreshToken.getToken(),
                         userDetails.getId(),
                         userDetails.getUsername(),
                         userDetails.getEmail(),
                         roles));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, refreshTokenService.createRefreshToken(user.getId()).getToken()));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not known."));
     }
 
     @PostMapping("/signup")
@@ -80,7 +110,6 @@ public class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // Create new user's account
         User user = new User(signUpRequest.getFirstName(), signUpRequest.getLastName(),
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),

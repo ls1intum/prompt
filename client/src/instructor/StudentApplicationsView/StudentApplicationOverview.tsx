@@ -2,27 +2,37 @@ import { Group, Text, Stack, ActionIcon } from '@mantine/core'
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useState, useEffect } from 'react'
-import {
-  type StudentApplication,
-  fetchStudentApplications,
-} from '../../service/studentApplicationService'
+import { useDispatch } from 'react-redux'
+import { type AppDispatch, useAppSelector } from '../../redux/store'
+import { type StudentApplication } from '../../redux/studentApplicationSlice/studentApplicationSlice'
+import { fetchStudentApplications } from '../../redux/studentApplicationSlice/thunks/fetchStudentApplications'
 import { StudentApplicationModal } from './StudentApplicationModal'
 
 export const StudentApplicationOverview = (): JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>()
+  const fetchedStudentApplications = useAppSelector(
+    (state) => state.studentApplications.studentApplications,
+  )
+  const selectedApplicationSemester = useAppSelector(
+    (state) => state.applicationSemester.currentState,
+  )
   const [studentApplicationModalOpen, setStudentApplicationModalOpen] = useState<
     StudentApplication | undefined
   >(undefined)
-  const [studentApplications, setApplications] = useState<[StudentApplication] | undefined>()
+  const [studentApplications, setStudentApplications] = useState<StudentApplication[] | undefined>()
 
   useEffect(() => {
-    void (async () => {
-      const response = await fetchStudentApplications()
-      setApplications(response)
-    })()
+    if (selectedApplicationSemester) {
+      void dispatch(fetchStudentApplications(selectedApplicationSemester.semesterName))
+    }
   }, [])
 
+  useEffect(() => {
+    setStudentApplications(fetchedStudentApplications)
+  }, [fetchedStudentApplications])
+
   return (
-    <div style={{ marginInline: '10vw', marginTop: '5vh' }}>
+    <div>
       {studentApplicationModalOpen && (
         <StudentApplicationModal
           open={!!studentApplicationModalOpen}

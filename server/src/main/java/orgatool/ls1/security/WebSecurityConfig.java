@@ -65,6 +65,7 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/api/student-applications").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/api/application-semesters").permitAll().and()
                 .authorizeHttpRequests().requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated();
 
@@ -80,7 +81,7 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**").allowedOrigins("http://localhost:3000");
+                registry.addMapping("/api/**").allowedOrigins("http://localhost:3000").allowedMethods("*");
             }
         };
     }

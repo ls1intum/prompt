@@ -13,12 +13,14 @@ export const StudentApplicationSubmissionPage = (): JSX.Element => {
       {successfullySubmitted ? (
         <StudentApplicationSuccessfulSubmission />
       ) : (
-        <StudentApplicationForm
-          accessMode={StudentApplicationAccessMode.STUDENT}
-          onSuccessfulSubmit={() => {
-            setSuccessfullySubmitted(true)
-          }}
-        />
+        <div style={{ margin: '5vh 5vw' }}>
+          <StudentApplicationForm
+            accessMode={StudentApplicationAccessMode.STUDENT}
+            onSuccessfulSubmit={() => {
+              setSuccessfullySubmitted(true)
+            }}
+          />
+        </div>
       )}
     </>
   )

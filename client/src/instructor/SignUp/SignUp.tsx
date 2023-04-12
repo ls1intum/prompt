@@ -1,18 +1,24 @@
 import {
+  Anchor,
   Button,
   Container,
   Group,
   Paper,
   PasswordInput,
   Select,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import React from 'react'
-import { signUp } from '../../service/authService'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { signUp } from '../../redux/authenticationSlice/thunks/signUp'
+import { type AppDispatch } from '../../redux/store'
 
 export const SignUp = (): JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>()
+  const navigateTo = useNavigate()
   const form = useForm({
     initialValues: {
       firstName: '',
@@ -28,6 +34,18 @@ export const SignUp = (): JSX.Element => {
   return (
     <Container size={700} my={40}>
       <Title align='center'>Create a new account</Title>
+      <Text color='dimmed' size='sm' align='center' mt={5}>
+        Do have an account already?{' '}
+        <Anchor
+          size='sm'
+          component='button'
+          onClick={() => {
+            navigateTo('/management/signin')
+          }}
+        >
+          Sign In
+        </Anchor>
+      </Text>
       <Paper
         withBorder
         shadow='md'
@@ -86,14 +104,18 @@ export const SignUp = (): JSX.Element => {
           type='submit'
           onClick={() => {
             if (form.isValid()) {
-              void signUp({
-                firstName: form.values.firstName,
-                lastName: form.values.lastName,
-                email: form.values.email,
-                username: form.values.username,
-                password: form.values.password,
-                roles: [form.values.role],
-              })
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              dispatch(
+                signUp({
+                  firstName: form.values.firstName,
+                  lastName: form.values.lastName,
+                  email: form.values.email,
+                  username: form.values.username,
+                  password: form.values.password,
+                  roles: [form.values.role],
+                }),
+              )
+              navigateTo('/management')
             }
           }}
         >

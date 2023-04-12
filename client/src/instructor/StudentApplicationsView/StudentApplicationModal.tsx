@@ -1,10 +1,9 @@
 import { Modal } from '@mantine/core'
-import React from 'react'
 import {
   StudentApplicationAccessMode,
   StudentApplicationForm,
 } from '../../forms/StudentApplicationForm'
-import { type StudentApplication } from '../../service/studentApplicationService'
+import { type StudentApplication } from '../../redux/studentApplicationSlice/studentApplicationSlice'
 
 interface StudentApplicationModalProps {
   open: boolean

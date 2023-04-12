@@ -23,8 +23,10 @@ public class StudentApplicationNote implements Serializable {
     private User author;
 
     @CreationTimestamp
+    @Column
     private ZonedDateTime timestamp;
 
     @Lob
+    @Column
     private String comment;
 }
