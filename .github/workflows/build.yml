@@ -1,10 +1,6 @@
 name: Build
 
-env:
-  IMAGE_NAME_CLIENT: prompt-client
-  IMAGE_NAME_SERVER: prompt-server
-
-#on:
+on: [push]
 #  push:
 #    branches: [main]
 #  pull_request:
@@ -18,9 +14,11 @@ jobs:
       matrix:
         include:
           - dockerfile: ./client/Dockerfile
-            image: ghcr.io/ls1intum/prompt/${{ IMAGE_NAME_CLIENT }}
+            image: ghcr.io/ls1intum/prompt/prompt-client
+            context: ./client
           - dockerfile: ./server/Dockerfile
-            image: ghcr.io/ls1intum/prompt/${{ IMAGE_NAME_SERVER }}
+            image: ghcr.io/ls1intum/prompt/prompt-server
+            context: ./server
     outputs:
       image_version: ${{ steps.output-tag.outputs.image_version }}
     steps:
@@ -35,7 +33,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: all
 
@@ -66,11 +64,12 @@ jobs:
         run: echo "image_version=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker Image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         env:
           IMAGE_VERSION: ${{ steps.compute-tag.outputs.result }}
         with:
-          context: .
+          context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ matrix.image }}:${{ env.IMAGE_VERSION }}
