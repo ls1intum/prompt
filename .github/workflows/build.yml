@@ -4,11 +4,11 @@ env:
   IMAGE_NAME_CLIENT: prompt-client
   IMAGE_NAME_SERVER: prompt-server
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+#on:
+#  push:
+#    branches: [main]
+#  pull_request:
+#    branches: [main]
 
 jobs:
   build:
