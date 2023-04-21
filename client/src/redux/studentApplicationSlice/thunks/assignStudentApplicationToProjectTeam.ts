@@ -4,15 +4,18 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 export const assignStudentApplicationToProjectTeam = createAsyncThunk(
   'studentApplications/assignStudentApplicationToProjectTeam',
 
-  async ({
-    studentApplicationId,
-    projectTeamId,
-    applicationSemester,
-  }: {
-    studentApplicationId: string
-    projectTeamId: string
-    applicationSemester: string
-  }) => {
+  async (
+    {
+      studentApplicationId,
+      projectTeamId,
+      applicationSemester,
+    }: {
+      studentApplicationId: string
+      projectTeamId: string
+      applicationSemester: string
+    },
+    { rejectWithValue },
+  ) => {
     try {
       return (
         await axios.post(
@@ -26,8 +29,7 @@ export const assignStudentApplicationToProjectTeam = createAsyncThunk(
         )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

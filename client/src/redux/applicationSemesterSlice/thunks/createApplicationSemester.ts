@@ -5,7 +5,7 @@ import { type ApplicationSemesterRequest } from '../applicationSemesterSlice'
 export const createApplicationSemester = createAsyncThunk(
   'applicationSemesters/createApplicationSemester',
 
-  async (applicationSemester: ApplicationSemesterRequest) => {
+  async (applicationSemester: ApplicationSemesterRequest, { rejectWithValue }) => {
     try {
       return (
         await axios.post('http://localhost:8080/api/application-semesters', applicationSemester, {
@@ -15,8 +15,7 @@ export const createApplicationSemester = createAsyncThunk(
         })
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

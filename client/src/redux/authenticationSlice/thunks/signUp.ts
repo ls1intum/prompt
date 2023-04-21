@@ -5,12 +5,11 @@ import { type SignUpRequest } from '../authenticationSlice'
 export const signUp = createAsyncThunk(
   'authentication/signUp',
 
-  async (signUpRequest: SignUpRequest) => {
+  async (signUpRequest: SignUpRequest, { rejectWithValue }) => {
     try {
       return (await axios.post('http://localhost:8080/api/auth/signup', signUpRequest)).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

@@ -65,7 +65,6 @@ export const authenticationState = createSlice({
       state.status = 'idle'
       localStorage.removeItem('jwt_token')
       localStorage.removeItem('refreshToken')
-      localStorage.removeItem('user_id')
     })
 
     builder.addCase(refreshToken.pending, (state) => {
@@ -74,7 +73,7 @@ export const authenticationState = createSlice({
     })
 
     builder.addCase(refreshToken.fulfilled, (state, { payload }) => {
-      localStorage.setItem('refreshToken', payload.refreshToken)
+      localStorage.setItem('refresh_token', payload.refreshToken)
       localStorage.setItem('jwt_token', payload.accessToken)
       state.status = 'idle'
     })
@@ -83,8 +82,7 @@ export const authenticationState = createSlice({
       if (payload) state.error = 'error'
       state.status = 'idle'
       localStorage.removeItem('jwt_token')
-      localStorage.removeItem('refreshToken')
-      localStorage.removeItem('user_id')
+      localStorage.removeItem('refresh_token')
     })
 
     builder.addCase(signUp.pending, (state) => {

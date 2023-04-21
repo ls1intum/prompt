@@ -5,6 +5,7 @@ import { createStudentApplication } from './thunks/createStudentApplication'
 import { createStudentApplicationNote } from './thunks/createStudentApplicationNote'
 import { fetchStudentApplications } from './thunks/fetchStudentApplications'
 import { removeStudentApplicationFromProjectTeam } from './thunks/removeStudentApplicationFromProjectTeam'
+import { updateStudentApplication } from './thunks/updateStudentApplication'
 
 interface Student {
   id: ''
@@ -35,6 +36,12 @@ interface StudentApplication {
   assessed: boolean
   accepted: boolean
   projectTeam?: ProjectTeam
+}
+
+interface StudentApplicationPatch {
+  op: 'replace' | 'add' | 'remove' | 'copy'
+  path: string
+  value: string
 }
 
 interface StudentApplicationNote {
@@ -96,6 +103,23 @@ export const studentApplicationsState = createSlice({
       state.status = 'idle'
     })
 
+    builder.addCase(updateStudentApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateStudentApplication.fulfilled, (state, { payload }) => {
+      state.studentApplications = state.studentApplications.map((studentApplication) =>
+        studentApplication.id === payload.id ? payload : studentApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateStudentApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
     builder.addCase(createStudentApplicationNote.pending, (state) => {
       state.status = 'loading'
       state.error = null
@@ -149,4 +173,9 @@ export const studentApplicationsState = createSlice({
 
 // export const {} = studentApplicationsState.actions
 export default studentApplicationsState.reducer
-export { type Student, type StudentApplication, type StudentApplicationNote }
+export {
+  type Student,
+  type StudentApplication,
+  type StudentApplicationNote,
+  type StudentApplicationPatch,
+}

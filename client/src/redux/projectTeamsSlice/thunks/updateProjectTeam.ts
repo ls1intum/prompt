@@ -5,13 +5,16 @@ import { type ProjectTeamPatch } from '../projectTeamsSlice'
 export const updateProjectTeam = createAsyncThunk(
   'projectTeams/updateProjectTeam',
 
-  async ({
-    projectTeamId,
-    projectTeamPatch,
-  }: {
-    projectTeamId: string
-    projectTeamPatch: ProjectTeamPatch[]
-  }) => {
+  async (
+    {
+      projectTeamId,
+      projectTeamPatch,
+    }: {
+      projectTeamId: string
+      projectTeamPatch: ProjectTeamPatch[]
+    },
+    { rejectWithValue },
+  ) => {
     try {
       return (
         await axios.patch(
@@ -26,8 +29,7 @@ export const updateProjectTeam = createAsyncThunk(
         )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

@@ -5,14 +5,25 @@ import { type StudentApplication } from '../studentApplicationSlice'
 export const createStudentApplication = createAsyncThunk(
   'studentApplications/createStudentApplication',
 
-  async (studentApplication: StudentApplication) => {
+  async (
+    {
+      studentApplication,
+      applicationSemester,
+    }: {
+      studentApplication: StudentApplication
+      applicationSemester: string
+    },
+    { rejectWithValue },
+  ) => {
     try {
       return (
-        await axios.post('http://localhost:8080/api/student-applications', studentApplication)
+        await axios.post(
+          `http://localhost:8080/api/student-applications?applicationSemester=${applicationSemester}`,
+          studentApplication,
+        )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

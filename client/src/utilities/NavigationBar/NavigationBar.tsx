@@ -17,7 +17,6 @@ import {
   Title,
 } from '@mantine/core'
 import {
-  IconLock,
   IconSun,
   IconMoonStars,
   IconPlus,
@@ -26,6 +25,8 @@ import {
   IconDeviceDesktop,
   IconStairs,
   IconCode,
+  IconAppsFilled,
+  IconLogout,
 } from '@tabler/icons-react'
 import { NavigationBarLinksGroup } from './NavigationBarLinksGroup'
 import { useNavigate } from 'react-router-dom'
@@ -33,11 +34,16 @@ import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
 import { setCurrentState } from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
 import {
-  WorkspaceCreationModal,
+  ApplicationSemesterCreationModal,
   WorkspaceSelectionDialog,
-} from '../../instructor/WorkspaceSelectionDialog'
+} from '../../instructor/ApplicationSemesterManager/WorkspaceSelectionDialog'
 
 const navigationContents = [
+  {
+    label: 'Application Semester Management',
+    icon: IconAppsFilled,
+    navigateTo: '/management/application-semesters',
+  },
   {
     label: 'Student Applications',
     icon: IconNews,
@@ -55,16 +61,6 @@ const navigationContents = [
   },
   { label: 'Grading', icon: IconStairs, navigateTo: '/student-applications' },
   { label: 'Artifacts', icon: IconCode, navigateTo: '/student-applications' },
-  {
-    label: 'Security',
-    navigateTo: '/student-applications',
-    icon: IconLock,
-    links: [
-      { label: 'Enable 2FA', link: '/' },
-      { label: 'Change password', link: '/' },
-      { label: 'Recovery codes', link: '/' },
-    ],
-  },
 ]
 
 const useStyles = createStyles((theme) => ({
@@ -94,7 +90,7 @@ export const DashboardWelcome = (): JSX.Element => {
       {selectedApplicationSemester ? (
         <>
           <Center style={{ paddingTop: '5vh' }}>
-            <Title>Welcome back!</Title>
+            <Title>Welcome to PROMPT!</Title>
           </Center>
           <SimpleGrid cols={3} style={{ padding: '20vh 10vw' }}>
             {navigationContents.map((item) => {
@@ -145,7 +141,7 @@ export const NavigationBar = (): JSX.Element => {
   return (
     <>
       {
-        <WorkspaceCreationModal
+        <ApplicationSemesterCreationModal
           opened={workspaceCreationModalOpen}
           onClose={() => {
             setWorkspaceCreationModalOpen(false)
@@ -223,6 +219,7 @@ export const NavigationBar = (): JSX.Element => {
         <Navbar.Section>
           <Center>
             <Button
+              leftIcon={<IconLogout />}
               onClick={() => {
                 localStorage.removeItem('userId')
                 localStorage.removeItem('jwt_token')

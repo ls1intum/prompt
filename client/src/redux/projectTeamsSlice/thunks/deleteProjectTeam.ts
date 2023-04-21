@@ -4,7 +4,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 export const deleteProjectTeam = createAsyncThunk(
   'projectTeams/deleteProjectTeam',
 
-  async (projectTeamId: string) => {
+  async (projectTeamId: string, { rejectWithValue }) => {
     try {
       return (
         await axios.delete(`http://localhost:8080/api/project-teams/${projectTeamId}`, {
@@ -14,8 +14,7 @@ export const deleteProjectTeam = createAsyncThunk(
         })
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

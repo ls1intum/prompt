@@ -83,8 +83,8 @@ export const NavigationBarLinksGroup = ({
       >
         <Group position='apart' spacing={0}>
           <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '1vw' }}>
-            <ThemeIcon variant='light' size={30}>
-              <Icon size='1.1rem' />
+            <ThemeIcon variant='light' size={45}>
+              <Icon size='25' />
             </ThemeIcon>
             <Text
               onClick={() => {

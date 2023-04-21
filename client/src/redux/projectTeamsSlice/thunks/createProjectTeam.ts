@@ -5,13 +5,16 @@ import { type ProjectTeam } from '../projectTeamsSlice'
 export const createProjectTeam = createAsyncThunk(
   'projectTeams/createProjectTeam',
 
-  async ({
-    projectTeam,
-    applicationSemester,
-  }: {
-    projectTeam: ProjectTeam
-    applicationSemester: string
-  }) => {
+  async (
+    {
+      projectTeam,
+      applicationSemester,
+    }: {
+      projectTeam: ProjectTeam
+      applicationSemester: string
+    },
+    { rejectWithValue },
+  ) => {
     try {
       return (
         await axios.post(
@@ -25,8 +28,7 @@ export const createProjectTeam = createAsyncThunk(
         )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )
