@@ -5,13 +5,16 @@ import { type StudentApplicationNote } from '../studentApplicationSlice'
 export const createStudentApplicationNote = createAsyncThunk(
   'studentApplications/createStudentApplicationNote',
 
-  async ({
-    studentApplicationId,
-    studentApplicationNote,
-  }: {
-    studentApplicationId: string
-    studentApplicationNote: StudentApplicationNote
-  }) => {
+  async (
+    {
+      studentApplicationId,
+      studentApplicationNote,
+    }: {
+      studentApplicationId: string
+      studentApplicationNote: StudentApplicationNote
+    },
+    { rejectWithValue },
+  ) => {
     try {
       return (
         await axios.post(
@@ -25,8 +28,7 @@ export const createStudentApplicationNote = createAsyncThunk(
         )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

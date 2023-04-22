@@ -5,7 +5,7 @@ import moment from 'moment'
 export const fetchAllApplicationSemesters = createAsyncThunk(
   'applicationSemesters/fetchAllApplicationSemesters',
 
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       return (
         await axios.get('http://localhost:8080/api/application-semesters', {
@@ -15,8 +15,7 @@ export const fetchAllApplicationSemesters = createAsyncThunk(
         })
       ).data
     } catch (err) {
-      console.log(err)
-      return []
+      return rejectWithValue(err)
     }
   },
 )
@@ -24,7 +23,7 @@ export const fetchAllApplicationSemesters = createAsyncThunk(
 export const fetchApplicationSemestersWithOpenApplicationPeriod = createAsyncThunk(
   'applicationSemesters/fetchApplicationSemestersWithOpenApplicationPeriod',
 
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const today = moment(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX").format()
       const response = (
@@ -40,8 +39,7 @@ export const fetchApplicationSemestersWithOpenApplicationPeriod = createAsyncThu
         return undefined
       }
     } catch (err) {
-      console.log(err)
-      return []
+      return rejectWithValue(err)
     }
   },
 )

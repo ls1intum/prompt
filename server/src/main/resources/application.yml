@@ -6,13 +6,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+    #show-sql: true
+    #properties:
+    #  hibernate:
+    #    format_sql: true
 
 prompt:
   auth:
     jwtSecret: 43cnz495jtc83t9n4
     jwtExpirationMs: 900000
     jwtRefreshExpirationMs: 604800000
+
+server:
+  servlet:
+    context-path: /api

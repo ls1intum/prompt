@@ -4,6 +4,8 @@ import {
   fetchAllApplicationSemesters,
   fetchApplicationSemestersWithOpenApplicationPeriod,
 } from './thunks/fetchApplicationSemesters'
+import { deleteApplicationSemester } from './thunks/deleteApplicationSemester'
+import { updateApplicationSemester } from './thunks/updateApplicationSemester'
 
 interface ApplicationSemesterRequest {
   semesterName: string
@@ -12,8 +14,16 @@ interface ApplicationSemesterRequest {
 }
 
 interface ApplicationSemester {
-  id: number
+  id: string
   semesterName: string
+  applicationPeriodStart: Date
+  applicationPeriodEnd: Date
+}
+
+interface ApplicationSemesterPatch {
+  op: 'replace' | 'add' | 'remove' | 'copy'
+  path: string
+  value: string
 }
 
 interface ApplicationSemesterSliceState {
@@ -38,6 +48,7 @@ export const applicationSemesterState = createSlice({
   reducers: {
     setCurrentState: (state, action: PayloadAction<ApplicationSemester>) => {
       state.currentState = action.payload
+      localStorage.setItem('application-semester', action.payload.id)
     },
   },
   extraReducers: (builder) => {
@@ -91,9 +102,46 @@ export const applicationSemesterState = createSlice({
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
+
+    builder.addCase(deleteApplicationSemester.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(deleteApplicationSemester.fulfilled, (state, { payload }) => {
+      state.applicationSemesters = state.applicationSemesters.filter(
+        (applicationSemester) => applicationSemester.id !== payload,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteApplicationSemester.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateApplicationSemester.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateApplicationSemester.fulfilled, (state, { payload }) => {
+      state.applicationSemesters = state.applicationSemesters.map((applicationSemester) => {
+        if (applicationSemester.id === payload.id) {
+          return payload
+        }
+        return applicationSemester
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateApplicationSemester.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
   },
 })
 
 export const { setCurrentState } = applicationSemesterState.actions
 export default applicationSemesterState.reducer
-export { type ApplicationSemester, type ApplicationSemesterRequest }
+export { type ApplicationSemester, type ApplicationSemesterRequest, type ApplicationSemesterPatch }

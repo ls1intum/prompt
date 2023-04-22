@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.0'
 }
 
-group = 'orgatool.ls1'
+group = 'prompt.ls1'
 version = '0.0.1'
 sourceCompatibility = '17'
 

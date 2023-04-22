@@ -4,13 +4,16 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 export const removeStudentApplicationFromProjectTeam = createAsyncThunk(
   'studentApplications/removeStudentApplicationFromProjectTeam',
 
-  async ({
-    studentApplicationId,
-    applicationSemester,
-  }: {
-    studentApplicationId: string
-    applicationSemester: string
-  }) => {
+  async (
+    {
+      studentApplicationId,
+      applicationSemester,
+    }: {
+      studentApplicationId: string
+      applicationSemester: string
+    },
+    { rejectWithValue },
+  ) => {
     try {
       return (
         await axios.delete(
@@ -23,8 +26,7 @@ export const removeStudentApplicationFromProjectTeam = createAsyncThunk(
         )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

@@ -4,7 +4,7 @@ import axios from 'axios'
 export const fetchStudentApplications = createAsyncThunk(
   'studentApplications/fetchAllStudentApplications',
 
-  async (applicationSemester: string) => {
+  async (applicationSemester: string, { rejectWithValue }) => {
     try {
       return (
         await axios.get(
@@ -17,8 +17,7 @@ export const fetchStudentApplications = createAsyncThunk(
         )
       ).data
     } catch (err) {
-      console.log(err)
-      return undefined
+      return rejectWithValue(err)
     }
   },
 )

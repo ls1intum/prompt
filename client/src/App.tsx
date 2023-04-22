@@ -7,11 +7,13 @@ import { Dashboard } from './instructor/Dashboard'
 import { SignIn } from './instructor/SignIn/SignIn'
 import { SignUp } from './instructor/SignUp/SignUp'
 import { StudentApplicationOverview } from './instructor/StudentApplicationsView/StudentApplicationOverview'
-import { ProjectTeamsManager } from './instructor/TeamAllocation/ProjectTeamsManager'
 import { refreshToken } from './redux/authenticationSlice/thunks/refreshToken'
 import { type AppDispatch } from './redux/store'
 import { StudentApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage'
 import { DashboardWelcome } from './utilities/NavigationBar/NavigationBar'
+import { StudentTeamProjectPreferencePage } from './student/StudentProjectTeamPreferencesPage/StudentTeamProjectPreferencePage'
+import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
+import { ApplicationSemesterManager } from './instructor/ApplicationSemesterManager/ApplicationSemesterManager'
 
 export const App = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
@@ -38,15 +40,23 @@ export const App = (): JSX.Element => {
               <Route path='/management/signup' element={<SignUp />} />
               <Route path='/management/signin' element={<SignIn />} />
               <Route
+                path='/management/application-semesters'
+                element={<Dashboard child={<ApplicationSemesterManager />} />}
+              />
+              <Route
                 path='/management/student-applications'
                 element={<Dashboard child={<StudentApplicationOverview />} />}
               />
               <Route
                 path='/management/team-allocation'
-                element={<Dashboard child={<ProjectTeamsManager />} />}
+                element={<Dashboard child={<TeamAllocationConsole />} />}
               />
               <Route path='/management' element={<DashboardWelcome />} />
               <Route path='/' element={<StudentApplicationSubmissionPage />} />
+              <Route
+                path='/preferences/:studentId'
+                element={<StudentTeamProjectPreferencePage />}
+              />
             </Routes>
           </BrowserRouter>
         </MantineProvider>
