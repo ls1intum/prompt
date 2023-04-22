@@ -44,7 +44,7 @@ public class ApplicationSemesterService {
 
         List<ApplicationSemester> applicationSemesterPeriodOverlap = applicationSemesterRepository
                 .findWithDateRangeOverlap(applicationSemester.getApplicationPeriodStart(), applicationSemester.getApplicationPeriodEnd());
-        if (applicationSemesterPeriodOverlap.size() > 0) {
+        if (!applicationSemesterPeriodOverlap.isEmpty()) {
             throw new ResourceInvalidParametersException(String.format("Application semester period overlaps with existing application semester with name %s",
                     applicationSemesterPeriodOverlap.get(0).getSemesterName()));
         }
