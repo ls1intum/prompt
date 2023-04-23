@@ -16,6 +16,9 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven {
+		url "https://packages.atlassian.com/maven/repository/public"
+	}
 }
 
 dependencies {
@@ -27,6 +30,8 @@ dependencies {
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'com.github.fge:json-patch:1.7'
+	implementation 'com.mashape.unirest:unirest-java:1.4.9'
+	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'

@@ -25,6 +25,9 @@ public class ProjectTeam implements Serializable {
     @Column(unique = true)
     private String name;
 
+    @Column(unique = true)
+    private String projectKey;
+
     @Column
     private String customer;
 
