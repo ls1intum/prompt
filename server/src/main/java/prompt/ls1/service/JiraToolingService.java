@@ -1,10 +1,11 @@
 package prompt.ls1.service;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.integration.client.JiraRestClient;
-import prompt.ls1.integration.client.domain.JiraRole;
+import prompt.ls1.integration.client.domain.JiraProjectCategory;
+import prompt.ls1.integration.client.domain.JiraProjectRole;
 import prompt.ls1.integration.client.exception.JiraResourceNotFoundException;
 import prompt.ls1.model.ProjectTeam;
 
@@ -28,13 +29,13 @@ public class JiraToolingService {
      * @throws UnirestException
      */
     public void setPermissions(final ProjectTeam projectTeam, final String iosTag) throws UnirestException {
-        final List<JiraRole> jiraRoles = jiraRestClient.getAllProjectRoles();
+        final List<JiraProjectRole> jiraProjectRoles = jiraRestClient.getAllProjectRoles();
 
-        final Optional<JiraRole> usersRole = jiraRoles.stream()
+        final Optional<JiraProjectRole> usersRole = jiraProjectRoles.stream()
                 .filter(role -> role.getName().equals(USERS_PROJECT_ROLE_NAME)).findFirst();
-        final Optional<JiraRole> developersRole = jiraRoles.stream()
+        final Optional<JiraProjectRole> developersRole = jiraProjectRoles.stream()
                 .filter(role -> role.getName().equals(DEVELOPERS_PROJECT_ROLE_NAME)).findFirst();
-        final Optional<JiraRole> administratorsRole = jiraRoles.stream()
+        final Optional<JiraProjectRole> administratorsRole = jiraProjectRoles.stream()
                 .filter(role -> role.getName().equals(ADMINISTRATORS_PROJECT_ROLE_NAME)).findFirst();
 
         if (usersRole.isEmpty()) {
@@ -90,6 +91,10 @@ public class JiraToolingService {
         projectTeams.forEach(projectTeam -> {
             jiraRestClient.createProject(projectTeam, projectLeadUsername, projectTeam.getApplicationSemester().getIosTag());
         });
+    }
+
+    public JiraProjectCategory createProjectCategory(final JiraProjectCategory jiraProjectCategory) {
+        return jiraRestClient.createProjectCategory(jiraProjectCategory);
     }
 
 }

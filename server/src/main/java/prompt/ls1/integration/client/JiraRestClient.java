@@ -1,19 +1,22 @@
 package prompt.ls1.integration.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
+import kong.unirest.UnirestParsingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import prompt.ls1.exception.UnirestRequestException;
+import prompt.ls1.integration.client.domain.JiraGroup;
+import prompt.ls1.integration.client.domain.JiraProject;
 import prompt.ls1.integration.client.domain.JiraProjectCategory;
-import prompt.ls1.integration.client.domain.JiraRole;
+import prompt.ls1.integration.client.domain.JiraProjectRole;
 import prompt.ls1.integration.client.domain.JiraUser;
 import prompt.ls1.model.ProjectTeam;
 
@@ -41,8 +44,10 @@ public class JiraRestClient {
         this.username = username;
         this.password = password;
         this.jsonNodeFactory = JsonNodeFactory.instance;
-        this.objectMapper = new ObjectMapper();
-        Unirest.setObjectMapper(new com.mashape.unirest.http.ObjectMapper() {
+        this.objectMapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
+        Unirest.config().setObjectMapper(new kong.unirest.ObjectMapper() {
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
                     return objectMapper.readValue(value, valueType);
@@ -66,14 +71,19 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JiraUser getUser(final String username) throws UnirestException {
-        return Unirest.get("https://{jiraUrl}/rest/api/2/user")
+    public JiraUser getUser(final String username) {
+        HttpResponse<JiraUser> response = Unirest.get("https://{jiraUrl}/rest/api/2/user")
                 .basicAuth(username, password)
                 .header("Accept", "application/json")
                 .routeParam("jiraUrl", jiraUrl)
                 .queryString("username", username)
                 .asObject(JiraUser.class)
-                .getBody();
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+
+        return response.getBody();
     }
 
     /**
@@ -81,15 +91,18 @@ public class JiraRestClient {
      * @return List of Jira roles
      * @throws UnirestException
      */
-    public List<JiraRole> getAllProjectRoles() throws UnirestException {
-        JiraRole[] jiraRoles = Unirest.get("https://{jiraUrl}/rest/api/2/role")
+    public List<JiraProjectRole> getAllProjectRoles() {
+        HttpResponse<JiraProjectRole[]> response = Unirest.get("https://{jiraUrl}/rest/api/2/role")
                 .basicAuth(username, password)
                 .header("Accept", "application/json")
                 .routeParam("jiraUrl", jiraUrl)
-                .asObject(JiraRole[].class)
-                .getBody();
+                .asObject(JiraProjectRole[].class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });;
 
-        return Arrays.asList(jiraRoles);
+        return Arrays.asList(response.getBody());
     }
 
     /**
@@ -97,15 +110,18 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public List<JiraProjectCategory> getAllProjectCategories() throws UnirestException {
-        JiraProjectCategory[] jiraProjectCategories = Unirest.get("https://{jiraUrl}/rest/api/2/projectCategory")
+    public List<JiraProjectCategory> getAllProjectCategories() {
+        HttpResponse<JiraProjectCategory[]> response = Unirest.get("https://{jiraUrl}/rest/api/2/projectCategory")
                 .basicAuth(username, password)
                 .header("Accept", "application/json")
                 .routeParam("jiraUrl", jiraUrl)
                 .asObject(JiraProjectCategory[].class)
-                .getBody();
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });;
 
-        return Arrays.asList(jiraProjectCategories);
+        return Arrays.asList(response.getBody());
     }
 
     /**
@@ -116,7 +132,7 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JsonNode createProject(final ProjectTeam projectTeam, final String leadAccountUsername, final String iosTag) {
+    public JiraProject createProject(final ProjectTeam projectTeam, final String leadAccountUsername, final String iosTag) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
         // Required parameters
@@ -127,54 +143,46 @@ public class JiraRestClient {
         payload.put("projectTypeKey", "software");
         payload.put("lead", leadAccountUsername);
 
-        try {
-            HttpResponse<JsonNode> response = Unirest.post("https://{jiraUrl}/rest/api/2/project")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .routeParam("jiraUrl", jiraUrl)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraProject> response = Unirest.post("https://{jiraUrl}/rest/api/2/project")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("jiraUrl", jiraUrl)
+                .body(payload)
+                .asObject(JiraProject.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
     /**
      * Create a new project category
-     * @param categoryName
+     * @param jiraProjectCategory - JiraProjectCategory object with name and description
      * @return
      * @throws UnirestException
      */
-    public JsonNode createCategory(final String categoryName) {
+    public JiraProjectCategory createProjectCategory(final JiraProjectCategory jiraProjectCategory) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
-        payload.put("name", categoryName);
+        payload.put("name", jiraProjectCategory.getName());
+        payload.put("description", jiraProjectCategory.getDescription());
 
-        HttpResponse<JsonNode> response = null;
-        try {
-            response = Unirest.post("https://{jiraUrl}/rest/api/2/projectCategory")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .routeParam("jiraUrl", jiraUrl)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraProjectCategory> response = Unirest.post("https://{jiraUrl}/rest/api/2/projectCategory")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("jiraUrl", jiraUrl)
+                .body(payload)
+                .asObject(JiraProjectCategory.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
     /**
@@ -183,29 +191,24 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JsonNode createUserGroup(final String userGroupName) {
+    public JiraGroup createUserGroup(final String userGroupName) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
         payload.put("name", userGroupName);
 
-        HttpResponse<JsonNode> response = null;
-        try {
-            response = Unirest.post("https://{jiraUrl}/rest/api/2/group")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .routeParam("jiraUrl", jiraUrl)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraGroup> response = Unirest.post("https://{jiraUrl}/rest/api/2/group")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("jiraUrl", jiraUrl)
+                .body(payload)
+                .asObject(JiraGroup.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
     /**
@@ -215,30 +218,25 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JsonNode addUserToGroup(final String userId, final String groupName) {
+    public JiraGroup addUserToGroup(final String userId, final String groupName) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
         payload.put("accountId", userId);
 
-        HttpResponse<JsonNode> response = null;
-        try {
-            response = Unirest.post("https://{jiraUrl}/rest/api/2/group/user")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .queryString("groupName", groupName)
-                    .routeParam("jiraUrl", jiraUrl)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraGroup> response = Unirest.post("https://{jiraUrl}/rest/api/2/group/user")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .queryString("groupName", groupName)
+                .routeParam("jiraUrl", jiraUrl)
+                .body(payload)
+                .asObject(JiraGroup.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
     /**
@@ -248,30 +246,25 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JsonNode setProjectCategory(final String projectKey, final String categoryId) {
+    public JiraProject setProjectCategory(final String projectKey, final String categoryId) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
         payload.put("categoryId", categoryId);
 
-        HttpResponse<JsonNode> response = null;
-        try {
-            response = Unirest.put("https://{jiraUrl}/rest/api/2/project/{projectKey}")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .routeParam("jiraUrl", jiraUrl)
-                    .routeParam("projectKey", projectKey)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraProject> response = Unirest.put("https://{jiraUrl}/rest/api/2/project/{projectKey}")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("jiraUrl", jiraUrl)
+                .routeParam("projectKey", projectKey)
+                .body(payload)
+                .asObject(JiraProject.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
     /**
@@ -281,30 +274,25 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JsonNode setProjectUrl(final String projectKey, final String projectUrl) {
+    public JiraProject setProjectUrl(final String projectKey, final String projectUrl) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
         payload.put("url", projectUrl);
 
-        HttpResponse<JsonNode> response = null;
-        try {
-            response = Unirest.put("https://{jiraUrl}/rest/api/2/project/{projectKey}")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .routeParam("jiraUrl", jiraUrl)
-                    .routeParam("projectKey", projectKey)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraProject> response = Unirest.put("https://{jiraUrl}/rest/api/2/project/{projectKey}")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("jiraUrl", jiraUrl)
+                .routeParam("projectKey", projectKey)
+                .body(payload)
+                .asObject(JiraProject.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
     /**
@@ -315,31 +303,26 @@ public class JiraRestClient {
      * @return
      * @throws UnirestException
      */
-    public JsonNode addProjectRoleActors(final String projectKey, final String roleId, final String groupName) {
+    public JiraProjectRole addProjectRoleActors(final String projectKey, final String roleId, final String groupName) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
         payload.put("group", groupName);
 
-        HttpResponse<JsonNode> response = null;
-        try {
-            response = Unirest.put("https://{jiraUrl}/rest/api/2/project/{projectKey}/role/{roleId}")
-                    .basicAuth(username, password)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .routeParam("jiraUrl", jiraUrl)
-                    .routeParam("projectKey", projectKey)
-                    .routeParam("roleId", roleId)
-                    .body(payload)
-                    .asJson();
+        HttpResponse<JiraProjectRole> response = Unirest.put("https://{jiraUrl}/rest/api/2/project/{projectKey}/role/{roleId}")
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("jiraUrl", jiraUrl)
+                .routeParam("projectKey", projectKey)
+                .routeParam("roleId", roleId)
+                .body(payload)
+                .asObject(JiraProjectRole.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });;
 
-            if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                throw new UnirestRequestException(response.getBody().getObject().get("errors").toString());
-            }
-
-            return response.getBody();
-        } catch (UnirestException e) {
-            throw new UnirestRequestException(e.getMessage());
-        }
+        return response.getBody();
     }
 
 }

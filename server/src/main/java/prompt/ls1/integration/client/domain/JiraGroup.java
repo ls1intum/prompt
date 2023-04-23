@@ -2,14 +2,15 @@ package prompt.ls1.integration.client.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class JiraRole {
+@NoArgsConstructor
+public class JiraGroup {
 
-    public Long id;
+    public String groupId;
     public String name;
-
 }

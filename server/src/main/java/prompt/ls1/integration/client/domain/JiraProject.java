@@ -9,9 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class JiraProjectCategory {
+public class JiraProject {
 
     public String id;
+    public String key;
     public String name;
-    public String description;
+    public String url;
+    public JiraProjectCategory jiraProjectCategory;
 }

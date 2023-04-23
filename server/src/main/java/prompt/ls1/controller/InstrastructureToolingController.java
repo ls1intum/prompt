@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import prompt.ls1.integration.client.domain.JiraProjectCategory;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.service.ApplicationSemesterService;
@@ -37,5 +38,10 @@ public class InstrastructureToolingController {
 
         jiraToolingService.createProjects(projectTeams, projectLeadUsername);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/jira/project-categories")
+    public ResponseEntity<JiraProjectCategory> createJiraProjectCategory(@RequestBody final JiraProjectCategory jiraProjectCategory) {
+        return ResponseEntity.ok(jiraToolingService.createProjectCategory(jiraProjectCategory));
     }
 }
