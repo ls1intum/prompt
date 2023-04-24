@@ -149,12 +149,7 @@ export const StudentApplicationForm = ({
                   <Title align='right'>Welcome to the application for the iPraktikum course!</Title>
                 </Group>
               )}
-              <form
-                style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}
-                onSubmit={form.onSubmit((values) => {
-                  console.log(values)
-                })}
-              >
+              <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
                 <Checkbox
                   mt='md'
                   disabled={accessMode === StudentApplicationAccessMode.INSTRUCTOR}
@@ -282,7 +277,7 @@ export const StudentApplicationForm = ({
                 />
                 <MultiSelect
                   disabled={accessMode === StudentApplicationAccessMode.INSTRUCTOR}
-                  data={['MacBook', 'iPhone', 'iPad', 'iWatch']}
+                  data={['MacBook', 'iPhone', 'iPad', 'iWatch', 'Raspberry Pi']}
                   label='Available Devices'
                   placeholder='Available Devices'
                 />

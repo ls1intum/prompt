@@ -14,6 +14,8 @@ import { DashboardWelcome } from './utilities/NavigationBar/NavigationBar'
 import { StudentTeamProjectPreferencePage } from './student/StudentProjectTeamPreferencesPage/StudentTeamProjectPreferencePage'
 import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
 import { ApplicationSemesterManager } from './instructor/ApplicationSemesterManager/ApplicationSemesterManager'
+import { InfrastructureManagement } from './instructor/InfrastructureManagement/InstrastructureManagement'
+import { Notifications } from '@mantine/notifications'
 
 export const App = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
@@ -35,6 +37,7 @@ export const App = (): JSX.Element => {
     <div>
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+          <Notifications />
           <BrowserRouter>
             <Routes>
               <Route path='/management/signup' element={<SignUp />} />
@@ -50,6 +53,10 @@ export const App = (): JSX.Element => {
               <Route
                 path='/management/team-allocation'
                 element={<Dashboard child={<TeamAllocationConsole />} />}
+              />
+              <Route
+                path='/management/infrastructure'
+                element={<Dashboard child={<InfrastructureManagement />} />}
               />
               <Route path='/management' element={<DashboardWelcome />} />
               <Route path='/' element={<StudentApplicationSubmissionPage />} />

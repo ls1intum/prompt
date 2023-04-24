@@ -3,6 +3,7 @@ import {
   Button,
   Group,
   Modal,
+  Notification,
   Paper,
   Stack,
   Text,
@@ -10,7 +11,14 @@ import {
   Tooltip,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { IconEdit, IconPlus, IconSearch, IconTrash, IconUsers } from '@tabler/icons-react'
+import {
+  IconAlertTriangle,
+  IconEdit,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+  IconUsers,
+} from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -156,6 +164,8 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const [tablePage, setTablePage] = useState(1)
   const [tableRecords, setTableRecords] = useState<ProjectTeam[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [deleteAttemptNonEmptyProjectTeamShowed, setDeleteAttemptNotEmptyProjectTeamShowed] =
+    useState(false)
 
   useEffect(() => {
     if (selectedApplicationSemester) {
@@ -242,6 +252,19 @@ export const ProjectTeamsManager = (): JSX.Element => {
           setSearchQuery(e.currentTarget.value)
         }}
       />
+      {deleteAttemptNonEmptyProjectTeamShowed && (
+        <Notification
+          title='Attempt to delete non empty project team'
+          onClose={() => {
+            setDeleteAttemptNotEmptyProjectTeamShowed(false)
+          }}
+          withCloseButton
+          icon={<IconAlertTriangle />}
+        >
+          The project team cannot be deleted because it is not empty. Please remove all team members
+          before deletion.
+        </Notification>
+      )}
       <DataTable
         withBorder
         minHeight={200}
@@ -306,8 +329,15 @@ export const ProjectTeamsManager = (): JSX.Element => {
                   <ActionIcon
                     color='red'
                     onClick={() => {
-                      setSelectedProjectTeam(projectTeam)
-                      setProjectTeamDeletionConfirmationOpen(true)
+                      if (
+                        studentApplications.filter((sa) => sa.projectTeam?.id === projectTeam.id)
+                          .length > 0
+                      ) {
+                        setDeleteAttemptNotEmptyProjectTeamShowed(true)
+                      } else {
+                        setSelectedProjectTeam(projectTeam)
+                        setProjectTeamDeletionConfirmationOpen(true)
+                      }
                     }}
                   >
                     <IconTrash size={16} />

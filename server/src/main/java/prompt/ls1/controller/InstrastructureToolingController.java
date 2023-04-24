@@ -3,11 +3,13 @@ package prompt.ls1.controller;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import prompt.ls1.integration.client.domain.JiraGroup;
 import prompt.ls1.integration.client.domain.JiraProjectCategory;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.model.ProjectTeam;
@@ -43,5 +45,16 @@ public class InstrastructureToolingController {
     @PostMapping("/jira/project-categories")
     public ResponseEntity<JiraProjectCategory> createJiraProjectCategory(@RequestBody final JiraProjectCategory jiraProjectCategory) {
         return ResponseEntity.ok(jiraToolingService.createProjectCategory(jiraProjectCategory));
+    }
+
+    @PostMapping("/jira/user-groups")
+    public ResponseEntity<JiraGroup> createJiraGroup(@RequestBody final JiraGroup jiraGroup) {
+        return ResponseEntity.ok(jiraToolingService.createGroup(jiraGroup));
+    }
+
+    @PostMapping("/jira/user/{username}/group/{groupName}")
+    public ResponseEntity<JiraGroup> addUserToJiraGroup(@PathVariable final String username,
+                                                        @PathVariable final String groupName) {
+        return ResponseEntity.ok(jiraToolingService.addUserToGroup(username, groupName));
     }
 }

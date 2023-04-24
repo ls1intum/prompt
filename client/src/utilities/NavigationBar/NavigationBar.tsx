@@ -57,7 +57,7 @@ const navigationContents = [
   {
     label: 'Infrastructure',
     icon: IconDeviceDesktop,
-    navigateTo: '/student-applications',
+    navigateTo: '/management/infrastructure',
   },
   { label: 'Grading', icon: IconStairs, navigateTo: '/student-applications' },
   { label: 'Artifacts', icon: IconCode, navigateTo: '/student-applications' },

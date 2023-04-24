@@ -187,14 +187,14 @@ public class JiraRestClient {
 
     /**
      * Create a user group
-     * @param userGroupName
+     * @param jiraGroup
      * @return
      * @throws UnirestException
      */
-    public JiraGroup createUserGroup(final String userGroupName) {
+    public JiraGroup createUserGroup(final JiraGroup jiraGroup) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
-        payload.put("name", userGroupName);
+        payload.put("name", jiraGroup.getName());
 
         HttpResponse<JiraGroup> response = Unirest.post("https://{jiraUrl}/rest/api/2/group")
                 .basicAuth(username, password)
@@ -213,21 +213,21 @@ public class JiraRestClient {
 
     /**
      * Assigns a user to the specified group.
-     * @param userId
+     * @param username
      * @param groupName
      * @return
      * @throws UnirestException
      */
-    public JiraGroup addUserToGroup(final String userId, final String groupName) {
+    public JiraGroup addUserToGroup(final String username, final String groupName) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
-        payload.put("accountId", userId);
+        payload.put("name", username);
 
         HttpResponse<JiraGroup> response = Unirest.post("https://{jiraUrl}/rest/api/2/group/user")
                 .basicAuth(username, password)
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
-                .queryString("groupName", groupName)
+                .queryString("groupname", groupName)
                 .routeParam("jiraUrl", jiraUrl)
                 .body(payload)
                 .asObject(JiraGroup.class)

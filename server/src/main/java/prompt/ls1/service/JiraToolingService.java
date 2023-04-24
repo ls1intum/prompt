@@ -4,6 +4,7 @@ import kong.unirest.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.integration.client.JiraRestClient;
+import prompt.ls1.integration.client.domain.JiraGroup;
 import prompt.ls1.integration.client.domain.JiraProjectCategory;
 import prompt.ls1.integration.client.domain.JiraProjectRole;
 import prompt.ls1.integration.client.exception.JiraResourceNotFoundException;
@@ -95,6 +96,14 @@ public class JiraToolingService {
 
     public JiraProjectCategory createProjectCategory(final JiraProjectCategory jiraProjectCategory) {
         return jiraRestClient.createProjectCategory(jiraProjectCategory);
+    }
+
+    public JiraGroup createGroup(final JiraGroup jiraGroup) {
+        return jiraRestClient.createUserGroup(jiraGroup);
+    }
+
+    public JiraGroup addUserToGroup(final String username, final String groupName) {
+        return jiraRestClient.addUserToGroup(username, groupName);
     }
 
 }
