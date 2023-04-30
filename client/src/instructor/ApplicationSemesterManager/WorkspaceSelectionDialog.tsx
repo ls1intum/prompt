@@ -40,12 +40,15 @@ export const ApplicationSemesterCreationModal = ({
     initialValues: applicationSemester
       ? {
           ...applicationSemester,
+          applicationPeriodStart: new Date(applicationSemester.applicationPeriodStart),
+          applicationPeriodEnd: new Date(applicationSemester.applicationPeriodEnd),
         }
       : {
           id: '',
           semesterName: '',
           applicationPeriodStart: new Date(),
           applicationPeriodEnd: new Date(),
+          iosTag: '',
         },
   })
 
@@ -58,6 +61,12 @@ export const ApplicationSemesterCreationModal = ({
             label='Semester Name'
             placeholder='SS20XX'
             {...form.getInputProps('semesterName')}
+          />
+          <TextInput
+            withAsterisk
+            label='IOS Tag'
+            placeholder='ss20XX'
+            {...form.getInputProps('iosTag')}
           />
           <DatePickerInput
             icon={<IconCalendar />}

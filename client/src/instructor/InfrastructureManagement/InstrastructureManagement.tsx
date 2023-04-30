@@ -1,88 +1,109 @@
-import { Button, Divider, SimpleGrid, Stack, Title } from '@mantine/core'
-import { IconCategory, IconTool, IconUser, IconUsers } from '@tabler/icons-react'
+import { Button, Group, Stack, Title } from '@mantine/core'
 import { useState } from 'react'
-import {
-  JiraAddUserToUserGroupModal,
-  JiraProjectCategoryCreationModal,
-  JiraSetupModal,
-  JiraUserGroupCreationModal,
-} from './components/JiraSetupModal'
+import { useAppSelector } from '../../redux/store'
+import { ManagementSetupModal } from './components/ManagementSetupModal'
+import { IconSettings } from '@tabler/icons-react'
+import { IntroCourseSetupStepper } from './components/IntroCourseSetupStepper'
+import { TeamAssignmentModal } from './components/TeamAssignmentModal'
+import { TeamsSetupStepper } from './components/TeamSetupStepper'
 
 export const InfrastructureManagement = (): JSX.Element => {
-  const [jiraProjectCategoryCreationModalOpened, setJiraProjectCategoryCreationModalOpened] =
-    useState(false)
-  const [jiraUserGroupCreationModalOpened, setJiraUserGroupCreationModalOpened] = useState(false)
-  const [jiraAddUserToUserGroupModalOpened, setJiraAddUserToUserGroupModalOpened] = useState(false)
-  const [jiraSetupModalOpened, setJiraSetupModalOpened] = useState(false)
+  const selectedApplicationSemester = useAppSelector(
+    (state) => state.applicationSemester.currentState,
+  )
+  const [mgmtSetupStepperOpened, setMgmtSetupStepperOpened] = useState(false)
+  const [introCourseSetupStepperOpened, setIntroCourseSetupStepperOpened] = useState(false)
+  const [teamAssignmentModalOpened, setTeamAssignmentModalOpened] = useState(false)
+  const [teamsSetupStepperOpened, setTeamsSetupStepperOpened] = useState(false)
 
   return (
     <>
       <Stack>
-        <Title>Jira</Title>
-        <SimpleGrid cols={2} style={{ padding: '5vh 0' }}>
-          <Button
-            variant='filled'
-            leftIcon={<IconTool />}
-            onClick={() => {
-              setJiraSetupModalOpened(true)
-            }}
-          >
-            Setup Jira Tools
-          </Button>
-          <Button
-            variant='filled'
-            leftIcon={<IconCategory />}
-            onClick={() => {
-              setJiraProjectCategoryCreationModalOpened(true)
-            }}
-          >
-            Create Project Category
-          </Button>
-          <Button
-            variant='filled'
-            leftIcon={<IconUsers />}
-            onClick={() => {
-              setJiraUserGroupCreationModalOpened(true)
-            }}
-          >
-            Create User Group
-          </Button>
-          <Button
-            variant='filled'
-            leftIcon={<IconUser />}
-            onClick={() => {
-              setJiraAddUserToUserGroupModalOpened(true)
-            }}
-          >
-            Add User To User Group
-          </Button>
-        </SimpleGrid>
-        <JiraProjectCategoryCreationModal
-          opened={jiraProjectCategoryCreationModalOpened}
-          onClose={() => {
-            setJiraProjectCategoryCreationModalOpened(false)
-          }}
-        />
-        <JiraSetupModal
-          opened={jiraSetupModalOpened}
-          onClose={() => {
-            setJiraSetupModalOpened(false)
-          }}
-        />
-        <JiraUserGroupCreationModal
-          opened={jiraUserGroupCreationModalOpened}
-          onClose={() => {
-            setJiraUserGroupCreationModalOpened(false)
-          }}
-        />
-        <JiraAddUserToUserGroupModal
-          opened={jiraAddUserToUserGroupModalOpened}
-          onClose={() => {
-            setJiraAddUserToUserGroupModalOpened(false)
-          }}
-        />
+        {selectedApplicationSemester && (
+          <Group>
+            <Title order={2}>Management</Title>
+            <Button
+              leftIcon={<IconSettings />}
+              variant='filled'
+              onClick={() => {
+                setMgmtSetupStepperOpened(true)
+              }}
+            >
+              Setup
+            </Button>
+            <ManagementSetupModal
+              opened={mgmtSetupStepperOpened}
+              onClose={() => {
+                setMgmtSetupStepperOpened(false)
+              }}
+              iosTag={selectedApplicationSemester.iosTag}
+            />
+          </Group>
+        )}
+        {selectedApplicationSemester && (
+          <Group>
+            <Title order={2}>Intro Course</Title>
+            <Button
+              leftIcon={<IconSettings />}
+              variant='filled'
+              onClick={() => {
+                setIntroCourseSetupStepperOpened(true)
+              }}
+            >
+              Setup
+            </Button>
+            <IntroCourseSetupStepper
+              opened={introCourseSetupStepperOpened}
+              onClose={() => {
+                setIntroCourseSetupStepperOpened(false)
+              }}
+              iosTag={selectedApplicationSemester.iosTag}
+            />
+          </Group>
+        )}
+        {selectedApplicationSemester && (
+          <Group>
+            <Title order={2}>Team Assignment</Title>
+            <Button
+              leftIcon={<IconSettings />}
+              variant='filled'
+              onClick={() => {
+                setTeamAssignmentModalOpened(true)
+              }}
+            >
+              Setup
+            </Button>
+            <TeamAssignmentModal
+              opened={teamAssignmentModalOpened}
+              onClose={() => {
+                setTeamAssignmentModalOpened(false)
+              }}
+              iosTag={selectedApplicationSemester.iosTag}
+            />
+          </Group>
+        )}
+        {selectedApplicationSemester && (
+          <Group>
+            <Title order={2}>Teams</Title>
+            <Button
+              leftIcon={<IconSettings />}
+              variant='filled'
+              onClick={() => {
+                setTeamsSetupStepperOpened(true)
+              }}
+            >
+              Setup
+            </Button>
+            <TeamsSetupStepper
+              opened={teamsSetupStepperOpened}
+              onClose={() => {
+                setTeamsSetupStepperOpened(false)
+              }}
+              iosTag={selectedApplicationSemester.iosTag}
+            />
+          </Group>
+        )}
       </Stack>
-      <Divider />
     </>
   )
 }

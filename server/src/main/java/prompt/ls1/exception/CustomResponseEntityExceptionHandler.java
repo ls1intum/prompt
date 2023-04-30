@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import prompt.ls1.integration.client.exception.JiraResourceNotFoundException;
+import prompt.ls1.integration.jira.exception.JiraResourceNotFoundException;
 
 import java.text.ParseException;
 

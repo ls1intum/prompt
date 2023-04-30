@@ -18,6 +18,7 @@
     "i18n-iso-countries": "^7.5.0",
     "mantine-datatable": "^2.3.3",
     "moment": "^2.29.4",
+    "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-csv": "^2.2.2",

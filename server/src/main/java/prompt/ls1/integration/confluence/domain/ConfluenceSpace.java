@@ -1,4 +1,4 @@
-package prompt.ls1.integration.client.domain;
+package prompt.ls1.integration.confluence.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,13 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class JiraProject {
+@AllArgsConstructor
+public class ConfluenceSpace {
 
     public String id;
     public String key;
     public String name;
-    public String url;
-    public JiraProjectCategory jiraProjectCategory;
 }

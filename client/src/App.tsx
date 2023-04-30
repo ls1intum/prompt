@@ -37,7 +37,7 @@ export const App = (): JSX.Element => {
     <div>
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-          <Notifications />
+          <Notifications limit={5} />
           <BrowserRouter>
             <Routes>
               <Route path='/management/signup' element={<SignUp />} />

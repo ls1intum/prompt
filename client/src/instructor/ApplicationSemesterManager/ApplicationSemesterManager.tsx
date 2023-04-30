@@ -85,6 +85,10 @@ export const ApplicationSemesterManager = (): JSX.Element => {
             title: 'Application Semester Name',
           },
           {
+            accessor: 'iosTag',
+            title: 'iOS Tag',
+          },
+          {
             accessor: 'applicationPeriodStart',
             title: 'Application Period Start',
             render: (applicationSemester) => (

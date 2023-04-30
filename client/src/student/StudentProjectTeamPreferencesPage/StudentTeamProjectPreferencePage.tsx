@@ -55,7 +55,7 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
       console.log('fetching')
       void dispatch(fetchProjectTeams(selectedApplicationSemester.semesterName))
     } else {
-      void dispatch(fetchProjectTeams('SS2024'))
+      void dispatch(fetchProjectTeams('SS2023'))
     }
   }, [selectedApplicationSemester])
 

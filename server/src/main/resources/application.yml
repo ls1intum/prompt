@@ -16,6 +16,15 @@ prompt:
     jwtSecret: 43cnz495jtc83t9n4
     jwtExpirationMs: 900000
     jwtRefreshExpirationMs: 604800000
+  atlassian:
+    # Fill out these values 
+    username:
+    password:
+    bitbucket-url:
+    jira-url:
+    bamboo-url:
+    confluence-url:
+
 
 server:
   servlet:

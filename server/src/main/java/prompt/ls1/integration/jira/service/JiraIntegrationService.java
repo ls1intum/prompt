@@ -1,20 +1,20 @@
-package prompt.ls1.service;
+package prompt.ls1.integration.jira.service;
 
 import kong.unirest.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import prompt.ls1.integration.client.JiraRestClient;
-import prompt.ls1.integration.client.domain.JiraGroup;
-import prompt.ls1.integration.client.domain.JiraProjectCategory;
-import prompt.ls1.integration.client.domain.JiraProjectRole;
-import prompt.ls1.integration.client.exception.JiraResourceNotFoundException;
-import prompt.ls1.model.ProjectTeam;
+import prompt.ls1.integration.jira.JiraRestClient;
+import prompt.ls1.integration.jira.domain.JiraGroup;
+import prompt.ls1.integration.jira.domain.JiraProject;
+import prompt.ls1.integration.jira.domain.JiraProjectCategory;
+import prompt.ls1.integration.jira.domain.JiraProjectRole;
+import prompt.ls1.integration.jira.domain.JiraProjectRoleActor;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class JiraToolingService {
+public class JiraIntegrationService {
 
     @Autowired
     private JiraRestClient jiraRestClient;
@@ -29,7 +29,7 @@ public class JiraToolingService {
      * @param iosTag - IOS tag used for group names
      * @throws UnirestException
      */
-    public void setPermissions(final ProjectTeam projectTeam, final String iosTag) throws UnirestException {
+   /* public void setPermissions(final ProjectTeam projectTeam, final String iosTag) throws UnirestException {
         final List<JiraProjectRole> jiraProjectRoles = jiraRestClient.getAllProjectRoles();
 
         final Optional<JiraProjectRole> usersRole = jiraProjectRoles.stream()
@@ -86,24 +86,63 @@ public class JiraToolingService {
         jiraRestClient.addProjectRoleActors(projectTeam.getProjectKey(),
                 usersRole.get().getId().toString(),
                 String.format("%s-customers", iosTag.toLowerCase()));
+    }*/
+
+    public List<JiraProject> createProjects(final List<JiraProject> jiraProjects) {
+        final List<JiraProject> createdJiraProjects = new ArrayList<>();
+        jiraProjects.forEach(jiraProject -> {
+            createdJiraProjects.add(jiraRestClient.createProject(jiraProject));
+        });
+
+        return createdJiraProjects;
     }
 
-    public void createProjects(final List<ProjectTeam> projectTeams, final String projectLeadUsername) {
-        projectTeams.forEach(projectTeam -> {
-            jiraRestClient.createProject(projectTeam, projectLeadUsername, projectTeam.getApplicationSemester().getIosTag());
+    public List<JiraProjectCategory> createProjectCategories(final List<String> jiraProjectCategoryNames) {
+        final List<JiraProjectCategory> jiraProjectCategories = new ArrayList<>();
+        jiraProjectCategoryNames.forEach(jiraProjectCategoryName -> {
+            jiraProjectCategories.add(jiraRestClient.createProjectCategory(jiraProjectCategoryName));
+        });
+
+        return jiraProjectCategories;
+    }
+
+    public List<JiraGroup> createGroups(final List<String> jiraGroupNames) {
+        final List<JiraGroup> jiraGroups = new ArrayList<>();
+        jiraGroupNames.forEach(jiraGroupName -> {
+            jiraGroups.add(jiraRestClient.createGroup(jiraGroupName));
+        });
+
+        return jiraGroups;
+    }
+
+    public List<JiraProjectRole> getAllProjectRoles() {
+        return jiraRestClient.getAllProjectRoles();
+    }
+
+    public List<JiraProjectCategory> getProjectCategories() {
+        return jiraRestClient.getAllProjectCategories();
+    }
+
+    public void addUsersToGroup(final String groupName, final List<String> usernames) {
+        usernames.forEach(username -> {
+            jiraRestClient.addUserToGroup(username, groupName);
         });
     }
 
-    public JiraProjectCategory createProjectCategory(final JiraProjectCategory jiraProjectCategory) {
-        return jiraRestClient.createProjectCategory(jiraProjectCategory);
+    public List<JiraGroup> getGroupsMatchingQuery(final String query) {
+        return jiraRestClient.getGroups(query);
     }
 
-    public JiraGroup createGroup(final JiraGroup jiraGroup) {
-        return jiraRestClient.createUserGroup(jiraGroup);
+    public List<JiraProject> getProjectsMatchingQuery(final String query) {
+        return jiraRestClient.getProjects(query);
     }
 
-    public JiraGroup addUserToGroup(final String username, final String groupName) {
-        return jiraRestClient.addUserToGroup(username, groupName);
+    public void addActorsToProjectRole(final List<JiraProjectRoleActor> jiraProjectRoleActors) {
+        jiraProjectRoleActors.forEach(jiraProjectRoleActor -> {
+            jiraRestClient.addProjectRoleActors(jiraProjectRoleActor.getProjectKey(),
+                    jiraProjectRoleActor.getRoleId(),
+                    jiraProjectRoleActor.getGroupNames());
+        });
     }
 
 }

@@ -1,4 +1,4 @@
-package prompt.ls1.integration.client.domain;
+package prompt.ls1.integration.bamboo.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,10 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class JiraGroup {
+@AllArgsConstructor
+public class BambooProject {
 
-    public String groupId;
+    public String key;
     public String name;
 }

@@ -1,4 +1,4 @@
-package prompt.ls1.integration.client.domain;
+package prompt.ls1.integration.jira.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class JiraProjectCategory {
+public class JiraProject {
 
     public String id;
+    public String key;
     public String name;
+    public String lead;
+    public String categoryId;
     public String description;
+    public String url;
 }
