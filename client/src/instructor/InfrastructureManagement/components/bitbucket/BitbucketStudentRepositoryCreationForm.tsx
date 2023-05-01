@@ -66,7 +66,7 @@ export const BitbucketStudentRepositoryCreationForm = ({
       />
       <Button
         variant='filled'
-        disabled={!selectedBitbucketProject}
+        disabled={!selectedBitbucketProject || students.length === 0}
         onClick={() => {
           if (selectedBitbucketProject) {
             void createBitbucketProjectRepositories(selectedBitbucketProject, studentUsernames)

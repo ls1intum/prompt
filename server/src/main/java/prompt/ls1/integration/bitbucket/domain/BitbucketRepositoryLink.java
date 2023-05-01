@@ -7,13 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class BitbucketRepository {
-
-    public String id;
+@NoArgsConstructor
+public class BitbucketRepositoryLink {
+    public String href;
     public String name;
-    public String slug;
-    public BitbucketProject project;
-    public String defaultBranch;
 }

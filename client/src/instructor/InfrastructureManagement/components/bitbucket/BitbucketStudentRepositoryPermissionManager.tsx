@@ -196,8 +196,8 @@ export const BitbucketStudentRepositoryPermissionManager = ({
       </Accordion>
       <Button
         variant='filled'
+        disabled={bitbucketRepositoryPermissionGrants.length === 0}
         onClick={() => {
-          console.log(bitbucketRepositoryPermissionGrants)
           void grantBitbucketProjectRepositoryPermissions(bitbucketRepositoryPermissionGrants)
         }}
       >

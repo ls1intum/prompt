@@ -44,6 +44,7 @@ export const JiraProjectCategoriesCreationForm = ({
         onChange={setProjectCategoriesToCreate}
       />
       <Button
+        disabled={projectCategoriesToCreate.length === 0}
         onClick={() => {
           void createJiraProjectCategories(projectCategoriesToCreate)
         }}

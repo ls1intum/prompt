@@ -1,5 +1,6 @@
 package prompt.ls1.controller;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import prompt.ls1.integration.jira.domain.JiraProjectRole;
 import prompt.ls1.integration.jira.domain.JiraProjectRoleActor;
 import prompt.ls1.integration.jira.service.JiraIntegrationService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -133,6 +135,12 @@ public class InstrastructureController {
     @GetMapping("/bitbucket/projects/{projectKey}/repositories")
     public ResponseEntity<List<BitbucketRepository>> getRepositoriesForProject(@PathVariable final String projectKey) {
         return ResponseEntity.ok(bitbucketIntegrationService.getRepositoriesForProject(projectKey));
+    }
+
+    @PostMapping("/bitbucket/projects/{projectKey}/repositories/{repositorySlug}/setup")
+    public ResponseEntity setupBitbucketRepository(@PathVariable final String projectKey, @PathVariable final String repositorySlug) throws GitAPIException, IOException {
+        bitbucketIntegrationService.setupRepository(projectKey, repositorySlug);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/bamboo/projects")

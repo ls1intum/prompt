@@ -1,4 +1,15 @@
-import { Button, FileInput, Group, Modal, MultiSelect, Stack, Stepper } from '@mantine/core'
+import {
+  Button,
+  Card,
+  Checkbox,
+  FileInput,
+  Group,
+  Modal,
+  MultiSelect,
+  Stack,
+  Stepper,
+  Text,
+} from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Papa from 'papaparse'
@@ -36,12 +47,40 @@ export const TeamsSetupStepper = ({
   }
 
   const [projects, setProjects] = useState<string[]>([])
+  const [prependProjectNamesWithIosTag, setPrependProjectNamesWithIosTag] = useState(false)
 
   return (
     <Modal centered size='100%' opened={opened} onClose={onClose}>
       <Stepper active={activeSetupStep} onStepClick={setActiveSetupStep} breakpoint='lg'>
         <Stepper.Step description='Upload Projects File'>
           <Stack>
+            <Text fz='sm' c='dimmed'>
+              Upload a .csv file with projects you would like to create. The .csv file should
+              resemble the structure exemplified below. Otherwise, enter the project names into the
+              multiselect form. Checking the box will automatically prepend the iOS tag to the
+              project names.
+            </Text>
+            <Card>
+              <Text fz='sm' ta='right' c='dimmed'>
+                projects.csv
+              </Text>
+              <Text fz='sm' c='bold'>
+                Name
+              </Text>
+              <Text fz='sm' c='dimmed'>
+                project_1
+              </Text>
+              <Text fz='sm' c='dimmed'>
+                project_2
+              </Text>
+            </Card>
+            <Checkbox
+              label='Prepend Project Names with iOS Tag'
+              checked={prependProjectNamesWithIosTag}
+              onChange={(e) => {
+                setPrependProjectNamesWithIosTag(e.target.checked)
+              }}
+            />
             <FileInput
               label='Projects'
               placeholder='Upload .csv file with projects'
@@ -68,7 +107,11 @@ export const TeamsSetupStepper = ({
                       const projectsFromCsv: string[] = []
 
                       results.data.forEach((data) => {
-                        projectsFromCsv.push(data.Name)
+                        projectsFromCsv.push(
+                          `${prependProjectNamesWithIosTag ? iosTag.toUpperCase() : ''}${
+                            data.Name
+                          }`,
+                        )
                       })
 
                       setProjects(projectsFromCsv)
@@ -85,8 +128,11 @@ export const TeamsSetupStepper = ({
               creatable
               getCreateLabel={(query) => `+ Create ${query}`}
               onCreate={(query) => {
-                setProjects((current) => [...current, query])
-                return query
+                const newProjectName = `${
+                  prependProjectNamesWithIosTag ? iosTag.toUpperCase() : ''
+                }${query}`
+                setProjects((current) => [...current, newProjectName])
+                return newProjectName
               }}
               value={projects}
               onChange={setProjects}
@@ -94,6 +140,10 @@ export const TeamsSetupStepper = ({
           </Stack>
         </Stepper.Step>
         <Stepper.Step description='Create Jira Project Categories'>
+          <Text fz='sm' c='dimmed'>
+            Select project categories from the suggested list generated from the project names or
+            enter a new project category to create.
+          </Text>
           <JiraProjectCategoriesCreationForm
             mode='teams'
             initialProjectCategoriesToCreate={projects}

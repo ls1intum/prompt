@@ -55,6 +55,7 @@ export const JiraGroupsCreationForm = ({
         onChange={setGroupNamesToCreate}
       />
       <Button
+        disabled={groupNamesToCreate.length === 0}
         onClick={() => {
           void createJiraGroups(groupNamesToCreate)
         }}

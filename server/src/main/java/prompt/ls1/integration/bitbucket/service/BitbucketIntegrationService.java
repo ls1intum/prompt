@@ -1,5 +1,6 @@
 package prompt.ls1.integration.bitbucket.service;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.integration.bitbucket.BitbucketRestClient;
@@ -8,6 +9,7 @@ import prompt.ls1.integration.bitbucket.domain.BitbucketProjectPermissionGrant;
 import prompt.ls1.integration.bitbucket.domain.BitbucketProjectRepositoryPermissionGrant;
 import prompt.ls1.integration.bitbucket.domain.BitbucketRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,10 @@ public class BitbucketIntegrationService {
             bitbucketRepositories.add(bitbucketRestClient.createRepository(projectKey, projectKey));
         });
 
+        bitbucketRepositories.forEach(bitbucketRepository -> {
+            bitbucketRestClient.setupRepository(bitbucketRepository.getProject().getKey(), bitbucketRepository.getSlug());
+        });
+
         return bitbucketRepositories;
     }
 
@@ -39,6 +45,10 @@ public class BitbucketIntegrationService {
         final List<BitbucketRepository> bitbucketRepositories = new ArrayList<>();
         repositoryNames.forEach(repositoryName -> {
             bitbucketRepositories.add(bitbucketRestClient.createRepository(projectKey, repositoryName));
+        });
+
+        bitbucketRepositories.forEach(bitbucketRepository -> {
+            bitbucketRestClient.setupRepository(bitbucketRepository.getProject().getKey(), bitbucketRepository.getSlug());
         });
 
         return bitbucketRepositories;
@@ -81,5 +91,9 @@ public class BitbucketIntegrationService {
                 );
             });
         });
+    }
+
+    public void setupRepository(final String projectKey, final String repositorySlug) throws GitAPIException, IOException {
+        bitbucketRestClient.setupRepository(projectKey, repositorySlug);
     }
 }
