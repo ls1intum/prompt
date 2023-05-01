@@ -1,7 +1,6 @@
 import { notifications } from '@mantine/notifications'
 import axios from 'axios'
-
-const baseUrl = process.env.REACT_APP_SERVER_URL ?? ''
+import { serverBaseUrl } from './configService'
 
 export const JIRA_PROJECT_CATEGORIES_MGMT = ['', 'CW', 'COACHPL']
 export const JIRA_PROJECTS_MGMT = ['CW', 'COACHPL']
@@ -41,11 +40,15 @@ export const createJiraGroups = async (
   jiraGroupNames: string[],
 ): Promise<JiraGroup[] | undefined> => {
   try {
-    const response = await axios.post(`${baseUrl}/api/infrastructure/jira/groups`, jiraGroupNames, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+    const response = await axios.post(
+      `${serverBaseUrl}/api/infrastructure/jira/groups`,
+      jiraGroupNames,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
       },
-    })
+    )
 
     notifications.show({
       color: 'green',
@@ -72,7 +75,7 @@ export const createJiraProjectCategories = async (
 ): Promise<JiraProjectCategory[] | undefined> => {
   try {
     const response = await axios.post(
-      `${baseUrl}/api/infrastructure/jira/project-categories`,
+      `${serverBaseUrl}/api/infrastructure/jira/project-categories`,
       jiraProjectCategoryNames,
       {
         headers: {
@@ -105,11 +108,15 @@ export const createJiraProjects = async (
   jiraProjects: JiraProject[],
 ): Promise<JiraProject[] | undefined> => {
   try {
-    const response = await axios.post(`${baseUrl}/api/infrastructure/jira/projects`, jiraProjects, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+    const response = await axios.post(
+      `${serverBaseUrl}/api/infrastructure/jira/projects`,
+      jiraProjects,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
       },
-    })
+    )
 
     notifications.show({
       color: 'green',
@@ -136,11 +143,15 @@ export const addUsersToJiraGroup = async (
   usernames: string[],
 ): Promise<void> => {
   try {
-    await axios.post(`${baseUrl}/api/infrastructure/jira/groups/${groupName}/users`, usernames, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+    await axios.post(
+      `${serverBaseUrl}/api/infrastructure/jira/groups/${groupName}/users`,
+      usernames,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
       },
-    })
+    )
 
     notifications.show({
       color: 'green',
@@ -163,7 +174,7 @@ export const addJiraProjectRoleActors = async (
 ): Promise<void> => {
   try {
     await axios.post(
-      `${baseUrl}/api/infrastructure/jira/projects/roles/actors`,
+      `${serverBaseUrl}/api/infrastructure/jira/projects/roles/actors`,
       jiraProjectRoleActors,
       {
         headers: {
@@ -192,7 +203,7 @@ export const addJiraProjectRoleActors = async (
 
 export const fetchJiraProjectRoles = async (): Promise<JiraProjectRole[] | undefined> => {
   try {
-    const response = await axios.get(`${baseUrl}/api/infrastructure/jira/roles`, {
+    const response = await axios.get(`${serverBaseUrl}/api/infrastructure/jira/roles`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
       },
@@ -213,11 +224,14 @@ export const fetchJiraProjectRoles = async (): Promise<JiraProjectRole[] | undef
 
 export const fetchJiraGroups = async (query: string): Promise<JiraGroup[] | undefined> => {
   try {
-    const response = await axios.get(`${baseUrl}/api/infrastructure/jira/groups?query=${query}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+    const response = await axios.get(
+      `${serverBaseUrl}/api/infrastructure/jira/groups?query=${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
       },
-    })
+    )
 
     return response.data
   } catch (err) {
@@ -234,11 +248,14 @@ export const fetchJiraGroups = async (query: string): Promise<JiraGroup[] | unde
 
 export const fetchJiraProjects = async (query: string): Promise<JiraProject[] | undefined> => {
   try {
-    const response = await axios.get(`${baseUrl}/api/infrastructure/jira/projects?query=${query}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+    const response = await axios.get(
+      `${serverBaseUrl}/api/infrastructure/jira/projects?query=${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
       },
-    })
+    )
 
     return response.data
   } catch (err) {
@@ -255,11 +272,14 @@ export const fetchJiraProjects = async (query: string): Promise<JiraProject[] | 
 
 export const fetchJiraProjectCategories = async (): Promise<JiraProjectCategory[] | undefined> => {
   try {
-    const response = await axios.get(`${baseUrl}/api/infrastructure/jira/project-categories`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+    const response = await axios.get(
+      `${serverBaseUrl}/api/infrastructure/jira/project-categories`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
       },
-    })
+    )
 
     return response.data
   } catch (err) {

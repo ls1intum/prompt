@@ -17,13 +17,12 @@ prompt:
     jwtExpirationMs: 900000
     jwtRefreshExpirationMs: 604800000
   atlassian:
-    # Fill out these values 
-    username:
-    password:
-    bitbucket-url:
-    jira-url:
-    bamboo-url:
-    confluence-url:
+    username: ${ATLASSIAN_USERNAME}
+    password: ${ATLASSIAN_PASSWORD}
+    bitbucket-url: ${BITBUCKET_URL}
+    jira-url: ${JIRA_URL}
+    bamboo-url: ${BAMBOO_URL}
+    confluence-url: ${CONFLUENCE_URL}
 
 
 server:

@@ -72,7 +72,6 @@ export const TeamsSetupStepper = ({
                       })
 
                       setProjects(projectsFromCsv)
-                      console.log(projectsFromCsv)
                     },
                   })
                 }

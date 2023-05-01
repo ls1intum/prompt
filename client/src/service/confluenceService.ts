@@ -1,7 +1,6 @@
 import { notifications } from '@mantine/notifications'
 import axios from 'axios'
-
-const baseUrl = process.env.REACT_APP_SERVER_URL ?? ''
+import { serverBaseUrl } from './configService'
 
 export interface ConfluenceSpace {
   name: string
@@ -13,7 +12,7 @@ export const createConfluenceSpaces = async (
 ): Promise<ConfluenceSpace[] | undefined> => {
   try {
     const response = await axios.post(
-      `${baseUrl}/api/infrastructure/confluence/spaces`,
+      `${serverBaseUrl}/api/infrastructure/confluence/spaces`,
       confluenceSpaceNames,
       {
         headers: {

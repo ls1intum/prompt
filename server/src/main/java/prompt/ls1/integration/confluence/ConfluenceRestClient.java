@@ -64,7 +64,7 @@ public class ConfluenceRestClient {
         payload.put("key", spaceKey);
         payload.put("name", spaceName);
 
-        HttpResponse<ConfluenceSpace> response = Unirest.post(String.format("%s/wiki/rest/api/space", confluenceUrl))
+        HttpResponse<ConfluenceSpace> response = Unirest.post(String.format("%s/rest/api/space", confluenceUrl))
                 .basicAuth(username, password)
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")

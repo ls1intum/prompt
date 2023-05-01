@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { type ProjectTeam } from '../projectTeamsSlice'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const createProjectTeam = createAsyncThunk(
   'projectTeams/createProjectTeam',
@@ -18,7 +19,7 @@ export const createProjectTeam = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `http://localhost:8080/api/project-teams?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/project-teams?applicationSemester=${applicationSemester}`,
           projectTeam,
           {
             headers: {

@@ -4,14 +4,18 @@ import { createBitbucketProjects } from '../../../../service/bitbucketService'
 
 interface BitbucketProjectsCreationFormProps {
   projectNames: string[]
+  defaultWithRepository?: boolean
 }
 
 export const BitbucketProjectsCreationForm = ({
   projectNames,
+  defaultWithRepository,
 }: BitbucketProjectsCreationFormProps): JSX.Element => {
   const [projectNameSuggestions, setProjectNameSuggestions] = useState(projectNames)
   const [projectNamesToCreate, setProjectNamesToCreate] = useState(projectNameSuggestions)
-  const [createProjectsWithRepositories, setCreateProjectsWithRepositories] = useState(true)
+  const [createProjectsWithRepositories, setCreateProjectsWithRepositories] = useState(
+    !!defaultWithRepository,
+  )
 
   return (
     <Stack>

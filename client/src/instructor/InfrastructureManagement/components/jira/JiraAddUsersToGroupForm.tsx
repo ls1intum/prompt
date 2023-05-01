@@ -1,7 +1,4 @@
-import { Button, FileInput, MultiSelect, Stack } from '@mantine/core'
-import { notifications } from '@mantine/notifications'
-import { IconUpload } from '@tabler/icons-react'
-import Papa from 'papaparse'
+import { Button, MultiSelect, Stack } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import {
   addUsersToJiraGroup,
@@ -11,10 +8,14 @@ import {
 
 interface JiraAddUsersToGroupFormProps {
   iosTag: string
+  students: string[]
 }
 
-export const JiraAddUsersToGroupForm = ({ iosTag }: JiraAddUsersToGroupFormProps): JSX.Element => {
-  const [studentUsernames, setStudentUsernames] = useState<string[]>([])
+export const JiraAddUsersToGroupForm = ({
+  iosTag,
+  students,
+}: JiraAddUsersToGroupFormProps): JSX.Element => {
+  const [studentUsernames, setStudentUsernames] = useState<string[]>(students)
   const [groupNameSuggestions, setGroupNameSuggestions] = useState<string[]>([])
   const [groupNamesToCreate, setGroupNamesToCreate] = useState<string[]>([])
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
@@ -24,48 +25,24 @@ export const JiraAddUsersToGroupForm = ({ iosTag }: JiraAddUsersToGroupFormProps
       const response = await fetchJiraGroups(iosTag.toLowerCase())
       if (response) {
         setGroupNameSuggestions(response.map((jiraGroup) => jiraGroup.name))
+
+        const iosTagGroup = response
+          .filter((g) => g.name.toLowerCase() === iosTag.toLowerCase())
+          .at(0)
+        if (iosTagGroup) {
+          setSelectedGroups([...selectedGroups, iosTagGroup.name])
+        }
       }
     }
     void loadJiraGroups()
   }, [])
 
+  useEffect(() => {
+    setStudentUsernames(students)
+  }, [students])
+
   return (
     <Stack>
-      <FileInput
-        label='Student usernames'
-        placeholder='Upload .csv file with student usernames'
-        accept='.csv'
-        icon={<IconUpload />}
-        onChange={(file) => {
-          if (file) {
-            Papa.parse(file, {
-              header: true,
-              skipEmptyLines: true,
-              delimiter: ',',
-              complete: function (results: {
-                data: Array<{ Username: string }>
-                errors: Array<{ message: string; row: number }>
-              }) {
-                if (results.errors?.length > 0) {
-                  notifications.show({
-                    color: 'red',
-                    autoClose: 5000,
-                    title: 'Error',
-                    message: `Failed to parse .csv due to error: ${results.errors[0].message}`,
-                  })
-                }
-                const usernamesFromCsv: string[] = []
-
-                results.data.forEach((data) => {
-                  usernamesFromCsv.push(data.Username)
-                })
-
-                setStudentUsernames(usernamesFromCsv)
-              },
-            })
-          }
-        }}
-      />
       <MultiSelect
         label='Student Usernames'
         data={studentUsernames}

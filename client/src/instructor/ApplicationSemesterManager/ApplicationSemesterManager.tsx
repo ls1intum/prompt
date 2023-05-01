@@ -27,10 +27,6 @@ export const ApplicationSemesterManager = (): JSX.Element => {
     setTableRecords(applicationSemesters)
   }, [applicationSemesters])
 
-  useEffect(() => {
-    console.log(selectedApplicationSemester)
-  }, [selectedApplicationSemester])
-
   return (
     <div>
       <ApplicationSemesterCreationModal

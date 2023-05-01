@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { type StudentApplicationPatch } from '../studentApplicationSlice'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const updateStudentApplication = createAsyncThunk(
   'studentApplications/updateStudentApplication',
@@ -18,7 +19,7 @@ export const updateStudentApplication = createAsyncThunk(
     try {
       return (
         await axios.patch(
-          `http://localhost:8080/api/student-applications/${studentApplicationId}`,
+          `${serverBaseUrl}/api/student-applications/${studentApplicationId}`,
           studentApplicationPatch,
           {
             headers: {

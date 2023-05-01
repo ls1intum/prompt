@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestParsingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import prompt.ls1.integration.bitbucket.domain.BitbucketProject;
 import prompt.ls1.integration.bitbucket.domain.BitbucketRepository;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class BitbucketRestClient {
@@ -78,6 +81,46 @@ public class BitbucketRestClient {
         return response.getBody();
     }
 
+    public List<BitbucketProject> getProjects(final String query) {
+        HttpResponse<JsonNode> response = Unirest.get(String.format("%s/rest/api/latest/projects", bitbucketUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .queryString("name", query)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+
+        try {
+            return Arrays.asList(objectMapper
+                    .readValue(response.getBody().getObject().getJSONArray("values").toString(), BitbucketProject[].class));
+        } catch (JsonProcessingException e) {
+            throw new UnirestRequestException(e.getMessage());
+        }
+    }
+
+    public List<BitbucketRepository> getRepositoriesForProject(final String projectKey) {
+        HttpResponse<JsonNode> response = Unirest.get(String.format("%s/rest/api/latest/projects/{projectKey}/repos", bitbucketUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("projectKey", projectKey)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+
+        try {
+            return Arrays.asList(objectMapper
+                    .readValue(response.getBody().getObject().getJSONArray("values").toString(), BitbucketRepository[].class));
+        } catch (JsonProcessingException e) {
+            throw new UnirestRequestException(e.getMessage());
+        }
+    }
+
     public BitbucketRepository createRepository(final String projectKey, final String repositoryName) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
@@ -106,6 +149,42 @@ public class BitbucketRestClient {
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
                 .routeParam("projectKey", projectKey)
+                .queryString("permission", permission)
+                .queryString("name", groupName)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+    }
+
+    public void grantProjectRepositoryPermissionUser(final String projectKey, final String repositorySlug,
+                                                 final String permission, final String user) {
+        Unirest.put(String
+                        .format("%s/rest/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users", bitbucketUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("projectKey", projectKey)
+                .routeParam("repositorySlug", repositorySlug)
+                .queryString("permission", permission)
+                .queryString("name", user)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+    }
+
+    public void grantProjectRepositoryPermissionGroup(final String projectKey, final String repositorySlug,
+                                                     final String permission, final String groupName) {
+        Unirest.put(String
+                        .format("%s/rest/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups", bitbucketUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .routeParam("projectKey", projectKey)
+                .routeParam("repositorySlug", repositorySlug)
                 .queryString("permission", permission)
                 .queryString("name", groupName)
                 .asJson()

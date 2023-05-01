@@ -13,6 +13,8 @@ import prompt.ls1.integration.bamboo.domain.BambooProject;
 import prompt.ls1.integration.bamboo.service.BambooIntegrationService;
 import prompt.ls1.integration.bitbucket.domain.BitbucketProject;
 import prompt.ls1.integration.bitbucket.domain.BitbucketProjectPermissionGrant;
+import prompt.ls1.integration.bitbucket.domain.BitbucketProjectRepositoryPermissionGrant;
+import prompt.ls1.integration.bitbucket.domain.BitbucketRepository;
 import prompt.ls1.integration.bitbucket.service.BitbucketIntegrationService;
 import prompt.ls1.integration.confluence.domain.ConfluenceSpace;
 import prompt.ls1.integration.confluence.service.ConfluenceIntegrationService;
@@ -102,11 +104,35 @@ public class InstrastructureController {
         return ResponseEntity.ok(bitbucketProjects);
     }
 
+    @PostMapping("/bitbucket/projects/{projectKey}/repositories")
+    public ResponseEntity<List<BitbucketRepository>> createBitbucketRepositories(
+            @PathVariable final String projectKey,
+            @RequestBody final List<String> repositoryNames) {
+        return ResponseEntity.ok(bitbucketIntegrationService.createRepositories(projectKey, repositoryNames));
+    }
+
     @PostMapping("/bitbucket/projects/permissions")
     public ResponseEntity grantBitbucketProjectPermissions(
             @RequestBody final List<BitbucketProjectPermissionGrant> bitbucketProjectPermissionGrants) {
         bitbucketIntegrationService.grantProjectPermissions(bitbucketProjectPermissionGrants);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/bitbucket/projects/repositories/permissions")
+    public ResponseEntity grantBitbucketProjectRepositoryPermissions(
+            @RequestBody final List<BitbucketProjectRepositoryPermissionGrant> bitbucketProjectRepositoryPermissionGrants) {
+        bitbucketIntegrationService.grantProjectRepositoryPermissions(bitbucketProjectRepositoryPermissionGrants);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/bitbucket/projects")
+    public ResponseEntity<List<BitbucketProject>> getProjects(@RequestParam final String query) {
+        return ResponseEntity.ok(bitbucketIntegrationService.getProjectsMatchingQuery(query));
+    }
+
+    @GetMapping("/bitbucket/projects/{projectKey}/repositories")
+    public ResponseEntity<List<BitbucketRepository>> getRepositoriesForProject(@PathVariable final String projectKey) {
+        return ResponseEntity.ok(bitbucketIntegrationService.getRepositoriesForProject(projectKey));
     }
 
     @PostMapping("/bamboo/projects")

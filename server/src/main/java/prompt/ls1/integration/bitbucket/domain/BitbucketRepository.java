@@ -13,5 +13,6 @@ public class BitbucketRepository {
 
     public String id;
     public String name;
+    public String slug;
     public BitbucketProject project;
 }

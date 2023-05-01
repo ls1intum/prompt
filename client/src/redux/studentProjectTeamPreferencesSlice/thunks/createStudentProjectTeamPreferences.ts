@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const createStudentProjectTeamPreferences = createAsyncThunk(
   'studentProjectTea/createProjectTeam',
@@ -19,7 +20,7 @@ export const createStudentProjectTeamPreferences = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `http://localhost:8080/api/project-team-preferences/${studentId}?applicationSemester=${applicationSemesterName}`,
+          `${serverBaseUrl}/api/project-team-preferences/${studentId}?applicationSemester=${applicationSemesterName}`,
           preferences,
         )
       ).data

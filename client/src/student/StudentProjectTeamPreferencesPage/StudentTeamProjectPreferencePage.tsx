@@ -52,7 +52,6 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
 
   useEffect(() => {
     if (selectedApplicationSemester) {
-      console.log('fetching')
       void dispatch(fetchProjectTeams(selectedApplicationSemester.semesterName))
     } else {
       void dispatch(fetchProjectTeams('SS2023'))
@@ -68,11 +67,6 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
       setSubmissionCodeModalOpen(true)
     }
   }, [submissionCode])
-
-  useEffect(() => {
-    console.log(state)
-    console.log(studentId)
-  }, [state])
 
   const items = state.map((item, index) => (
     <Draggable key={item.id.toString()} index={index} draggableId={item.id.toString()}>
@@ -153,16 +147,14 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
           variant='filled'
           onClick={() => {
             if (studentId) {
-              console.log(
-                state.map((preference, index) => {
-                  return {
-                    studentId,
-                    projectTeamId: preference.id,
-                    applicationSemesterId: selectedApplicationSemester?.id ?? 'SS2024',
-                    priorityScore: index,
-                  }
-                }),
-              )
+              state.map((preference, index) => {
+                return {
+                  studentId,
+                  projectTeamId: preference.id,
+                  applicationSemesterId: selectedApplicationSemester?.id ?? 'SS2024',
+                  priorityScore: index,
+                }
+              })
             }
           }}
         >

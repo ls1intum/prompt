@@ -20,7 +20,7 @@ export const InfrastructureManagement = (): JSX.Element => {
     <>
       <Stack>
         {selectedApplicationSemester && (
-          <Group>
+          <Group grow>
             <Title order={2}>Management</Title>
             <Button
               leftIcon={<IconSettings />}
@@ -41,7 +41,7 @@ export const InfrastructureManagement = (): JSX.Element => {
           </Group>
         )}
         {selectedApplicationSemester && (
-          <Group>
+          <Group grow>
             <Title order={2}>Intro Course</Title>
             <Button
               leftIcon={<IconSettings />}
@@ -62,7 +62,7 @@ export const InfrastructureManagement = (): JSX.Element => {
           </Group>
         )}
         {selectedApplicationSemester && (
-          <Group>
+          <Group grow>
             <Title order={2}>Team Assignment</Title>
             <Button
               leftIcon={<IconSettings />}
@@ -83,7 +83,7 @@ export const InfrastructureManagement = (): JSX.Element => {
           </Group>
         )}
         {selectedApplicationSemester && (
-          <Group>
+          <Group grow>
             <Title order={2}>Teams</Title>
             <Button
               leftIcon={<IconSettings />}
