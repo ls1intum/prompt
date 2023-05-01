@@ -77,4 +77,22 @@ public class ConfluenceRestClient {
 
         return response.getBody();
     }
+
+    /* public void addSpaceGroupPermission(final String spaceKey, final String groupName) {
+        ObjectNode payload = jsonNodeFactory.objectNode();
+
+        payload.put("subject", String.format("{\"type\": \"group\", \"identifier\": \"%s\"}", groupName));
+        payload.put("name", spaceName);
+
+        Unirest.post(String.format("%s/rest/api/space", confluenceUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .body(payload)
+                .asObject(ConfluenceSpace.class)
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+    } */
 }
