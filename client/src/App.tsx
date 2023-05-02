@@ -33,6 +33,10 @@ export const App = (): JSX.Element => {
     }
   }, [])
 
+  useEffect(() => {
+    console.log(process.env.REACT_APP_SERVER_HOST)
+  }, [process.env.REACT_APP_SERVER_HOST])
+
   return (
     <div>
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>

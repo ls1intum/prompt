@@ -12,6 +12,8 @@ spring:
     #    format_sql: true
 
 prompt:
+  client:
+    host: ${CLIENT_HOST}
   auth:
     jwtSecret: 43cnz495jtc83t9n4
     jwtExpirationMs: 900000
