@@ -3,6 +3,11 @@ WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm ci --silent
+
+ARG SERVER_HOST
+
+ENV REACT_APP_SERVER_HOST $SERVER_HOST
+
 COPY . ./
 RUN npm run build
 

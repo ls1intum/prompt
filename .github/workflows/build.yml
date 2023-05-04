@@ -73,3 +73,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ matrix.image }}:${{ env.IMAGE_VERSION }}
+          build-args: |
+            "SERVER_HOST=${{ vars.SERVER_HOST }}"
