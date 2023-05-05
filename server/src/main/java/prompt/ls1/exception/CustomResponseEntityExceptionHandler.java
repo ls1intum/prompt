@@ -35,7 +35,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler(value
-            = { ApplicationSemesterConflictException.class, ProjectTeamConflictException.class })
+            = { ResourceConflictException.class })
     protected ResponseEntity<Object> handleConflict(
             RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),

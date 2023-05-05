@@ -64,29 +64,6 @@ export const InfrastructureManagement = (): JSX.Element => {
       ),
     },
     {
-      title: 'Team Assignment',
-      component: (
-        <>
-          <Button
-            leftIcon={<IconSettings />}
-            variant='filled'
-            onClick={() => {
-              setTeamAssignmentModalOpened(true)
-            }}
-          >
-            Setup
-          </Button>
-          <TeamAssignmentModal
-            opened={teamAssignmentModalOpened}
-            onClose={() => {
-              setTeamAssignmentModalOpened(false)
-            }}
-            iosTag={selectedApplicationSemester?.iosTag ?? ''}
-          />
-        </>
-      ),
-    },
-    {
       title: 'Teams',
       component: (
         <>
@@ -103,6 +80,29 @@ export const InfrastructureManagement = (): JSX.Element => {
             opened={teamsSetupStepperOpened}
             onClose={() => {
               setTeamsSetupStepperOpened(false)
+            }}
+            iosTag={selectedApplicationSemester?.iosTag ?? ''}
+          />
+        </>
+      ),
+    },
+    {
+      title: 'Team Assignment',
+      component: (
+        <>
+          <Button
+            leftIcon={<IconSettings />}
+            variant='filled'
+            onClick={() => {
+              setTeamAssignmentModalOpened(true)
+            }}
+          >
+            Setup
+          </Button>
+          <TeamAssignmentModal
+            opened={teamAssignmentModalOpened}
+            onClose={() => {
+              setTeamAssignmentModalOpened(false)
             }}
             iosTag={selectedApplicationSemester?.iosTag ?? ''}
           />

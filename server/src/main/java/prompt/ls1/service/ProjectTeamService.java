@@ -7,7 +7,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import prompt.ls1.exception.ProjectTeamConflictException;
+import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.repository.ProjectTeamRepository;
@@ -25,7 +25,7 @@ public class ProjectTeamService {
     public ProjectTeam create(final ProjectTeam projectTeam) {
         Optional<ProjectTeam> existingProjectTeam = projectTeamRepository.findFirstByName(projectTeam.getName());
         if (existingProjectTeam.isPresent()) {
-            throw new ProjectTeamConflictException(String.format("Project team with name %s already exists.", projectTeam.getName()));
+            throw new ResourceConflictException(String.format("Project team with name %s already exists.", projectTeam.getName()));
         }
 
         return projectTeamRepository.save(projectTeam);

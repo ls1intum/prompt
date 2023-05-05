@@ -150,7 +150,7 @@ public class JiraRestClient {
                 .header("Content-Type", "application/json")
                 .body(payload)
                 .asObject(JiraProject.class)
-                .ifFailure(Error.class, error -> {
+                .ifFailure(error -> {
                     UnirestParsingException ex = error.getParsingError().get();
                     throw new UnirestRequestException(ex.getOriginalBody());
                 });

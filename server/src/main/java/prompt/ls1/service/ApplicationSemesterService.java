@@ -7,7 +7,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import prompt.ls1.exception.ApplicationSemesterConflictException;
+import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ApplicationSemester;
@@ -35,7 +35,7 @@ public class ApplicationSemesterService {
         Optional<ApplicationSemester> conflictApplicationSemester = applicationSemesterRepository
                 .findBySemesterName(applicationSemester.getSemesterName());
         if (conflictApplicationSemester.isPresent()) {
-            throw new ApplicationSemesterConflictException(String.format("Application semester with name %s already exists.", applicationSemester.getSemesterName()));
+            throw new ResourceConflictException(String.format("Application semester with name %s already exists.", applicationSemester.getSemesterName()));
         }
 
         if (applicationSemester.getApplicationPeriodStart().after(applicationSemester.getApplicationPeriodEnd())) {
