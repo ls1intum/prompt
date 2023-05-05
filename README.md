@@ -6,6 +6,7 @@ The tool is build with the following architecture:
 * **PostgreSQL database**
 * **server**
 * **client** 
+* **Docker**
 
 ### PostgreSQL
 
