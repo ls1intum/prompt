@@ -11,6 +11,7 @@ interface ApplicationSemesterRequest {
   semesterName: string
   applicationPeriodStart: Date
   applicationPeriodEnd: Date
+  iosTag: string
 }
 
 interface ApplicationSemester {
@@ -18,6 +19,7 @@ interface ApplicationSemester {
   semesterName: string
   applicationPeriodStart: Date
   applicationPeriodEnd: Date
+  iosTag: string
 }
 
 interface ApplicationSemesterPatch {

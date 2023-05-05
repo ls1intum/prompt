@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import {
   Navbar,
   Card,
@@ -19,7 +18,6 @@ import {
 import {
   IconSun,
   IconMoonStars,
-  IconPlus,
   IconNews,
   IconUsers,
   IconDeviceDesktop,
@@ -33,10 +31,7 @@ import { useNavigate } from 'react-router-dom'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
 import { setCurrentState } from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
-import {
-  ApplicationSemesterCreationModal,
-  WorkspaceSelectionDialog,
-} from '../../instructor/ApplicationSemesterManager/WorkspaceSelectionDialog'
+import { WorkspaceSelectionDialog } from '../../instructor/ApplicationSemesterManager/WorkspaceSelectionDialog'
 
 const navigationContents = [
   {
@@ -57,7 +52,7 @@ const navigationContents = [
   {
     label: 'Infrastructure',
     icon: IconDeviceDesktop,
-    navigateTo: '/student-applications',
+    navigateTo: '/management/infrastructure',
   },
   { label: 'Grading', icon: IconStairs, navigateTo: '/student-applications' },
   { label: 'Artifacts', icon: IconCode, navigateTo: '/student-applications' },
@@ -125,7 +120,6 @@ export const NavigationBar = (): JSX.Element => {
   const { classes } = useStyles()
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const [workspaceCreationModalOpen, setWorkspaceCreationModalOpen] = useState(false)
   const links = navigationContents.map((item) => (
     <NavigationBarLinksGroup {...item} key={item.label} />
   ))
@@ -140,14 +134,6 @@ export const NavigationBar = (): JSX.Element => {
 
   return (
     <>
-      {
-        <ApplicationSemesterCreationModal
-          opened={workspaceCreationModalOpen}
-          onClose={() => {
-            setWorkspaceCreationModalOpen(false)
-          }}
-        />
-      }
       <Navbar
         p='md'
         className={classes.navbar}
@@ -172,45 +158,25 @@ export const NavigationBar = (): JSX.Element => {
         </Navbar.Section>
         {selectedApplicationSemester && (
           <Navbar.Section style={{ margin: '5vh 0' }}>
-            <Group
-              position='center'
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-end',
-                justifyContent: 'flex-start',
+            <Select
+              searchable
+              label='Application Semester'
+              data={applicationSemesters.map((applicationSemester) => {
+                return {
+                  value: applicationSemester.id.toString(),
+                  label: applicationSemester.semesterName,
+                }
+              })}
+              value={selectedApplicationSemester.id.toString()}
+              onChange={(changedApplicationSemesterId: string) => {
+                const changedApplicationSemester = applicationSemesters.find(
+                  (as) => as.id.toString() === changedApplicationSemesterId,
+                )
+                if (changedApplicationSemester) {
+                  void dispatch(setCurrentState(changedApplicationSemester))
+                }
               }}
-            >
-              <Select
-                searchable
-                label='Application Semester'
-                data={applicationSemesters.map((applicationSemester) => {
-                  return {
-                    value: applicationSemester.id.toString(),
-                    label: applicationSemester.semesterName,
-                  }
-                })}
-                value={selectedApplicationSemester.id.toString()}
-                onChange={(changedApplicationSemesterId: string) => {
-                  const changedApplicationSemester = applicationSemesters.find(
-                    (as) => as.id.toString() === changedApplicationSemesterId,
-                  )
-                  if (changedApplicationSemester) {
-                    console.log('here')
-                    void dispatch(setCurrentState(changedApplicationSemester))
-                  }
-                }}
-              />
-              <ActionIcon
-                variant='outline'
-                size={35}
-                onClick={() => {
-                  setWorkspaceCreationModalOpen(true)
-                }}
-              >
-                <IconPlus size='16' />
-              </ActionIcon>
-            </Group>
+            />
           </Navbar.Section>
         )}
         <Navbar.Section grow className={classes.links} component={ScrollArea}>

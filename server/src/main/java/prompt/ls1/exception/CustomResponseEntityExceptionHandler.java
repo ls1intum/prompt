@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import prompt.ls1.integration.jira.exception.JiraResourceNotFoundException;
 
 import java.text.ParseException;
 
@@ -16,7 +17,7 @@ import java.text.ParseException;
 public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value
-            = { ResourceNotFoundException.class })
+            = { ResourceNotFoundException.class, JiraResourceNotFoundException.class })
     protected ResponseEntity<Object> handleNotFound(
             RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),
@@ -25,7 +26,8 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler(value
             = { ParseException.class, ResourceInvalidParametersException.class,
-            JsonParseException.class, JsonProcessingException.class})
+            JsonParseException.class, JsonProcessingException.class, RuntimeException.class,
+            UnirestRequestException.class })
     protected ResponseEntity<Object> handleBadRequest(
             RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),
@@ -33,7 +35,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler(value
-            = { ApplicationSemesterConflictException.class, ProjectTeamConflictException.class })
+            = { ResourceConflictException.class })
     protected ResponseEntity<Object> handleConflict(
             RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),

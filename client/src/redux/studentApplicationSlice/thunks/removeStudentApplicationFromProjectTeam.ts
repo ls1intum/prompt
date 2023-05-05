@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const removeStudentApplicationFromProjectTeam = createAsyncThunk(
   'studentApplications/removeStudentApplicationFromProjectTeam',
@@ -17,7 +18,7 @@ export const removeStudentApplicationFromProjectTeam = createAsyncThunk(
     try {
       return (
         await axios.delete(
-          `http://localhost:8080/api/student-applications/${studentApplicationId}/project-team?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/student-applications/${studentApplicationId}/project-team?applicationSemester=${applicationSemester}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

@@ -156,12 +156,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                 >
                   <IconEdit size={16} />
                 </ActionIcon>
-                <ActionIcon
-                  color='red'
-                  onClick={() => {
-                    console.log(studentApplication)
-                  }}
-                >
+                <ActionIcon color='red' onClick={() => {}}>
                   <IconTrash size={16} />
                 </ActionIcon>
               </Group>

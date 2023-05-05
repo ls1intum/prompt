@@ -27,10 +27,6 @@ export const ApplicationSemesterManager = (): JSX.Element => {
     setTableRecords(applicationSemesters)
   }, [applicationSemesters])
 
-  useEffect(() => {
-    console.log(selectedApplicationSemester)
-  }, [selectedApplicationSemester])
-
   return (
     <div>
       <ApplicationSemesterCreationModal
@@ -83,6 +79,10 @@ export const ApplicationSemesterManager = (): JSX.Element => {
           {
             accessor: 'semesterName',
             title: 'Application Semester Name',
+          },
+          {
+            accessor: 'iosTag',
+            title: 'iOS Tag',
           },
           {
             accessor: 'applicationPeriodStart',

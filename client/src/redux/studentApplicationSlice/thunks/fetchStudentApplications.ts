@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const fetchStudentApplications = createAsyncThunk(
   'studentApplications/fetchAllStudentApplications',
@@ -8,7 +9,7 @@ export const fetchStudentApplications = createAsyncThunk(
     try {
       return (
         await axios.get(
-          `http://localhost:8080/api/student-applications?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/student-applications?applicationSemester=${applicationSemester}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

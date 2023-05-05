@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const fetchStudentProjectTeamPreferences = createAsyncThunk(
   'studentProjectTeamPreferences/fetchStudentProjectTeamPreferences',
@@ -8,7 +9,7 @@ export const fetchStudentProjectTeamPreferences = createAsyncThunk(
     try {
       return (
         await axios.get(
-          `http://localhost:8080/api/project-team-preferences?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/project-team-preferences?applicationSemester=${applicationSemester}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

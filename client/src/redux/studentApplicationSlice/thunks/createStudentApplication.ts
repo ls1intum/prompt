@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { type StudentApplication } from '../studentApplicationSlice'
+import { serverBaseUrl } from '../../../service/configService'
 
 export const createStudentApplication = createAsyncThunk(
   'studentApplications/createStudentApplication',
@@ -18,7 +19,7 @@ export const createStudentApplication = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `http://localhost:8080/api/student-applications?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/student-applications?applicationSemester=${applicationSemester}`,
           studentApplication,
         )
       ).data

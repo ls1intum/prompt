@@ -22,6 +22,9 @@ public class ApplicationSemester {
     @Column(unique = true)
     private String semesterName;
 
+    @Column(unique = true)
+    private String iosTag;
+
     @Column(columnDefinition = "DATE")
     private Date applicationPeriodStart;
 

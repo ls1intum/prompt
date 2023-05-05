@@ -1,6 +1,7 @@
 package prompt.ls1.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,9 @@ public class WebSecurityConfig {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
+    @Value("${prompt.client.host}")
+    private String clientHost;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -83,7 +87,9 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("*");
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000",
+                        String.format("http://%s", clientHost),
+                        String.format("http://%s:80", clientHost)).allowedMethods("*");
             }
         };
     }
