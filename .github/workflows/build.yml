@@ -75,7 +75,11 @@ jobs:
           tags: ${{ matrix.image }}:${{ env.IMAGE_VERSION }}
           build-args: |
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
-            
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: SSH to VM and Execute Docker-Compose
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -87,4 +91,5 @@ jobs:
           proxy_key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           proxy_port: ${{ vars.PROXY_PORT }}
           script: |
-            docker compose -f docker-compose.prod.yml —env-file=.env.prod up -d
+            docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
+    
