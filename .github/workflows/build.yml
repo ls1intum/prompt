@@ -77,7 +77,7 @@ jobs:
   #           "SERVER_HOST=${{ vars.SERVER_HOST }}"
 
   deploy:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     steps:
       - name: SSH to VM and Execute Docker-Compose
