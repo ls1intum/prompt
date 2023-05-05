@@ -7,74 +7,74 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - dockerfile: ./client/Dockerfile
-            image: ghcr.io/ls1intum/prompt/prompt-client
-            context: ./client
-          - dockerfile: ./server/Dockerfile
-            image: ghcr.io/ls1intum/prompt/prompt-server
-            context: ./server
-    outputs:
-      image_version: ${{ steps.output-tag.outputs.image_version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # build:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - dockerfile: ./client/Dockerfile
+  #           image: ghcr.io/ls1intum/prompt/prompt-client
+  #           context: ./client
+  #         - dockerfile: ./server/Dockerfile
+  #           image: ghcr.io/ls1intum/prompt/prompt-server
+  #           context: ./server
+  #   outputs:
+  #     image_version: ${{ steps.output-tag.outputs.image_version }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Log in to the Container registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: all
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
+  #       with:
+  #         platforms: all
 
-      - name: Install Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Install Docker Buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Compute Tag
-        uses: actions/github-script@v6
-        id: compute-tag
-        with:
-          result-encoding: string
-          script: |
-            if (context.eventName === "pull_request") {
-              return "pr-" + context.issue.number;
-            }
-            if (context.eventName === "push") {
-              if (context.ref.startsWith("refs/tags/")) {
-                return context.ref.slice(10);
-              }
-              if (context.ref === "refs/heads/develop") {
-                return "develop";
-              }
-            }
-            return "latest";
+  #     - name: Compute Tag
+  #       uses: actions/github-script@v6
+  #       id: compute-tag
+  #       with:
+  #         result-encoding: string
+  #         script: |
+  #           if (context.eventName === "pull_request") {
+  #             return "pr-" + context.issue.number;
+  #           }
+  #           if (context.eventName === "push") {
+  #             if (context.ref.startsWith("refs/tags/")) {
+  #               return context.ref.slice(10);
+  #             }
+  #             if (context.ref === "refs/heads/develop") {
+  #               return "develop";
+  #             }
+  #           }
+  #           return "latest";
 
-      - id: output-tag
-        run: echo "image_version=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
+  #     - id: output-tag
+  #       run: echo "image_version=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push Docker Image
-        uses: docker/build-push-action@v4
-        env:
-          IMAGE_VERSION: ${{ steps.compute-tag.outputs.result }}
-        with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ matrix.image }}:${{ env.IMAGE_VERSION }}
-          build-args: |
-            "SERVER_HOST=${{ vars.SERVER_HOST }}"
+  #     - name: Build and push Docker Image
+  #       uses: docker/build-push-action@v4
+  #       env:
+  #         IMAGE_VERSION: ${{ steps.compute-tag.outputs.result }}
+  #       with:
+  #         context: ${{ matrix.context }}
+  #         file: ${{ matrix.dockerfile }}
+  #         platforms: linux/amd64,linux/arm64
+  #         push: true
+  #         tags: ${{ matrix.image }}:${{ env.IMAGE_VERSION }}
+  #         build-args: |
+  #           "SERVER_HOST=${{ vars.SERVER_HOST }}"
 
   deploy:
     needs: build
