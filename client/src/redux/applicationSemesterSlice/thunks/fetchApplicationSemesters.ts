@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import moment from 'moment'
 import { serverBaseUrl } from '../../../service/configService'
 
 export const fetchAllApplicationSemesters = createAsyncThunk(
@@ -26,19 +25,7 @@ export const fetchApplicationSemestersWithOpenApplicationPeriod = createAsyncThu
 
   async (_, { rejectWithValue }) => {
     try {
-      const today = moment(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX").format()
-      const response = (
-        await axios.get(
-          `${serverBaseUrl}/api/application-semesters?applicationPeriodDate=${encodeURIComponent(
-            today,
-          )}`,
-        )
-      ).data
-      if (response) {
-        return response[0]
-      } else {
-        return undefined
-      }
+      return (await axios.get(`${serverBaseUrl}/api/application-semesters/open`)).data
     } catch (err) {
       return rejectWithValue(err)
     }

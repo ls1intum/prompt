@@ -180,7 +180,9 @@ export const ProjectTeamsManager = (): JSX.Element => {
     setTableRecords(
       projectTeams
         .filter(({ name, customer }) => {
-          return `${name} ${customer}`.includes(searchQuery)
+          return `${name.toLowerCase()} ${customer.toLowerCase()}`.includes(
+            searchQuery.toLowerCase(),
+          )
         })
         .slice(from, to),
     )

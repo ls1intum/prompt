@@ -172,7 +172,6 @@ export const BitbucketStudentRepositoryPermissionManager = ({
                             .at(0)?.groupNames
                         }
                         onChange={(value) => {
-                          console.log(value)
                           setBitbucketRepositoryPermissionGrants(
                             bitbucketRepositoryPermissionGrants.map((grant) => {
                               if (grant.repositorySlug === s && grant.permission === p) {

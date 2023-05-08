@@ -12,17 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prompt.ls1.model.ApplicationSemester;
-import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
-import prompt.ls1.model.StudentProjectTeamPreference;
-import prompt.ls1.repository.ProjectTeamRepository;
+import prompt.ls1.model.StudentProjectTeamPreferencesSubmission;
 import prompt.ls1.repository.StudentProjectTeamPreferenceRepository;
+import prompt.ls1.repository.StudentProjectTeamPreferencesSubmissionRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.service.ApplicationSemesterService;
+import prompt.ls1.service.StudentProjectTeamPreferencesSubmissionService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,17 +28,19 @@ import java.util.UUID;
 @RequestMapping("/project-team-preferences")
 public class StudentProjectTeamPreferenceController {
     @Autowired
+    private StudentProjectTeamPreferencesSubmissionService studentProjectTeamPreferencesSubmissionService;
+    @Autowired
+    private StudentProjectTeamPreferencesSubmissionRepository studentProjectTeamPreferencesSubmissionRepository;
+    @Autowired
     private StudentProjectTeamPreferenceRepository studentProjectTeamPreferenceRepository;
     @Autowired
     private StudentRepository studentRepository;
-    @Autowired
-    private ProjectTeamRepository projectTeamRepository;
 
     @Autowired
     private ApplicationSemesterService applicationSemesterService;
 
     @GetMapping(value = {"/{studentId}", ""})
-    public ResponseEntity<List<StudentProjectTeamPreference>> getProjectTeamPreferences(
+    public ResponseEntity<List<StudentProjectTeamPreferencesSubmission>> getProjectTeamPreferencesSubmissions(
             @PathVariable(required = false) final UUID studentId,
             @RequestParam(name = "applicationSemester") final String applicationSemesterName
     ) {
@@ -53,53 +53,31 @@ public class StudentProjectTeamPreferenceController {
                         HttpStatus.BAD_REQUEST);
             }
 
-            final List<StudentProjectTeamPreference> studentProjectTeamPreferences = studentProjectTeamPreferenceRepository
-                    .findAllByStudentIdAndApplicationSemesterId(student.get().getId(), applicationSemester.getId());
+            final List<StudentProjectTeamPreferencesSubmission> studentProjectTeamPreferencesSubmissions =
+                    studentProjectTeamPreferencesSubmissionRepository
+                            .findAllByStudentIdAndApplicationSemesterId(student.get().getId(), applicationSemester.getId());
 
-            return ResponseEntity.ok(studentProjectTeamPreferences);
+            return ResponseEntity.ok(studentProjectTeamPreferencesSubmissions);
         }
 
         final List<Student> students = studentRepository.findAll();
-        final List<StudentProjectTeamPreference> studentProjectTeamPreferences = studentProjectTeamPreferenceRepository
+        final List<StudentProjectTeamPreferencesSubmission> studentProjectTeamPreferencesSubmissions = studentProjectTeamPreferencesSubmissionRepository
                 .findAllByApplicationSemesterId(applicationSemester.getId());
-        studentProjectTeamPreferences.forEach(studentProjectTeamPreference -> {
-            Optional<Student> student = students.stream().filter(std -> std.getId().equals(studentProjectTeamPreference.getStudentId())).findFirst();
+        studentProjectTeamPreferencesSubmissions.forEach(studentProjectTeamPreferencesSubmission -> {
+            Optional<Student> student = students.stream().filter(std -> std.getId().equals(studentProjectTeamPreferencesSubmission.getStudentId())).findFirst();
             if (student.isPresent()) {
-                studentProjectTeamPreference.setStudent(student.get());
+                studentProjectTeamPreferencesSubmission.setStudent(student.get());
             }
         });
 
-        return ResponseEntity.ok(studentProjectTeamPreferences);
+        return ResponseEntity.ok(studentProjectTeamPreferencesSubmissions);
     }
 
-    @PostMapping("/{studentId}")
-    public ResponseEntity<List<StudentProjectTeamPreference>> createStudentProjectTeamPreferencesForStudent(
-            @RequestParam(name = "applicationSemester") String applicationSemesterName,
-            @PathVariable UUID studentId,
-            @RequestBody Map<UUID, Integer> preferences
+    @PostMapping
+    public ResponseEntity<StudentProjectTeamPreferencesSubmission> createStudentProjectTeamPreferencesSubmissionForStudent(
+            @RequestBody final StudentProjectTeamPreferencesSubmission studentProjectTeamPreferencesSubmission
     ) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
-
-        final Optional<Student> student = studentRepository.findById(studentId);
-        if (student.isEmpty()) {
-            return new ResponseEntity(String.format("Student with id %s not found.", studentId),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        final List<ProjectTeam> projectTeams = projectTeamRepository.findAllByApplicationSemesterId(applicationSemester.getId());
-
-        List<StudentProjectTeamPreference> studentProjectTeamPreferences = new ArrayList<>();
-        preferences.forEach((projectTeamId, priorityScore) -> {
-            final Optional<ProjectTeam> projectTeam = projectTeams.stream().filter(pt -> pt.getId().equals(projectTeamId)).findFirst();
-            if (projectTeam.isPresent()) {
-                final StudentProjectTeamPreference projectTeamPreference =
-                        new StudentProjectTeamPreference(applicationSemester.getId(), student.get().getId(), projectTeamId, priorityScore);
-
-                studentProjectTeamPreferences.add(studentProjectTeamPreferenceRepository.save(projectTeamPreference));
-            }
-        });
-
-        return ResponseEntity.ok(studentProjectTeamPreferences);
+        return ResponseEntity.ok(studentProjectTeamPreferencesSubmissionService.create(studentProjectTeamPreferencesSubmission));
     }
 
     @DeleteMapping
@@ -108,7 +86,7 @@ public class StudentProjectTeamPreferenceController {
     ) {
         final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
 
-        studentProjectTeamPreferenceRepository.deleteAllByApplicationSemesterId(applicationSemester.getId());
+        studentProjectTeamPreferencesSubmissionRepository.deleteAllByApplicationSemesterId(applicationSemester.getId());
 
         return ResponseEntity.ok().build();
     }

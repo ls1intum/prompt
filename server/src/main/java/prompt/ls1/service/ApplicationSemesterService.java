@@ -15,6 +15,7 @@ import prompt.ls1.repository.ApplicationSemesterRepository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -88,8 +89,8 @@ public class ApplicationSemesterService {
         return applicationSemesterRepository.findAll();
     }
 
-    public List<ApplicationSemester> findAllWithApplicationPeriodIncludes(final String applicationPeriodDate) throws ParseException{
-        return applicationSemesterRepository.findAllWithApplicationPeriodIncludes(simpleDateFormat.parse(applicationPeriodDate));
+    public Optional<ApplicationSemester> findWithOpenApplicationPeriod() throws ParseException{
+        return applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date());
     }
 
     private ApplicationSemester applyPatchToApplicationSemester(

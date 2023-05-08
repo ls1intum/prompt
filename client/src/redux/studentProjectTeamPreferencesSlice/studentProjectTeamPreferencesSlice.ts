@@ -5,27 +5,33 @@ import { deleteStudentProjectTeamPreferences } from './thunks/deleteStudentProje
 import { type Student } from '../studentApplicationSlice/studentApplicationSlice'
 
 interface StudentProjectTeamPreference {
-  applicationSemesterId: string
-  studentId: string
   projectTeamId: string
   priorityScore: number
-  student?: Student
 }
 
-interface StudentProjectTeamPreferencesSliceState {
-  status: string
-  error: string | null
+interface StudentProjectTeamPreferenceSubmission {
+  id?: string
+  applicationSemesterId: string
+  studentId: string
+  student?: Student
+  appleId: string
   studentProjectTeamPreferences: StudentProjectTeamPreference[]
 }
 
-const initialState: StudentProjectTeamPreferencesSliceState = {
-  status: 'idle',
-  error: null,
-  studentProjectTeamPreferences: [],
+interface StudentProjectTeamPreferencesSubmissionsSliceState {
+  status: string
+  error: string | null
+  studentProjectTeamPreferencesSubmissions: StudentProjectTeamPreferenceSubmission[]
 }
 
-export const studentProjectTeamPreferencesSlice = createSlice({
-  name: 'studentProjectTeamPreferences',
+const initialState: StudentProjectTeamPreferencesSubmissionsSliceState = {
+  status: 'idle',
+  error: null,
+  studentProjectTeamPreferencesSubmissions: [],
+}
+
+export const studentProjectTeamPreferencesSubmissionsSlice = createSlice({
+  name: 'studentProjectTeamPreferencesSubmissions',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -35,7 +41,7 @@ export const studentProjectTeamPreferencesSlice = createSlice({
     })
 
     builder.addCase(fetchStudentProjectTeamPreferences.fulfilled, (state, { payload }) => {
-      state.studentProjectTeamPreferences = payload
+      state.studentProjectTeamPreferencesSubmissions = payload
       state.status = 'idle'
     })
 
@@ -50,7 +56,7 @@ export const studentProjectTeamPreferencesSlice = createSlice({
     })
 
     builder.addCase(createStudentProjectTeamPreferences.fulfilled, (state, { payload }) => {
-      state.studentProjectTeamPreferences.push(payload)
+      state.studentProjectTeamPreferencesSubmissions.push(payload)
       state.status = 'idle'
     })
 
@@ -65,7 +71,7 @@ export const studentProjectTeamPreferencesSlice = createSlice({
     })
 
     builder.addCase(deleteStudentProjectTeamPreferences.fulfilled, (state, { payload }) => {
-      state.studentProjectTeamPreferences = []
+      state.studentProjectTeamPreferencesSubmissions = []
       state.status = 'idle'
     })
 
@@ -77,5 +83,5 @@ export const studentProjectTeamPreferencesSlice = createSlice({
 })
 
 // export const {} = studentApplicationsState.actions
-export default studentProjectTeamPreferencesSlice.reducer
-export { type StudentProjectTeamPreference }
+export default studentProjectTeamPreferencesSubmissionsSlice.reducer
+export { type StudentProjectTeamPreference, type StudentProjectTeamPreferenceSubmission }

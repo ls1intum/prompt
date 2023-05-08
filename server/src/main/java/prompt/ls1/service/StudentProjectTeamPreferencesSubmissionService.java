@@ -1,0 +1,71 @@
+package prompt.ls1.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import prompt.ls1.exception.ResourceConflictException;
+import prompt.ls1.exception.ResourceNotFoundException;
+import prompt.ls1.model.ApplicationSemester;
+import prompt.ls1.model.ProjectTeam;
+import prompt.ls1.model.Student;
+import prompt.ls1.model.StudentProjectTeamPreferencesSubmission;
+import prompt.ls1.repository.ApplicationSemesterRepository;
+import prompt.ls1.repository.ProjectTeamRepository;
+import prompt.ls1.repository.StudentApplicationRepository;
+import prompt.ls1.repository.StudentProjectTeamPreferencesSubmissionRepository;
+import prompt.ls1.repository.StudentRepository;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class StudentProjectTeamPreferencesSubmissionService {
+
+    private final StudentProjectTeamPreferencesSubmissionRepository studentProjectTeamPreferencesSubmissionRepository;
+    private final StudentRepository studentRepository;
+    private final ProjectTeamRepository projectTeamRepository;
+    private final StudentApplicationRepository studentApplicationRepository;
+    private final ApplicationSemesterRepository applicationSemesterRepository;
+
+    @Autowired
+    public StudentProjectTeamPreferencesSubmissionService(
+            StudentProjectTeamPreferencesSubmissionRepository studentProjectTeamPreferencesSubmissionRepository,
+            StudentRepository studentRepository,
+            ProjectTeamRepository projectTeamRepository,
+            StudentApplicationRepository studentApplicationRepository,
+            ApplicationSemesterRepository applicationSemesterRepository) {
+        this.studentProjectTeamPreferencesSubmissionRepository = studentProjectTeamPreferencesSubmissionRepository;
+        this.studentRepository = studentRepository;
+        this.projectTeamRepository = projectTeamRepository;
+        this.studentApplicationRepository = studentApplicationRepository;
+        this.applicationSemesterRepository = applicationSemesterRepository;
+    }
+
+    public StudentProjectTeamPreferencesSubmission create(StudentProjectTeamPreferencesSubmission studentProjectTeamPreferencesSubmission) {
+        final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
+
+        final Student student = studentRepository.findById(studentProjectTeamPreferencesSubmission.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentProjectTeamPreferencesSubmission.getStudentId())));
+
+        studentApplicationRepository
+                .findByStudentAndApplicationSemester(student, applicationSemester)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
+
+        studentProjectTeamPreferencesSubmissionRepository
+                .findByStudentIdAndApplicationSemesterId(student.getId(), applicationSemester.getId())
+                .ifPresent(existing -> {
+                    throw new ResourceConflictException(String.format("Student preferences submission for student with id %s already exists.", student.getId()));
+                });
+
+        final List<ProjectTeam> projectTeams = projectTeamRepository
+                .findAllByApplicationSemesterId(studentProjectTeamPreferencesSubmission.getApplicationSemesterId());
+
+        studentProjectTeamPreferencesSubmission.getStudentProjectTeamPreferences().forEach(studentProjectTeamPreference -> {
+            if (projectTeams.stream().noneMatch(pt -> pt.getId().equals(studentProjectTeamPreference.getProjectTeamId()))) {
+                throw new ResourceNotFoundException(String.format("Project team with id %s not found.", studentProjectTeamPreference.getProjectTeamId()));
+            }
+        });
+
+        return studentProjectTeamPreferencesSubmissionRepository.save(studentProjectTeamPreferencesSubmission);
+    }
+}

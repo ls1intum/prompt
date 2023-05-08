@@ -13,8 +13,9 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const selectedApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.currentState,
   )
-  const studentProjectTeamPreferences = useAppSelector(
-    (state) => state.studentProjectTeamPreferences.studentProjectTeamPreferences,
+  const studentProjectTeamPreferencesSubmissions = useAppSelector(
+    (state) =>
+      state.studentProjectTeamPreferencesSubmissions.studentProjectTeamPreferencesSubmissions,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
 
@@ -31,7 +32,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           <Button
             leftIcon={<IconTrash />}
             variant='outline'
-            disabled={studentProjectTeamPreferences.length === 0}
+            disabled={studentProjectTeamPreferencesSubmissions.length === 0}
             onClick={() => {
               if (selectedApplicationSemester) {
                 void dispatch(
@@ -46,7 +47,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         <Button
           leftIcon={<IconDownload />}
           variant='filled'
-          disabled={studentProjectTeamPreferences.length === 0}
+          disabled={studentProjectTeamPreferencesSubmissions.length === 0}
           onClick={() => {
             downloadLinkRef.current?.link?.click()
           }}
@@ -55,14 +56,15 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         </Button>
       </div>
       <CSVLink
-        data={studentProjectTeamPreferences.map((stp) => {
-          return {
+        data={studentProjectTeamPreferencesSubmissions?.flatMap((stp) =>
+          stp.studentProjectTeamPreferences.map((p) => ({
             applicationSemesterId: stp.applicationSemesterId,
             studentId: stp.studentId,
-            projectTeamId: stp.projectTeamId,
-            priorityScore: stp.priorityScore,
-          }
-        })}
+            tumId: stp.student?.tumId,
+            projectTeamId: p.projectTeamId,
+            priorityScore: p.priorityScore,
+          })),
+        )}
         filename='data.csv'
         style={{ display: 'hidden' }}
         ref={downloadLinkRef}
@@ -77,20 +79,22 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          {studentProjectTeamPreferences.map((sp) => {
-            return (
-              <tr key={`${sp.studentId}${sp.projectTeamId}`}>
-                <td>{`${sp.student?.firstName ?? ''} ${sp.student?.lastName ?? ''}`}</td>
-                <td>
-                  {
-                    projectTeams.filter((pt) => {
-                      return pt.id === sp.projectTeamId
-                    })[0].customer
-                  }
-                </td>
-                <td>{sp.priorityScore}</td>
-              </tr>
-            )
+          {studentProjectTeamPreferencesSubmissions?.map((sp) => {
+            return sp.studentProjectTeamPreferences.map((p) => {
+              return (
+                <tr key={`${sp.studentId}${p.projectTeamId}`}>
+                  <td>{`${sp.student?.firstName ?? ''} ${sp.student?.lastName ?? ''}`}</td>
+                  <td>
+                    {
+                      projectTeams.filter((pt) => {
+                        return pt.id === p.projectTeamId
+                      })[0].customer
+                    }
+                  </td>
+                  <td>{p.priorityScore}</td>
+                </tr>
+              )
+            })
           })}
         </tbody>
       </Table>

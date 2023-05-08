@@ -14,10 +14,24 @@ import {
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
-import { Button, Center, Container, Group, Text, Title, createStyles, rem } from '@mantine/core'
+import {
+  Button,
+  Center,
+  Container,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+  createStyles,
+  rem,
+} from '@mantine/core'
 import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
 import { useParams } from 'react-router-dom'
+import { createStudentProjectTeamPreferences } from '../../redux/studentProjectTeamPreferencesSlice/thunks/createStudentProjectTeamPreferences'
+import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
+import { isNotEmpty, useForm } from '@mantine/form'
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -41,32 +55,41 @@ const useStyles = createStyles((theme) => ({
 export const StudentTeamProjectPreferencePage = (): JSX.Element => {
   const { classes, cx } = useStyles()
   const { studentId } = useParams()
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
+  const openApplicationSemester = useAppSelector(
+    (state) => state.applicationSemester.openApplicationSemester,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const dispatch = useDispatch<AppDispatch>()
   const [state, handlers] = useListState<ProjectTeam>([])
   const [submissionCodeModalOpen, setSubmissionCodeModalOpen] = useState(false)
   const [submissionCode, setSubmissionCode] = useState('')
+  const form = useForm({
+    initialValues: {
+      appleId: '',
+      macBookDeviceId: '',
+      iPhoneDeviceId: '',
+      iPadDeviceId: '',
+      appleWatchDeviceId: '',
+    },
+    validate: {
+      appleId: isNotEmpty('Please provide a valid Apple ID.'),
+    },
+    validateInputOnChange: true,
+  })
 
   useEffect(() => {
-    if (selectedApplicationSemester) {
-      void dispatch(fetchProjectTeams(selectedApplicationSemester.semesterName))
-    } else {
-      void dispatch(fetchProjectTeams('SS2023'))
+    void dispatch(fetchApplicationSemestersWithOpenApplicationPeriod())
+  }, [])
+
+  useEffect(() => {
+    if (openApplicationSemester) {
+      void dispatch(fetchProjectTeams(openApplicationSemester.semesterName))
     }
-  }, [selectedApplicationSemester])
+  }, [openApplicationSemester])
 
   useEffect(() => {
     handlers.setState(projectTeams)
   }, [projectTeams])
-
-  useEffect(() => {
-    if (!submissionCode) {
-      setSubmissionCodeModalOpen(true)
-    }
-  }, [submissionCode])
 
   const items = state.map((item, index) => (
     <Draggable key={item.id.toString()} index={index} draggableId={item.id.toString()}>
@@ -109,10 +132,41 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
         onSubmit={setSubmissionCode}
       />
       <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
-        <Title>Project Priority List</Title>
-        <Text>Please order the projects in descending order according to your preferences</Text>
+        <Title order={2}>Project Team Preferences</Title>
       </Center>
       <Container size='50vw' style={{ padding: '3vh' }}>
+        <Stack style={{ paddingBottom: '5vh' }}>
+          <TextInput
+            label='Apple ID'
+            placeholder='Apple ID'
+            required
+            {...form.getInputProps('appleId')}
+          />
+          <Group grow>
+            <TextInput
+              label='MacBook Device ID'
+              placeholder='MacBook Device ID'
+              {...form.getInputProps('macBookDeviceId')}
+            />
+            <TextInput
+              label='iPhone Device ID'
+              placeholder='iPhone Device ID'
+              {...form.getInputProps('iPhoneDeviceId')}
+            />
+          </Group>
+          <Group grow>
+            <TextInput
+              label='iPad Device ID'
+              placeholder='iPad Device ID'
+              {...form.getInputProps('iPadDeviceId')}
+            />
+            <TextInput
+              label='Apple Watch Device ID'
+              placeholder='Apple Watch Device ID'
+              {...form.getInputProps('appleWatchDeviceId')}
+            />
+          </Group>
+        </Stack>
         <DragDropContext
           onDragEnd={({ destination, source }: any) => {
             handlers.reorder({ from: source.index, to: destination?.index || 0 })
@@ -145,16 +199,33 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
       <Center>
         <Button
           variant='filled'
+          disabled={!openApplicationSemester || !form.isValid()}
           onClick={() => {
-            if (studentId) {
-              state.map((preference, index) => {
-                return {
-                  studentId,
-                  projectTeamId: preference.id,
-                  applicationSemesterId: selectedApplicationSemester?.id ?? 'SS2024',
-                  priorityScore: index,
+            if (submissionCode) {
+              if (studentId) {
+                const preferencesMap = new Map()
+                state.forEach((preference, index) => {
+                  preferencesMap.set(preference.id, index)
+                })
+
+                if (openApplicationSemester) {
+                  void dispatch(
+                    createStudentProjectTeamPreferences({
+                      appleId: form.values.appleId,
+                      studentId,
+                      applicationSemesterId: openApplicationSemester.id,
+                      studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
+                        return {
+                          projectTeamId: projectTeam.id,
+                          priorityScore,
+                        }
+                      }),
+                    }),
+                  )
                 }
-              })
+              }
+            } else {
+              setSubmissionCodeModalOpen(true)
             }
           }}
         >

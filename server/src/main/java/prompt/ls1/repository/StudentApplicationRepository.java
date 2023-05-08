@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import prompt.ls1.model.ApplicationSemester;
+import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentApplication;
 
 import java.util.List;
@@ -17,4 +19,6 @@ public interface StudentApplicationRepository extends JpaRepository<StudentAppli
     List<StudentApplication> findAllByApplicationSemesterId(UUID applicationSemesterId);
 
     Optional<StudentApplication> findById(final UUID studentApplicationId);
+
+    Optional<StudentApplication> findByStudentAndApplicationSemester(final Student student, final ApplicationSemester applicationSemester);
 }
