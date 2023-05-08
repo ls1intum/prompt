@@ -61,6 +61,8 @@ public class StudentApplicationService {
         }
         if (existingStudent.isEmpty()) {
             studentRepository.save(student);
+        } else {
+            studentApplication.setStudent(existingStudent.get());
         }
 
         return studentApplicationRepository.save(studentApplication);

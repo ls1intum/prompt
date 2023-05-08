@@ -12,8 +12,10 @@ import java.util.UUID;
 @Repository
 public interface StudentProjectTeamPreferencesSubmissionRepository extends JpaRepository<StudentProjectTeamPreferencesSubmission, UUID> {
 
+    @Transactional
     Optional<StudentProjectTeamPreferencesSubmission> findByStudentIdAndApplicationSemesterId(final UUID studentId, final UUID applicationSemesterId);
 
+    @Transactional
     List<StudentProjectTeamPreferencesSubmission> findAllByApplicationSemesterId(final UUID applicationSemesterId);
 
     @Transactional

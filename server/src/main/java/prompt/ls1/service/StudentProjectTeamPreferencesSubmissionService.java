@@ -71,7 +71,7 @@ public class StudentProjectTeamPreferencesSubmissionService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentProjectTeamPreferencesSubmission.getStudentId())));
 
         studentApplicationRepository
-                .findByStudentAndApplicationSemester(student, applicationSemester)
+                .findByStudentAndApplicationSemester(student.getId(), applicationSemester.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
 
         studentProjectTeamPreferencesSubmissionRepository

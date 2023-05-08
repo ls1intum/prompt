@@ -33,10 +33,14 @@ public class StudentProjectTeamPreferencesSubmission implements Serializable {
 
     private String appleWatchDeviceId;
 
+    private StudentExperienceLevel selfReportedExperienceLevel;
+
     @Transient
     private Student student;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinTable(joinColumns = @JoinColumn(name = "id", referencedColumnName="id"))
+    @JoinTable(name="student_project_team_preference_submission",
+            joinColumns = @JoinColumn(name = "student_project_team_preferences_submission_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "student_project_team_preferences_id", referencedColumnName = "id"))
     private List<StudentProjectTeamPreference> studentProjectTeamPreferences;
 }

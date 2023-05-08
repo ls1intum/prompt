@@ -4,8 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import prompt.ls1.model.ApplicationSemester;
-import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentApplication;
 
 import java.util.List;
@@ -16,9 +14,11 @@ import java.util.UUID;
 public interface StudentApplicationRepository extends JpaRepository<StudentApplication, UUID> {
     @Transactional
     @Query(value="select sa from StudentApplication sa where sa.applicationSemester.id=?1")
-    List<StudentApplication> findAllByApplicationSemesterId(UUID applicationSemesterId);
+    List<StudentApplication> findAllByApplicationSemesterId(final UUID applicationSemesterId);
 
     Optional<StudentApplication> findById(final UUID studentApplicationId);
 
-    Optional<StudentApplication> findByStudentAndApplicationSemester(final Student student, final ApplicationSemester applicationSemester);
+    @Transactional
+    @Query(value="select sa from StudentApplication sa where sa.applicationSemester.id=?2 and sa.student.id=?1")
+    Optional<StudentApplication> findByStudentAndApplicationSemester(final UUID studentId, final UUID applicationSemesterId);
 }

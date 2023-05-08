@@ -4,9 +4,17 @@ import { fetchStudentProjectTeamPreferences } from './thunks/fetchStudentProject
 import { deleteStudentProjectTeamPreferences } from './thunks/deleteStudentProjectTeamPreferences'
 import { type Student } from '../studentApplicationSlice/studentApplicationSlice'
 
+enum StudentExperienceLevel {
+  'BEGINNER',
+  'INTERMEDIATE',
+  'ADVANCED',
+  'EXPERT',
+}
+
 interface StudentProjectTeamPreference {
   projectTeamId: string
   priorityScore: number
+  reason: string
 }
 
 interface StudentProjectTeamPreferenceSubmission {
@@ -16,6 +24,7 @@ interface StudentProjectTeamPreferenceSubmission {
   student?: Student
   appleId: string
   studentProjectTeamPreferences: StudentProjectTeamPreference[]
+  selfReportedExperienceLevel: StudentExperienceLevel
 }
 
 interface StudentProjectTeamPreferencesSubmissionsSliceState {
@@ -84,4 +93,8 @@ export const studentProjectTeamPreferencesSubmissionsSlice = createSlice({
 
 // export const {} = studentApplicationsState.actions
 export default studentProjectTeamPreferencesSubmissionsSlice.reducer
-export { type StudentProjectTeamPreference, type StudentProjectTeamPreferenceSubmission }
+export {
+  type StudentProjectTeamPreference,
+  type StudentProjectTeamPreferenceSubmission,
+  StudentExperienceLevel,
+}

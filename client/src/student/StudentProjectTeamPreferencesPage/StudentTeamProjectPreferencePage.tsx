@@ -19,9 +19,11 @@ import {
   Center,
   Container,
   Group,
+  Select,
   Stack,
   Text,
   TextInput,
+  Textarea,
   Title,
   createStyles,
   rem,
@@ -32,6 +34,7 @@ import { useParams } from 'react-router-dom'
 import { createStudentProjectTeamPreferences } from '../../redux/studentProjectTeamPreferencesSlice/thunks/createStudentProjectTeamPreferences'
 import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
 import { isNotEmpty, useForm } from '@mantine/form'
+import { StudentExperienceLevel } from '../../redux/studentProjectTeamPreferencesSlice/studentProjectTeamPreferencesSlice'
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -70,6 +73,9 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
       iPhoneDeviceId: '',
       iPadDeviceId: '',
       appleWatchDeviceId: '',
+      selfReportedExperienceLevel: StudentExperienceLevel.BEGINNER,
+      reasonForHighPrio: '',
+      reasonForLowPrio: '',
     },
     validate: {
       appleId: isNotEmpty('Please provide a valid Apple ID.'),
@@ -140,6 +146,7 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
             label='Apple ID'
             placeholder='Apple ID'
             required
+            withAsterisk
             {...form.getInputProps('appleId')}
           />
           <Group grow>
@@ -166,6 +173,17 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
               {...form.getInputProps('appleWatchDeviceId')}
             />
           </Group>
+          <Select
+            withAsterisk
+            required
+            searchable
+            label='Experience level'
+            placeholder='How experience are you with SwiftUI?'
+            data={Object.keys(StudentExperienceLevel).filter(
+              (option: any) => typeof StudentExperienceLevel[option] !== 'string',
+            )}
+            {...form.getInputProps('selfReportedExperienceLevel')}
+          />
         </Stack>
         <DragDropContext
           onDragEnd={({ destination, source }: any) => {
@@ -195,6 +213,26 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
             )}
           </Droppable>
         </DragDropContext>
+        <Stack>
+          <Textarea
+            autosize
+            minRows={5}
+            withAsterisk
+            label='Reason for 1st Choice'
+            placeholder='Reason for high priority'
+            required
+            {...form.getInputProps('reasonForHighPrio')}
+          />
+          <Textarea
+            autosize
+            minRows={5}
+            withAsterisk
+            label='Reason for Last Choice'
+            placeholder='Reason for low priority'
+            required
+            {...form.getInputProps('reasonForLowPrio')}
+          />
+        </Stack>
       </Container>
       <Center>
         <Button
@@ -214,10 +252,12 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
                       appleId: form.values.appleId,
                       studentId,
                       applicationSemesterId: openApplicationSemester.id,
+                      selfReportedExperienceLevel: form.values.selfReportedExperienceLevel,
                       studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
                         return {
                           projectTeamId: projectTeam.id,
                           priorityScore,
+                          reason: '',
                         }
                       }),
                     }),
