@@ -26,27 +26,29 @@ import java.util.UUID;
 
 @Service
 public class StudentApplicationService {
-    @Autowired
-    private StudentApplicationRepository studentApplicationRepository;
+    private final StudentApplicationRepository studentApplicationRepository;
+    private final StudentApplicationNoteRepository studentApplicationNoteRepository;
+    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
+    private final ProjectTeamRepository projectTeamRepository;
 
     @Autowired
-    private StudentApplicationNoteRepository studentApplicationNoteRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProjectTeamRepository projectTeamRepository;
+    public StudentApplicationService(
+            StudentApplicationRepository studentApplicationRepository,
+            StudentApplicationNoteRepository studentApplicationNoteRepository,
+            StudentRepository studentRepository,
+            UserRepository userRepository,
+            ProjectTeamRepository projectTeamRepository) {
+        this.studentApplicationRepository = studentApplicationRepository;
+        this.studentApplicationNoteRepository = studentApplicationNoteRepository;
+        this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
+        this.projectTeamRepository = projectTeamRepository;
+    }
 
     public StudentApplication findById(final UUID studentApplicationId) {
-        Optional<StudentApplication> studentApplication = studentApplicationRepository.findById(studentApplicationId);
-        if (studentApplication.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Student application with id %s not found.", studentApplicationId));
-        }
-        return studentApplication.get();
+        return studentApplicationRepository.findById(studentApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application with id %s not found.", studentApplicationId)));
     }
 
     public StudentApplication create(final StudentApplication studentApplication) {
@@ -75,38 +77,30 @@ public class StudentApplicationService {
     public StudentApplication createNote(final UUID studentApplicationId, final StudentApplicationNote studentApplicationNote) {
         StudentApplication studentApplication = findById(studentApplicationId);
 
-        Optional<User> user = userRepository.findById(studentApplicationNote.getAuthor().getId());
-        if (user.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("User with id %s not found.", studentApplicationNote.getAuthor().getId()));
-        }
+        User user = userRepository.findById(studentApplicationNote.getAuthor().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", studentApplicationNote.getAuthor().getId())));
 
-        studentApplicationNote.setAuthor(user.get());
+        studentApplicationNote.setAuthor(user);
         studentApplication.getNotes().add(studentApplicationNote);
         studentApplicationNoteRepository.save(studentApplicationNote);
 
-        Optional<StudentApplication> updatedStudentApplication = studentApplicationRepository.findById(studentApplicationId);
-        if (updatedStudentApplication.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Student application with id %s not found.", studentApplicationId));
-        }
-
-        return updatedStudentApplication.get();
+        return studentApplicationRepository.findById(studentApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application with id %s not found.", studentApplicationId)));
     }
 
     public StudentApplication assignToProjectTeam(final UUID studentApplicationId, final UUID projectTeamId, final UUID applicationSemesterId) {
         StudentApplication studentApplication = findById(studentApplicationId);
 
-        Optional<ProjectTeam> projectTeam = projectTeamRepository.findById(projectTeamId);
-        if (projectTeam.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId));
-        }
+        ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
 
-        if (!studentApplication.getApplicationSemester().getId().equals(projectTeam.get().getApplicationSemester().getId()) ||
+        if (!studentApplication.getApplicationSemester().getId().equals(projectTeam.getApplicationSemester().getId()) ||
                 !studentApplication.getApplicationSemester().getId().equals(applicationSemesterId)) {
             throw new ResourceInvalidParametersException(String.format("Student application with id %s does not match the application semester of" +
                     "the project team with id %s.", studentApplicationId, projectTeamId));
         }
 
-        studentApplication.setProjectTeam(projectTeam.get());
+        studentApplication.setProjectTeam(projectTeam);
         return studentApplicationRepository.save(studentApplication);
     }
 

@@ -36,7 +36,7 @@ public class StudentProjectTeamPreferencesSubmission implements Serializable {
     @Transient
     private Student student;
 
-    @OneToMany(targetEntity=StudentProjectTeamPreference.class,cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinTable(joinColumns = @JoinColumn(name = "id", referencedColumnName="id"))
     private List<StudentProjectTeamPreference> studentProjectTeamPreferences;
 }

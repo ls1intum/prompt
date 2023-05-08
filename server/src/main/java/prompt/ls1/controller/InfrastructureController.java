@@ -31,19 +31,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/infrastructure")
-public class InstrastructureController {
+public class InfrastructureController {
+    private final JiraIntegrationService jiraIntegrationService;
+    private final BitbucketIntegrationService bitbucketIntegrationService;
+    private final BambooIntegrationService bambooIntegrationService;
+    private final ConfluenceIntegrationService confluenceIntegrationService;
 
     @Autowired
-    private JiraIntegrationService jiraIntegrationService;
-
-    @Autowired
-    private BitbucketIntegrationService bitbucketIntegrationService;
-
-    @Autowired
-    private BambooIntegrationService bambooIntegrationService;
-
-    @Autowired
-    private ConfluenceIntegrationService confluenceIntegrationService;
+    public InfrastructureController(JiraIntegrationService jiraIntegrationService,
+                                     BitbucketIntegrationService bitbucketIntegrationService,
+                                     BambooIntegrationService bambooIntegrationService,
+                                     ConfluenceIntegrationService confluenceIntegrationService) {
+        this.jiraIntegrationService = jiraIntegrationService;
+        this.bitbucketIntegrationService = bitbucketIntegrationService;
+        this.bambooIntegrationService = bambooIntegrationService;
+        this.confluenceIntegrationService = confluenceIntegrationService;
+    }
 
     @PostMapping("/jira/groups")
     public ResponseEntity<List<JiraGroup>> createJiraGroups(@RequestBody final List<String> jiraGroupNames) {
@@ -82,14 +85,14 @@ public class InstrastructureController {
     }
 
     @PostMapping("/jira/groups/{groupName}/users")
-    public ResponseEntity addUsersToJiraGroup(@PathVariable final String groupName,
+    public ResponseEntity<String> addUsersToJiraGroup(@PathVariable final String groupName,
                                               @RequestBody final List<String> usernames) {
         jiraIntegrationService.addUsersToGroup(groupName, usernames);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/jira/projects/roles/actors")
-    public ResponseEntity addProjectRoleActors(@RequestBody final List<JiraProjectRoleActor> jiraProjectRoleActors) {
+    public ResponseEntity<String> addProjectRoleActors(@RequestBody final List<JiraProjectRoleActor> jiraProjectRoleActors) {
         jiraIntegrationService.addActorsToProjectRole(jiraProjectRoleActors);
         return ResponseEntity.ok().build();
     }
@@ -114,14 +117,14 @@ public class InstrastructureController {
     }
 
     @PostMapping("/bitbucket/projects/permissions")
-    public ResponseEntity grantBitbucketProjectPermissions(
+    public ResponseEntity<String> grantBitbucketProjectPermissions(
             @RequestBody final List<BitbucketProjectPermissionGrant> bitbucketProjectPermissionGrants) {
         bitbucketIntegrationService.grantProjectPermissions(bitbucketProjectPermissionGrants);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/bitbucket/projects/repositories/permissions")
-    public ResponseEntity grantBitbucketProjectRepositoryPermissions(
+    public ResponseEntity<String> grantBitbucketProjectRepositoryPermissions(
             @RequestBody final List<BitbucketProjectRepositoryPermissionGrant> bitbucketProjectRepositoryPermissionGrants) {
         bitbucketIntegrationService.grantProjectRepositoryPermissions(bitbucketProjectRepositoryPermissionGrants);
         return ResponseEntity.ok().build();
@@ -138,7 +141,7 @@ public class InstrastructureController {
     }
 
     @PostMapping("/bitbucket/projects/{projectKey}/repositories/{repositorySlug}/setup")
-    public ResponseEntity setupBitbucketRepository(@PathVariable final String projectKey, @PathVariable final String repositorySlug) throws GitAPIException, IOException {
+    public ResponseEntity<String> setupBitbucketRepository(@PathVariable final String projectKey, @PathVariable final String repositorySlug) throws GitAPIException, IOException {
         bitbucketIntegrationService.setupRepository(projectKey, repositorySlug);
         return ResponseEntity.ok().build();
     }

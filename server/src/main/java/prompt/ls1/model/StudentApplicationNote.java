@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "student_application_note")
+@Table
 public class StudentApplicationNote implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

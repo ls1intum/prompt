@@ -27,11 +27,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/student-applications")
 public class StudentApplicationController {
-    @Autowired
-    private StudentApplicationService studentApplicationService;
+    private final StudentApplicationService studentApplicationService;
+    private final ApplicationSemesterService applicationSemesterService;
 
     @Autowired
-    private ApplicationSemesterService applicationSemesterService;
+    public StudentApplicationController(StudentApplicationService studentApplicationService,
+                                        ApplicationSemesterService applicationSemesterService) {
+        this.studentApplicationService = studentApplicationService;
+        this.applicationSemesterService = applicationSemesterService;
+    }
 
     @GetMapping
     public ResponseEntity<List<StudentApplication>> getAllStudentApplications(

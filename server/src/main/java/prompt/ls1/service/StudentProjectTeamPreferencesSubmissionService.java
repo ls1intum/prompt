@@ -16,6 +16,8 @@ import prompt.ls1.repository.StudentRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentProjectTeamPreferencesSubmissionService {
@@ -38,6 +40,27 @@ public class StudentProjectTeamPreferencesSubmissionService {
         this.projectTeamRepository = projectTeamRepository;
         this.studentApplicationRepository = studentApplicationRepository;
         this.applicationSemesterRepository = applicationSemesterRepository;
+    }
+
+    public List<StudentProjectTeamPreferencesSubmission> getByApplicationSemester(final String applicationSemesterName) {
+        final ApplicationSemester applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
+
+        final List<StudentProjectTeamPreferencesSubmission> studentProjectTeamPreferencesSubmissions = studentProjectTeamPreferencesSubmissionRepository
+                .findAllByApplicationSemesterId(applicationSemester.getId());
+
+        final List<UUID> studentIds = studentProjectTeamPreferencesSubmissions.stream()
+                .map(StudentProjectTeamPreferencesSubmission::getStudentId)
+                .distinct()
+                .collect(Collectors.toList());
+        final List<Student> students = studentRepository.findAllByIdIn(studentIds);
+
+        studentProjectTeamPreferencesSubmissions.forEach(studentProjectTeamPreferencesSubmission ->
+                students.stream().filter(std -> std.getId().equals(studentProjectTeamPreferencesSubmission.getStudentId()))
+                        .findFirst()
+                        .ifPresent(studentProjectTeamPreferencesSubmission::setStudent));
+
+        return studentProjectTeamPreferencesSubmissions;
     }
 
     public StudentProjectTeamPreferencesSubmission create(StudentProjectTeamPreferencesSubmission studentProjectTeamPreferencesSubmission) {
@@ -67,5 +90,12 @@ public class StudentProjectTeamPreferencesSubmissionService {
         });
 
         return studentProjectTeamPreferencesSubmissionRepository.save(studentProjectTeamPreferencesSubmission);
+    }
+
+    public void deleteByApplicationSemester(final String applicationSemesterName) {
+        final ApplicationSemester applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
+
+        studentProjectTeamPreferencesSubmissionRepository.deleteAllByApplicationSemesterId(applicationSemester.getId());
     }
 }

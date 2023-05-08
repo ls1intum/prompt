@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,19 +13,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.service.ApplicationSemesterService;
 
-import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/application-semesters")
 public class ApplicationSemesterController {
+    private final ApplicationSemesterService applicationSemesterService;
+
     @Autowired
-    private ApplicationSemesterService applicationSemesterService;
+    public ApplicationSemesterController(ApplicationSemesterService applicationSemesterService) {
+        this.applicationSemesterService = applicationSemesterService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ApplicationSemester>> getAllApplicationSemesters() {
@@ -34,14 +36,11 @@ public class ApplicationSemesterController {
     }
 
     @GetMapping ("/open")
-    public ResponseEntity<ApplicationSemester> getApplicationSemesterWithOpenApplicationPeriod() throws ParseException {
-        final Optional<ApplicationSemester> applicationSemester = applicationSemesterService.findWithOpenApplicationPeriod();
-        if (applicationSemester.isEmpty()) {
-            return new ResponseEntity("No application semester with open application period found.",
-                    HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ApplicationSemester> getApplicationSemesterWithOpenApplicationPeriod() {
+        return applicationSemesterService.findWithOpenApplicationPeriod()
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open application period found."));
 
-        return ResponseEntity.ok(applicationSemester.get());
     }
 
     @PostMapping

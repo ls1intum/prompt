@@ -13,7 +13,6 @@ import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.repository.ApplicationSemesterRepository;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -23,8 +22,8 @@ import java.util.UUID;
 
 @Service
 public class ApplicationSemesterService {
-    private ApplicationSemesterRepository applicationSemesterRepository;
-    private SimpleDateFormat simpleDateFormat;
+    private final ApplicationSemesterRepository applicationSemesterRepository;
+    private final SimpleDateFormat simpleDateFormat;
 
     @Autowired
     public ApplicationSemesterService(final ApplicationSemesterRepository applicationSemesterRepository) {
@@ -89,7 +88,7 @@ public class ApplicationSemesterService {
         return applicationSemesterRepository.findAll();
     }
 
-    public Optional<ApplicationSemester> findWithOpenApplicationPeriod() throws ParseException{
+    public Optional<ApplicationSemester> findWithOpenApplicationPeriod() {
         return applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date());
     }
 
