@@ -118,19 +118,15 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         ref={downloadLinkRef}
         target='_blank'
       />
-      <Transition
-        mounted={inverseTableView}
-        transition='fade'
-        duration={400}
-        exitDuration={0}
-        timingFunction='ease'
-      >
+      <Transition mounted={inverseTableView} transition='fade' duration={200}>
         {(styles) => (
           <DataTable
             style={styles}
             withBorder
             withColumnBorders
             highlightOnHover
+            minHeight={200}
+            noRecordsText='No records to show'
             columns={[
               {
                 accessor: 'student',
@@ -186,19 +182,15 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           />
         )}
       </Transition>
-      <Transition
-        mounted={!inverseTableView}
-        transition='fade'
-        duration={400}
-        exitDuration={0}
-        timingFunction='ease'
-      >
+      <Transition mounted={!inverseTableView} transition='fade' duration={200}>
         {(styles) => (
           <DataTable
             style={styles}
             withBorder
             withColumnBorders
             highlightOnHover
+            minHeight={200}
+            noRecordsText='No records to show'
             columns={[
               {
                 accessor: 'projectTeamId',
@@ -233,6 +225,8 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
               content: (record) => (
                 <DataTable
                   noHeader
+                  minHeight={200}
+                  noRecordsText='No records to show'
                   columns={[
                     {
                       accessor: 'student',

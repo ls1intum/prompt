@@ -49,8 +49,8 @@ export const Dashboard = ({ child }: DashboardProps): JSX.Element => {
   return (
     <>
       {currentState ? (
-        <AppShell padding='md' navbar={<NavigationBar />}>
-          <div style={{ margin: '5vh 4vw' }}>{child}</div>
+        <AppShell navbar={<NavigationBar />}>
+          <div style={{ margin: '5vh 2vw' }}>{child}</div>
         </AppShell>
       ) : (
         <WorkspaceSelectionDialog />
