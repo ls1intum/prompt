@@ -27,12 +27,12 @@ import {
   IconAppsFilled,
   IconLogout,
 } from '@tabler/icons-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
 import { setCurrentState } from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
 import { WorkspaceSelectionDialog } from '../../instructor/ApplicationSemesterManager/WorkspaceSelectionDialog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const navigationContents = [
   {
@@ -156,16 +156,21 @@ export const NavigationBar = (): JSX.Element => {
   const selectedApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.currentState,
   )
-  const [active, setActive] = useState('Application Semester Management')
+  const location = useLocation()
+  const [active, setActive] = useState(location.pathname)
+
+  useEffect(() => {
+    setActive(location.pathname)
+  }, [location.pathname])
 
   const linksContent = navigationContents.map((item) => (
     <a
-      className={cx(classes.link, { [classes.linkActive]: item.label === active })}
+      className={cx(classes.link, { [classes.linkActive]: item.link === active })}
       href={item.link}
       key={item.label}
       onClick={(event) => {
         event.preventDefault()
-        setActive(item.label)
+        setActive(item.link)
         navigate(item.link)
       }}
     >

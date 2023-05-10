@@ -2,17 +2,7 @@ import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { useEffect, useRef, useState } from 'react'
 import { fetchStudentProjectTeamPreferences } from '../../../../redux/studentProjectTeamPreferencesSlice/thunks/fetchStudentProjectTeamPreferences'
-import {
-  Button,
-  Group,
-  Switch,
-  Table,
-  Text,
-  Tooltip,
-  Transition,
-  createStyles,
-  px,
-} from '@mantine/core'
+import { Button, Group, Switch, Text, Tooltip, Transition, createStyles, px } from '@mantine/core'
 import {
   IconBuilding,
   IconChevronRight,
@@ -50,7 +40,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
   const [expandedStudentPreferences, setExpandedStudentPreferences] = useState<string[]>([])
-  const [inverseTableView, setInverseTableView] = useState(true)
+  const [inverseTableView, setInverseTableView] = useState(false)
 
   useEffect(() => {
     if (selectedApplicationSemester) {
@@ -125,7 +115,6 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             withBorder
             withColumnBorders
             highlightOnHover
-            minHeight={200}
             noRecordsText='No records to show'
             columns={[
               {
@@ -189,33 +178,26 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             withBorder
             withColumnBorders
             highlightOnHover
-            minHeight={200}
             noRecordsText='No records to show'
             columns={[
               {
-                accessor: 'projectTeamId',
+                accessor: 'id',
                 title: 'Customer',
-                render: ({ projectTeamId }) => (
+                render: ({ id, customer }) => (
                   <Group spacing='xs'>
                     <IconChevronRight
                       size='0.9em'
                       className={cx(classes.expandIcon, {
-                        [classes.expandIconRotated]: expandedStudentPreferences.includes(
-                          projectTeamId ?? '',
-                        ),
+                        [classes.expandIconRotated]: expandedStudentPreferences.includes(id ?? ''),
                       })}
                     />
                     <IconBuilding size='0.9em' />
-                    <Text>
-                      {projectTeams.filter((p) => p.id === projectTeamId).at(0)?.customer}
-                    </Text>
+                    <Text>{customer}</Text>
                   </Group>
                 ),
               },
             ]}
-            records={studentProjectTeamPreferencesSubmissions.flatMap(
-              (spp) => spp.studentProjectTeamPreferences,
-            )}
+            records={projectTeams}
             rowExpansion={{
               allowMultiple: true,
               expanded: {
@@ -225,7 +207,6 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
               content: (record) => (
                 <DataTable
                   noHeader
-                  minHeight={200}
                   noRecordsText='No records to show'
                   columns={[
                     {
@@ -249,7 +230,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                           <Text>
                             {`${
                               studentProjectTeamPreferences
-                                .filter((p) => p.projectTeamId === record.record.projectTeamId)
+                                .filter((p) => p.projectTeamId === record.record.id)
                                 .at(0)?.priorityScore ?? ''
                             }`}
                           </Text>
@@ -260,7 +241,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                   records={studentProjectTeamPreferencesSubmissions.filter((spp) => {
                     return spp.studentProjectTeamPreferences
                       .map((p) => p.projectTeamId)
-                      .includes(record.record.projectTeamId)
+                      .includes(record.record.id)
                   })}
                 />
               ),
@@ -268,34 +249,6 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           />
         )}
       </Transition>
-      <Table>
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Project Team</th>
-            <th>Priority Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentProjectTeamPreferencesSubmissions?.map((sp) => {
-            return sp.studentProjectTeamPreferences.map((p) => {
-              return (
-                <tr key={`${sp.studentId}${p.projectTeamId}`}>
-                  <td>{`${sp.student?.firstName ?? ''} ${sp.student?.lastName ?? ''}`}</td>
-                  <td>
-                    {
-                      projectTeams.filter((pt) => {
-                        return pt.id === p.projectTeamId
-                      })[0].customer
-                    }
-                  </td>
-                  <td>{p.priorityScore}</td>
-                </tr>
-              )
-            })
-          })}
-        </tbody>
-      </Table>
     </div>
   )
 }
