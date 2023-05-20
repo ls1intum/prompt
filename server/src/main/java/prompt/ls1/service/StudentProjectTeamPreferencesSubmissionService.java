@@ -3,6 +3,7 @@ package prompt.ls1.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.exception.ResourceConflictException;
+import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.model.ProjectTeam;
@@ -63,12 +64,20 @@ public class StudentProjectTeamPreferencesSubmissionService {
         return studentProjectTeamPreferencesSubmissions;
     }
 
-    public StudentProjectTeamPreferencesSubmission create(StudentProjectTeamPreferencesSubmission studentProjectTeamPreferencesSubmission) {
+    public StudentProjectTeamPreferencesSubmission create(final String studentPublicId,
+                                                          final String studentMatriculationNumber,
+                                                          StudentProjectTeamPreferencesSubmission studentProjectTeamPreferencesSubmission) {
         final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
 
-        final Student student = studentRepository.findById(studentProjectTeamPreferencesSubmission.getStudentId())
+        final Student student = studentRepository.findByPublicId(studentPublicId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentProjectTeamPreferencesSubmission.getStudentId())));
+
+        if (!student.getMatriculationNumber().equals(studentMatriculationNumber)) {
+            throw new ResourceInvalidParametersException("The public id provided does not match with the matriculation number.");
+        }
+
+        studentProjectTeamPreferencesSubmission.setStudentId(student.getId());
 
         studentApplicationRepository
                 .findByStudentAndApplicationSemester(student.getId(), applicationSemester.getId())

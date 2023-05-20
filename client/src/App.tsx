@@ -61,7 +61,7 @@ export const App = (): JSX.Element => {
               <Route path='/management' element={<DashboardWelcome />} />
               <Route path='/' element={<StudentApplicationSubmissionPage />} />
               <Route
-                path='/preferences/:studentId'
+                path='/preferences/:studentPublicId'
                 element={<StudentTeamProjectPreferencePage />}
               />
             </Routes>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +32,16 @@ public class StudentProjectTeamPreferenceController {
         return ResponseEntity.ok(studentProjectTeamPreferencesSubmissionService.getByApplicationSemester(applicationSemesterName));
     }
 
-    @PostMapping
+    @PostMapping("/{studentPublicId}")
     public ResponseEntity<StudentProjectTeamPreferencesSubmission> createStudentProjectTeamPreferencesSubmissionForStudent(
+            @PathVariable final String studentPublicId,
+            @RequestParam final String studentMatriculationNumber,
             @RequestBody final StudentProjectTeamPreferencesSubmission studentProjectTeamPreferencesSubmission
     ) {
-        return ResponseEntity.ok(studentProjectTeamPreferencesSubmissionService.create(studentProjectTeamPreferencesSubmission));
+        return ResponseEntity.ok(studentProjectTeamPreferencesSubmissionService.create(
+                studentPublicId,
+                studentMatriculationNumber,
+                studentProjectTeamPreferencesSubmission));
     }
 
     @DeleteMapping

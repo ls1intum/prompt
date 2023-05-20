@@ -9,12 +9,17 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "public_id" }),
+        @UniqueConstraint(columnNames = { "email" }) })
 public class Student implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(name = "public_id")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID publicId;
 
     @Column
     private String firstName;

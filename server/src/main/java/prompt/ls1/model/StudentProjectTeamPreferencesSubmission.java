@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames =
-        { "studentId", "applicationSemesterId" }) })
+        { "student_id", "application_semester_id" }) })
 @NoArgsConstructor
 public class StudentProjectTeamPreferencesSubmission implements Serializable {
 
@@ -19,8 +19,10 @@ public class StudentProjectTeamPreferencesSubmission implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "student_id")
     private UUID studentId;
 
+    @Column(name = "application_semester_id")
     private UUID applicationSemesterId;
 
     private String appleId;

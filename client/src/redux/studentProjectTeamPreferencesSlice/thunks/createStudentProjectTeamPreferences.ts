@@ -7,13 +7,21 @@ export const createStudentProjectTeamPreferences = createAsyncThunk(
   'studentProjectTeamPreferencesSubmissions/createStudentProjectTeamPreferencesSubmission',
 
   async (
-    studentProjectTeamPreferencesSubmission: StudentProjectTeamPreferenceSubmission,
+    {
+      studentPublicId,
+      studentMatriculationNumber,
+      studentProjectTeamPreferencesSubmission,
+    }: {
+      studentPublicId: string
+      studentMatriculationNumber: string
+      studentProjectTeamPreferencesSubmission: StudentProjectTeamPreferenceSubmission
+    },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/project-team-preferences`,
+          `${serverBaseUrl}/api/project-team-preferences/${studentPublicId}?studentMatriculationNumber=${studentMatriculationNumber}`,
           studentProjectTeamPreferencesSubmission,
         )
       ).data

@@ -60,6 +60,7 @@ public class StudentApplicationService {
             existingStudent = studentRepository.findByFirstNameAndLastName(student.getFirstName(), student.getLastName());
         }
         if (existingStudent.isEmpty()) {
+            student.setPublicId(UUID.randomUUID());
             studentRepository.save(student);
         } else {
             studentApplication.setStudent(existingStudent.get());

@@ -57,15 +57,15 @@ const useStyles = createStyles((theme) => ({
 
 export const StudentTeamProjectPreferencePage = (): JSX.Element => {
   const { classes, cx } = useStyles()
-  const { studentId } = useParams()
+  const { studentPublicId } = useParams()
   const openApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.openApplicationSemester,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const dispatch = useDispatch<AppDispatch>()
   const [state, handlers] = useListState<ProjectTeam>([])
-  const [submissionCodeModalOpen, setSubmissionCodeModalOpen] = useState(false)
-  const [submissionCode, setSubmissionCode] = useState('')
+  const [matriculationNumberModalOpen, setMatriculationNumberModalOpen] = useState(false)
+  const [matriculationNumber, setMatriculationNumber] = useState('')
   const form = useForm({
     initialValues: {
       appleId: '',
@@ -96,6 +96,12 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
   useEffect(() => {
     handlers.setState(projectTeams)
   }, [projectTeams])
+
+  useEffect(() => {
+    if (!matriculationNumber) {
+      setMatriculationNumberModalOpen(true)
+    }
+  }, [matriculationNumber])
 
   const items = state.map((item, index) => (
     <Draggable key={item.id.toString()} index={index} draggableId={item.id.toString()}>
@@ -131,11 +137,11 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
   return (
     <div style={{ margin: '5vh' }}>
       <ProjectTeamPreferencesSubmissionCodeModal
-        open={submissionCodeModalOpen}
+        open={matriculationNumberModalOpen}
         onClose={() => {
-          setSubmissionCodeModalOpen(false)
+          setMatriculationNumberModalOpen(false)
         }}
-        onSubmit={setSubmissionCode}
+        onSubmit={setMatriculationNumber}
       />
       <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
         <Title order={2}>Project Team Preferences</Title>
@@ -239,18 +245,20 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
           variant='filled'
           disabled={!openApplicationSemester || !form.isValid()}
           onClick={() => {
-            if (submissionCode) {
-              if (studentId) {
-                const preferencesMap = new Map()
-                state.forEach((preference, index) => {
-                  preferencesMap.set(preference.id, index)
-                })
+            if (studentPublicId && matriculationNumber) {
+              const preferencesMap = new Map()
+              state.forEach((preference, index) => {
+                preferencesMap.set(preference.id, index)
+              })
 
-                if (openApplicationSemester) {
-                  void dispatch(
-                    createStudentProjectTeamPreferences({
+              if (openApplicationSemester) {
+                void dispatch(
+                  createStudentProjectTeamPreferences({
+                    studentPublicId,
+                    studentMatriculationNumber: matriculationNumber,
+                    studentProjectTeamPreferencesSubmission: {
                       appleId: form.values.appleId,
-                      studentId,
+                      studentId: '',
                       applicationSemesterId: openApplicationSemester.id,
                       selfReportedExperienceLevel: form.values.selfReportedExperienceLevel,
                       studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
@@ -260,12 +268,10 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
                           reason: '',
                         }
                       }),
-                    }),
-                  )
-                }
+                    },
+                  }),
+                )
               }
-            } else {
-              setSubmissionCodeModalOpen(true)
             }
           }}
         >

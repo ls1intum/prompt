@@ -13,6 +13,8 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
 
     Optional<Student> findByTumId(final String tumId);
 
+    Optional<Student> findByPublicId(final String publicId);
+
     Optional<Student> findByFirstNameAndLastName(final String firstName, final String lastName);
 
     List<Student> findAllByIdIn(final List<UUID> studentIds);
