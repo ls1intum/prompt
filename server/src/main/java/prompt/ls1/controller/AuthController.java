@@ -1,68 +1,40 @@
 package prompt.ls1.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import prompt.ls1.exception.TokenRefreshException;
-import prompt.ls1.model.RefreshToken;
-import prompt.ls1.model.Role;
-import prompt.ls1.model.RoleType;
-import prompt.ls1.model.User;
 import prompt.ls1.repository.RoleRepository;
 import prompt.ls1.repository.UserRepository;
 import prompt.ls1.security.jwt.JwtUtils;
-import prompt.ls1.security.payload.JwtResponse;
-import prompt.ls1.security.payload.LoginRequest;
-import prompt.ls1.security.payload.MessageResponse;
-import prompt.ls1.security.payload.SignUpRequest;
-import prompt.ls1.security.payload.TokenRefreshRequest;
-import prompt.ls1.security.payload.TokenRefreshResponse;
 import prompt.ls1.service.RefreshTokenService;
-import prompt.ls1.service.UserDetailsImpl;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager,
-                          UserRepository userRepository,
+    public AuthController(UserRepository userRepository,
                           RoleRepository roleRepository,
-                          PasswordEncoder encoder,
                           JwtUtils jwtUtils,
                           RefreshTokenService refreshTokenService) {
-        this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.encoder = encoder;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
     }
 
-    @PostMapping("/signin")
+    /*@GetMapping
+    public String index() {
+        return "home";
+    }*/
+
+    /*@PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -86,9 +58,9 @@ public class AuthController {
                         userDetails.getLastName(),
                         userDetails.getEmail(),
                         roles));
-    }
+    }*/
 
-    @PostMapping("/refresh-token")
+    /*@PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
 
@@ -101,9 +73,9 @@ public class AuthController {
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
                         "Refresh token is not known."));
-    }
+    }*/
 
-    @PostMapping("/signup")
+    /*@PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
@@ -155,5 +127,5 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-    }
+    }*/
 }

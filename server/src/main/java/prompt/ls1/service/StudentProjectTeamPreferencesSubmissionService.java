@@ -70,7 +70,7 @@ public class StudentProjectTeamPreferencesSubmissionService {
         final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
 
-        final Student student = studentRepository.findByPublicId(studentPublicId)
+        final Student student = studentRepository.findByPublicId(UUID.fromString(studentPublicId))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentProjectTeamPreferencesSubmission.getStudentId())));
 
         if (!student.getMatriculationNumber().equals(studentMatriculationNumber)) {
