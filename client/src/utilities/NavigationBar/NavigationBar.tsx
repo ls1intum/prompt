@@ -6,15 +6,17 @@ import {
   Switch,
   useMantineColorScheme,
   useMantineTheme,
-  Button,
   Center,
   Select,
   ActionIcon,
   SimpleGrid,
   Stack,
+  Text,
   Title,
   rem,
   getStylesRef,
+  Avatar,
+  Button,
 } from '@mantine/core'
 import {
   IconSun,
@@ -27,6 +29,7 @@ import {
   IconAppsFilled,
   IconLogout,
 } from '@tabler/icons-react'
+import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
@@ -144,7 +147,7 @@ export const DashboardWelcome = (): JSX.Element => {
   )
 }
 
-export const NavigationBar = (): JSX.Element => {
+export const NavigationBar = ({ keycloak }: { keycloak: Keycloak }): JSX.Element => {
   const { classes, cx } = useStyles()
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
@@ -156,6 +159,7 @@ export const NavigationBar = (): JSX.Element => {
   const selectedApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.currentState,
   )
+  const auth = useAppSelector((state) => state.auth)
   const location = useLocation()
   const [active, setActive] = useState(location.pathname)
 
@@ -221,16 +225,24 @@ export const NavigationBar = (): JSX.Element => {
         </Navbar.Section>
         <Navbar.Section className={classes.footer}>
           <Center>
-            <Button
-              leftIcon={<IconLogout />}
-              onClick={() => {
-                localStorage.removeItem('userId')
-                localStorage.removeItem('jwt_token')
-                navigate('/management/signin')
-              }}
-            >
-              Logout
-            </Button>
+            <Stack>
+              <Group>
+                <Avatar color='blue' radius='xl'>{`${auth.firstName.at(0) ?? ''}${
+                  auth.lastName.at(0) ?? ''
+                }`}</Avatar>
+                <Text c='dimmed' fw={500}>
+                  {auth.firstName} {auth.lastName}
+                </Text>
+              </Group>
+              <Button
+                leftIcon={<IconLogout />}
+                onClick={() => {
+                  void keycloak.logout({ redirectUri: window.location.origin + '/management' })
+                }}
+              >
+                Logout
+              </Button>
+            </Stack>
           </Center>
         </Navbar.Section>
       </Navbar>

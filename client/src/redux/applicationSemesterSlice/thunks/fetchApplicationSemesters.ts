@@ -7,13 +7,7 @@ export const fetchAllApplicationSemesters = createAsyncThunk(
 
   async (_, { rejectWithValue }) => {
     try {
-      return (
-        await axios.get(`${serverBaseUrl}/api/application-semesters`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-          },
-        })
-      ).data
+      return (await axios.get(`${serverBaseUrl}/api/application-semesters`, {})).data
     } catch (err) {
       return rejectWithValue(err)
     }

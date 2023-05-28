@@ -10,21 +10,39 @@ spring:
     #properties:
     #  hibernate:
     #    format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: prompt-server
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:}
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/prompt}
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8081/realms/prompt/protocol/openid-connect/certs}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/prompt}
+
+jwt:
+  auth:
+    converter:
+      resource-id: prompt-server
+      principal-attribute: preferred_username
 
 prompt:
   client:
-    host: ${CLIENT_HOST}
-  auth:
-    jwtSecret: 43cnz495jtc83t9n4
-    jwtExpirationMs: 900000
-    jwtRefreshExpirationMs: 604800000
+    host: ${CLIENT_HOST:localhost}
   atlassian:
-    username: ${ATLASSIAN_USERNAME}
-    password: ${ATLASSIAN_PASSWORD}
-    bitbucket-url: ${BITBUCKET_URL}
-    jira-url: ${JIRA_URL}
-    bamboo-url: ${BAMBOO_URL}
-    confluence-url: ${CONFLUENCE_URL}
+    username: ${ATLASSIAN_USERNAME:}
+    password: ${ATLASSIAN_PASSWORD:}
+    bitbucket-url: ${BITBUCKET_URL:}
+    jira-url: ${JIRA_URL:}
+    bamboo-url: ${BAMBOO_URL:}
+    confluence-url: ${CONFLUENCE_URL:}
 
 
 server:

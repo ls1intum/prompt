@@ -17,11 +17,7 @@ public class StudentApplicationNote implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(	name = "user_note",
-            joinColumns = @JoinColumn(name = "note_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private User author;
+    private String author;
 
     @CreationTimestamp
     @Column(columnDefinition = "TIMESTAMP")

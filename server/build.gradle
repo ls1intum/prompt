@@ -24,17 +24,19 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.security:spring-security-saml2-service-provider:6.1.0'
-	implementation 'org.keycloak:keycloak-spring-boot-starter:21.1.1'
 	implementation 'org.springframework.boot:spring-boot-starter-validation:3.0.4'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'com.github.fge:json-patch:1.7'
 	implementation 'com.konghq:unirest-java:3.14.2'
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:3.0.3.201309161630-r'
+
+	// Authentication
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.1.0'
+	implementation 'org.keycloak:keycloak-admin-client:21.1.1'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
