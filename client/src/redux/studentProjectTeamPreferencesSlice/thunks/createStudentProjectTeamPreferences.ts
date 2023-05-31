@@ -1,27 +1,28 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { serverBaseUrl } from '../../../service/configService'
+import { type StudentProjectTeamPreferenceSubmission } from '../studentProjectTeamPreferencesSlice'
 
 export const createStudentProjectTeamPreferences = createAsyncThunk(
-  'studentProjectTea/createProjectTeam',
+  'studentProjectTeamPreferencesSubmissions/createStudentProjectTeamPreferencesSubmission',
 
   async (
     {
-      applicationSemesterName,
-      studentId,
-      preferences,
+      studentPublicId,
+      studentMatriculationNumber,
+      studentProjectTeamPreferencesSubmission,
     }: {
-      applicationSemesterName: string
-      studentId: string
-      preferences: Map<string, number>
+      studentPublicId: string
+      studentMatriculationNumber: string
+      studentProjectTeamPreferencesSubmission: StudentProjectTeamPreferenceSubmission
     },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/project-team-preferences/${studentId}?applicationSemester=${applicationSemesterName}`,
-          preferences,
+          `${serverBaseUrl}/api/project-team-preferences/${studentPublicId}?studentMatriculationNumber=${studentMatriculationNumber}`,
+          studentProjectTeamPreferencesSubmission,
         )
       ).data
     } catch (err) {

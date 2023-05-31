@@ -26,11 +26,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/project-teams")
 public class ProjectTeamController {
-    @Autowired
-    private ApplicationSemesterService applicationSemesterService;
+    private final ApplicationSemesterService applicationSemesterService;
+    private final ProjectTeamService projectTeamService;
 
     @Autowired
-    private ProjectTeamService projectTeamService;
+    public ProjectTeamController(ApplicationSemesterService applicationSemesterService,
+                                 ProjectTeamService projectTeamService) {
+        this.applicationSemesterService = applicationSemesterService;
+        this.projectTeamService = projectTeamService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ProjectTeam>> getProjectTeamsByApplicationSemester(

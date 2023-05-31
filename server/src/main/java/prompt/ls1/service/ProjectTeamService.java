@@ -18,9 +18,12 @@ import java.util.UUID;
 
 @Service
 public class ProjectTeamService {
+    private final ProjectTeamRepository projectTeamRepository;
 
     @Autowired
-    private ProjectTeamRepository projectTeamRepository;
+    public ProjectTeamService(ProjectTeamRepository projectTeamRepository) {
+        this.projectTeamRepository = projectTeamRepository;
+    }
 
     public ProjectTeam create(final ProjectTeam projectTeam) {
         Optional<ProjectTeam> existingProjectTeam = projectTeamRepository.findFirstByName(projectTeam.getName());

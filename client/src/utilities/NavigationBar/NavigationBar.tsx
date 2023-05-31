@@ -2,7 +2,6 @@ import {
   Navbar,
   Card,
   Group,
-  ScrollArea,
   createStyles,
   Switch,
   useMantineColorScheme,
@@ -14,6 +13,8 @@ import {
   SimpleGrid,
   Stack,
   Title,
+  rem,
+  getStylesRef,
 } from '@mantine/core'
 import {
   IconSun,
@@ -26,51 +27,78 @@ import {
   IconAppsFilled,
   IconLogout,
 } from '@tabler/icons-react'
-import { NavigationBarLinksGroup } from './NavigationBarLinksGroup'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
 import { setCurrentState } from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
 import { WorkspaceSelectionDialog } from '../../instructor/ApplicationSemesterManager/WorkspaceSelectionDialog'
+import { useEffect, useState } from 'react'
 
 const navigationContents = [
   {
     label: 'Application Semester Management',
     icon: IconAppsFilled,
-    navigateTo: '/management/application-semesters',
+    link: '/management/application-semesters',
   },
-  {
-    label: 'Student Applications',
-    icon: IconNews,
-    navigateTo: '/management/student-applications',
-  },
-  {
-    label: 'Team Allocation',
-    icon: IconUsers,
-    navigateTo: '/management/team-allocation',
-  },
-  {
-    label: 'Infrastructure',
-    icon: IconDeviceDesktop,
-    navigateTo: '/management/infrastructure',
-  },
-  { label: 'Grading', icon: IconStairs, navigateTo: '/student-applications' },
-  { label: 'Artifacts', icon: IconCode, navigateTo: '/student-applications' },
+  { label: 'Student Applications', icon: IconNews, link: '/management/student-applications' },
+  { label: 'Team Allocation', icon: IconUsers, link: '/management/team-allocation' },
+  { label: 'Infrastructure', icon: IconDeviceDesktop, link: '/management/infrastructure' },
+  { label: 'Grading', icon: IconStairs, link: '/student-applications' },
+  { label: 'Artifacts', icon: IconCode, link: '/student-applications' },
 ]
 
 const useStyles = createStyles((theme) => ({
-  navbar: {
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-    height: '100vh',
-    width: '20vw',
+  header: {
+    paddingBottom: theme.spacing.md,
+    marginBottom: `calc(${theme.spacing.md} * 1.5)`,
+    borderBottom: `${rem(1)} solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
+    }`,
   },
 
-  links: {
-    marginLeft: '1vw',
+  footer: {
+    paddingTop: theme.spacing.md,
+    marginTop: theme.spacing.md,
+    borderTop: `${rem(1)} solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
+    }`,
   },
 
-  linksInner: {
-    paddingVertical: '3vh',
+  link: {
+    ...theme.fn.focusStyles(),
+    display: 'flex',
+    alignItems: 'center',
+    textDecoration: 'none',
+    fontSize: theme.fontSizes.sm,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: theme.radius.sm,
+    fontWeight: 500,
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+
+      [`& .${getStylesRef('icon')}`]: {
+        color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+      },
+    },
+  },
+
+  linkIcon: {
+    ref: getStylesRef('icon'),
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+    marginRight: theme.spacing.sm,
+  },
+
+  linkActive: {
+    '&, &:hover': {
+      backgroundColor: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background,
+      color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
+      [`& .${getStylesRef('icon')}`]: {
+        color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
+      },
+    },
   },
 }))
 
@@ -97,7 +125,7 @@ export const DashboardWelcome = (): JSX.Element => {
                   radius='md'
                   withBorder
                   onClick={() => {
-                    navigate(item.navigateTo)
+                    navigate(item.link)
                   }}
                 >
                   <Stack style={{ display: 'flex', alignItems: 'center' }}>
@@ -117,12 +145,9 @@ export const DashboardWelcome = (): JSX.Element => {
 }
 
 export const NavigationBar = (): JSX.Element => {
-  const { classes } = useStyles()
+  const { classes, cx } = useStyles()
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const links = navigationContents.map((item) => (
-    <NavigationBarLinksGroup {...item} key={item.label} />
-  ))
   const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const theme = useMantineTheme()
   const applicationSemesters = useAppSelector(
@@ -131,19 +156,33 @@ export const NavigationBar = (): JSX.Element => {
   const selectedApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.currentState,
   )
+  const location = useLocation()
+  const [active, setActive] = useState(location.pathname)
+
+  useEffect(() => {
+    setActive(location.pathname)
+  }, [location.pathname])
+
+  const linksContent = navigationContents.map((item) => (
+    <a
+      className={cx(classes.link, { [classes.linkActive]: item.link === active })}
+      href={item.link}
+      key={item.label}
+      onClick={(event) => {
+        event.preventDefault()
+        setActive(item.link)
+        navigate(item.link)
+      }}
+    >
+      <item.icon className={classes.linkIcon} stroke={1.5} />
+      <span>{item.label}</span>
+    </a>
+  ))
 
   return (
     <>
-      <Navbar
-        p='md'
-        className={classes.navbar}
-        width={{
-          sm: 300,
-          lg: 300,
-          base: 100,
-        }}
-      >
-        <Navbar.Section>
+      <Navbar height={'100vh'} width={{ sm: 300 }} p='md'>
+        <Navbar.Section grow>
           <Group position='center' my={20}>
             <Switch
               checked={colorScheme === 'dark'}
@@ -155,34 +194,32 @@ export const NavigationBar = (): JSX.Element => {
               offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
             />
           </Group>
+          {selectedApplicationSemester && (
+            <Navbar.Section style={{ margin: '5vh 0' }}>
+              <Select
+                searchable
+                label='Application Semester'
+                data={applicationSemesters.map((applicationSemester) => {
+                  return {
+                    value: applicationSemester.id.toString(),
+                    label: applicationSemester.semesterName,
+                  }
+                })}
+                value={selectedApplicationSemester.id.toString()}
+                onChange={(changedApplicationSemesterId: string) => {
+                  const changedApplicationSemester = applicationSemesters.find(
+                    (as) => as.id.toString() === changedApplicationSemesterId,
+                  )
+                  if (changedApplicationSemester) {
+                    void dispatch(setCurrentState(changedApplicationSemester))
+                  }
+                }}
+              />
+            </Navbar.Section>
+          )}
+          {linksContent}
         </Navbar.Section>
-        {selectedApplicationSemester && (
-          <Navbar.Section style={{ margin: '5vh 0' }}>
-            <Select
-              searchable
-              label='Application Semester'
-              data={applicationSemesters.map((applicationSemester) => {
-                return {
-                  value: applicationSemester.id.toString(),
-                  label: applicationSemester.semesterName,
-                }
-              })}
-              value={selectedApplicationSemester.id.toString()}
-              onChange={(changedApplicationSemesterId: string) => {
-                const changedApplicationSemester = applicationSemesters.find(
-                  (as) => as.id.toString() === changedApplicationSemesterId,
-                )
-                if (changedApplicationSemester) {
-                  void dispatch(setCurrentState(changedApplicationSemester))
-                }
-              }}
-            />
-          </Navbar.Section>
-        )}
-        <Navbar.Section grow className={classes.links} component={ScrollArea}>
-          <div className={classes.linksInner}>{links}</div>
-        </Navbar.Section>
-        <Navbar.Section>
+        <Navbar.Section className={classes.footer}>
           <Center>
             <Button
               leftIcon={<IconLogout />}

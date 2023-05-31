@@ -1,22 +1,46 @@
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { fetchStudentProjectTeamPreferences } from '../../../../redux/studentProjectTeamPreferencesSlice/thunks/fetchStudentProjectTeamPreferences'
-import { Button, Table, Tooltip } from '@mantine/core'
-import { IconDownload, IconTrash } from '@tabler/icons-react'
+import { Button, Group, Switch, Text, Tooltip, Transition, createStyles, px } from '@mantine/core'
+import {
+  IconBuilding,
+  IconChevronRight,
+  IconDownload,
+  IconTrash,
+  IconUser,
+} from '@tabler/icons-react'
 import { CSVLink } from 'react-csv'
 import { deleteStudentProjectTeamPreferences } from '../../../../redux/studentProjectTeamPreferencesSlice/thunks/deleteStudentProjectTeamPreferences'
+import { DataTable } from 'mantine-datatable'
+
+const useStyles = createStyles((theme) => ({
+  expandIcon: {
+    transition: 'transform 0.2s ease',
+  },
+  expandIconRotated: {
+    transform: 'rotate(90deg)',
+  },
+  employeeName: {
+    marginLeft: px(theme.spacing.xl) * 2,
+  },
+}))
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const { cx, classes } = useStyles()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const selectedApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.currentState,
   )
-  const studentProjectTeamPreferences = useAppSelector(
-    (state) => state.studentProjectTeamPreferences.studentProjectTeamPreferences,
+  const studentProjectTeamPreferencesSubmissions = useAppSelector(
+    (state) =>
+      state.studentProjectTeamPreferencesSubmissions.studentProjectTeamPreferencesSubmissions,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
+  const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
+  const [expandedStudentPreferences, setExpandedStudentPreferences] = useState<string[]>([])
+  const [inverseTableView, setInverseTableView] = useState(false)
 
   useEffect(() => {
     if (selectedApplicationSemester) {
@@ -26,12 +50,27 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'right', margin: '2vh 0', gap: '2vw' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'right',
+          alignItems: 'center',
+          margin: '2vh 0',
+          gap: '2vw',
+        }}
+      >
+        <Switch
+          label='Inverse Table Entries'
+          checked={inverseTableView}
+          onChange={(event) => {
+            setInverseTableView(event.currentTarget.checked)
+          }}
+        />
         <Tooltip label='Out of database space reasons it is recommended to clear student project team preferences after the team allocation process is completed.'>
           <Button
             leftIcon={<IconTrash />}
             variant='outline'
-            disabled={studentProjectTeamPreferences.length === 0}
+            disabled={studentProjectTeamPreferencesSubmissions.length === 0}
             onClick={() => {
               if (selectedApplicationSemester) {
                 void dispatch(
@@ -46,7 +85,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         <Button
           leftIcon={<IconDownload />}
           variant='filled'
-          disabled={studentProjectTeamPreferences.length === 0}
+          disabled={studentProjectTeamPreferencesSubmissions.length === 0}
           onClick={() => {
             downloadLinkRef.current?.link?.click()
           }}
@@ -55,45 +94,161 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         </Button>
       </div>
       <CSVLink
-        data={studentProjectTeamPreferences.map((stp) => {
-          return {
+        data={studentProjectTeamPreferencesSubmissions?.flatMap((stp) =>
+          stp.studentProjectTeamPreferences.map((p) => ({
             applicationSemesterId: stp.applicationSemesterId,
             studentId: stp.studentId,
-            projectTeamId: stp.projectTeamId,
-            priorityScore: stp.priorityScore,
-          }
-        })}
+            tumId: stp.student?.tumId,
+            projectTeamId: p.projectTeamId,
+            priorityScore: p.priorityScore,
+          })),
+        )}
         filename='data.csv'
         style={{ display: 'hidden' }}
         ref={downloadLinkRef}
         target='_blank'
       />
-      <Table>
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Project Team</th>
-            <th>Priority Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentProjectTeamPreferences.map((sp) => {
-            return (
-              <tr key={`${sp.studentId}${sp.projectTeamId}`}>
-                <td>{`${sp.student?.firstName ?? ''} ${sp.student?.lastName ?? ''}`}</td>
-                <td>
-                  {
-                    projectTeams.filter((pt) => {
-                      return pt.id === sp.projectTeamId
-                    })[0].customer
+      <Transition mounted={inverseTableView} transition='fade' duration={200}>
+        {(styles) => (
+          <DataTable
+            style={styles}
+            withBorder
+            withColumnBorders
+            highlightOnHover
+            noRecordsText='No records to show'
+            columns={[
+              {
+                accessor: 'student',
+                title: 'Student',
+                render: ({ student, id }) => (
+                  <Group spacing='xs'>
+                    <IconChevronRight
+                      size='0.9em'
+                      className={cx(classes.expandIcon, {
+                        [classes.expandIconRotated]: expandedStudentIds.includes(id ?? ''),
+                      })}
+                    />
+                    <IconUser size='0.9em' />
+                    <Text>{`${student?.firstName ?? ''} ${student?.lastName ?? ''} - ${
+                      student?.tumId ?? ''
+                    }`}</Text>
+                  </Group>
+                ),
+              },
+            ]}
+            records={studentProjectTeamPreferencesSubmissions}
+            rowExpansion={{
+              allowMultiple: true,
+              expanded: {
+                recordIds: expandedStudentIds,
+                onRecordIdsChange: setExpandedStudentIds,
+              },
+              content: (record) => (
+                <DataTable
+                  noHeader
+                  columns={[
+                    {
+                      accessor: 'projectTeamId',
+                      render: ({ projectTeamId }) => (
+                        <Group ml='lg' spacing='xs' noWrap>
+                          <IconBuilding size='0.9em' />
+                          <Text>
+                            {projectTeams.filter((p) => p.id === projectTeamId).at(0)?.customer}
+                          </Text>
+                        </Group>
+                      ),
+                    },
+                    { accessor: 'priorityScore', textAlignment: 'right', width: 200 },
+                  ]}
+                  records={
+                    studentProjectTeamPreferencesSubmissions
+                      .filter((spp) => spp.id === record.record.id)
+                      .at(0)?.studentProjectTeamPreferences
                   }
-                </td>
-                <td>{sp.priorityScore}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </Table>
+                />
+              ),
+            }}
+          />
+        )}
+      </Transition>
+      <Transition mounted={!inverseTableView} transition='fade' duration={200}>
+        {(styles) => (
+          <DataTable
+            style={styles}
+            withBorder
+            withColumnBorders
+            highlightOnHover
+            noRecordsText='No records to show'
+            columns={[
+              {
+                accessor: 'id',
+                title: 'Customer',
+                render: ({ id, customer }) => (
+                  <Group spacing='xs'>
+                    <IconChevronRight
+                      size='0.9em'
+                      className={cx(classes.expandIcon, {
+                        [classes.expandIconRotated]: expandedStudentPreferences.includes(id ?? ''),
+                      })}
+                    />
+                    <IconBuilding size='0.9em' />
+                    <Text>{customer}</Text>
+                  </Group>
+                ),
+              },
+            ]}
+            records={projectTeams}
+            rowExpansion={{
+              allowMultiple: true,
+              expanded: {
+                recordIds: expandedStudentPreferences,
+                onRecordIdsChange: setExpandedStudentPreferences,
+              },
+              content: (record) => (
+                <DataTable
+                  noHeader
+                  noRecordsText='No records to show'
+                  columns={[
+                    {
+                      accessor: 'student',
+                      render: ({ student }) => (
+                        <Group ml='lg' spacing='xs' noWrap>
+                          <IconBuilding size='0.9em' />
+                          <Text>
+                            {`${student?.firstName ?? ''} ${student?.lastName ?? ''} - ${
+                              student?.tumId ?? ''
+                            }`}
+                          </Text>
+                        </Group>
+                      ),
+                    },
+                    {
+                      accessor: 'priorityScore',
+                      render: ({ studentProjectTeamPreferences }) => (
+                        <Group ml='lg' spacing='xs' noWrap>
+                          <IconBuilding size='0.9em' />
+                          <Text>
+                            {`${
+                              studentProjectTeamPreferences
+                                .filter((p) => p.projectTeamId === record.record.id)
+                                .at(0)?.priorityScore ?? ''
+                            }`}
+                          </Text>
+                        </Group>
+                      ),
+                    },
+                  ]}
+                  records={studentProjectTeamPreferencesSubmissions.filter((spp) => {
+                    return spp.studentProjectTeamPreferences
+                      .map((p) => p.projectTeamId)
+                      .includes(record.record.id)
+                  })}
+                />
+              ),
+            }}
+          />
+        )}
+      </Transition>
     </div>
   )
 }

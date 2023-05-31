@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "student_application")
+@Table
 public class StudentApplication {
 
     @Id
@@ -17,8 +17,8 @@ public class StudentApplication {
 
     @ManyToOne
     @JoinTable(name = "student_student_application",
-            joinColumns = @JoinColumn(name = "student_application_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id"))
+            joinColumns = @JoinColumn(name = "student_application_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"))
     private Student student;
 
     @ManyToOne(targetEntity = ApplicationSemester.class)

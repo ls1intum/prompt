@@ -14,7 +14,11 @@ import java.util.UUID;
 public interface StudentApplicationRepository extends JpaRepository<StudentApplication, UUID> {
     @Transactional
     @Query(value="select sa from StudentApplication sa where sa.applicationSemester.id=?1")
-    List<StudentApplication> findAllByApplicationSemesterId(UUID applicationSemesterId);
+    List<StudentApplication> findAllByApplicationSemesterId(final UUID applicationSemesterId);
 
     Optional<StudentApplication> findById(final UUID studentApplicationId);
+
+    @Transactional
+    @Query(value="select sa from StudentApplication sa where sa.applicationSemester.id=?2 and sa.student.id=?1")
+    Optional<StudentApplication> findByStudentAndApplicationSemester(final UUID studentId, final UUID applicationSemesterId);
 }

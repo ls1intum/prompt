@@ -69,9 +69,9 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/student-applications").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/application-semesters").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/application-semesters/**").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/project-teams").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/project-team-preferences/**").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/project-team-preferences").permitAll().and()
                 .authorizeHttpRequests().requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated();
 

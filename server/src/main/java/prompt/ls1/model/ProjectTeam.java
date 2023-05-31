@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "project_team")
+@Table
 public class ProjectTeam implements Serializable {
 
     @Id

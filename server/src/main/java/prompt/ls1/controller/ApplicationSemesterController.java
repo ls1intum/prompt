@@ -12,28 +12,35 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.service.ApplicationSemesterService;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/application-semesters")
 public class ApplicationSemesterController {
+    private final ApplicationSemesterService applicationSemesterService;
+
     @Autowired
-    private ApplicationSemesterService applicationSemesterService;
+    public ApplicationSemesterController(ApplicationSemesterService applicationSemesterService) {
+        this.applicationSemesterService = applicationSemesterService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<ApplicationSemester>> getAllApplicationSemesters(@RequestParam(required = false)
-                                                                                    String applicationPeriodDate) throws ParseException{
-        if (applicationPeriodDate != null) {
-            return ResponseEntity.ok(applicationSemesterService.findAllWithApplicationPeriodIncludes(applicationPeriodDate));
-        }
+    public ResponseEntity<List<ApplicationSemester>> getAllApplicationSemesters() {
         return ResponseEntity.ok(applicationSemesterService.findAll());
+    }
+
+    @GetMapping ("/open")
+    public ResponseEntity<ApplicationSemester> getApplicationSemesterWithOpenApplicationPeriod() {
+        return applicationSemesterService.findWithOpenApplicationPeriod()
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open application period found."));
+
     }
 
     @PostMapping
