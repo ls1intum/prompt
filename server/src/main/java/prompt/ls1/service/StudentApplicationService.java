@@ -13,12 +13,10 @@ import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentApplication;
 import prompt.ls1.model.StudentApplicationNote;
-import prompt.ls1.model.User;
 import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentApplicationNoteRepository;
 import prompt.ls1.repository.StudentApplicationRepository;
 import prompt.ls1.repository.StudentRepository;
-import prompt.ls1.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +27,6 @@ public class StudentApplicationService {
     private final StudentApplicationRepository studentApplicationRepository;
     private final StudentApplicationNoteRepository studentApplicationNoteRepository;
     private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
     private final ProjectTeamRepository projectTeamRepository;
 
     @Autowired
@@ -37,12 +34,10 @@ public class StudentApplicationService {
             StudentApplicationRepository studentApplicationRepository,
             StudentApplicationNoteRepository studentApplicationNoteRepository,
             StudentRepository studentRepository,
-            UserRepository userRepository,
             ProjectTeamRepository projectTeamRepository) {
         this.studentApplicationRepository = studentApplicationRepository;
         this.studentApplicationNoteRepository = studentApplicationNoteRepository;
         this.studentRepository = studentRepository;
-        this.userRepository = userRepository;
         this.projectTeamRepository = projectTeamRepository;
     }
 
@@ -79,11 +74,6 @@ public class StudentApplicationService {
 
     public StudentApplication createNote(final UUID studentApplicationId, final StudentApplicationNote studentApplicationNote) {
         StudentApplication studentApplication = findById(studentApplicationId);
-
-        User user = userRepository.findById(studentApplicationNote.getAuthor().getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", studentApplicationNote.getAuthor().getId())));
-
-        studentApplicationNote.setAuthor(user);
         studentApplication.getNotes().add(studentApplicationNote);
         studentApplicationNoteRepository.save(studentApplicationNote);
 

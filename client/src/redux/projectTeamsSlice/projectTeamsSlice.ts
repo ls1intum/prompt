@@ -97,6 +97,5 @@ export const projectTeamsSlice = createSlice({
   },
 })
 
-// export const {} = studentApplicationsState.actions
 export default projectTeamsSlice.reducer
 export { type ProjectTeam, type ProjectTeamPatch }
