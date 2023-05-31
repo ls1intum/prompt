@@ -28,7 +28,7 @@ public class StudentProjectTeamPreference implements Serializable {
 
     private Integer priorityScore;
 
-    @Lob
+    @Lob  
     private String reason;
 
     @ManyToOne(fetch = FetchType.EAGER)

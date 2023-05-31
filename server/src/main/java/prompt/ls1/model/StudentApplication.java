@@ -31,6 +31,12 @@ public class StudentApplication {
 
     private String studyProgram;
 
+    private LanguageProficiency germanLanguageProficiency;
+
+    private LanguageProficiency englishLanguageProficiency;
+
+    private Set<Device> devices;
+
     @Lob
     private String experience;
 
@@ -57,5 +63,9 @@ public class StudentApplication {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "project_team_id")
     private ProjectTeam projectTeam;
+
+    @OneToOne
+    @MapsId
+    private StudentIntroCourseParticipation introCourseParticipation;
 
 }

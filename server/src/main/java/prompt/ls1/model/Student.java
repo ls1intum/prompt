@@ -28,7 +28,7 @@ public class Student implements Serializable {
     private String lastName;
 
     @Column
-    private String gender;
+    private Gender gender;
 
     @Column
     private String nationality;
