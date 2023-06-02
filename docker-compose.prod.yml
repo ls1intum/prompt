@@ -1,0 +1,77 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.10
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=valeryia.andraichuk@tum.de"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+
+  server:
+    image: "ghcr.io/ls1intum/prompt/prompt-server:latest"
+    container_name: orgatool-server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server.rule=Host(`prompt.ase.cit.tum.de`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.server.entrypoints=websecure"
+      - "traefik.http.routers.server.tls.certresolver=letsencrypt"
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8080"
+    environment:
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - CLIENT_HOST=${CLIENT_HOST}
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - KEYCLOAK_ISSUER_URI=${KEYCLOAK_ISSUER_URI}
+      - KEYCLOAK_JWK_SET_URI=${KEYCLOAK_JWK_SET_URI}
+
+  db:
+    image: "postgres:15.2-alpine"
+    container_name: db
+    environment:
+      - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
+      - POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -d $$SPRING_DATASOURCE_USERNAME -U $$SPRING_DATASOURCE_PASSWORD",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  client:
+    image: "ghcr.io/ls1intum/prompt/prompt-client:latest"
+    container_name: orgatool-client
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=Host(`prompt.ase.cit.tum.de`)"
+      - "traefik.http.routers.client.entrypoints=websecure"
+      - "traefik.http.routers.client.tls.certresolver=letsencrypt"
+    expose:
+      - "80"
+    environment:
+      - SERVER_HOST=${SERVER_HOST}
+      - KEYCLOAK_HOST=${KEYCLOAK_HOST}
+    depends_on:
+      - server
