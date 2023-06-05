@@ -16,16 +16,33 @@ jobs:
           - dockerfile: ./client/Dockerfile
             image: ghcr.io/ls1intum/prompt/prompt-client
             context: ./client
+            path: client
           - dockerfile: ./server/Dockerfile
             image: ghcr.io/ls1intum/prompt/prompt-server
             context: ./server
+            name: server
     outputs:
       image_tag: ${{ steps.output-tag.outputs.image_tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files in the client folder
+        id: changed-files-client-folder
+        uses: tj-actions/changed-files@v36
+        with:
+          files: client/*
+
+      - name: Get changed files in the server folder
+        id: changed-files-server-folder
+        uses: tj-actions/changed-files@v36
+        with:
+          files: server/*
 
       - name: Log in to the Container registry
+        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -33,11 +50,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
+        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
         uses: docker/setup-qemu-action@v2
         with:
           platforms: all
 
       - name: Install Docker Buildx
+        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
         id: buildx
         uses: docker/setup-buildx-action@v2
 
@@ -65,6 +84,7 @@ jobs:
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4
+        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true' && matrix.path == 'client') || (steps.changed-files-server-folder.outputs.any_changed == 'true' && matrix.path == 'server') }}
         env:
           IMAGE_TAG: ${{ steps.compute-tag.outputs.result }}
         with:
@@ -95,13 +115,30 @@ jobs:
           script: |
             docker compose -f docker-compose.prod.yml --env-file=.env.prod down --remove-orphans --rmi all
 
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docker-compose.prod.yml
+          path: docker-compose.prod.yml
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: docker-compose.prod.yml
+          path: distfiles
+
       - name: Copy Docker Compose File From Repo to VM Host
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          source: "docker-compose.prod.yml"
+          proxy_host: ${{ vars.PROXY_HOST }}
+          proxy_username: ${{ vars.PROXY_USERNAME }}
+          proxy_key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_port: ${{ vars.PROXY_PORT }}
+          source: "distfiles/docker-compose.prod.yml"
           target: /home/${{ vars.VM_USERNAME }}
 
       - name: Compute Tag
@@ -136,5 +173,5 @@ jobs:
           proxy_key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           proxy_port: ${{ vars.PROXY_PORT }}
           script: |
-            docker compose -f docker-compose.prod.yml --env-file=.env.prod -e IMAGE_TAG=${{ env.IMAGE_TAG }} up --pull=always -d
+            docker compose -f docker-compose.prod.yml --env-file=.env.prod up --pull=always -d
     
