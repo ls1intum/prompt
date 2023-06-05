@@ -75,6 +75,7 @@ jobs:
           tags: ${{ matrix.image }}:${{ env.IMAGE_VERSION }}
           build-args: |
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
+            "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
 
   deploy:
     needs: build
