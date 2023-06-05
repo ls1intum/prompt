@@ -76,6 +76,7 @@ jobs:
           build-args: |
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
             "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
+            "KEYCLOAK_REALM_NAME=${{ vars.KEYCLOAK_REALM_NAME }}"
 
   deploy:
     needs: build
