@@ -23,7 +23,7 @@ services:
       - ./letsencrypt:/letsencrypt
 
   server:
-    image: "ghcr.io/ls1intum/prompt/prompt-server:latest"
+    image: "ghcr.io/ls1intum/prompt/prompt-server:${IMAGE_TAG}"
     container_name: orgatool-server
     labels:
       - "traefik.enable=true"
@@ -65,7 +65,7 @@ services:
       retries: 5
 
   client:
-    image: "ghcr.io/ls1intum/prompt/prompt-client:latest"
+    image: "ghcr.io/ls1intum/prompt/prompt-client:${IMAGE_TAG}"
     container_name: orgatool-client
     labels:
       - "traefik.enable=true"
