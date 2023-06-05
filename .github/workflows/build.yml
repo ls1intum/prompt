@@ -102,7 +102,7 @@ jobs:
           username: ${{ vars.VM_USERNAME }}
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           source: docker-compose.prod.yml
-          target: /home/${{ vars.VM_USERNAME }}/docker-compose.prod.yml
+          target: /home/${{ vars.VM_USERNAME }}
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v0.1.10
