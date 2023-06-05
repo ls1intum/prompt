@@ -29,6 +29,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
   )
 
   useEffect(() => {
+    console.log(keycloakUrl)
     void keycloak
       .init({ onLoad: 'login-required' })
       .then((authenticated) => {
