@@ -55,8 +55,8 @@ public class WebSecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowedOrigins("http://localhost:3000",
-                        String.format("http://%s", clientHost),
-                        String.format("http://%s:80", clientHost)).allowedMethods("*");
+                        String.format("https://%s", clientHost),
+                        String.format("http://%s", clientHost)).allowedMethods("*");
             }
         };
     }
