@@ -9,7 +9,7 @@ import Keycloak from 'keycloak-js'
 import jwtDecode from 'jwt-decode'
 import { setAuthState } from '../redux/authSlice/authSlice'
 import { setCurrentState } from '../redux/applicationSemesterSlice/applicationSemesterSlice'
-import { keycloakUrl } from '../service/configService'
+import { keycloakRealmName, keycloakUrl } from '../service/configService'
 
 interface DashboardProps {
   child: React.ReactNode
@@ -17,7 +17,7 @@ interface DashboardProps {
 
 export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
   const keycloak = new Keycloak({
-    realm: 'prompt',
+    realm: keycloakRealmName,
     url: keycloakUrl,
     clientId: 'prompt-client',
   })
@@ -29,7 +29,6 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
   )
 
   useEffect(() => {
-    console.log(keycloakUrl)
     void keycloak
       .init({ onLoad: 'login-required' })
       .then((authenticated) => {

@@ -74,9 +74,6 @@ services:
       - "traefik.http.routers.client.tls.certresolver=letsencrypt"
     expose:
       - "80"
-    environment:
-      - SERVER_HOST=${SERVER_HOST}
-      - KEYCLOAK_HOST=${KEYCLOAK_HOST}
     depends_on:
       - server
 
