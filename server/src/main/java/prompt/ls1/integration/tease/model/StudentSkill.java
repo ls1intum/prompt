@@ -3,9 +3,8 @@ package prompt.ls1.integration.tease.model;
 import lombok.Data;
 
 @Data
-public class Skill {
+public class StudentSkill {
     private String id;
-    private String title;
-    private String description;
 
+    private String skillProficiencyLevel;
 }
