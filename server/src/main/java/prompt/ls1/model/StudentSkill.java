@@ -21,10 +21,6 @@ public class StudentSkill {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "student_application_id")
-    private StudentApplication studentApplication;
-
-    @ManyToOne
     @JoinColumn(name = "skill_id")
     private Skill skill;
 

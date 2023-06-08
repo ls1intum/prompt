@@ -2,14 +2,15 @@ import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { serverBaseUrl } from '../../../service/configService'
 
-export const deleteStudentProjectTeamPreferences = createAsyncThunk(
-  'studentProjectTeamPreferences/deleteStudentProjectTeamPreferences',
+export const toggleSkill = createAsyncThunk(
+  'skills/toggleSkill',
 
-  async (applicationSemesterName: string, { rejectWithValue }) => {
+  async (skillId: string, { rejectWithValue }) => {
     try {
       return (
-        await axios.delete(
-          `${serverBaseUrl}/api/project-team-preferences?applicationSemester=${applicationSemesterName}`,
+        await axios.post(
+          `${serverBaseUrl}/api/skills/${skillId}`,
+          {},
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

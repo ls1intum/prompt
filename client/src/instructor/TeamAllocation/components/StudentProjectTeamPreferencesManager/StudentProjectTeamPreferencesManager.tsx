@@ -1,7 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { useEffect, useRef, useState } from 'react'
-import { fetchStudentProjectTeamPreferences } from '../../../../redux/studentProjectTeamPreferencesSlice/thunks/fetchStudentProjectTeamPreferences'
 import { Button, Group, Switch, Text, Tooltip, Transition, createStyles, px } from '@mantine/core'
 import {
   IconBuilding,
@@ -11,8 +10,9 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 import { CSVLink } from 'react-csv'
-import { deleteStudentProjectTeamPreferences } from '../../../../redux/studentProjectTeamPreferencesSlice/thunks/deleteStudentProjectTeamPreferences'
+import { deleteStudentProjectTeamPreferences } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/deleteStudentProjectTeamPreferences'
 import { DataTable } from 'mantine-datatable'
+import { fetchStudentPostKickoffSubmissions } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
 
 const useStyles = createStyles((theme) => ({
   expandIcon: {
@@ -33,9 +33,8 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const selectedApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.currentState,
   )
-  const studentProjectTeamPreferencesSubmissions = useAppSelector(
-    (state) =>
-      state.studentProjectTeamPreferencesSubmissions.studentProjectTeamPreferencesSubmissions,
+  const studentPostKickoffSubmissions = useAppSelector(
+    (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
@@ -44,7 +43,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
 
   useEffect(() => {
     if (selectedApplicationSemester) {
-      void dispatch(fetchStudentProjectTeamPreferences(selectedApplicationSemester.semesterName))
+      void dispatch(fetchStudentPostKickoffSubmissions(selectedApplicationSemester.semesterName))
     }
   }, [selectedApplicationSemester])
 
@@ -70,7 +69,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           <Button
             leftIcon={<IconTrash />}
             variant='outline'
-            disabled={studentProjectTeamPreferencesSubmissions.length === 0}
+            disabled={studentPostKickoffSubmissions.length === 0}
             onClick={() => {
               if (selectedApplicationSemester) {
                 void dispatch(
@@ -85,7 +84,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         <Button
           leftIcon={<IconDownload />}
           variant='filled'
-          disabled={studentProjectTeamPreferencesSubmissions.length === 0}
+          disabled={studentPostKickoffSubmissions.length === 0}
           onClick={() => {
             downloadLinkRef.current?.link?.click()
           }}
@@ -94,10 +93,10 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         </Button>
       </div>
       <CSVLink
-        data={studentProjectTeamPreferencesSubmissions?.flatMap((stp) =>
+        data={studentPostKickoffSubmissions?.flatMap((stp) =>
           stp.studentProjectTeamPreferences.map((p) => ({
-            applicationSemesterId: stp.applicationSemesterId,
-            studentId: stp.studentId,
+            applicationSemesterId: selectedApplicationSemester?.id,
+            studentId: stp.student?.id,
             tumId: stp.student?.tumId,
             projectTeamId: p.projectTeamId,
             priorityScore: p.priorityScore,
@@ -136,7 +135,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                 ),
               },
             ]}
-            records={studentProjectTeamPreferencesSubmissions}
+            records={studentPostKickoffSubmissions}
             rowExpansion={{
               allowMultiple: true,
               expanded: {
@@ -161,9 +160,8 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                     { accessor: 'priorityScore', textAlignment: 'right', width: 200 },
                   ]}
                   records={
-                    studentProjectTeamPreferencesSubmissions
-                      .filter((spp) => spp.id === record.record.id)
-                      .at(0)?.studentProjectTeamPreferences
+                    studentPostKickoffSubmissions.filter((spp) => spp.id === record.record.id).at(0)
+                      ?.studentProjectTeamPreferences
                   }
                 />
               ),
@@ -238,7 +236,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                       ),
                     },
                   ]}
-                  records={studentProjectTeamPreferencesSubmissions.filter((spp) => {
+                  records={studentPostKickoffSubmissions.filter((spp) => {
                     return spp.studentProjectTeamPreferences
                       .map((p) => p.projectTeamId)
                       .includes(record.record.id)

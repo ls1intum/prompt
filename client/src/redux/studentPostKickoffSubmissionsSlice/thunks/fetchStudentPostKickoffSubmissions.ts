@@ -2,14 +2,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { serverBaseUrl } from '../../../service/configService'
 
-export const fetchStudentProjectTeamPreferences = createAsyncThunk(
-  'studentProjectTeamPreferences/fetchStudentProjectTeamPreferences',
+export const fetchStudentPostKickoffSubmissions = createAsyncThunk(
+  'studentPostKickoffSubmissions/fetchStudentPostKickoffSubmissions',
 
   async (applicationSemester: string, { rejectWithValue }) => {
     try {
       return (
         await axios.get(
-          `${serverBaseUrl}/api/project-team-preferences?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/post-kickoff-submissions?applicationSemester=${applicationSemester}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

@@ -35,27 +35,26 @@ public class ProjectTeamService {
     }
 
     public ProjectTeam update(UUID projectTeamId, JsonPatch patchProjectTeam) throws JsonPatchException, JsonProcessingException {
-        Optional<ProjectTeam> existingProjectTeam = projectTeamRepository.findById(projectTeamId);
-        if (existingProjectTeam.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId));
-        }
+        ProjectTeam existingProjectTeam = findById(projectTeamId);
 
-        ProjectTeam pathcedProjectTeam = applyPatchToProjectTeam(patchProjectTeam, existingProjectTeam.get());
-        return projectTeamRepository.save(pathcedProjectTeam);
+        ProjectTeam patchedProjectTeam = applyPatchToProjectTeam(patchProjectTeam, existingProjectTeam);
+        return projectTeamRepository.save(patchedProjectTeam);
     }
 
     public UUID delete(final UUID projectTeamId) {
-        Optional<ProjectTeam> existingProjectTeam = projectTeamRepository.findById(projectTeamId);
-        if (existingProjectTeam.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId));
-        }
+        ProjectTeam existingProjectTeam = findById(projectTeamId);
 
-        projectTeamRepository.delete(existingProjectTeam.get());
-        return existingProjectTeam.get().getId();
+        projectTeamRepository.delete(existingProjectTeam);
+        return existingProjectTeam.getId();
     }
 
     public List<ProjectTeam> findAllByApplicationSemesterId(final UUID applicationSemesterId) {
         return projectTeamRepository.findAllByApplicationSemesterId(applicationSemesterId);
+    }
+
+    private ProjectTeam findById(final UUID projectTeamId) {
+        return projectTeamRepository.findById(projectTeamId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
     }
 
     private ProjectTeam applyPatchToProjectTeam(

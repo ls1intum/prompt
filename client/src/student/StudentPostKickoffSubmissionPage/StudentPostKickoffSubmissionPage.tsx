@@ -31,10 +31,15 @@ import {
 import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
 import { useParams } from 'react-router-dom'
-import { createStudentProjectTeamPreferences } from '../../redux/studentProjectTeamPreferencesSlice/thunks/createStudentProjectTeamPreferences'
 import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { StudentExperienceLevel } from '../../redux/studentProjectTeamPreferencesSlice/studentProjectTeamPreferencesSlice'
+import {
+  SkillAssessmentSource,
+  SkillProficiency,
+  type StudentPostKickoffSubmission,
+} from '../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
+import { createStudentPostKickoffSubmission } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/createStudentPostKickoffSubmission'
+import { fetchSkills } from '../../redux/skillsSlice/thunks/fetchSkills'
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -55,27 +60,30 @@ const useStyles = createStyles((theme) => ({
   },
 }))
 
-export const StudentTeamProjectPreferencePage = (): JSX.Element => {
+export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const { classes, cx } = useStyles()
   const { studentPublicId } = useParams()
   const openApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.openApplicationSemester,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
+  const skills = useAppSelector((state) => state.skills.skills)
   const dispatch = useDispatch<AppDispatch>()
   const [state, handlers] = useListState<ProjectTeam>([])
   const [matriculationNumberModalOpen, setMatriculationNumberModalOpen] = useState(false)
   const [matriculationNumber, setMatriculationNumber] = useState('')
-  const form = useForm({
+  const form = useForm<StudentPostKickoffSubmission>({
     initialValues: {
       appleId: '',
       macBookDeviceId: '',
       iPhoneDeviceId: '',
       iPadDeviceId: '',
       appleWatchDeviceId: '',
-      selfReportedExperienceLevel: StudentExperienceLevel.BEGINNER,
-      reasonForHighPrio: '',
-      reasonForLowPrio: '',
+      selfReportedExperienceLevel: SkillProficiency.BEGINNER,
+      studentProjectTeamPreferences: [],
+      reasonForFirstChoice: '',
+      reasonForLastChoice: '',
+      studentSkills: [],
     },
     validate: {
       appleId: isNotEmpty('Please provide a valid Apple ID.'),
@@ -85,7 +93,21 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
 
   useEffect(() => {
     void dispatch(fetchApplicationSemestersWithOpenApplicationPeriod())
+    void dispatch(fetchSkills())
   }, [])
+
+  useEffect(() => {
+    form.setValues({
+      ...form.values,
+      studentSkills: skills.map((skill) => {
+        return {
+          skill,
+          skillAssessmentSource: SkillAssessmentSource.STUDENT,
+          skillProficiency: SkillProficiency.BEGINNER,
+        }
+      }),
+    })
+  }, [skills])
 
   useEffect(() => {
     if (openApplicationSemester) {
@@ -144,9 +166,9 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
         onSubmit={setMatriculationNumber}
       />
       <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
-        <Title order={2}>Project Team Preferences</Title>
+        <Title order={2}>Kickoff Submission Form</Title>
       </Center>
-      <Container size='50vw' style={{ padding: '3vh' }}>
+      <Container size='70vw' style={{ padding: '3vh' }}>
         <Stack style={{ paddingBottom: '5vh' }}>
           <TextInput
             label='Apple ID'
@@ -185,11 +207,30 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
             searchable
             label='Experience level'
             placeholder='How experience are you with SwiftUI?'
-            data={Object.keys(StudentExperienceLevel).filter(
-              (option: any) => typeof StudentExperienceLevel[option] !== 'string',
-            )}
+            data={Object.keys(SkillProficiency).map((key) => {
+              return {
+                label: SkillProficiency[key as keyof typeof SkillProficiency],
+                value: key,
+              }
+            })}
             {...form.getInputProps('selfReportedExperienceLevel')}
           />
+          {skills.map((skill, idx) => (
+            <Select
+              key={skill.id}
+              withAsterisk
+              required
+              label={skill.title}
+              placeholder={skill.description}
+              data={Object.keys(SkillProficiency).map((key) => {
+                return {
+                  label: SkillProficiency[key as keyof typeof SkillProficiency],
+                  value: key,
+                }
+              })}
+              {...form.getInputProps('studentSkills.' + idx.toString() + '.skillProficiency')}
+            />
+          ))}
         </Stack>
         <DragDropContext
           onDragEnd={({ destination, source }: any) => {
@@ -224,19 +265,19 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
             autosize
             minRows={5}
             withAsterisk
-            label='Reason for 1st Choice'
+            label='Reason for the First Choice'
             placeholder='Reason for high priority'
             required
-            {...form.getInputProps('reasonForHighPrio')}
+            {...form.getInputProps('reasonForFirstChoice')}
           />
           <Textarea
             autosize
             minRows={5}
             withAsterisk
-            label='Reason for Last Choice'
+            label='Reason for the Last Choice'
             placeholder='Reason for low priority'
             required
-            {...form.getInputProps('reasonForLowPrio')}
+            {...form.getInputProps('reasonForLastChoice')}
           />
         </Stack>
       </Container>
@@ -253,19 +294,15 @@ export const StudentTeamProjectPreferencePage = (): JSX.Element => {
 
               if (openApplicationSemester) {
                 void dispatch(
-                  createStudentProjectTeamPreferences({
+                  createStudentPostKickoffSubmission({
                     studentPublicId,
                     studentMatriculationNumber: matriculationNumber,
-                    studentProjectTeamPreferencesSubmission: {
-                      appleId: form.values.appleId,
-                      studentId: '',
-                      applicationSemesterId: openApplicationSemester.id,
-                      selfReportedExperienceLevel: form.values.selfReportedExperienceLevel,
+                    studentPostKickoffSubmission: {
+                      ...form.values,
                       studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
                         return {
                           projectTeamId: projectTeam.id,
                           priorityScore,
-                          reason: '',
                         }
                       }),
                     },

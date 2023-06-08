@@ -42,7 +42,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
             student.tumId
           } ${student.matriculationNumber}`.includes(searchQuery)
         })
-        .filter((studentApplication) => (showOnlyNotAssessed ? !studentApplication.assessed : true))
+        .filter((studentApplication) =>
+          showOnlyNotAssessed ? !studentApplication.studentApplicationAssessment.assessed : true,
+        )
         .slice(from, to),
     )
   }, [studentApplications, tablePageSize, tablePage, searchQuery, showOnlyNotAssessed])
@@ -126,8 +128,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
             accessor: 'applicationStatus',
             title: <Text>Application Status</Text>,
             render: (studentApplication) => {
-              const isAccepted = studentApplication.accepted
-              const isAssessed = studentApplication.assessed
+              const isAccepted = studentApplication.studentApplicationAssessment.accepted
+              const isAssessed = studentApplication.studentApplicationAssessment.assessed
               return (
                 <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
                   {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}

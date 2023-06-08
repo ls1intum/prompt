@@ -10,11 +10,6 @@ export const fetchProjectTeams = createAsyncThunk(
       return (
         await axios.get(
           `${serverBaseUrl}/api/project-teams?applicationSemester=${applicationSemester}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-            },
-          },
         )
       ).data
     } catch (err) {

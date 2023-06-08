@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.model.StudentApplication;
-import prompt.ls1.model.StudentApplicationNote;
+import prompt.ls1.model.InstructorComment;
 import prompt.ls1.service.ApplicationSemesterService;
 import prompt.ls1.service.StudentApplicationService;
 
@@ -56,15 +56,23 @@ public class StudentApplicationController {
     }
 
     @PatchMapping(path = "/{studentApplicationId}", consumes = "application/json-path+json")
-    public ResponseEntity<StudentApplication> updateProjectTeam(@PathVariable UUID studentApplicationId, @RequestBody JsonPatch patchStudentApplication)
+    public ResponseEntity<StudentApplication> updateProjectTeam(@PathVariable final UUID studentApplicationId,
+                                                                @RequestBody JsonPatch patchStudentApplication)
             throws JsonPatchException, JsonProcessingException {
         return ResponseEntity.ok(studentApplicationService.update(studentApplicationId, patchStudentApplication));
     }
 
-    @PostMapping("/{studentApplicationId}/notes")
+    @PatchMapping(path = "/{studentApplicationId}/assessment", consumes = "application/json-path+json")
+    public ResponseEntity<StudentApplication> updateStudentApplicationAssessment(@PathVariable final UUID studentApplicationId,
+                                                                                 @RequestBody JsonPatch patchStudentApplicationAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        return ResponseEntity.ok(studentApplicationService.updateStudentApplicationAssessment(studentApplicationId, patchStudentApplicationAssessment));
+    }
+
+    @PostMapping("/{studentApplicationId}/instructor-comments")
     public ResponseEntity<StudentApplication> createNote(@PathVariable UUID studentApplicationId,
-                                     @RequestBody StudentApplicationNote studentApplicationNote) {
-        return ResponseEntity.ok(studentApplicationService.createNote(studentApplicationId, studentApplicationNote));
+                                     @RequestBody InstructorComment instructorComment) {
+        return ResponseEntity.ok(studentApplicationService.createInstructorComment(studentApplicationId, instructorComment));
     }
 
     @PostMapping(path = "/{studentApplicationId}/project-team/{projectTeamId}")

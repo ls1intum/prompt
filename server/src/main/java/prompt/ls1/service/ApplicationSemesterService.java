@@ -76,20 +76,17 @@ public class ApplicationSemesterService {
     }
 
     public ApplicationSemester findBySemesterName(final String applicationSemesterName) {
-        Optional<ApplicationSemester> applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName);
-        if (applicationSemester.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName));
-        }
-
-        return applicationSemester.get();
+        return applicationSemesterRepository.findBySemesterName(applicationSemesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
     }
 
     public List<ApplicationSemester> findAll() {
         return applicationSemesterRepository.findAll();
     }
 
-    public Optional<ApplicationSemester> findWithOpenApplicationPeriod() {
-        return applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date());
+    public ApplicationSemester findWithOpenApplicationPeriod() {
+        return applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("Application semester with open application period not found."));
     }
 
     private ApplicationSemester applyPatchToApplicationSemester(

@@ -5,7 +5,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ManagementConsole } from './instructor/ManagementConsole'
 import { StudentApplicationOverview } from './instructor/StudentApplicationsView/StudentApplicationOverview'
 import { StudentApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage'
-import { StudentTeamProjectPreferencePage } from './student/StudentProjectTeamPreferencesPage/StudentTeamProjectPreferencePage'
+import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
 import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
 import { ApplicationSemesterManager } from './instructor/ApplicationSemesterManager/ApplicationSemesterManager'
 import { InfrastructureManagement } from './instructor/InfrastructureManagement/InstrastructureManagement'
@@ -48,8 +48,8 @@ export const App = (): JSX.Element => {
               />
               <Route path='/' element={<StudentApplicationSubmissionPage />} />
               <Route
-                path='/preferences/:studentId'
-                element={<StudentTeamProjectPreferencePage />}
+                path='/kick-off/:studentPublicId'
+                element={<StudentTeamPostKickoffSubmissionPage />}
               />
             </Routes>
           </BrowserRouter>

@@ -4,7 +4,8 @@ import authReducer from './authSlice/authSlice'
 import applicationSemesterReducer from './applicationSemesterSlice/applicationSemesterSlice'
 import studentApplicationsReducer from './studentApplicationSlice/studentApplicationSlice'
 import projectTeamsReducer from './projectTeamsSlice/projectTeamsSlice'
-import studentProjectTeamPreferencesSubmissionsReducer from './studentProjectTeamPreferencesSlice/studentProjectTeamPreferencesSlice'
+import studentPostKickoffSubmissionsReducer from './studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
+import skillsReducer from './skillsSlice/skillsSlice'
 
 const store = configureStore({
   reducer: {
@@ -12,7 +13,8 @@ const store = configureStore({
     applicationSemester: applicationSemesterReducer,
     studentApplications: studentApplicationsReducer,
     projectTeams: projectTeamsReducer,
-    studentProjectTeamPreferencesSubmissions: studentProjectTeamPreferencesSubmissionsReducer,
+    studentPostKickoffSubmissions: studentPostKickoffSubmissionsReducer,
+    skills: skillsReducer,
   },
 })
 

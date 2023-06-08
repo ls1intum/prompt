@@ -25,11 +25,11 @@ public class StudentApplication {
     @JoinColumn(name ="application_semester_id", referencedColumnName = "id")
     private ApplicationSemester applicationSemester;
 
-    private String studyDegree;
+    private StudyDegree studyDegree;
 
     private Short currentSemester;
 
-    private String studyProgram;
+    private StudyProgram studyProgram;
 
     private LanguageProficiency germanLanguageProficiency;
 
@@ -43,29 +43,20 @@ public class StudentApplication {
     @Lob
     private String motivation;
 
-    private Boolean suggestedAsCoach;
-
-    private Boolean suggestedAsTutor;
-
-    private Boolean blockedByPM;
-
-    private String reasonForBlockedByPM;
-
-    private Integer assessmentScore;
-
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
-    private Set<StudentApplicationNote> notes;
-
-    private Boolean assessed;
-
-    private Boolean accepted;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_application_assessment_id")
+    private StudentApplicationAssessment studentApplicationAssessment;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "project_team_id")
     private ProjectTeam projectTeam;
 
-    @OneToOne
-    @MapsId
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_intro_course_participation_id")
     private StudentIntroCourseParticipation introCourseParticipation;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_post_kickoff_submission_id")
+    private StudentPostKickoffSubmission studentPostKickOffSubmission;
 
 }

@@ -22,4 +22,6 @@ public class Skill {
 
     private String description;
 
+    private Boolean active;
+
 }

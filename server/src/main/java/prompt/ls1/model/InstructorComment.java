@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table
-public class StudentApplicationNote implements Serializable {
+public class InstructorComment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -25,9 +25,6 @@ public class StudentApplicationNote implements Serializable {
 
     @Lob
     @Column
-    private String comment;
+    private String text;
 
-    @ManyToOne()
-    @JoinColumn(name = "student_application_id")
-    private StudentApplication studentApplication;
 }
