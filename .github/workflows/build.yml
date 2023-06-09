@@ -20,7 +20,7 @@ jobs:
           - dockerfile: ./server/Dockerfile
             image: ghcr.io/ls1intum/prompt/prompt-server
             context: ./server
-            name: server
+            path: server
     outputs:
       image_tag: ${{ steps.output-tag.outputs.image_tag }}
     steps:
