@@ -27,7 +27,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   useEffect(() => {
     if (selectedApplicationSemester) {
-      void dispatch(fetchStudentApplications(selectedApplicationSemester.semesterName))
+      void dispatch(
+        fetchStudentApplications({ applicationSemester: selectedApplicationSemester.semesterName }),
+      )
     }
   }, [selectedApplicationSemester])
 

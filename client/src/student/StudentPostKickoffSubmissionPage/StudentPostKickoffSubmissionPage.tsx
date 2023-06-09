@@ -30,7 +30,6 @@ import {
 } from '@mantine/core'
 import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
-import { useParams } from 'react-router-dom'
 import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
 import { isNotEmpty, useForm } from '@mantine/form'
 import {
@@ -62,7 +61,7 @@ const useStyles = createStyles((theme) => ({
 
 export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const { classes, cx } = useStyles()
-  const { studentPublicId } = useParams()
+  const [studentId, setStudentId] = useState('')
   const openApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.openApplicationSemester,
   )
@@ -70,8 +69,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const skills = useAppSelector((state) => state.skills.skills)
   const dispatch = useDispatch<AppDispatch>()
   const [state, handlers] = useListState<ProjectTeam>([])
-  const [matriculationNumberModalOpen, setMatriculationNumberModalOpen] = useState(false)
-  const [matriculationNumber, setMatriculationNumber] = useState('')
+  const [studentVerificationDialogOpened, setStudentVerificationDialogOpened] = useState(false)
   const form = useForm<StudentPostKickoffSubmission>({
     initialValues: {
       appleId: '',
@@ -87,6 +85,9 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     },
     validate: {
       appleId: isNotEmpty('Please provide a valid Apple ID.'),
+      selfReportedExperienceLevel: isNotEmpty('Please state your experience level.'),
+      reasonForFirstChoice: isNotEmpty('Please state the reason behind your first choice.'),
+      reasonForLastChoice: isNotEmpty('Please state the reason behind your last choice.'),
     },
     validateInputOnChange: true,
   })
@@ -120,10 +121,10 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   }, [projectTeams])
 
   useEffect(() => {
-    if (!matriculationNumber) {
-      setMatriculationNumberModalOpen(true)
+    if (!studentId) {
+      setStudentVerificationDialogOpened(true)
     }
-  }, [matriculationNumber])
+  }, [studentId])
 
   const items = state.map((item, index) => (
     <Draggable key={item.id.toString()} index={index} draggableId={item.id.toString()}>
@@ -159,11 +160,11 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   return (
     <div style={{ margin: '5vh' }}>
       <ProjectTeamPreferencesSubmissionCodeModal
-        open={matriculationNumberModalOpen}
+        open={studentVerificationDialogOpened}
         onClose={() => {
-          setMatriculationNumberModalOpen(false)
+          setStudentVerificationDialogOpened(false)
         }}
-        onSubmit={setMatriculationNumber}
+        onSubmit={setStudentId}
       />
       <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
         <Title order={2}>Kickoff Submission Form</Title>
@@ -232,34 +233,40 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
             />
           ))}
         </Stack>
-        <DragDropContext
-          onDragEnd={({ destination, source }: any) => {
-            handlers.reorder({ from: source.index, to: destination?.index || 0 })
-          }}
-        >
-          <Droppable droppableId='dnd-list' direction='vertical'>
-            {(provided: {
-              droppableProps: JSX.IntrinsicAttributes &
-                ClassAttributes<HTMLDivElement> &
-                HTMLAttributes<HTMLDivElement>
-              innerRef: LegacyRef<HTMLDivElement> | undefined
-              placeholder:
-                | string
-                | number
-                | boolean
-                | ReactElement<any, string | JSXElementConstructor<any>>
-                | ReactFragment
-                | ReactPortal
-                | null
-                | undefined
-            }) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {items}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <Stack>
+          <Text c='dimmed' ta='center' fz='sm'>
+            Please order the projects according to your preferences by dragging the boxes below up
+            and down.
+          </Text>
+          <DragDropContext
+            onDragEnd={({ destination, source }: any) => {
+              handlers.reorder({ from: source.index, to: destination?.index || 0 })
+            }}
+          >
+            <Droppable droppableId='dnd-list' direction='vertical'>
+              {(provided: {
+                droppableProps: JSX.IntrinsicAttributes &
+                  ClassAttributes<HTMLDivElement> &
+                  HTMLAttributes<HTMLDivElement>
+                innerRef: LegacyRef<HTMLDivElement> | undefined
+                placeholder:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | ReactFragment
+                  | ReactPortal
+                  | null
+                  | undefined
+              }) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {items}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </Stack>
         <Stack>
           <Textarea
             autosize
@@ -286,7 +293,8 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
           variant='filled'
           disabled={!openApplicationSemester || !form.isValid()}
           onClick={() => {
-            if (studentPublicId && matriculationNumber) {
+            console.log(studentId)
+            if (studentId) {
               const preferencesMap = new Map()
               state.forEach((preference, index) => {
                 preferencesMap.set(preference.id, index)
@@ -295,8 +303,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
               if (openApplicationSemester) {
                 void dispatch(
                   createStudentPostKickoffSubmission({
-                    studentPublicId,
-                    studentMatriculationNumber: matriculationNumber,
+                    studentId,
                     studentPostKickoffSubmission: {
                       ...form.values,
                       studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {

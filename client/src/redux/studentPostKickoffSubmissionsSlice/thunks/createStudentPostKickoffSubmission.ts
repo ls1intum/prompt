@@ -8,12 +8,10 @@ export const createStudentPostKickoffSubmission = createAsyncThunk(
 
   async (
     {
-      studentPublicId,
-      studentMatriculationNumber,
+      studentId,
       studentPostKickoffSubmission,
     }: {
-      studentPublicId: string
-      studentMatriculationNumber: string
+      studentId: string
       studentPostKickoffSubmission: StudentPostKickoffSubmission
     },
     { rejectWithValue },
@@ -21,7 +19,7 @@ export const createStudentPostKickoffSubmission = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/post-kickoff-submissions/${studentPublicId}?studentMatriculationNumber=${studentMatriculationNumber}`,
+          `${serverBaseUrl}/api/post-kickoff-submissions/${studentId}`,
           studentPostKickoffSubmission,
         )
       ).data

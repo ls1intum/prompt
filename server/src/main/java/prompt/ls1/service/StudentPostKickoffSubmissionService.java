@@ -38,22 +38,7 @@ public class StudentPostKickoffSubmissionService {
         this.applicationSemesterRepository = applicationSemesterRepository;
     }
 
-    public List<StudentPostKickoffSubmission> getByApplicationSemester(final String applicationSemesterName) {
-        final ApplicationSemester applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
-
-        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByApplicationSemesterId(applicationSemester.getId());
-
-        return studentApplications
-                .stream().map(sa -> {
-                    sa.getStudentPostKickOffSubmission().setStudent(sa.getStudent());
-                    return sa.getStudentPostKickOffSubmission();
-                }).toList();
-    }
-
-    public StudentPostKickoffSubmission create(final String studentPublicId,
-                                               final String studentMatriculationNumber,
-                                               StudentPostKickoffSubmission studentPostKickOffSubmission) {
+    public UUID verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
         final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
 
@@ -67,6 +52,48 @@ public class StudentPostKickoffSubmissionService {
         final StudentApplication studentApplication = studentApplicationRepository
                 .findByStudentAndApplicationSemester(student.getId(), applicationSemester.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
+
+        if (!studentApplication.getStudentApplicationAssessment().getAccepted()) {
+            throw new ResourceInvalidParametersException("No student application with provided parameters found.");
+        }
+
+        if (studentApplication.getStudentPostKickOffSubmission() != null) {
+            throw new ResourceConflictException("Student post kickoff submission already exists.");
+        }
+
+        return student.getId();
+    }
+
+    public List<StudentPostKickoffSubmission> getByApplicationSemester(final String applicationSemesterName) {
+        final ApplicationSemester applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
+
+        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByApplicationSemesterId(applicationSemester.getId());
+
+        return studentApplications
+                .stream()
+                .filter(sa -> sa.getStudentPostKickOffSubmission() != null)
+                .map(sa -> {
+                    sa.getStudentPostKickOffSubmission().setStudent(sa.getStudent());
+                    return sa.getStudentPostKickOffSubmission();
+                }).toList();
+    }
+
+    public StudentPostKickoffSubmission create(final String studentId,
+                                               StudentPostKickoffSubmission studentPostKickOffSubmission) {
+        final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
+
+        final Student student = studentRepository.findById(UUID.fromString(studentId))
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentId)));
+
+        final StudentApplication studentApplication = studentApplicationRepository
+                .findByStudentAndApplicationSemester(student.getId(), applicationSemester.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
+
+        if (!studentApplication.getStudentApplicationAssessment().getAccepted()) {
+            throw new ResourceInvalidParametersException("No student application with provided parameters found.");
+        }
 
        if (studentApplication.getStudentPostKickOffSubmission() != null) {
            throw new ResourceConflictException(String.format("Student preferences submission for student with id %s already exists.", student.getId()));
