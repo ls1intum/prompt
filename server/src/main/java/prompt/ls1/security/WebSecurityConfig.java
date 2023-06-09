@@ -39,9 +39,13 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/student-applications").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/skills").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/application-semesters/**").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/project-teams").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/project-team-preferences/**").permitAll()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/post-kickoff-submissions/**").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/v1/students").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/v1/skills").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/v1/allocation").permitAll()
                 .anyRequest().authenticated().and().oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         http.oauth2ResourceServer()
                 .jwt()

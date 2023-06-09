@@ -15,22 +15,27 @@ import {
   Loader,
   Center,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { isNotEmpty, useForm } from '@mantine/form'
 import LS1Logo from '../static/ls1logo.png'
 import { useEffect, useState } from 'react'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import {
-  type StudentApplicationPatch,
   type StudentApplication,
+  LanguageProficiency,
+  Gender,
+  StudyDegree,
+  StudyProgram,
+  Device,
 } from '../redux/studentApplicationSlice/studentApplicationSlice'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
-import { createStudentApplicationNote } from '../redux/studentApplicationSlice/thunks/createStudentApplicationNote'
+import { createInstructorComment } from '../redux/studentApplicationSlice/thunks/createInstructorComment'
 import { createStudentApplication } from '../redux/studentApplicationSlice/thunks/createStudentApplication'
 import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
-import { updateStudentApplication } from '../redux/studentApplicationSlice/thunks/updateStudentApplication'
 import { StudentApplicationComment } from './StudentApplicationComment'
+import { type Patch } from '../service/configService'
+import { updateStudentApplicationAssessment } from '../redux/studentApplicationSlice/thunks/updateStudentApplicationAssessment'
 
 export enum StudentApplicationAccessMode {
   INSTRUCTOR,
@@ -62,11 +67,15 @@ export const StudentApplicationForm = ({
   const openApplicationSemester = useAppSelector(
     (state) => state.applicationSemester.openApplicationSemester,
   )
+  const auth = useAppSelector((state) => state.auth)
   const loading = useAppSelector((state) => state.applicationSemester.status)
   const [note, setNote] = useState('')
   const form = useForm<StudentApplication>({
     initialValues: studentApplication
-      ? { ...studentApplication }
+      ? {
+          ...studentApplication,
+          studentApplicationAssessment: { ...studentApplication.studentApplicationAssessment },
+        }
       : {
           id: '',
           student: {
@@ -78,21 +87,26 @@ export const StudentApplicationForm = ({
             firstName: '',
             lastName: '',
             nationality: '',
-            gender: '',
+            gender: Gender.PREFER_NOT_TO_SAY,
           },
-          studyDegree: '',
-          studyProgram: '',
+          studyDegree: StudyDegree.BACHELOR,
+          studyProgram: StudyProgram.COMPUTER_SCIENCE,
           currentSemester: '',
+          englishLanguageProficiency: LanguageProficiency.A1A2,
+          germanLanguageProficiency: LanguageProficiency.A1A2,
           motivation: '',
           experience: '',
-          notes: [],
-          suggestedAsCoach: false,
-          suggestedAsTutor: false,
-          blockedByPM: false,
-          reasonForBlockedByPM: '',
-          assessmentScore: 0,
-          assessed: false,
-          accepted: false,
+          devices: [],
+          studentApplicationAssessment: {
+            instructorComments: [],
+            suggestedAsCoach: false,
+            suggestedAsTutor: false,
+            blockedByPM: false,
+            reasonForBlockedByPM: '',
+            assessmentScore: 0,
+            assessed: false,
+            accepted: false,
+          },
           projectTeam: undefined,
         },
     validateInputOnBlur: true,
@@ -101,11 +115,14 @@ export const StudentApplicationForm = ({
         tumId: (value) =>
           /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value) ? null : 'This is not a valid TUM ID',
         email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+        gender: isNotEmpty('Gender cannot be empty.'),
       },
       motivation: (value) =>
         value.length <= 500 ? null : 'The maximum number of characters is 500',
       experience: (value) =>
         value.length <= 500 ? null : 'The maximum number of characters is 500',
+      englishLanguageProficiency: isNotEmpty('Please state your English language proficiency'),
+      germanLanguageProficiency: isNotEmpty('Please state your German language proficiency'),
     },
   })
 
@@ -202,11 +219,12 @@ export const StudentApplicationForm = ({
                     required
                     label='Gender'
                     placeholder='Gender'
-                    data={[
-                      { value: 'M', label: 'Male' },
-                      { value: 'F', label: 'Female' },
-                      { value: '-', label: 'Prefer not to say' },
-                    ]}
+                    data={Object.keys(Gender).map((key) => {
+                      return {
+                        label: Gender[key as keyof typeof Gender],
+                        value: key,
+                      }
+                    })}
                     {...form.getInputProps('student.gender')}
                   />
                   <Select
@@ -235,10 +253,12 @@ export const StudentApplicationForm = ({
                     required
                     label='Study Degree'
                     placeholder='Study Degree'
-                    data={[
-                      { value: 'ma', label: 'Master' },
-                      { value: 'ba', label: 'Bachelor' },
-                    ]}
+                    data={Object.keys(StudyDegree).map((key) => {
+                      return {
+                        label: StudyDegree[key as keyof typeof StudyDegree],
+                        value: key,
+                      }
+                    })}
                     {...form.getInputProps('studyDegree')}
                   />
                   <Select
@@ -247,12 +267,12 @@ export const StudentApplicationForm = ({
                     required
                     label='Study Program'
                     placeholder='Study Program'
-                    data={[
-                      { value: 'Information Systems', label: 'Information Systems' },
-                      { value: 'Computer Science', label: 'Computer Science' },
-                      { value: 'Game Engineering', label: 'Game Engineering' },
-                      { value: 'Management and Technology', label: 'Management and Technology' },
-                    ]}
+                    data={Object.keys(StudyProgram).map((key) => {
+                      return {
+                        label: StudyProgram[key as keyof typeof StudyProgram],
+                        value: key,
+                      }
+                    })}
                     {...form.getInputProps('studyProgram')}
                   />
                   <TextInput
@@ -263,6 +283,36 @@ export const StudentApplicationForm = ({
                     placeholder='Current semester'
                     label='Current Semester'
                     {...form.getInputProps('currentSemester')}
+                  />
+                </Group>
+                <Group grow>
+                  <Select
+                    required
+                    withAsterisk
+                    disabled={accessMode === StudentApplicationAccessMode.INSTRUCTOR}
+                    data={Object.keys(LanguageProficiency).map((key) => {
+                      return {
+                        label: LanguageProficiency[key as keyof typeof LanguageProficiency],
+                        value: key,
+                      }
+                    })}
+                    label='English Language Proficiency'
+                    placeholder='English language proficiency'
+                    {...form.getInputProps('englishLanguageProficiency')}
+                  />
+                  <Select
+                    required
+                    withAsterisk
+                    disabled={accessMode === StudentApplicationAccessMode.INSTRUCTOR}
+                    data={Object.keys(LanguageProficiency).map((key) => {
+                      return {
+                        label: LanguageProficiency[key as keyof typeof LanguageProficiency],
+                        value: key,
+                      }
+                    })}
+                    label='German Language Proficiency'
+                    placeholder='German language proficiency'
+                    {...form.getInputProps('germanLanguageProficiency')}
                   />
                 </Group>
                 <MultiSelect
@@ -277,9 +327,15 @@ export const StudentApplicationForm = ({
                 />
                 <MultiSelect
                   disabled={accessMode === StudentApplicationAccessMode.INSTRUCTOR}
-                  data={['MacBook', 'iPhone', 'iPad', 'iWatch', 'Raspberry Pi']}
+                  data={Object.keys(Device).map((key) => {
+                    return {
+                      label: Device[key as keyof typeof Device],
+                      value: key,
+                    }
+                  })}
                   label='Available Devices'
                   placeholder='Available Devices'
+                  {...form.getInputProps('devices')}
                 />
                 <Textarea
                   label='Motivation'
@@ -308,26 +364,32 @@ export const StudentApplicationForm = ({
                       <Checkbox
                         mt='md'
                         label='Suggested as Coach'
-                        {...form.getInputProps('suggestedAsCoach', { type: 'checkbox' })}
+                        {...form.getInputProps('studentApplicationAssessment.suggestedAsCoach', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Checkbox
                         mt='md'
                         label='Suggested as Tutor'
-                        {...form.getInputProps('suggestedAsTutor', { type: 'checkbox' })}
+                        {...form.getInputProps('studentApplicationAssessment.suggestedAsTutor', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Checkbox
                         mt='md'
                         label='Blocked by PM'
-                        {...form.getInputProps('blockedByPM', { type: 'checkbox' })}
+                        {...form.getInputProps('studentApplicationAssessment.blockedByPM', {
+                          type: 'checkbox',
+                        })}
                       />
                     </Group>
-                    {form.values.blockedByPM && (
+                    {form.values.studentApplicationAssessment.blockedByPM && (
                       <Textarea
                         autosize
                         label='Reason for Blocked by PM'
                         placeholder='Reason for blocked by PM'
                         minRows={5}
-                        {...form.getInputProps('reasonForBlockedByPM')}
+                        {...form.getInputProps('studentApplicationAssessment.reasonForBlockedByPM')}
                       />
                     )}
                     <TextInput
@@ -335,18 +397,22 @@ export const StudentApplicationForm = ({
                       type='number'
                       label='Assessment Score'
                       placeholder='Assessment Score'
-                      {...form.getInputProps('assessmentScore')}
+                      {...form.getInputProps('studentApplicationAssessment.assessmentScore')}
                     />
                     <Group grow style={{ alignItems: 'center' }}>
                       <Checkbox
                         mt='md'
                         label='Accepted for the Course'
-                        {...form.getInputProps('accepted', { type: 'checkbox' })}
+                        {...form.getInputProps('studentApplicationAssessment.accepted', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Checkbox
                         mt='md'
                         label='Student Application Assessed'
-                        {...form.getInputProps('assessed', { type: 'checkbox' })}
+                        {...form.getInputProps('studentApplicationAssessment.assessed', {
+                          type: 'checkbox',
+                        })}
                       />
                     </Group>
                     <Divider />
@@ -354,41 +420,18 @@ export const StudentApplicationForm = ({
                       <Text fz='sm' weight={500}>
                         Additional Notes
                       </Text>
-                      {form.values.notes.map((note) => (
-                        /* <Paper
-                          key={note.id ?? note.comment}
-                          withBorder
-                          radius='md'
-                          style={{
-                            padding: '2vh 3vw',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            gap: '3vw',
-                          }}
-                        >
-                          <Group style={{ width: '16vw' }}>
-                            <Avatar radius='xl'>{`${
-                              note.author.username?.substring(0, 2) ?? ''
-                            }`}</Avatar>
-                            <div>
-                              <Text fz='sm'>{note.author.username}</Text>
-                              <Text fz='xs' c='dimmed'>
-                                {note.timestamp}
-                              </Text>
-                            </div>
-                          </Group>
-                          <Divider orientation='vertical' />
-                          <Text fz='sm'>{note.comment}</Text>
-                        </Paper> */
-                        <div key={note.id}>
-                          <StudentApplicationComment studentApplicationComment={note} />
-                        </div>
-                      ))}
+                      {form.values.studentApplicationAssessment.instructorComments.map(
+                        (comment) => (
+                          <div key={`${comment.id ?? ''} ${comment.timestamp ?? ''}`}>
+                            <StudentApplicationComment instructorComment={comment} />
+                          </div>
+                        ),
+                      )}
                     </div>
                     <Group position='left' style={{ alignItems: 'flex-end' }}>
                       <Textarea
                         autosize
-                        placeholder='Note'
+                        placeholder='Comment'
                         value={note}
                         onChange={(e) => {
                           setNote(e.target.value)
@@ -399,27 +442,25 @@ export const StudentApplicationForm = ({
                           if (note && note.length !== 0) {
                             form.setValues({
                               ...form.values,
-                              notes: [
-                                ...form.values.notes,
-                                {
-                                  author: {
-                                    id: localStorage.getItem('user_id') ?? '',
+                              studentApplicationAssessment: {
+                                ...form.values.studentApplicationAssessment,
+                                instructorComments: [
+                                  ...form.values.studentApplicationAssessment.instructorComments,
+                                  {
+                                    author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                                    text: note,
                                   },
-                                  comment: note,
-                                },
-                              ],
+                                ],
+                              },
                             })
                             setNote('')
                             if (studentApplication) {
-                              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                              dispatch(
-                                createStudentApplicationNote({
+                              void dispatch(
+                                createInstructorComment({
                                   studentApplicationId: studentApplication?.id,
-                                  studentApplicationNote: {
-                                    author: {
-                                      id: localStorage.getItem('user_id') ?? '',
-                                    },
-                                    comment: note,
+                                  instructorComment: {
+                                    author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                                    text: note,
                                   },
                                 }),
                               )
@@ -427,7 +468,7 @@ export const StudentApplicationForm = ({
                           }
                         }}
                       >
-                        Add Note
+                        Add Comment
                       </Button>
                     </Group>
                   </div>
@@ -445,19 +486,26 @@ export const StudentApplicationForm = ({
                         )
                         onSuccessfulSubmit(form.values)
                       } else if (form.isValid() && studentApplication) {
-                        const studentApplicationPatchObjectArray: StudentApplicationPatch[] = []
-                        Object.keys(form.values).forEach((key) => {
-                          const studentApplicationPatchObject = new Map()
-                          studentApplicationPatchObject.set('op', 'replace')
-                          studentApplicationPatchObject.set('path', '/' + key)
-                          studentApplicationPatchObject.set('value', form.getInputProps(key).value)
-                          const obj = Object.fromEntries(studentApplicationPatchObject)
-                          studentApplicationPatchObjectArray.push(obj)
+                        // TODO: differentiate between assessment and student application changes
+                        const studentApplicationAssessmentPatchObjectArray: Patch[] = []
+                        Object.keys(form.values.studentApplicationAssessment).forEach((key) => {
+                          if (form.isTouched('studentApplicationAssessment.' + key)) {
+                            const studentApplicationPatchObject = new Map()
+                            studentApplicationPatchObject.set('op', 'replace')
+                            studentApplicationPatchObject.set('path', '/' + key)
+                            studentApplicationPatchObject.set(
+                              'value',
+                              form.getInputProps('studentApplicationAssessment.' + key).value,
+                            )
+                            const obj = Object.fromEntries(studentApplicationPatchObject)
+                            studentApplicationAssessmentPatchObjectArray.push(obj)
+                          }
                         })
                         void dispatch(
-                          updateStudentApplication({
+                          updateStudentApplicationAssessment({
                             studentApplicationId: studentApplication.id,
-                            studentApplicationPatch: studentApplicationPatchObjectArray,
+                            studentApplicationAssessmentPatch:
+                              studentApplicationAssessmentPatchObjectArray,
                           }),
                         )
                         onSuccessfulSubmit(form.values)

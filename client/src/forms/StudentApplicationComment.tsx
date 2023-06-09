@@ -1,30 +1,37 @@
 import { Text } from '@mantine/core'
-import { type StudentApplicationNote } from '../redux/studentApplicationSlice/studentApplicationSlice'
+import { type InstructorComment } from '../redux/studentApplicationSlice/studentApplicationSlice'
 import moment from 'moment'
 
 interface StudentApplicationCommentProps {
-  studentApplicationComment: StudentApplicationNote
+  instructorComment: InstructorComment
 }
 
 export const StudentApplicationComment = ({
-  studentApplicationComment,
+  instructorComment,
 }: StudentApplicationCommentProps): JSX.Element => {
   return (
     <fieldset
       style={{
         textAlign: 'center',
         borderRadius: '0.25rem',
-        borderWidth: '0.0625rem solid #373A40',
+        borderWidth: '0.0625rem solid #373A40 !important',
         display: 'flex',
         justifyContent: 'flex-start',
-        fontSize: '14px',
+        fontSize: '13px',
       }}
     >
-      <legend style={{ textAlign: 'left', padding: '0.5vw', fontSize: '14px', fontWeight: '500' }}>
-        {studentApplicationComment.author.username} ·{' '}
-        {moment(studentApplicationComment.timestamp).format('DD-MM-YYYY hh:mm')}
+      <legend
+        style={{
+          textAlign: 'left',
+          padding: '0.5vw',
+          fontSize: '13px',
+          fontWeight: '500',
+        }}
+      >
+        {instructorComment.author} ·{' '}
+        {moment(instructorComment.timestamp).format('DD-MM-YYYY hh:mm')}
       </legend>
-      <Text>{studentApplicationComment.comment}</Text>
+      <Text>{instructorComment.text}</Text>
     </fieldset>
   )
 }

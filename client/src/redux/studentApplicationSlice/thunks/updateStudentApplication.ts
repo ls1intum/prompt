@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { type StudentApplicationPatch } from '../studentApplicationSlice'
-import { serverBaseUrl } from '../../../service/configService'
+import { type Patch, serverBaseUrl } from '../../../service/configService'
 
 export const updateStudentApplication = createAsyncThunk(
   'studentApplications/updateStudentApplication',
@@ -12,7 +11,7 @@ export const updateStudentApplication = createAsyncThunk(
       studentApplicationPatch,
     }: {
       studentApplicationId: string
-      studentApplicationPatch: StudentApplicationPatch[]
+      studentApplicationPatch: Patch[]
     },
     { rejectWithValue },
   ) => {

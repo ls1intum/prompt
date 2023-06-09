@@ -12,9 +12,10 @@ import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentApplication;
-import prompt.ls1.model.StudentApplicationNote;
+import prompt.ls1.model.InstructorComment;
+import prompt.ls1.model.StudentApplicationAssessment;
 import prompt.ls1.repository.ProjectTeamRepository;
-import prompt.ls1.repository.StudentApplicationNoteRepository;
+import prompt.ls1.repository.InstructorCommentRepository;
 import prompt.ls1.repository.StudentApplicationRepository;
 import prompt.ls1.repository.StudentRepository;
 
@@ -25,18 +26,18 @@ import java.util.UUID;
 @Service
 public class StudentApplicationService {
     private final StudentApplicationRepository studentApplicationRepository;
-    private final StudentApplicationNoteRepository studentApplicationNoteRepository;
+    private final InstructorCommentRepository instructorCommentRepository;
     private final StudentRepository studentRepository;
     private final ProjectTeamRepository projectTeamRepository;
 
     @Autowired
     public StudentApplicationService(
             StudentApplicationRepository studentApplicationRepository,
-            StudentApplicationNoteRepository studentApplicationNoteRepository,
+            InstructorCommentRepository instructorCommentRepository,
             StudentRepository studentRepository,
             ProjectTeamRepository projectTeamRepository) {
         this.studentApplicationRepository = studentApplicationRepository;
-        this.studentApplicationNoteRepository = studentApplicationNoteRepository;
+        this.instructorCommentRepository = instructorCommentRepository;
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
     }
@@ -65,17 +66,28 @@ public class StudentApplicationService {
     }
 
     public StudentApplication update(final UUID studentApplicationId, JsonPatch patchStudentApplication)
-            throws JsonPatchException, JsonProcessingException  {
+            throws JsonPatchException, JsonProcessingException {
         StudentApplication existingStudentApplication = findById(studentApplicationId);
 
         StudentApplication patchedStudentApplication = applyPatchToStudentApplication(patchStudentApplication, existingStudentApplication);
         return studentApplicationRepository.save(patchedStudentApplication);
     }
 
-    public StudentApplication createNote(final UUID studentApplicationId, final StudentApplicationNote studentApplicationNote) {
+    public StudentApplication updateStudentApplicationAssessment(final UUID studentApplicationId, JsonPatch patchStudentApplicationAssessment)
+            throws JsonPatchException, JsonProcessingException {
         StudentApplication studentApplication = findById(studentApplicationId);
-        studentApplication.getNotes().add(studentApplicationNote);
-        studentApplicationNoteRepository.save(studentApplicationNote);
+
+        StudentApplicationAssessment patchedStudentApplicationAssessment = applyPatchToStudentApplicationAssessment(
+                patchStudentApplicationAssessment, studentApplication.getStudentApplicationAssessment());
+
+        studentApplication.setStudentApplicationAssessment(patchedStudentApplicationAssessment);
+        return studentApplicationRepository.save(studentApplication);
+    }
+
+    public StudentApplication createInstructorComment(final UUID studentApplicationId, final InstructorComment instructorComment) {
+        StudentApplication studentApplication = findById(studentApplicationId);
+        studentApplication.getStudentApplicationAssessment().getInstructorComments().add(instructorComment);
+        instructorCommentRepository.save(instructorComment);
 
         return studentApplicationRepository.findById(studentApplicationId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application with id %s not found.", studentApplicationId)));
@@ -113,10 +125,26 @@ public class StudentApplicationService {
         return studentApplicationRepository.findAllByApplicationSemesterId(applicationSemesterId);
     }
 
+    public void assignProjectTeam(final UUID studentApplicationId, final UUID projectTeamId) {
+        final StudentApplication studentApplication = findById(studentApplicationId);
+        final ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
+
+        studentApplication.setProjectTeam(projectTeam);
+        studentApplicationRepository.save(studentApplication);
+    }
+
     private StudentApplication applyPatchToStudentApplication(
             JsonPatch patch, StudentApplication targetStudentApplication) throws JsonPatchException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode patched = patch.apply(objectMapper.convertValue(targetStudentApplication, JsonNode.class));
         return objectMapper.treeToValue(patched, StudentApplication.class);
+    }
+
+    private StudentApplicationAssessment applyPatchToStudentApplicationAssessment(
+            JsonPatch patch, StudentApplicationAssessment targetStudentApplicationAssessment) throws JsonPatchException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetStudentApplicationAssessment, JsonNode.class));
+        return objectMapper.treeToValue(patched, StudentApplicationAssessment.class);
     }
 }

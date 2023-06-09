@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.ApplicationSemester;
 import prompt.ls1.service.ApplicationSemesterService;
 
@@ -37,9 +36,7 @@ public class ApplicationSemesterController {
 
     @GetMapping ("/open")
     public ResponseEntity<ApplicationSemester> getApplicationSemesterWithOpenApplicationPeriod() {
-        return applicationSemesterService.findWithOpenApplicationPeriod()
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open application period found."));
+        return ResponseEntity.ok(applicationSemesterService.findWithOpenApplicationPeriod());
 
     }
 
