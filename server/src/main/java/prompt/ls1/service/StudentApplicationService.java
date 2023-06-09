@@ -121,12 +121,18 @@ public class StudentApplicationService {
         return studentApplicationRepository.save(studentApplication);
     }
 
-    public List<StudentApplication> findAllByApplicationSemester(final UUID applicationSemesterId) {
-        return studentApplicationRepository.findAllByApplicationSemesterId(applicationSemesterId);
+    public List<StudentApplication> findAllByApplicationSemester(final UUID applicationSemesterId, final boolean accepted) {
+        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByApplicationSemesterId(applicationSemesterId);
+        if (accepted) {
+            return studentApplications
+                    .stream().filter(studentApplication -> studentApplication.getStudentApplicationAssessment().getAccepted()).toList();
+        }
+        return studentApplications;
     }
 
-    public void assignProjectTeam(final UUID studentApplicationId, final UUID projectTeamId) {
-        final StudentApplication studentApplication = findById(studentApplicationId);
+    public void assignProjectTeam(final UUID studentId, final UUID projectTeamId) {
+        final StudentApplication studentApplication = studentApplicationRepository.findByStudentId(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", studentId)));
         final ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   StudentApplicationAccessMode,
   StudentApplicationForm,
-} from '../forms/StudentApplicationForm'
+} from '../../forms/StudentApplicationForm'
 import { StudentApplicationSuccessfulSubmission } from './StudentApplicationSuccessfulSubmission'
 
 export const StudentApplicationSubmissionPage = (): JSX.Element => {

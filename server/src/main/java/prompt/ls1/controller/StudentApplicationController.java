@@ -39,11 +39,12 @@ public class StudentApplicationController {
 
     @GetMapping
     public ResponseEntity<List<StudentApplication>> getAllStudentApplications(
-            @RequestParam(name = "applicationSemester") @NotNull String applicationSemesterName
+            @RequestParam(name = "applicationSemester") @NotNull String applicationSemesterName,
+            @RequestParam(required = false, defaultValue = "false") boolean accepted
     ) {
         final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
 
-        return ResponseEntity.ok(studentApplicationService.findAllByApplicationSemester(applicationSemester.getId()));
+        return ResponseEntity.ok(studentApplicationService.findAllByApplicationSemester(applicationSemester.getId(), accepted));
     }
 
     @PostMapping

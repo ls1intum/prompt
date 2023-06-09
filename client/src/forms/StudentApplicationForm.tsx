@@ -27,6 +27,7 @@ import {
   StudyDegree,
   StudyProgram,
   Device,
+  Course,
 } from '../redux/studentApplicationSlice/studentApplicationSlice'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
@@ -97,6 +98,7 @@ export const StudentApplicationForm = ({
           motivation: '',
           experience: '',
           devices: [],
+          coursesTaken: [],
           studentApplicationAssessment: {
             instructorComments: [],
             suggestedAsCoach: false,
@@ -317,10 +319,12 @@ export const StudentApplicationForm = ({
                 </Group>
                 <MultiSelect
                   disabled={accessMode === StudentApplicationAccessMode.INSTRUCTOR}
-                  data={[
-                    'Introduction to Software Engineering',
-                    'Patterns in Software Engineering',
-                  ]}
+                  data={Object.keys(Course).map((key) => {
+                    return {
+                      label: Course[key as keyof typeof Course],
+                      value: key,
+                    }
+                  })}
                   label='Courses Taken at the Chair'
                   placeholder='Courses Taken at the Chair'
                   {...form.getInputProps('coursesTaken')}

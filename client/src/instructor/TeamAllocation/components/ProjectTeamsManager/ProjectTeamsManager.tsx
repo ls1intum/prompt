@@ -169,7 +169,9 @@ export const ProjectTeamsManager = (): JSX.Element => {
 
   useEffect(() => {
     if (selectedApplicationSemester) {
-      void dispatch(fetchStudentApplications(selectedApplicationSemester.semesterName))
+      void dispatch(
+        fetchStudentApplications({ applicationSemester: selectedApplicationSemester.semesterName }),
+      )
       void dispatch(fetchProjectTeams(selectedApplicationSemester.semesterName))
     }
   }, [selectedApplicationSemester])

@@ -16,6 +16,10 @@ public interface StudentApplicationRepository extends JpaRepository<StudentAppli
     @Query(value="select sa from StudentApplication sa where sa.applicationSemester.id=?1")
     List<StudentApplication> findAllByApplicationSemesterId(final UUID applicationSemesterId);
 
+    @Transactional
+    @Query(value="select sa from StudentApplication sa where sa.student.id=?1")
+    Optional<StudentApplication> findByStudentId(final UUID studentId);
+
     Optional<StudentApplication> findById(final UUID studentApplicationId);
 
     @Transactional

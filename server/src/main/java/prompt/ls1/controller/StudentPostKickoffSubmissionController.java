@@ -14,6 +14,7 @@ import prompt.ls1.model.StudentPostKickoffSubmission;
 import prompt.ls1.service.StudentPostKickoffSubmissionService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/post-kickoff-submissions")
@@ -32,15 +33,19 @@ public class StudentPostKickoffSubmissionController {
         return ResponseEntity.ok(studentPostKickoffSubmissionService.getByApplicationSemester(applicationSemesterName));
     }
 
-    @PostMapping("/{studentPublicId}")
+    @PostMapping("/verify-student/{studentPublicId}")
+    public ResponseEntity<UUID> verifyStudentFormAccess(@PathVariable final String studentPublicId,
+                                                        @RequestBody final String studentMatriculationNumber) {
+        return ResponseEntity.ok(studentPostKickoffSubmissionService.verifyStudentFormAccess(studentPublicId, studentMatriculationNumber));
+    }
+
+    @PostMapping("/{studentId}")
     public ResponseEntity<StudentPostKickoffSubmission> createStudentPostKickoffsSubmissionForStudent(
-            @PathVariable final String studentPublicId,
-            @RequestParam final String studentMatriculationNumber,
+            @PathVariable final String studentId,
             @RequestBody final StudentPostKickoffSubmission studentPostKickOffSubmission
     ) {
         return ResponseEntity.ok(studentPostKickoffSubmissionService.create(
-                studentPublicId,
-                studentMatriculationNumber,
+                studentId,
                 studentPostKickOffSubmission));
     }
 

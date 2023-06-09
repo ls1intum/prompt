@@ -41,6 +41,11 @@ enum Device {
   RASPBERRY_PI = 'Raspberry PI',
 }
 
+enum Course {
+  ITSE = 'Introduction to Software Engineering',
+  PISE = 'Patterns in Software Engineering',
+}
+
 interface Student {
   id: string
   tumId: string
@@ -75,6 +80,7 @@ interface StudentApplication {
   motivation: string
   experience: string
   devices: Device[]
+  coursesTaken: Course[]
   projectTeam?: ProjectTeam
   studentApplicationAssessment: StudentApplicationAssessment
 }
@@ -214,4 +220,5 @@ export {
   StudyProgram,
   Gender,
   Device,
+  Course,
 }

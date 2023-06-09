@@ -37,6 +37,8 @@ public class StudentApplication {
 
     private Set<Device> devices;
 
+    private Set<Course> coursesTaken;
+
     @Lob
     private String experience;
 

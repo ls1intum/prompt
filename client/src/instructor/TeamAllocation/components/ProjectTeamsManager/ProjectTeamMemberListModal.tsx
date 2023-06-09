@@ -29,7 +29,12 @@ export const ProjectTeamMemberListModal = ({
 
   useEffect(() => {
     if (selectedApplicationSemester) {
-      void dispatch(fetchStudentApplications(selectedApplicationSemester.semesterName))
+      void dispatch(
+        fetchStudentApplications({
+          applicationSemester: selectedApplicationSemester.semesterName,
+          accepted: true,
+        }),
+      )
     }
   }, [selectedApplicationSemester])
 

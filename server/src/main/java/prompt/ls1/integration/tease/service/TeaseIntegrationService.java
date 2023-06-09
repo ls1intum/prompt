@@ -45,7 +45,7 @@ public class TeaseIntegrationService {
 
     public List<Student> getStudents() {
         final ApplicationSemester applicationSemester = applicationSemesterService.findWithOpenApplicationPeriod();
-        final List<StudentApplication> studentApplications = studentApplicationService.findAllByApplicationSemester(applicationSemester.getId());
+        final List<StudentApplication> studentApplications = studentApplicationService.findAllByApplicationSemester(applicationSemester.getId(), true);
         final List<ProjectTeam> projectTeams = projectTeamService.findAllByApplicationSemesterId(applicationSemester.getId());
 
         return studentApplications.stream().map(studentApplication ->
