@@ -8,9 +8,7 @@ import { TeamAssignmentModal } from './components/TeamAssignmentModal'
 import { TeamsSetupStepper } from './components/TeamSetupStepper'
 
 export const InfrastructureManagement = (): JSX.Element => {
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedApplicationSemester = useAppSelector((state) => state.courseIterations.currentState)
   const [mgmtSetupStepperOpened, setMgmtSetupStepperOpened] = useState(false)
   const [introCourseSetupStepperOpened, setIntroCourseSetupStepperOpened] = useState(false)
   const [teamAssignmentModalOpened, setTeamAssignmentModalOpened] = useState(false)

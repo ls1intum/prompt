@@ -14,7 +14,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table
-public class ApplicationSemester {
+public class CourseIteration {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

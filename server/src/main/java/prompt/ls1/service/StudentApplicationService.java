@@ -93,15 +93,15 @@ public class StudentApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application with id %s not found.", studentApplicationId)));
     }
 
-    public StudentApplication assignToProjectTeam(final UUID studentApplicationId, final UUID projectTeamId, final UUID applicationSemesterId) {
+    public StudentApplication assignToProjectTeam(final UUID studentApplicationId, final UUID projectTeamId, final UUID courseIterationId) {
         StudentApplication studentApplication = findById(studentApplicationId);
 
         ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
 
-        if (!studentApplication.getApplicationSemester().getId().equals(projectTeam.getApplicationSemester().getId()) ||
-                !studentApplication.getApplicationSemester().getId().equals(applicationSemesterId)) {
-            throw new ResourceInvalidParametersException(String.format("Student application with id %s does not match the application semester of" +
+        if (!studentApplication.getCourseIteration().getId().equals(projectTeam.getCourseIteration().getId()) ||
+                !studentApplication.getCourseIteration().getId().equals(courseIterationId)) {
+            throw new ResourceInvalidParametersException(String.format("Student application with id %s does not match the course iteration of" +
                     "the project team with id %s.", studentApplicationId, projectTeamId));
         }
 
@@ -109,20 +109,20 @@ public class StudentApplicationService {
         return studentApplicationRepository.save(studentApplication);
     }
 
-    public StudentApplication removeFromProjectTeam(final UUID studentApplicationId, final UUID applicationSemesterId) {
+    public StudentApplication removeFromProjectTeam(final UUID studentApplicationId, final UUID courseIterationId) {
         StudentApplication studentApplication = findById(studentApplicationId);
 
-        if (!studentApplication.getApplicationSemester().getId().equals(applicationSemesterId)) {
+        if (!studentApplication.getCourseIteration().getId().equals(courseIterationId)) {
             throw new ResourceInvalidParametersException(String.format("Student application with id %s does not match with" +
-                    "the application semester with id %s.", studentApplicationId, applicationSemesterId));
+                    "the course iteration with id %s.", studentApplicationId, courseIterationId));
         }
 
         studentApplication.setProjectTeam(null);
         return studentApplicationRepository.save(studentApplication);
     }
 
-    public List<StudentApplication> findAllByApplicationSemester(final UUID applicationSemesterId, final boolean accepted) {
-        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByApplicationSemesterId(applicationSemesterId);
+    public List<StudentApplication> findAllByCourseIteration(final UUID courseIterationId, final boolean accepted) {
+        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByCourseIterationId(courseIterationId);
         if (accepted) {
             return studentApplications
                     .stream().filter(studentApplication -> studentApplication.getStudentApplicationAssessment().getAccepted()).toList();

@@ -7,7 +7,7 @@ import { StudentApplicationOverview } from './instructor/StudentApplicationsView
 import { StudentApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/StudentApplicationSubmissionPage'
 import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
 import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
-import { ApplicationSemesterManager } from './instructor/ApplicationSemesterManager/ApplicationSemesterManager'
+import { CourseIterationManager } from './instructor/CourseIterationManager/CourseIterationManager'
 import { InfrastructureManagement } from './instructor/InfrastructureManagement/InstrastructureManagement'
 import { Notifications } from '@mantine/notifications'
 
@@ -27,8 +27,8 @@ export const App = (): JSX.Element => {
           <BrowserRouter>
             <Routes>
               <Route
-                path='/management/application-semesters'
-                element={<ManagementConsole child={<ApplicationSemesterManager />} />}
+                path='/management/course-iterations'
+                element={<ManagementConsole child={<CourseIterationManager />} />}
               />
               <Route
                 path='/management/student-applications'

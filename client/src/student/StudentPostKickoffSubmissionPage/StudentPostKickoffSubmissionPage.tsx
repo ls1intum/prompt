@@ -30,7 +30,7 @@ import {
 } from '@mantine/core'
 import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
-import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
+import { fetchCourseIterationsWithOpenApplicationPeriod } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { isNotEmpty, useForm } from '@mantine/form'
 import {
   SkillAssessmentSource,
@@ -63,7 +63,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const { classes, cx } = useStyles()
   const [studentId, setStudentId] = useState('')
   const openApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.openApplicationSemester,
+    (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const skills = useAppSelector((state) => state.skills.skills)
@@ -93,7 +93,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   })
 
   useEffect(() => {
-    void dispatch(fetchApplicationSemestersWithOpenApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenApplicationPeriod())
     void dispatch(fetchSkills())
   }, [])
 

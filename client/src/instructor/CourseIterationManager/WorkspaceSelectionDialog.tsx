@@ -12,36 +12,36 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
-import { fetchAllApplicationSemesters } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
+import { fetchAllCourseIterations } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import {
-  type ApplicationSemester,
+  type CourseIteration,
   setCurrentState,
-  type ApplicationSemesterPatch,
-} from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
-import { createApplicationSemester } from '../../redux/applicationSemesterSlice/thunks/createApplicationSemester'
+} from '../../redux/courseIterationSlice/courseIterationSlice'
+import { createCourseIteration } from '../../redux/courseIterationSlice/thunks/createCourseIteration'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendar } from '@tabler/icons-react'
-import { updateApplicationSemester } from '../../redux/applicationSemesterSlice/thunks/updateApplicationSemester'
+import { updateCourseIteration } from '../../redux/courseIterationSlice/thunks/updateCourseIteration'
+import { type Patch } from '../../service/configService'
 
 interface ApplicationSemesterCreationModalProps {
   opened: boolean
   onClose: () => void
-  applicationSemester?: ApplicationSemester
+  courseIteration?: CourseIteration
 }
 
-export const ApplicationSemesterCreationModal = ({
+export const CourseIterationCreationModal = ({
   opened,
   onClose,
-  applicationSemester,
+  courseIteration,
 }: ApplicationSemesterCreationModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const form = useForm<ApplicationSemester>({
-    initialValues: applicationSemester
+  const form = useForm<CourseIteration>({
+    initialValues: courseIteration
       ? {
-          ...applicationSemester,
-          applicationPeriodStart: new Date(applicationSemester.applicationPeriodStart),
-          applicationPeriodEnd: new Date(applicationSemester.applicationPeriodEnd),
+          ...courseIteration,
+          applicationPeriodStart: new Date(courseIteration.applicationPeriodStart),
+          applicationPeriodEnd: new Date(courseIteration.applicationPeriodEnd),
         }
       : {
           id: '',
@@ -81,8 +81,8 @@ export const ApplicationSemesterCreationModal = ({
           <Button
             variant='filled'
             onClick={() => {
-              if (applicationSemester) {
-                const applicationSemesterPatchObjectArray: ApplicationSemesterPatch[] = []
+              if (courseIteration) {
+                const applicationSemesterPatchObjectArray: Patch[] = []
                 Object.keys(form.values).forEach((key) => {
                   const applicationSemesterPatchObject = new Map()
                   applicationSemesterPatchObject.set('op', 'replace')
@@ -92,13 +92,13 @@ export const ApplicationSemesterCreationModal = ({
                   applicationSemesterPatchObjectArray.push(obj)
                 })
                 void dispatch(
-                  updateApplicationSemester({
-                    applicationSemesterId: applicationSemester.id.toString(),
-                    applicationSemesterPatch: applicationSemesterPatchObjectArray,
+                  updateCourseIteration({
+                    courseIterationId: courseIteration.id.toString(),
+                    courseIterationPatch: applicationSemesterPatchObjectArray,
                   }),
                 )
               } else {
-                void dispatch(createApplicationSemester(form.values))
+                void dispatch(createCourseIteration(form.values))
               }
               form.reset()
               onClose()
@@ -114,27 +114,25 @@ export const ApplicationSemesterCreationModal = ({
 
 export const WorkspaceSelectionDialog = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const fetchedApplicationSemesters = useAppSelector(
-    (state) => state.applicationSemester.applicationSemesters,
-  )
-  const [applicationSemesters, setApplicationSemesters] = useState<ApplicationSemester[] | []>([])
+  const fetchedCourseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
+  const [courseIterations, setCourseIterations] = useState<CourseIteration[] | []>([])
   const [workspaceCreationModalOpen, setWorkspaceCreationModalOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize] = useState(5)
 
   useEffect(() => {
-    void dispatch(fetchAllApplicationSemesters())
+    void dispatch(fetchAllCourseIterations())
   }, [])
 
   useEffect(() => {
-    if (fetchAllApplicationSemesters.length > 0) {
-      setApplicationSemesters(fetchedApplicationSemesters)
+    if (fetchAllCourseIterations.length > 0) {
+      setCourseIterations(fetchedCourseIterations)
     }
-  }, [fetchedApplicationSemesters])
+  }, [fetchedCourseIterations])
 
   return (
     <div style={{ paddingTop: '10vh' }}>
-      <ApplicationSemesterCreationModal
+      <CourseIterationCreationModal
         opened={workspaceCreationModalOpen}
         onClose={() => {
           setWorkspaceCreationModalOpen(false)
@@ -143,7 +141,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
       <Center>
         <Title order={3}>Please select a workspace</Title>
       </Center>
-      {applicationSemesters.length > 0 ? (
+      {courseIterations.length > 0 ? (
         <div
           style={{
             display: 'flex',
@@ -160,7 +158,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
             }}
           >
             <Stack>
-              {applicationSemesters
+              {courseIterations
                 .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
                 .map((applicationSemester) => (
                   <Button
@@ -178,7 +176,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
               <Pagination
                 value={page}
                 onChange={setPage}
-                total={applicationSemesters.length > 0 ? applicationSemesters.length / pageSize : 1}
+                total={courseIterations.length > 0 ? courseIterations.length / pageSize : 1}
               />
             </div>
           </Paper>

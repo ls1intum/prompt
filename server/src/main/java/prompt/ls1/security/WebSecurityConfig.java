@@ -40,7 +40,7 @@ public class WebSecurityConfig {
         http.cors().and().csrf().disable()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/student-applications").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/skills").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/application-semesters/**").permitAll().and()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/course-iterations/**").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/project-teams").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/post-kickoff-submissions/**").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/v1/students").permitAll().and()

@@ -33,15 +33,15 @@ import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
-import { setCurrentState } from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
-import { WorkspaceSelectionDialog } from '../../instructor/ApplicationSemesterManager/WorkspaceSelectionDialog'
+import { setCurrentState } from '../../redux/courseIterationSlice/courseIterationSlice'
+import { WorkspaceSelectionDialog } from '../../instructor/CourseIterationManager/WorkspaceSelectionDialog'
 import { useEffect, useState } from 'react'
 
 const navigationContents = [
   {
-    label: 'Application Semester Management',
+    label: 'Course Iteration Management',
     icon: IconAppsFilled,
-    link: '/management/application-semesters',
+    link: '/management/course-iterations',
   },
   { label: 'Student Applications', icon: IconNews, link: '/management/student-applications' },
   { label: 'Team Allocation', icon: IconUsers, link: '/management/team-allocation' },
@@ -106,14 +106,12 @@ const useStyles = createStyles((theme) => ({
 }))
 
 export const DashboardWelcome = (): JSX.Element => {
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const navigate = useNavigate()
 
   return (
     <>
-      {selectedApplicationSemester ? (
+      {selectedCourseIteration ? (
         <>
           <Center style={{ paddingTop: '5vh' }}>
             <Title>Welcome to PROMPT!</Title>
@@ -153,12 +151,8 @@ export const NavigationBar = ({ keycloak }: { keycloak: Keycloak }): JSX.Element
   const navigate = useNavigate()
   const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const theme = useMantineTheme()
-  const applicationSemesters = useAppSelector(
-    (state) => state.applicationSemester.applicationSemesters,
-  )
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const courseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const auth = useAppSelector((state) => state.auth)
   const location = useLocation()
   const [active, setActive] = useState(location.pathname)
@@ -198,24 +192,24 @@ export const NavigationBar = ({ keycloak }: { keycloak: Keycloak }): JSX.Element
               offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
             />
           </Group>
-          {selectedApplicationSemester && (
+          {selectedCourseIteration && (
             <Navbar.Section style={{ margin: '5vh 0' }}>
               <Select
                 searchable
-                label='Application Semester'
-                data={applicationSemesters.map((applicationSemester) => {
+                label='Course Iteration'
+                data={courseIterations.map((courseIteration) => {
                   return {
-                    value: applicationSemester.id.toString(),
-                    label: applicationSemester.semesterName,
+                    value: courseIteration.id.toString(),
+                    label: courseIteration.semesterName,
                   }
                 })}
-                value={selectedApplicationSemester.id.toString()}
-                onChange={(changedApplicationSemesterId: string) => {
-                  const changedApplicationSemester = applicationSemesters.find(
-                    (as) => as.id.toString() === changedApplicationSemesterId,
+                value={selectedCourseIteration.id.toString()}
+                onChange={(changedCourseIterationId: string) => {
+                  const changedCourseIteration = courseIterations.find(
+                    (as) => as.id.toString() === changedCourseIterationId,
                   )
-                  if (changedApplicationSemester) {
-                    void dispatch(setCurrentState(changedApplicationSemester))
+                  if (changedCourseIteration) {
+                    void dispatch(setCurrentState(changedCourseIteration))
                   }
                 }}
               />

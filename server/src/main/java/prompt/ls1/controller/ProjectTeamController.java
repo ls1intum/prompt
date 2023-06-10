@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import prompt.ls1.model.ApplicationSemester;
+import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.ProjectTeam;
-import prompt.ls1.service.ApplicationSemesterService;
+import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.ProjectTeamService;
 
 import java.util.List;
@@ -26,30 +26,30 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/project-teams")
 public class ProjectTeamController {
-    private final ApplicationSemesterService applicationSemesterService;
+    private final CourseIterationService courseIterationService;
     private final ProjectTeamService projectTeamService;
 
     @Autowired
-    public ProjectTeamController(ApplicationSemesterService applicationSemesterService,
+    public ProjectTeamController(CourseIterationService courseIterationService,
                                  ProjectTeamService projectTeamService) {
-        this.applicationSemesterService = applicationSemesterService;
+        this.courseIterationService = courseIterationService;
         this.projectTeamService = projectTeamService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjectTeam>> getProjectTeamsByApplicationSemester(
-            @RequestParam(name = "applicationSemester") @NotNull String applicationSemesterName
+    public ResponseEntity<List<ProjectTeam>> getProjectTeamsByCourseIteration(
+            @RequestParam(name = "courseIteration") @NotNull String courseIterationName
     ) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
+        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
-        return ResponseEntity.ok(projectTeamService.findAllByApplicationSemesterId(applicationSemester.getId()));
+        return ResponseEntity.ok(projectTeamService.findAllByCourseIterationId(courseIteration.getId()));
     }
 
     @PostMapping
     public ResponseEntity<ProjectTeam> createProjectTeam(@RequestBody @NotNull ProjectTeam projectTeam,
-                                                         @RequestParam(name="applicationSemester") @NotNull String applicationSemesterName) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
-        projectTeam.setApplicationSemester(applicationSemester);
+                                                         @RequestParam(name= "courseIteration") @NotNull String courseIterationName) {
+        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
+        projectTeam.setCourseIteration(courseIteration);
 
         return ResponseEntity.ok(projectTeamService.create(projectTeam));
     }

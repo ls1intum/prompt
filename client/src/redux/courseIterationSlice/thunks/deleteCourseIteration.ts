@@ -2,13 +2,13 @@ import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { serverBaseUrl } from '../../../service/configService'
 
-export const deleteApplicationSemester = createAsyncThunk(
-  'applicationSemesters/deleteApplicationSemester',
+export const deleteCourseIteration = createAsyncThunk(
+  'courseIterations/deleteCourseIteration',
 
-  async (applicationSemesterId: string, { rejectWithValue }) => {
+  async (courseIterationId: string, { rejectWithValue }) => {
     try {
       return (
-        await axios.delete(`${serverBaseUrl}/api/application-semesters/${applicationSemesterId}`, {
+        await axios.delete(`${serverBaseUrl}/api/course-iterations/${courseIterationId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
           },

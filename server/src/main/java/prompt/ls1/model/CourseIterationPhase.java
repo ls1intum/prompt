@@ -1,6 +1,6 @@
 package prompt.ls1.model;
 
-public enum ApplicationSemesterPhase {
+public enum CourseIterationPhase {
     PRE_APPLICATION,
     APPLICATION,
     STUDENT_PRE_SELECTION,

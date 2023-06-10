@@ -9,17 +9,17 @@ export const createStudentApplication = createAsyncThunk(
   async (
     {
       studentApplication,
-      applicationSemester,
+      courseIteration,
     }: {
       studentApplication: StudentApplication
-      applicationSemester: string
+      courseIteration: string
     },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/student-applications?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/student-applications?courseIteration=${courseIteration}`,
           studentApplication,
         )
       ).data

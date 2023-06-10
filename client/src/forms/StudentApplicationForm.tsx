@@ -33,7 +33,7 @@ import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
 import { createInstructorComment } from '../redux/studentApplicationSlice/thunks/createInstructorComment'
 import { createStudentApplication } from '../redux/studentApplicationSlice/thunks/createStudentApplication'
-import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
+import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { StudentApplicationComment } from './StudentApplicationComment'
 import { type Patch } from '../service/configService'
 import { updateStudentApplicationAssessment } from '../redux/studentApplicationSlice/thunks/updateStudentApplicationAssessment'
@@ -65,11 +65,11 @@ export const StudentApplicationForm = ({
   onSuccessfulSubmit,
 }: StudentApplicationFormProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const openApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.openApplicationSemester,
+  const courseIterationWithOpenApplicationPeriod = useAppSelector(
+    (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
   )
   const auth = useAppSelector((state) => state.auth)
-  const loading = useAppSelector((state) => state.applicationSemester.status)
+  const loading = useAppSelector((state) => state.courseIterations.status)
   const [note, setNote] = useState('')
   const form = useForm<StudentApplication>({
     initialValues: studentApplication
@@ -129,7 +129,7 @@ export const StudentApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchApplicationSemestersWithOpenApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenApplicationPeriod())
   }, [])
 
   return (
@@ -150,7 +150,7 @@ export const StudentApplicationForm = ({
         </div>
       ) : (
         <div>
-          {openApplicationSemester ? (
+          {courseIterationWithOpenApplicationPeriod ? (
             <Box
               sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
               mx='auto'
@@ -481,11 +481,15 @@ export const StudentApplicationForm = ({
                   <Button
                     type='submit'
                     onClick={() => {
-                      if (form.isValid() && openApplicationSemester && !studentApplication) {
+                      if (
+                        form.isValid() &&
+                        courseIterationWithOpenApplicationPeriod &&
+                        !studentApplication
+                      ) {
                         void dispatch(
                           createStudentApplication({
                             studentApplication: form.values,
-                            applicationSemester: openApplicationSemester.semesterName,
+                            courseIteration: courseIterationWithOpenApplicationPeriod.semesterName,
                           }),
                         )
                         onSuccessfulSubmit(form.values)
