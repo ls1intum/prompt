@@ -11,10 +11,14 @@ import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.CourseIterationPhase;
+import prompt.ls1.model.CoursePhase;
 import prompt.ls1.repository.CourseIterationRepository;
+import prompt.ls1.repository.CoursePhaseRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -23,11 +27,14 @@ import java.util.UUID;
 @Service
 public class CourseIterationService {
     private final CourseIterationRepository courseIterationRepository;
+    private final CoursePhaseRepository coursePhaseRepository;
     private final SimpleDateFormat simpleDateFormat;
 
     @Autowired
-    public CourseIterationService(final CourseIterationRepository courseIterationRepository) {
+    public CourseIterationService(final CourseIterationRepository courseIterationRepository,
+                                  final CoursePhaseRepository coursePhaseRepository) {
         this.courseIterationRepository = courseIterationRepository;
+        this.coursePhaseRepository = coursePhaseRepository;
         this.simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.GERMAN);
     }
 
@@ -48,6 +55,14 @@ public class CourseIterationService {
             throw new ResourceInvalidParametersException(String.format("Course iteration application period overlaps with existing course iteration with name %s",
                     courseIterationPeriodOverlap.get(0).getSemesterName()));
         }
+
+        courseIteration.setPhases(new HashSet<>());
+        List<CoursePhase> coursePhases = coursePhaseRepository.findAll();
+        coursePhases.forEach(coursePhase -> {
+            final CourseIterationPhase courseIterationPhase = new CourseIterationPhase();
+            courseIterationPhase.setCoursePhase(coursePhase);
+            courseIteration.getPhases().add(courseIterationPhase);
+        });
 
         return courseIterationRepository.save(courseIteration);
     }

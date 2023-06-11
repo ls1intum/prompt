@@ -7,9 +7,9 @@ import { StudentApplicationOverview } from './instructor/StudentApplicationsView
 import { StudentApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/StudentApplicationSubmissionPage'
 import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
 import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
-import { CourseIterationManager } from './instructor/CourseIterationManager/CourseIterationManager'
 import { InfrastructureManagement } from './instructor/InfrastructureManagement/InstrastructureManagement'
 import { Notifications } from '@mantine/notifications'
+import { CourseIterationConsole } from './instructor/CourseIterationManager/CourseIterationConsole'
 
 export const App = (): JSX.Element => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
@@ -28,7 +28,7 @@ export const App = (): JSX.Element => {
             <Routes>
               <Route
                 path='/management/course-iterations'
-                element={<ManagementConsole child={<CourseIterationManager />} />}
+                element={<ManagementConsole child={<CourseIterationConsole />} />}
               />
               <Route
                 path='/management/student-applications'

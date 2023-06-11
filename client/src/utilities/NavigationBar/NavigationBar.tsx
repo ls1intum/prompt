@@ -34,7 +34,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useDispatch } from 'react-redux'
 import { setCurrentState } from '../../redux/courseIterationSlice/courseIterationSlice'
-import { WorkspaceSelectionDialog } from '../../instructor/CourseIterationManager/WorkspaceSelectionDialog'
+import { WorkspaceSelectionDialog } from '../../instructor/CourseIterationManager/components/WorkspaceSelectionDialog'
 import { useEffect, useState } from 'react'
 
 const navigationContents = [

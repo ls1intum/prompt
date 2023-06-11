@@ -20,9 +20,24 @@ interface CourseIteration {
   applicationPeriodStart: Date
   applicationPeriodEnd: Date
   iosTag: string
+  phases: CourseIterationPhase[]
 }
 
-enum ApplicationSemesterPhase {
+interface CoursePhase {
+  id: string
+  name: string
+  sequentialOrder: number
+  type: CoursePhaseType
+}
+
+interface CourseIterationPhase {
+  id: string
+  coursePhase: CoursePhase
+  startDate: Date | null
+  endDate: Date | null
+}
+
+enum CoursePhaseType {
   PRE_APPLICATION = 'PRE_APPLICATION',
   APPLICATION = 'APPLICATION',
   STUDENT_PRE_SELECTION = 'STUDENT_PRE_SELECTION',
@@ -155,4 +170,4 @@ export const courseIterationState = createSlice({
 
 export const { setCurrentState } = courseIterationState.actions
 export default courseIterationState.reducer
-export { type CourseIteration, type CourseIterationRequest, ApplicationSemesterPhase }
+export { type CourseIteration, type CourseIterationRequest, CoursePhaseType }

@@ -12,19 +12,19 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
-import { fetchAllCourseIterations } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
+import { fetchAllCourseIterations } from '../../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { type AppDispatch, useAppSelector } from '../../../redux/store'
 import {
   type CourseIteration,
   setCurrentState,
-} from '../../redux/courseIterationSlice/courseIterationSlice'
-import { createCourseIteration } from '../../redux/courseIterationSlice/thunks/createCourseIteration'
+} from '../../../redux/courseIterationSlice/courseIterationSlice'
+import { createCourseIteration } from '../../../redux/courseIterationSlice/thunks/createCourseIteration'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendar } from '@tabler/icons-react'
-import { updateCourseIteration } from '../../redux/courseIterationSlice/thunks/updateCourseIteration'
-import { type Patch } from '../../service/configService'
+import { updateCourseIteration } from '../../../redux/courseIterationSlice/thunks/updateCourseIteration'
+import { type Patch } from '../../../service/configService'
 
-interface ApplicationSemesterCreationModalProps {
+interface CourseIterationCreationModalProps {
   opened: boolean
   onClose: () => void
   courseIteration?: CourseIteration
@@ -34,7 +34,7 @@ export const CourseIterationCreationModal = ({
   opened,
   onClose,
   courseIteration,
-}: ApplicationSemesterCreationModalProps): JSX.Element => {
+}: CourseIterationCreationModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const form = useForm<CourseIteration>({
     initialValues: courseIteration
@@ -49,6 +49,7 @@ export const CourseIterationCreationModal = ({
           applicationPeriodStart: new Date(),
           applicationPeriodEnd: new Date(),
           iosTag: '',
+          phases: [],
         },
   })
 
@@ -82,19 +83,19 @@ export const CourseIterationCreationModal = ({
             variant='filled'
             onClick={() => {
               if (courseIteration) {
-                const applicationSemesterPatchObjectArray: Patch[] = []
+                const courseIterationPatchObjectArray: Patch[] = []
                 Object.keys(form.values).forEach((key) => {
-                  const applicationSemesterPatchObject = new Map()
-                  applicationSemesterPatchObject.set('op', 'replace')
-                  applicationSemesterPatchObject.set('path', '/' + key)
-                  applicationSemesterPatchObject.set('value', form.getInputProps(key).value)
-                  const obj = Object.fromEntries(applicationSemesterPatchObject)
-                  applicationSemesterPatchObjectArray.push(obj)
+                  const courseIterationPatchObject = new Map()
+                  courseIterationPatchObject.set('op', 'replace')
+                  courseIterationPatchObject.set('path', '/' + key)
+                  courseIterationPatchObject.set('value', form.getInputProps(key).value)
+                  const obj = Object.fromEntries(courseIterationPatchObject)
+                  courseIterationPatchObjectArray.push(obj)
                 })
                 void dispatch(
                   updateCourseIteration({
                     courseIterationId: courseIteration.id.toString(),
-                    courseIterationPatch: applicationSemesterPatchObjectArray,
+                    courseIterationPatch: courseIterationPatchObjectArray,
                   }),
                 )
               } else {
@@ -160,15 +161,15 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
             <Stack>
               {courseIterations
                 .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-                .map((applicationSemester) => (
+                .map((courseIteration) => (
                   <Button
                     variant='outline'
-                    key={applicationSemester.id}
+                    key={courseIteration.id}
                     onClick={() => {
-                      dispatch(setCurrentState(applicationSemester))
+                      dispatch(setCurrentState(courseIteration))
                     }}
                   >
-                    {applicationSemester.semesterName}
+                    {courseIteration.semesterName}
                   </Button>
                 ))}
             </Stack>

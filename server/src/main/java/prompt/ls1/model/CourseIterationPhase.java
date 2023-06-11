@@ -1,16 +1,33 @@
 package prompt.ls1.model;
 
-public enum CourseIterationPhase {
-    PRE_APPLICATION,
-    APPLICATION,
-    STUDENT_PRE_SELECTION,
-    STUDENT_ADMISSION,
-    INTRO_COURSE_PLANNING,
-    INTRO_COURSE_ASSESSMENT,
-    PROJECT_PREFERENCES_COLLECTION,
-    TEAM_ALLOCATION,
-    PROJECT_INFRASTRUCTURE_SETUP,
-    INTERMEDIATE_GRADING,
-    FINAL_DELIVERY,
-    FINAL_GRADING
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
+
+@Data
+@Entity
+@Table
+public class CourseIterationPhase {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "course_phase_id")
+    private CoursePhase coursePhase;
+
+    @Column(columnDefinition = "DATE")
+    private Date startDate;
+
+    @Column(columnDefinition = "DATE")
+    private Date endDate;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinTable(name="course_iteration_check_entries",
+            joinColumns = @JoinColumn(name = "course_iteration_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "check_entry_id", referencedColumnName = "id"))
+    private Set<CourseIterationPhaseCheckEntry> checkEntries;
 }

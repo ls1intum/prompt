@@ -2,7 +2,7 @@ import { AppShell, Center, Loader } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { NavigationBar } from '../utilities/NavigationBar/NavigationBar'
-import { WorkspaceSelectionDialog } from './CourseIterationManager/WorkspaceSelectionDialog'
+import { WorkspaceSelectionDialog } from './CourseIterationManager/components/WorkspaceSelectionDialog'
 import { useDispatch } from 'react-redux'
 import { fetchAllCourseIterations } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import Keycloak from 'keycloak-js'
@@ -81,11 +81,11 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
 
   useEffect(() => {
     if (!currentState && courseIterations.length > 0 && localStorage.getItem('course-iteration')) {
-      const savedApplicationSemester = courseIterations.find(
+      const savedCourseIteration = courseIterations.find(
         (as) => as.id === localStorage.getItem('course-iteration'),
       )
-      if (savedApplicationSemester) {
-        void dispatch(setCurrentState(savedApplicationSemester))
+      if (savedCourseIteration) {
+        void dispatch(setCurrentState(savedCourseIteration))
       }
     }
   }, [currentState, courseIterations])

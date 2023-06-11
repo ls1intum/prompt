@@ -8,7 +8,7 @@ import { TeamAssignmentModal } from './components/TeamAssignmentModal'
 import { TeamsSetupStepper } from './components/TeamSetupStepper'
 
 export const InfrastructureManagement = (): JSX.Element => {
-  const selectedApplicationSemester = useAppSelector((state) => state.courseIterations.currentState)
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [mgmtSetupStepperOpened, setMgmtSetupStepperOpened] = useState(false)
   const [introCourseSetupStepperOpened, setIntroCourseSetupStepperOpened] = useState(false)
   const [teamAssignmentModalOpened, setTeamAssignmentModalOpened] = useState(false)
@@ -33,7 +33,7 @@ export const InfrastructureManagement = (): JSX.Element => {
             onClose={() => {
               setMgmtSetupStepperOpened(false)
             }}
-            iosTag={selectedApplicationSemester?.iosTag ?? ''}
+            iosTag={selectedCourseIteration?.iosTag ?? ''}
           />
         </>
       ),
@@ -56,7 +56,7 @@ export const InfrastructureManagement = (): JSX.Element => {
             onClose={() => {
               setIntroCourseSetupStepperOpened(false)
             }}
-            iosTag={selectedApplicationSemester?.iosTag ?? ''}
+            iosTag={selectedCourseIteration?.iosTag ?? ''}
           />
         </>
       ),
@@ -79,7 +79,7 @@ export const InfrastructureManagement = (): JSX.Element => {
             onClose={() => {
               setTeamsSetupStepperOpened(false)
             }}
-            iosTag={selectedApplicationSemester?.iosTag ?? ''}
+            iosTag={selectedCourseIteration?.iosTag ?? ''}
           />
         </>
       ),
@@ -102,7 +102,7 @@ export const InfrastructureManagement = (): JSX.Element => {
             onClose={() => {
               setTeamAssignmentModalOpened(false)
             }}
-            iosTag={selectedApplicationSemester?.iosTag ?? ''}
+            iosTag={selectedCourseIteration?.iosTag ?? ''}
           />
         </>
       ),
@@ -112,7 +112,7 @@ export const InfrastructureManagement = (): JSX.Element => {
   return (
     <>
       <Stack>
-        {selectedApplicationSemester && (
+        {selectedCourseIteration && (
           <SimpleGrid cols={2} style={{ padding: '20vh 10vw' }}>
             {options.map((option) => {
               return (
