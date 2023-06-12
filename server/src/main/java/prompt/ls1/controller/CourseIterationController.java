@@ -52,6 +52,12 @@ public class CourseIterationController {
         return ResponseEntity.ok(courseIterationService.update(courseIterationId, patchCourseIteration));
     }
 
+    @PostMapping("/{courseIterationId}/course-iteration-phase-check-entries/{courseIterationPhaseCheckEntryId}")
+    public ResponseEntity<CourseIteration> toggleCourseIterationPhaseCheckEntry(@PathVariable final UUID courseIterationId,
+                                                                                @PathVariable final UUID courseIterationPhaseCheckEntryId) {
+        return ResponseEntity.ok(courseIterationService.toggleCourseIterationPhaseCheckEntry(courseIterationId, courseIterationPhaseCheckEntryId));
+    }
+
     @DeleteMapping("/{courseIterationId}")
     public ResponseEntity<UUID> deleteCourseIteration(@PathVariable UUID courseIterationId) {
         return ResponseEntity.ok(courseIterationService.deleteById(courseIterationId));

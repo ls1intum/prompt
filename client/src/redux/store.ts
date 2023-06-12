@@ -6,11 +6,13 @@ import studentApplicationsReducer from './studentApplicationSlice/studentApplica
 import projectTeamsReducer from './projectTeamsSlice/projectTeamsSlice'
 import studentPostKickoffSubmissionsReducer from './studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import skillsReducer from './skillsSlice/skillsSlice'
+import coursePhasesReducer from './coursePhasesSlice/coursePhasesSlice'
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     courseIterations: courseIterationReducer,
+    coursePhases: coursePhasesReducer,
     studentApplications: studentApplicationsReducer,
     projectTeams: projectTeamsReducer,
     studentPostKickoffSubmissions: studentPostKickoffSubmissionsReducer,

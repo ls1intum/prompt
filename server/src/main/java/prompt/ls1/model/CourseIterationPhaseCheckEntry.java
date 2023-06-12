@@ -13,7 +13,7 @@ public class CourseIterationPhaseCheckEntry {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "course_phase_check_id")
     private CoursePhaseCheck coursePhaseCheck;
 

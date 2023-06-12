@@ -1,15 +1,11 @@
 package prompt.ls1.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -28,4 +24,9 @@ public class CoursePhase {
 
     private CoursePhaseType type;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinTable(name="course_phase_course_phase_check",
+            joinColumns = @JoinColumn(name = "course_phase_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "course_phase_check_id", referencedColumnName = "id"))
+    private Set<CoursePhaseCheck> checks;
 }

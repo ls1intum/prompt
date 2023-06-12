@@ -15,7 +15,7 @@ public class CourseIterationPhase {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "course_phase_id")
     private CoursePhase coursePhase;
 

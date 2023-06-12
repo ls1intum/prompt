@@ -1,12 +1,12 @@
 import { ActionIcon, Button, Group, Text, Tooltip } from '@mantine/core'
 import { DataTable } from 'mantine-datatable'
-import { type AppDispatch, useAppSelector } from '../../../redux/store'
+import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { useEffect, useState } from 'react'
 import { IconEdit, IconPlus, IconTrash } from '@tabler/icons-react'
 import moment from 'moment'
 import { useDispatch } from 'react-redux'
-import { deleteCourseIteration } from '../../../redux/courseIterationSlice/thunks/deleteCourseIteration'
-import { type CourseIteration } from '../../../redux/courseIterationSlice/courseIterationSlice'
+import { deleteCourseIteration } from '../../../../redux/courseIterationSlice/thunks/deleteCourseIteration'
+import { type CourseIteration } from '../../../../redux/courseIterationSlice/courseIterationSlice'
 import { CourseIterationCreationModal } from './WorkspaceSelectionDialog'
 
 export const CourseIterationManager = (): JSX.Element => {

@@ -6,6 +6,8 @@ import {
 } from './thunks/fetchAllCourseIterations'
 import { deleteCourseIteration } from './thunks/deleteCourseIteration'
 import { updateCourseIteration } from './thunks/updateCourseIteration'
+import { type CoursePhase, type CoursePhaseCheck } from '../coursePhasesSlice/coursePhasesSlice'
+import { toggleCourseIterationPhaseCheckEntry } from './thunks/toggleCourseIterationPhaseCheckEntry'
 
 interface CourseIterationRequest {
   semesterName: string
@@ -23,33 +25,18 @@ interface CourseIteration {
   phases: CourseIterationPhase[]
 }
 
-interface CoursePhase {
+interface CourseIterationPhaseCheckEntry {
   id: string
-  name: string
-  sequentialOrder: number
-  type: CoursePhaseType
+  coursePhaseCheck: CoursePhaseCheck
+  fulfilled: boolean
 }
 
 interface CourseIterationPhase {
   id: string
   coursePhase: CoursePhase
+  checkEntries: CourseIterationPhaseCheckEntry[]
   startDate: Date | null
   endDate: Date | null
-}
-
-enum CoursePhaseType {
-  PRE_APPLICATION = 'PRE_APPLICATION',
-  APPLICATION = 'APPLICATION',
-  STUDENT_PRE_SELECTION = 'STUDENT_PRE_SELECTION',
-  STUDENT_ADMISSION = 'STUDENT_ADMISSION',
-  INTRO_COURSE_PLANNING = 'INTRO_COURSE_PLANNING',
-  INTRO_COURSE_ASSESSMENT = 'INTRO_COURSE_ASSESSMENT',
-  PROJECT_PREFERENCES_COLLECTION = 'PROJECT_PREFERENCES_COLLECTION',
-  TEAM_ALLOCATION = 'TEAM_ALLOCATION',
-  PROJECT_INFRASTRUCTURE_SETUP = 'PROJECT_INFRASTRUCTURE_SETUP',
-  INTERMEDIATE_GRADING = 'INTERMEDIATE_GRADING',
-  FINAL_DELIVERY = 'FINAL_DELIVERY',
-  FINAL_GRADING = 'FINAL_GRADING',
 }
 
 interface CourseIterationSliceState {
@@ -152,16 +139,36 @@ export const courseIterationState = createSlice({
     })
 
     builder.addCase(updateCourseIteration.fulfilled, (state, { payload }) => {
-      state.courseIterations = state.courseIterations.map((courseIteration) => {
-        if (courseIteration.id === payload.id) {
-          return payload
-        }
-        return courseIteration
-      })
+      state.courseIterations = state.courseIterations.map((courseIteration) =>
+        courseIteration.id === payload.id ? payload : courseIteration,
+      )
+      state.currentState = state.courseIterations
+        .filter((courseIteration) => courseIteration.id === state.currentState?.id)
+        ?.at(0)
       state.status = 'idle'
     })
 
     builder.addCase(updateCourseIteration.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(toggleCourseIterationPhaseCheckEntry.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(toggleCourseIterationPhaseCheckEntry.fulfilled, (state, { payload }) => {
+      state.courseIterations = state.courseIterations.map((courseIteration) =>
+        courseIteration.id === payload.id ? payload : courseIteration,
+      )
+      state.currentState = state.courseIterations
+        .filter((courseIteration) => courseIteration.id === state.currentState?.id)
+        ?.at(0)
+      state.status = 'idle'
+    })
+
+    builder.addCase(toggleCourseIterationPhaseCheckEntry.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
@@ -170,4 +177,9 @@ export const courseIterationState = createSlice({
 
 export const { setCurrentState } = courseIterationState.actions
 export default courseIterationState.reducer
-export { type CourseIteration, type CourseIterationRequest, CoursePhaseType }
+export {
+  type CourseIteration,
+  type CourseIterationRequest,
+  type CourseIterationPhase,
+  type CourseIterationPhaseCheckEntry,
+}

@@ -12,6 +12,7 @@ import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.CourseIterationPhase;
+import prompt.ls1.model.CourseIterationPhaseCheckEntry;
 import prompt.ls1.model.CoursePhase;
 import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.CoursePhaseRepository;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseIterationService {
@@ -61,6 +63,13 @@ public class CourseIterationService {
         coursePhases.forEach(coursePhase -> {
             final CourseIterationPhase courseIterationPhase = new CourseIterationPhase();
             courseIterationPhase.setCoursePhase(coursePhase);
+            courseIterationPhase.setCheckEntries(coursePhase.getChecks()
+                    .stream().map(check -> {
+                        final CourseIterationPhaseCheckEntry courseIterationPhaseCheckEntry = new CourseIterationPhaseCheckEntry();
+                        courseIterationPhaseCheckEntry.setCoursePhaseCheck(check);
+                        courseIterationPhaseCheckEntry.setFulfilled(false);
+                        return courseIterationPhaseCheckEntry;
+                    }).collect(Collectors.toSet()));
             courseIteration.getPhases().add(courseIterationPhase);
         });
 
@@ -69,19 +78,28 @@ public class CourseIterationService {
 
     public CourseIteration update(final UUID courseIterationId, JsonPatch patchCourseIteration)
             throws JsonPatchException, JsonProcessingException{
-        Optional<CourseIteration> existingCourseIteration = courseIterationRepository.findById(courseIterationId);
-        if (existingCourseIteration.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
-                    courseIterationId));
-        }
+        CourseIteration existingCourseIteration = findById(courseIterationId);
 
-        CourseIteration patchedCourseIteration = applyPatchToCourseIteration(patchCourseIteration, existingCourseIteration.get());
+        CourseIteration patchedCourseIteration = applyPatchToCourseIteration(patchCourseIteration, existingCourseIteration);
         return courseIterationRepository.save(patchedCourseIteration);
     }
 
+    public CourseIteration toggleCourseIterationPhaseCheckEntry(final UUID courseIterationId,
+                                                                final UUID courseIterationPhaseCheckEntryId) {
+        final CourseIteration courseIteration = findById(courseIterationId);
+        courseIteration.getPhases().forEach(phase -> {
+            phase.getCheckEntries().forEach(courseIterationPhaseCheckEntry -> {
+                if (courseIterationPhaseCheckEntry.getId().equals(courseIterationPhaseCheckEntryId)) {
+                    courseIterationPhaseCheckEntry.setFulfilled(!courseIterationPhaseCheckEntry.getFulfilled());
+                }
+            });
+        });
+
+        return courseIterationRepository.save(courseIteration);
+    }
+
     public UUID deleteById(final UUID courseIterationId) {
-        CourseIteration courseIteration = courseIterationRepository.findById(courseIterationId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.", courseIterationId)));
+        CourseIteration courseIteration = findById(courseIterationId);
 
         courseIterationRepository.deleteById(courseIterationId);
         return courseIteration.getId();
@@ -99,6 +117,11 @@ public class CourseIterationService {
     public CourseIteration findWithOpenApplicationPeriod() {
         return courseIterationRepository.findWithApplicationPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open application period not found."));
+    }
+
+    private CourseIteration findById(final UUID courseIterationId) {
+        return courseIterationRepository.findById(courseIterationId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.", courseIterationId)));
     }
 
     private CourseIteration applyPatchToCourseIteration(

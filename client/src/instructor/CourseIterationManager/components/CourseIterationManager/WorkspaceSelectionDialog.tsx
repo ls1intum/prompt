@@ -12,17 +12,17 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
-import { fetchAllCourseIterations } from '../../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
-import { type AppDispatch, useAppSelector } from '../../../redux/store'
+import { fetchAllCourseIterations } from '../../../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import {
   type CourseIteration,
   setCurrentState,
-} from '../../../redux/courseIterationSlice/courseIterationSlice'
-import { createCourseIteration } from '../../../redux/courseIterationSlice/thunks/createCourseIteration'
+} from '../../../../redux/courseIterationSlice/courseIterationSlice'
+import { createCourseIteration } from '../../../../redux/courseIterationSlice/thunks/createCourseIteration'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendar } from '@tabler/icons-react'
-import { updateCourseIteration } from '../../../redux/courseIterationSlice/thunks/updateCourseIteration'
-import { type Patch } from '../../../service/configService'
+import { updateCourseIteration } from '../../../../redux/courseIterationSlice/thunks/updateCourseIteration'
+import { type Patch } from '../../../../service/configService'
 
 interface CourseIterationCreationModalProps {
   opened: boolean
