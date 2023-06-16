@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.CourseIterationPhase;
 import prompt.ls1.model.CourseIterationPhaseCheckEntry;
 import prompt.ls1.model.CoursePhase;
 import prompt.ls1.model.CoursePhaseCheck;
@@ -124,10 +125,30 @@ public class CoursePhaseService {
         return coursePhaseRepository.save(coursePhase);
     }
 
+    public CoursePhase updateCoursePhaseCheckOrdering(final UUID coursePhaseId, final List<CoursePhaseCheck> coursePhaseChecks) {
+        coursePhaseChecks.forEach(coursePhaseCheck -> {
+            coursePhaseCheckRepository.findById(coursePhaseCheck.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Course phase check with id %s not found.",
+                            coursePhaseCheck.getId())));
+            coursePhaseCheckRepository.save(coursePhaseCheck);
+        });
+
+        return findById(coursePhaseId);
+    }
+
     public UUID deleteById(final UUID coursePhaseId) {
         final CoursePhase coursePhase = findById(coursePhaseId);
+        final List<CourseIteration> courseIterations = courseIterationRepository.findAll();
+        courseIterations.forEach(courseIteration -> {
+            final Optional<CourseIterationPhase> courseIterationPhase = courseIteration.getPhases()
+                    .stream().filter(iterationPhase -> iterationPhase.getCoursePhase().getId().equals(coursePhaseId))
+                    .findFirst();
+            if (courseIterationPhase.isPresent()) {
+                courseIteration.getPhases().removeIf(phase -> phase.getId().equals(courseIterationPhase.get().getId()));
+                courseIterationPhaseRepository.deleteById(courseIterationPhase.get().getId());
+            }
+        });
         coursePhaseRepository.delete(coursePhase);
-
         return  coursePhase.getId();
     }
 
