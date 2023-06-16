@@ -9,17 +9,17 @@ export const createProjectTeam = createAsyncThunk(
   async (
     {
       projectTeam,
-      applicationSemester,
+      courseIteration,
     }: {
       projectTeam: ProjectTeam
-      applicationSemester: string
+      courseIteration: string
     },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/project-teams?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/project-teams?courseIteration=${courseIteration}`,
           projectTeam,
           {
             headers: {

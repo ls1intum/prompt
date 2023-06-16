@@ -1,47 +1,45 @@
 import { ActionIcon, Button, Group, Text, Tooltip } from '@mantine/core'
 import { DataTable } from 'mantine-datatable'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
+import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { useEffect, useState } from 'react'
-import { type ApplicationSemester } from '../../redux/applicationSemesterSlice/applicationSemesterSlice'
 import { IconEdit, IconPlus, IconTrash } from '@tabler/icons-react'
-import { ApplicationSemesterCreationModal } from './WorkspaceSelectionDialog'
 import moment from 'moment'
 import { useDispatch } from 'react-redux'
-import { deleteApplicationSemester } from '../../redux/applicationSemesterSlice/thunks/deleteApplicationSemester'
+import { deleteCourseIteration } from '../../../../redux/courseIterationSlice/thunks/deleteCourseIteration'
+import { type CourseIteration } from '../../../../redux/courseIterationSlice/courseIterationSlice'
+import { CourseIterationCreationModal } from './WorkspaceSelectionDialog'
 
-export const ApplicationSemesterManager = (): JSX.Element => {
+export const CourseIterationManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const applicationSemesters = useAppSelector(
-    (state) => state.applicationSemester.applicationSemesters,
-  )
-  const [tableRecords, setTableRecords] = useState<ApplicationSemester[]>([])
+  const courseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
+  const [tableRecords, setTableRecords] = useState<CourseIteration[]>([])
   const [tablePageSize, setTablePageSize] = useState(15)
   const [tablePage, setTablePage] = useState(1)
   const [creationModalOpen, setCreationModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
-  const [selectedApplicationSemester, setSelectedApplicationSemester] = useState<
-    ApplicationSemester | undefined
+  const [selectedCourseIteration, setSelectedCourseIteration] = useState<
+    CourseIteration | undefined
   >(undefined)
 
   useEffect(() => {
-    setTableRecords(applicationSemesters)
-  }, [applicationSemesters])
+    setTableRecords(courseIterations)
+  }, [courseIterations])
 
   return (
     <div>
-      <ApplicationSemesterCreationModal
+      <CourseIterationCreationModal
         opened={creationModalOpen}
         onClose={() => {
           setCreationModalOpen(false)
         }}
       />
-      {selectedApplicationSemester && (
-        <ApplicationSemesterCreationModal
+      {selectedCourseIteration && (
+        <CourseIterationCreationModal
           opened={editModalOpen}
           onClose={() => {
             setEditModalOpen(false)
           }}
-          applicationSemester={selectedApplicationSemester}
+          courseIteration={selectedCourseIteration}
         />
       )}
       <div style={{ display: 'flex', justifyContent: 'right', margin: '2vh 0' }}>
@@ -52,7 +50,7 @@ export const ApplicationSemesterManager = (): JSX.Element => {
             setCreationModalOpen(true)
           }}
         >
-          Create Application Semester
+          Create Course Iteration
         </Button>
       </div>
       <DataTable
@@ -65,7 +63,7 @@ export const ApplicationSemesterManager = (): JSX.Element => {
         striped
         highlightOnHover
         records={tableRecords}
-        totalRecords={applicationSemesters.length}
+        totalRecords={courseIterations.length}
         recordsPerPage={tablePageSize}
         page={tablePage}
         onPageChange={(page) => {
@@ -78,7 +76,7 @@ export const ApplicationSemesterManager = (): JSX.Element => {
         columns={[
           {
             accessor: 'semesterName',
-            title: 'Application Semester Name',
+            title: 'Course Iteration Semester Name',
           },
           {
             accessor: 'iosTag',
@@ -87,43 +85,39 @@ export const ApplicationSemesterManager = (): JSX.Element => {
           {
             accessor: 'applicationPeriodStart',
             title: 'Application Period Start',
-            render: (applicationSemester) => (
-              <Text>
-                {moment(applicationSemester.applicationPeriodStart).format('DD. MMMM YYYY')}
-              </Text>
+            render: (courseIteration) => (
+              <Text>{moment(courseIteration.applicationPeriodStart).format('DD. MMMM YYYY')}</Text>
             ),
           },
           {
             accessor: 'applicationPeriodEnd',
             title: 'Application Period End',
-            render: (applicationSemester) => (
-              <Text>
-                {moment(applicationSemester.applicationPeriodEnd).format('DD. MMMM YYYY')}
-              </Text>
+            render: (courseIteration) => (
+              <Text>{moment(courseIteration.applicationPeriodEnd).format('DD. MMMM YYYY')}</Text>
             ),
           },
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,
             textAlignment: 'right',
-            render: (applicationSemester) => (
+            render: (courseIteration) => (
               <Group spacing={4} position='right' noWrap>
-                <Tooltip label='Edit application semester'>
+                <Tooltip label='Edit course iteration'>
                   <ActionIcon
                     color='blue'
                     onClick={(e: React.MouseEvent) => {
-                      setSelectedApplicationSemester(applicationSemester)
+                      setSelectedCourseIteration(courseIteration)
                       setEditModalOpen(true)
                     }}
                   >
                     <IconEdit size={16} />
                   </ActionIcon>
                 </Tooltip>
-                <Tooltip label='Delete application semester'>
+                <Tooltip label='Delete course iteration'>
                   <ActionIcon
                     color='red'
                     onClick={() => {
-                      void dispatch(deleteApplicationSemester(applicationSemester.id.toString()))
+                      void dispatch(deleteCourseIteration(courseIteration.id.toString()))
                     }}
                   >
                     <IconTrash size={16} />

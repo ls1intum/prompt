@@ -73,9 +73,7 @@ const ProjectTeamCreationModal = ({
   onClose,
 }: ProjectTeamCreationModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const form = useForm<ProjectTeam>({
     initialValues: projectTeam
       ? { ...projectTeam }
@@ -107,7 +105,7 @@ const ProjectTeamCreationModal = ({
           variant='outline'
           type='submit'
           onClick={() => {
-            if (selectedApplicationSemester) {
+            if (selectedCourseIteration) {
               if (projectTeam) {
                 const projectTeamPatchObjectArray: ProjectTeamPatch[] = []
                 Object.keys(form.values).forEach((key) => {
@@ -129,7 +127,7 @@ const ProjectTeamCreationModal = ({
                 void dispatch(
                   createProjectTeam({
                     projectTeam: form.values,
-                    applicationSemester: selectedApplicationSemester.semesterName,
+                    courseIteration: selectedCourseIteration.semesterName,
                   }),
                 )
               }
@@ -147,9 +145,7 @@ const ProjectTeamCreationModal = ({
 
 export const ProjectTeamsManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const studentApplications = useAppSelector(
     (state) => state.studentApplications.studentApplications,
@@ -168,13 +164,13 @@ export const ProjectTeamsManager = (): JSX.Element => {
     useState(false)
 
   useEffect(() => {
-    if (selectedApplicationSemester) {
+    if (selectedCourseIteration) {
       void dispatch(
-        fetchStudentApplications({ applicationSemester: selectedApplicationSemester.semesterName }),
+        fetchStudentApplications({ courseIteration: selectedCourseIteration.semesterName }),
       )
-      void dispatch(fetchProjectTeams(selectedApplicationSemester.semesterName))
+      void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
     }
-  }, [selectedApplicationSemester])
+  }, [selectedCourseIteration])
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize

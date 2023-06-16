@@ -1,20 +1,16 @@
 package prompt.ls1.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
 @Entity
 @Table
-public class ApplicationSemester {
+public class CourseIteration {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -33,4 +29,10 @@ public class ApplicationSemester {
 
     @Column(columnDefinition = "boolean default false")
     private Boolean projectTeamPreferencesSubmissionOpen;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinTable(name="course_iteration_phases",
+            joinColumns = @JoinColumn(name = "course_iteration_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "phase_id", referencedColumnName = "id"))
+    private Set<CourseIterationPhase> phases;
 }

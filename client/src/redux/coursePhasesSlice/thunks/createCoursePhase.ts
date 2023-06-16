@@ -1,14 +1,15 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { serverBaseUrl } from '../../../service/configService'
+import { type CoursePhase } from '../coursePhasesSlice'
 
-export const deleteApplicationSemester = createAsyncThunk(
-  'applicationSemesters/deleteApplicationSemester',
+export const createCoursePhase = createAsyncThunk(
+  'coursePhases/createCoursePhase',
 
-  async (applicationSemesterId: string, { rejectWithValue }) => {
+  async (coursePhase: CoursePhase, { rejectWithValue }) => {
     try {
       return (
-        await axios.delete(`${serverBaseUrl}/api/application-semesters/${applicationSemesterId}`, {
+        await axios.post(`${serverBaseUrl}/api/course-phases`, coursePhase, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
           },

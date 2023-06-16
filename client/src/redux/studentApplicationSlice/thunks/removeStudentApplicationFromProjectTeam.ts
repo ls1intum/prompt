@@ -8,17 +8,17 @@ export const removeStudentApplicationFromProjectTeam = createAsyncThunk(
   async (
     {
       studentApplicationId,
-      applicationSemester,
+      courseIteration,
     }: {
       studentApplicationId: string
-      applicationSemester: string
+      courseIteration: string
     },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.delete(
-          `${serverBaseUrl}/api/student-applications/${studentApplicationId}/project-team?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/student-applications/${studentApplicationId}/project-team?courseIteration=${courseIteration}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

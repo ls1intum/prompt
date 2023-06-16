@@ -1,6 +1,6 @@
 package prompt.ls1.model;
 
-public enum ApplicationSemesterPhase {
+public enum CoursePhaseType {
     PRE_APPLICATION,
     APPLICATION,
     STUDENT_PRE_SELECTION,
@@ -12,5 +12,6 @@ public enum ApplicationSemesterPhase {
     PROJECT_INFRASTRUCTURE_SETUP,
     INTERMEDIATE_GRADING,
     FINAL_DELIVERY,
-    FINAL_GRADING
+    FINAL_GRADING,
+    OTHER
 }

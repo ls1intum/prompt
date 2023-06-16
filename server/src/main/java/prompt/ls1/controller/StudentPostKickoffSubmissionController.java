@@ -28,9 +28,9 @@ public class StudentPostKickoffSubmissionController {
 
     @GetMapping
     public ResponseEntity<List<StudentPostKickoffSubmission>> getProjectTeamPreferencesSubmissions(
-            @RequestParam(name = "applicationSemester") final String applicationSemesterName
+            @RequestParam(name = "courseIteration") final String courseIterationName
     ) {
-        return ResponseEntity.ok(studentPostKickoffSubmissionService.getByApplicationSemester(applicationSemesterName));
+        return ResponseEntity.ok(studentPostKickoffSubmissionService.getByCourseIteration(courseIterationName));
     }
 
     @PostMapping("/verify-student/{studentPublicId}")
@@ -50,9 +50,9 @@ public class StudentPostKickoffSubmissionController {
     }
 
     @DeleteMapping("/project-team-preferences")
-    public ResponseEntity<List<StudentPostKickoffSubmission>> deleteAllStudentProjectTeamPreferencesForApplicationSemester(
-            @RequestParam(name = "applicationSemester") final String applicationSemesterName
+    public ResponseEntity<List<StudentPostKickoffSubmission>> deleteAllStudentProjectTeamPreferencesForCourseIteration(
+            @RequestParam(name = "courseIteration") final String courseIterationName
     ) {
-        return ResponseEntity.ok(studentPostKickoffSubmissionService.deleteByApplicationSemester(applicationSemesterName));
+        return ResponseEntity.ok(studentPostKickoffSubmissionService.deleteByCourseIteration(courseIterationName));
     }
 }

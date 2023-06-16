@@ -5,12 +5,10 @@ import { serverBaseUrl } from '../../../service/configService'
 export const fetchProjectTeams = createAsyncThunk(
   'projectTeams/fetchAllProjectTeams',
 
-  async (applicationSemester: string, { rejectWithValue }) => {
+  async (courseIteration: string, { rejectWithValue }) => {
     try {
       return (
-        await axios.get(
-          `${serverBaseUrl}/api/project-teams?applicationSemester=${applicationSemester}`,
-        )
+        await axios.get(`${serverBaseUrl}/api/project-teams?courseIteration=${courseIteration}`)
       ).data
     } catch (err) {
       return rejectWithValue(err)

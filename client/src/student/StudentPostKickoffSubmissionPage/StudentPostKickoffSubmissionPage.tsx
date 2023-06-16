@@ -30,7 +30,7 @@ import {
 } from '@mantine/core'
 import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
-import { fetchApplicationSemestersWithOpenApplicationPeriod } from '../../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
+import { fetchCourseIterationsWithOpenApplicationPeriod } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { isNotEmpty, useForm } from '@mantine/form'
 import {
   SkillAssessmentSource,
@@ -62,8 +62,8 @@ const useStyles = createStyles((theme) => ({
 export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const { classes, cx } = useStyles()
   const [studentId, setStudentId] = useState('')
-  const openApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.openApplicationSemester,
+  const courseIterationWithOpenApplicationPeriod = useAppSelector(
+    (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const skills = useAppSelector((state) => state.skills.skills)
@@ -93,7 +93,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   })
 
   useEffect(() => {
-    void dispatch(fetchApplicationSemestersWithOpenApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenApplicationPeriod())
     void dispatch(fetchSkills())
   }, [])
 
@@ -111,10 +111,10 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   }, [skills])
 
   useEffect(() => {
-    if (openApplicationSemester) {
-      void dispatch(fetchProjectTeams(openApplicationSemester.semesterName))
+    if (courseIterationWithOpenApplicationPeriod) {
+      void dispatch(fetchProjectTeams(courseIterationWithOpenApplicationPeriod.semesterName))
     }
-  }, [openApplicationSemester])
+  }, [courseIterationWithOpenApplicationPeriod])
 
   useEffect(() => {
     handlers.setState(projectTeams)
@@ -291,7 +291,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       <Center>
         <Button
           variant='filled'
-          disabled={!openApplicationSemester || !form.isValid()}
+          disabled={!courseIterationWithOpenApplicationPeriod || !form.isValid()}
           onClick={() => {
             console.log(studentId)
             if (studentId) {
@@ -300,7 +300,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                 preferencesMap.set(preference.id, index)
               })
 
-              if (openApplicationSemester) {
+              if (courseIterationWithOpenApplicationPeriod) {
                 void dispatch(
                   createStudentPostKickoffSubmission({
                     studentId,

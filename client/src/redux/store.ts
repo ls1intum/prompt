@@ -1,16 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { type TypedUseSelectorHook, useSelector } from 'react-redux'
 import authReducer from './authSlice/authSlice'
-import applicationSemesterReducer from './applicationSemesterSlice/applicationSemesterSlice'
+import courseIterationReducer from './courseIterationSlice/courseIterationSlice'
 import studentApplicationsReducer from './studentApplicationSlice/studentApplicationSlice'
 import projectTeamsReducer from './projectTeamsSlice/projectTeamsSlice'
 import studentPostKickoffSubmissionsReducer from './studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import skillsReducer from './skillsSlice/skillsSlice'
+import coursePhasesReducer from './coursePhasesSlice/coursePhasesSlice'
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    applicationSemester: applicationSemesterReducer,
+    courseIterations: courseIterationReducer,
+    coursePhases: coursePhasesReducer,
     studentApplications: studentApplicationsReducer,
     projectTeams: projectTeamsReducer,
     studentPostKickoffSubmissions: studentPostKickoffSubmissionsReducer,

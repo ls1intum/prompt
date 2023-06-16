@@ -19,24 +19,22 @@ export const ProjectTeamMemberListModal = ({
   onClose,
 }: ProjectTeamMemberListModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const studentApplications = useAppSelector(
     (state) => state.studentApplications.studentApplications,
   )
   const [data, setData] = useState<TransferListData>([[], []])
 
   useEffect(() => {
-    if (selectedApplicationSemester) {
+    if (selectedCourseIteration) {
       void dispatch(
         fetchStudentApplications({
-          applicationSemester: selectedApplicationSemester.semesterName,
+          courseIteration: selectedCourseIteration.semesterName,
           accepted: true,
         }),
       )
     }
-  }, [selectedApplicationSemester])
+  }, [selectedCourseIteration])
 
   useEffect(() => {
     setData([
@@ -86,23 +84,23 @@ export const ProjectTeamMemberListModal = ({
     )
 
     studentApplicationsAddedToProjectTeam.forEach((studentApplication) => {
-      if (selectedApplicationSemester) {
+      if (selectedCourseIteration) {
         void dispatch(
           assignStudentApplicationToProjectTeam({
             studentApplicationId: studentApplication.id,
             projectTeamId: projectTeam.id,
-            applicationSemester: selectedApplicationSemester?.semesterName,
+            courseIteration: selectedCourseIteration?.semesterName,
           }),
         )
       }
     })
 
     studentApplicationsRemovedFromProjectTeam.forEach((studentApplication) => {
-      if (selectedApplicationSemester) {
+      if (selectedCourseIteration) {
         void dispatch(
           removeStudentApplicationFromProjectTeam({
             studentApplicationId: studentApplication.id,
-            applicationSemester: selectedApplicationSemester.semesterName,
+            courseIteration: selectedCourseIteration.semesterName,
           }),
         )
       }

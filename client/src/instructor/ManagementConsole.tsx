@@ -2,13 +2,13 @@ import { AppShell, Center, Loader } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { NavigationBar } from '../utilities/NavigationBar/NavigationBar'
-import { WorkspaceSelectionDialog } from './ApplicationSemesterManager/WorkspaceSelectionDialog'
+import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
 import { useDispatch } from 'react-redux'
-import { fetchAllApplicationSemesters } from '../redux/applicationSemesterSlice/thunks/fetchApplicationSemesters'
+import { fetchAllCourseIterations } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import Keycloak from 'keycloak-js'
 import jwtDecode from 'jwt-decode'
 import { setAuthState } from '../redux/authSlice/authSlice'
-import { setCurrentState } from '../redux/applicationSemesterSlice/applicationSemesterSlice'
+import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
 
 interface DashboardProps {
@@ -24,9 +24,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
   const [authenticated, setAuthenticated] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
-  const { currentState, applicationSemesters } = useAppSelector(
-    (state) => state.applicationSemester,
-  )
+  const { currentState, courseIterations } = useAppSelector((state) => state.courseIterations)
 
   useEffect(() => {
     void keycloak
@@ -76,25 +74,21 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
   }, [])
 
   useEffect(() => {
-    if (authenticated && !currentState && localStorage.getItem('application-semester')) {
-      void dispatch(fetchAllApplicationSemesters())
+    if (authenticated && !currentState && localStorage.getItem('course-iteration')) {
+      void dispatch(fetchAllCourseIterations())
     }
   }, [authenticated, currentState])
 
   useEffect(() => {
-    if (
-      !currentState &&
-      applicationSemesters.length > 0 &&
-      localStorage.getItem('application-semester')
-    ) {
-      const savedApplicationSemester = applicationSemesters.find(
-        (as) => as.id === localStorage.getItem('application-semester'),
+    if (!currentState && courseIterations.length > 0 && localStorage.getItem('course-iteration')) {
+      const savedCourseIteration = courseIterations.find(
+        (as) => as.id === localStorage.getItem('course-iteration'),
       )
-      if (savedApplicationSemester) {
-        void dispatch(setCurrentState(savedApplicationSemester))
+      if (savedCourseIteration) {
+        void dispatch(setCurrentState(savedCourseIteration))
       }
     }
-  }, [currentState, applicationSemesters])
+  }, [currentState, courseIterations])
 
   return (
     <>

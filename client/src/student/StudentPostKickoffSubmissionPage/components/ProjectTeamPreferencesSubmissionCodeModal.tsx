@@ -17,7 +17,6 @@ export const ProjectTeamPreferencesSubmissionCodeModal = ({
 }: ProjectTeamPreferencesSubmissionCodeModalProps): JSX.Element => {
   const { studentPublicId } = useParams()
   const [matriculationNumber, setMatriculationNumber] = useState('')
-  const [studentId, setStudentId] = useState('')
   const [error, setError] = useState('')
 
   const onFormSubmit = async (): Promise<void> => {
@@ -28,9 +27,9 @@ export const ProjectTeamPreferencesSubmissionCodeModal = ({
         { headers: { 'Content-Type': 'text/plain' } },
       )
       if (response.data) {
+        console.log(response.data)
         setError('')
-        setStudentId(response.data)
-        onSubmit(studentId)
+        onSubmit(response.data)
         onClose()
       }
     } catch (err) {

@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
-import prompt.ls1.model.ApplicationSemester;
+import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentApplication;
 import prompt.ls1.model.StudentPostKickoffSubmission;
-import prompt.ls1.repository.ApplicationSemesterRepository;
+import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentApplicationRepository;
 import prompt.ls1.repository.StudentRepository;
@@ -24,23 +24,23 @@ public class StudentPostKickoffSubmissionService {
     private final StudentRepository studentRepository;
     private final ProjectTeamRepository projectTeamRepository;
     private final StudentApplicationRepository studentApplicationRepository;
-    private final ApplicationSemesterRepository applicationSemesterRepository;
+    private final CourseIterationRepository courseIterationRepository;
 
     @Autowired
     public StudentPostKickoffSubmissionService(
             StudentRepository studentRepository,
             ProjectTeamRepository projectTeamRepository,
             StudentApplicationRepository studentApplicationRepository,
-            ApplicationSemesterRepository applicationSemesterRepository) {
+            CourseIterationRepository courseIterationRepository) {
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
         this.studentApplicationRepository = studentApplicationRepository;
-        this.applicationSemesterRepository = applicationSemesterRepository;
+        this.courseIterationRepository = courseIterationRepository;
     }
 
     public UUID verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
-        final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
-                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
+        final CourseIteration courseIteration = courseIterationRepository.findWithApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
 
         final Student student = studentRepository.findByPublicId(UUID.fromString(studentPublicId))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentPublicId)));
@@ -50,7 +50,7 @@ public class StudentPostKickoffSubmissionService {
         }
 
         final StudentApplication studentApplication = studentApplicationRepository
-                .findByStudentAndApplicationSemester(student.getId(), applicationSemester.getId())
+                .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
 
         if (!studentApplication.getStudentApplicationAssessment().getAccepted()) {
@@ -64,11 +64,11 @@ public class StudentPostKickoffSubmissionService {
         return student.getId();
     }
 
-    public List<StudentPostKickoffSubmission> getByApplicationSemester(final String applicationSemesterName) {
-        final ApplicationSemester applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
+    public List<StudentPostKickoffSubmission> getByCourseIteration(final String courseIterationName) {
+        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(courseIterationName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
 
-        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByApplicationSemesterId(applicationSemester.getId());
+        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByCourseIterationId(courseIteration.getId());
 
         return studentApplications
                 .stream()
@@ -81,14 +81,14 @@ public class StudentPostKickoffSubmissionService {
 
     public StudentPostKickoffSubmission create(final String studentId,
                                                StudentPostKickoffSubmission studentPostKickOffSubmission) {
-        final ApplicationSemester applicationSemester = applicationSemesterRepository.findWithApplicationPeriodIncludes(new Date())
-                .orElseThrow(() -> new ResourceNotFoundException("No application semester with open preferences submission period found."));
+        final CourseIteration courseIteration = courseIterationRepository.findWithApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
 
         final Student student = studentRepository.findById(UUID.fromString(studentId))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentId)));
 
         final StudentApplication studentApplication = studentApplicationRepository
-                .findByStudentAndApplicationSemester(student.getId(), applicationSemester.getId())
+                .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
 
         if (!studentApplication.getStudentApplicationAssessment().getAccepted()) {
@@ -100,7 +100,7 @@ public class StudentPostKickoffSubmissionService {
        }
 
         final List<ProjectTeam> projectTeams = projectTeamRepository
-                .findAllByApplicationSemesterId(applicationSemester.getId());
+                .findAllByCourseIterationId(courseIteration.getId());
 
         studentPostKickOffSubmission.getStudentProjectTeamPreferences().forEach(studentProjectTeamPreference -> {
             if (projectTeams.stream().noneMatch(pt -> pt.getId().equals(studentProjectTeamPreference.getProjectTeamId()))) {
@@ -113,11 +113,11 @@ public class StudentPostKickoffSubmissionService {
         return studentApplicationRepository.save(studentApplication).getStudentPostKickOffSubmission();
     }
 
-    public List<StudentPostKickoffSubmission> deleteByApplicationSemester(final String applicationSemesterName) {
-        final ApplicationSemester applicationSemester = applicationSemesterRepository.findBySemesterName(applicationSemesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Application semester with name %s not found.", applicationSemesterName)));
+    public List<StudentPostKickoffSubmission> deleteByCourseIteration(final String courseIterationName) {
+        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(courseIterationName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
 
-        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByApplicationSemesterId(applicationSemester.getId());
+        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByCourseIterationId(courseIteration.getId());
         return studentApplications.stream().map(sa -> {
             sa.getStudentPostKickOffSubmission().setStudentProjectTeamPreferences(null);
             return studentApplicationRepository.save(sa).getStudentPostKickOffSubmission();

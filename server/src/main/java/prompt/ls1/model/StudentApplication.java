@@ -21,9 +21,9 @@ public class StudentApplication {
             inverseJoinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"))
     private Student student;
 
-    @ManyToOne(targetEntity = ApplicationSemester.class)
-    @JoinColumn(name ="application_semester_id", referencedColumnName = "id")
-    private ApplicationSemester applicationSemester;
+    @ManyToOne(targetEntity = CourseIteration.class)
+    @JoinColumn(name ="course_iteration_id", referencedColumnName = "id")
+    private CourseIteration courseIteration;
 
     private StudyDegree studyDegree;
 

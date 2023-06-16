@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import prompt.ls1.model.ApplicationSemester;
+import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.StudentApplication;
 import prompt.ls1.model.InstructorComment;
-import prompt.ls1.service.ApplicationSemesterService;
+import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.StudentApplicationService;
 
 import java.util.List;
@@ -28,30 +28,30 @@ import java.util.UUID;
 @RequestMapping("/student-applications")
 public class StudentApplicationController {
     private final StudentApplicationService studentApplicationService;
-    private final ApplicationSemesterService applicationSemesterService;
+    private final CourseIterationService courseIterationService;
 
     @Autowired
     public StudentApplicationController(StudentApplicationService studentApplicationService,
-                                        ApplicationSemesterService applicationSemesterService) {
+                                        CourseIterationService courseIterationService) {
         this.studentApplicationService = studentApplicationService;
-        this.applicationSemesterService = applicationSemesterService;
+        this.courseIterationService = courseIterationService;
     }
 
     @GetMapping
     public ResponseEntity<List<StudentApplication>> getAllStudentApplications(
-            @RequestParam(name = "applicationSemester") @NotNull String applicationSemesterName,
+            @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @RequestParam(required = false, defaultValue = "false") boolean accepted
     ) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
+        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
-        return ResponseEntity.ok(studentApplicationService.findAllByApplicationSemester(applicationSemester.getId(), accepted));
+        return ResponseEntity.ok(studentApplicationService.findAllByCourseIteration(courseIteration.getId(), accepted));
     }
 
     @PostMapping
     public ResponseEntity<StudentApplication> create(@RequestBody StudentApplication studentApplication,
-                                     @RequestParam(name = "applicationSemester") String applicationSemesterName) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
-        studentApplication.setApplicationSemester(applicationSemester);
+                                     @RequestParam(name = "courseIteration") String courseIterationName) {
+        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
+        studentApplication.setCourseIteration(courseIteration);
 
         return ResponseEntity.ok(studentApplicationService.create(studentApplication));
     }
@@ -78,23 +78,23 @@ public class StudentApplicationController {
 
     @PostMapping(path = "/{studentApplicationId}/project-team/{projectTeamId}")
     public ResponseEntity<StudentApplication> assignStudentApplicationToProjectTeam(
-            @RequestParam(name="applicationSemester") @NotNull String applicationSemesterName,
+            @RequestParam(name="courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID studentApplicationId,
             @PathVariable UUID projectTeamId
     ) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
+        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
-        return ResponseEntity.ok(studentApplicationService.assignToProjectTeam(studentApplicationId, projectTeamId, applicationSemester.getId()));
+        return ResponseEntity.ok(studentApplicationService.assignToProjectTeam(studentApplicationId, projectTeamId, courseIteration.getId()));
     }
 
     @DeleteMapping(path = "/{studentApplicationId}/project-team")
     public ResponseEntity<StudentApplication> removeStudentApplicationFromProjectTeam(
-            @RequestParam(name = "applicationSemester") @NotNull String applicationSemesterName,
+            @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID studentApplicationId
     ) {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findBySemesterName(applicationSemesterName);
+        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
-        return ResponseEntity.ok(studentApplicationService.removeFromProjectTeam(studentApplicationId, applicationSemester.getId()));
+        return ResponseEntity.ok(studentApplicationService.removeFromProjectTeam(studentApplicationId, courseIteration.getId()));
     }
 
 }

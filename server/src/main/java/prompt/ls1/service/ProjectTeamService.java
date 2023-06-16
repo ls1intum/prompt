@@ -48,8 +48,8 @@ public class ProjectTeamService {
         return existingProjectTeam.getId();
     }
 
-    public List<ProjectTeam> findAllByApplicationSemesterId(final UUID applicationSemesterId) {
-        return projectTeamRepository.findAllByApplicationSemesterId(applicationSemesterId);
+    public List<ProjectTeam> findAllByCourseIterationId(final UUID courseIterationId) {
+        return projectTeamRepository.findAllByCourseIterationId(courseIterationId);
     }
 
     private ProjectTeam findById(final UUID projectTeamId) {

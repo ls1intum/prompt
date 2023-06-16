@@ -5,11 +5,11 @@ import { serverBaseUrl } from '../../../service/configService'
 export const fetchStudentPostKickoffSubmissions = createAsyncThunk(
   'studentPostKickoffSubmissions/fetchStudentPostKickoffSubmissions',
 
-  async (applicationSemester: string, { rejectWithValue }) => {
+  async (courseIteration: string, { rejectWithValue }) => {
     try {
       return (
         await axios.get(
-          `${serverBaseUrl}/api/post-kickoff-submissions?applicationSemester=${applicationSemester}`,
+          `${serverBaseUrl}/api/post-kickoff-submissions?courseIteration=${courseIteration}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

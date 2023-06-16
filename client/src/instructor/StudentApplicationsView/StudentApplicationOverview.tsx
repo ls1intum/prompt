@@ -13,9 +13,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const studentApplications = useAppSelector(
     (state) => state.studentApplications.studentApplications,
   )
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [studentApplicationModalOpen, setStudentApplicationModalOpen] = useState<
     StudentApplication | undefined
   >(undefined)
@@ -26,12 +24,12 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const [showOnlyNotAssessed, setShowOnlyNotAssessed] = useState(false)
 
   useEffect(() => {
-    if (selectedApplicationSemester) {
+    if (selectedCourseIteration) {
       void dispatch(
-        fetchStudentApplications({ applicationSemester: selectedApplicationSemester.semesterName }),
+        fetchStudentApplications({ courseIteration: selectedCourseIteration.semesterName }),
       )
     }
-  }, [selectedApplicationSemester])
+  }, [selectedCourseIteration])
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize

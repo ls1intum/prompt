@@ -30,9 +30,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const { cx, classes } = useStyles()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
-  const selectedApplicationSemester = useAppSelector(
-    (state) => state.applicationSemester.currentState,
-  )
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const studentPostKickoffSubmissions = useAppSelector(
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
   )
@@ -42,10 +40,10 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const [inverseTableView, setInverseTableView] = useState(false)
 
   useEffect(() => {
-    if (selectedApplicationSemester) {
-      void dispatch(fetchStudentPostKickoffSubmissions(selectedApplicationSemester.semesterName))
+    if (selectedCourseIteration) {
+      void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
     }
-  }, [selectedApplicationSemester])
+  }, [selectedCourseIteration])
 
   return (
     <div>
@@ -71,9 +69,9 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             variant='outline'
             disabled={studentPostKickoffSubmissions.length === 0}
             onClick={() => {
-              if (selectedApplicationSemester) {
+              if (selectedCourseIteration) {
                 void dispatch(
-                  deleteStudentProjectTeamPreferences(selectedApplicationSemester.semesterName),
+                  deleteStudentProjectTeamPreferences(selectedCourseIteration.semesterName),
                 )
               }
             }}
@@ -95,7 +93,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
       <CSVLink
         data={studentPostKickoffSubmissions?.flatMap((stp) =>
           stp.studentProjectTeamPreferences.map((p) => ({
-            applicationSemesterId: selectedApplicationSemester?.id,
+            courseIterationId: selectedCourseIteration?.id,
             studentId: stp.student?.id,
             tumId: stp.student?.tumId,
             projectTeamId: p.projectTeamId,

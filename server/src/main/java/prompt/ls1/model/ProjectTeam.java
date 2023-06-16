@@ -32,6 +32,6 @@ public class ProjectTeam implements Serializable {
     private String customer;
 
     @ManyToOne
-    @JoinColumn(name ="application_semester_id", referencedColumnName = "id")
-    private ApplicationSemester applicationSemester;
+    @JoinColumn(name ="course_iteration_id", referencedColumnName = "id")
+    private CourseIteration courseIteration;
 }

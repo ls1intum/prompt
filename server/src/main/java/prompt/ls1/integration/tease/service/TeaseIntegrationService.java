@@ -7,10 +7,10 @@ import prompt.ls1.integration.tease.mapper.TeaseStudentMapper;
 import prompt.ls1.integration.tease.model.Allocation;
 import prompt.ls1.integration.tease.model.Skill;
 import prompt.ls1.integration.tease.model.Student;
-import prompt.ls1.model.ApplicationSemester;
+import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.StudentApplication;
-import prompt.ls1.service.ApplicationSemesterService;
+import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.ProjectTeamService;
 import prompt.ls1.service.SkillService;
 import prompt.ls1.service.StudentApplicationService;
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Service
 public class TeaseIntegrationService {
-    private final ApplicationSemesterService applicationSemesterService;
+    private final CourseIterationService courseIterationService;
     private final StudentApplicationService studentApplicationService;
     private final ProjectTeamService projectTeamService;
     private final SkillService skillService;
@@ -29,13 +29,13 @@ public class TeaseIntegrationService {
     private final TeaseSkillMapper teaseSkillMapper;
 
     @Autowired
-    public TeaseIntegrationService(final ApplicationSemesterService applicationSemesterService,
+    public TeaseIntegrationService(final CourseIterationService courseIterationService,
                                    final StudentApplicationService studentApplicationService,
                                    final ProjectTeamService projectTeamService,
                                    final SkillService skillService,
                                    final TeaseStudentMapper teaseStudentMapper,
                                    final TeaseSkillMapper teaseSkillMapper) {
-        this.applicationSemesterService = applicationSemesterService;
+        this.courseIterationService = courseIterationService;
         this.studentApplicationService = studentApplicationService;
         this.projectTeamService = projectTeamService;
         this.skillService = skillService;
@@ -44,9 +44,9 @@ public class TeaseIntegrationService {
     }
 
     public List<Student> getStudents() {
-        final ApplicationSemester applicationSemester = applicationSemesterService.findWithOpenApplicationPeriod();
-        final List<StudentApplication> studentApplications = studentApplicationService.findAllByApplicationSemester(applicationSemester.getId(), true);
-        final List<ProjectTeam> projectTeams = projectTeamService.findAllByApplicationSemesterId(applicationSemester.getId());
+        final CourseIteration courseIteration = courseIterationService.findWithOpenApplicationPeriod();
+        final List<StudentApplication> studentApplications = studentApplicationService.findAllByCourseIteration(courseIteration.getId(), true);
+        final List<ProjectTeam> projectTeams = projectTeamService.findAllByCourseIterationId(courseIteration.getId());
 
         return studentApplications.stream().map(studentApplication ->
             teaseStudentMapper.toTeaseStudent(studentApplication, projectTeams)

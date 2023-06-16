@@ -6,13 +6,13 @@ export const fetchStudentApplications = createAsyncThunk(
   'studentApplications/fetchAllStudentApplications',
 
   async (
-    { applicationSemester, accepted }: { applicationSemester: string; accepted?: boolean },
+    { courseIteration, accepted }: { courseIteration: string; accepted?: boolean },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.get(
-          `${serverBaseUrl}/api/student-applications?applicationSemester=${applicationSemester}${
+          `${serverBaseUrl}/api/student-applications?courseIteration=${courseIteration}${
             accepted ? '&accepted=true' : ''
           }`,
           {

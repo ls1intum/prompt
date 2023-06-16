@@ -15,8 +15,8 @@ public interface ProjectTeamRepository extends JpaRepository<ProjectTeam, UUID> 
     Optional<ProjectTeam> findFirstByName(final String projectTeamName);
 
     @Transactional
-    @Query(value="select pt from ProjectTeam pt where pt.applicationSemester.id=?1")
-    List<ProjectTeam> findAllByApplicationSemesterId(final UUID applicationSemester);
+    @Query(value="select pt from ProjectTeam pt where pt.courseIteration.id=?1")
+    List<ProjectTeam> findAllByCourseIterationId(final UUID courseIterationId);
 
     Optional<ProjectTeam> findById(final UUID projectTeamId);
 
