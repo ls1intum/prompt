@@ -1,14 +1,12 @@
 import { Modal } from '@mantine/core'
-import {
-  StudentApplicationAccessMode,
-  StudentApplicationForm,
-} from '../../forms/StudentApplicationForm'
-import { type StudentApplication } from '../../redux/studentApplicationSlice/studentApplicationSlice'
+import { ApplicationFormAccessMode } from '../../forms/DefaultApplicationForm'
+import { type DeveloperApplication } from '../../redux/studentApplicationSlice/studentApplicationSlice'
+import { DeveloperApplicationForm } from '../../forms/DeveloperApplicationForm'
 
 interface StudentApplicationModalProps {
   open: boolean
   onClose: () => void
-  studentApplication: StudentApplication
+  studentApplication: DeveloperApplication
 }
 
 export const StudentApplicationModal = ({
@@ -19,10 +17,10 @@ export const StudentApplicationModal = ({
   return (
     <Modal opened={open} onClose={onClose} size='xl'>
       <div style={{ padding: '3vh 3vw' }}>
-        <StudentApplicationForm
-          accessMode={StudentApplicationAccessMode.INSTRUCTOR}
-          studentApplication={studentApplication}
-          onSuccessfulSubmit={onClose}
+        <DeveloperApplicationForm
+          accessMode={ApplicationFormAccessMode.INSTRUCTOR}
+          developerApplication={studentApplication}
+          onSuccess={onClose}
         />
       </div>
     </Modal>

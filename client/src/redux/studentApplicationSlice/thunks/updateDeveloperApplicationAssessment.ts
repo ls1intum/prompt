@@ -2,24 +2,24 @@ import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { type Patch, serverBaseUrl } from '../../../service/configService'
 
-export const updateStudentApplicationAssessment = createAsyncThunk(
-  'studentApplications/updateStudentApplicationAssessment',
+export const updateDeveloperApplicationAssessment = createAsyncThunk(
+  'studentApplications/updateDeveloperApplicationAssessment',
 
   async (
     {
-      studentApplicationId,
-      studentApplicationAssessmentPatch,
+      applicationId,
+      applicationAssessmentPatch,
     }: {
-      studentApplicationId: string
-      studentApplicationAssessmentPatch: Patch[]
+      applicationId: string
+      applicationAssessmentPatch: Patch[]
     },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.patch(
-          `${serverBaseUrl}/api/student-applications/${studentApplicationId}/assessment`,
-          studentApplicationAssessmentPatch,
+          `${serverBaseUrl}/api/applications/developer/${applicationId}/assessment`,
+          applicationAssessmentPatch,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

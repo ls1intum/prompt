@@ -63,7 +63,10 @@ export const CoursePhasesManager = (): JSX.Element => {
         snapshot: any,
       ) => (
         <div {...provided.draggableProps} ref={provided.innerRef}>
-          <Group className={cx({ [classes.itemDragging]: snapshot.isDragging })}>
+          <Group
+            className={cx({ [classes.itemDragging]: snapshot.isDragging })}
+            style={{ display: 'flex' }}
+          >
             <div {...provided.dragHandleProps}>
               <IconGripVertical />
             </div>

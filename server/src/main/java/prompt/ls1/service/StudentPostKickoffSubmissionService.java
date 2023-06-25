@@ -6,13 +6,13 @@ import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
-import prompt.ls1.model.StudentApplication;
 import prompt.ls1.model.StudentPostKickoffSubmission;
 import prompt.ls1.repository.CourseIterationRepository;
+import prompt.ls1.repository.DeveloperApplicationRepository;
 import prompt.ls1.repository.ProjectTeamRepository;
-import prompt.ls1.repository.StudentApplicationRepository;
 import prompt.ls1.repository.StudentRepository;
 
 import java.util.Date;
@@ -23,18 +23,18 @@ import java.util.UUID;
 public class StudentPostKickoffSubmissionService {
     private final StudentRepository studentRepository;
     private final ProjectTeamRepository projectTeamRepository;
-    private final StudentApplicationRepository studentApplicationRepository;
+    private final DeveloperApplicationRepository developerApplicationRepository;
     private final CourseIterationRepository courseIterationRepository;
 
     @Autowired
     public StudentPostKickoffSubmissionService(
-            StudentRepository studentRepository,
-            ProjectTeamRepository projectTeamRepository,
-            StudentApplicationRepository studentApplicationRepository,
-            CourseIterationRepository courseIterationRepository) {
+            final StudentRepository studentRepository,
+            final ProjectTeamRepository projectTeamRepository,
+            final DeveloperApplicationRepository developerApplicationRepository,
+            final CourseIterationRepository courseIterationRepository) {
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
-        this.studentApplicationRepository = studentApplicationRepository;
+        this.developerApplicationRepository = developerApplicationRepository;
         this.courseIterationRepository = courseIterationRepository;
     }
 
@@ -49,16 +49,16 @@ public class StudentPostKickoffSubmissionService {
             throw new ResourceInvalidParametersException("The public id provided does not match with the matriculation number.");
         }
 
-        final StudentApplication studentApplication = studentApplicationRepository
+        final DeveloperApplication developerApplication = developerApplicationRepository
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
 
-        if (!studentApplication.getStudentApplicationAssessment().getAccepted()) {
-            throw new ResourceInvalidParametersException("No student application with provided parameters found.");
+        if (!developerApplication.getAssessment().getAccepted()) {
+            throw new ResourceInvalidParametersException("No developer application with provided parameters found.");
         }
 
-        if (studentApplication.getStudentPostKickOffSubmission() != null) {
-            throw new ResourceConflictException("Student post kickoff submission already exists.");
+        if (developerApplication.getStudentPostKickOffSubmission() != null) {
+            throw new ResourceConflictException("Developer post kickoff submission already exists.");
         }
 
         return student.getId();
@@ -68,9 +68,9 @@ public class StudentPostKickoffSubmissionService {
         final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(courseIterationName)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
 
-        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByCourseIterationId(courseIteration.getId());
+        final List<DeveloperApplication> applications = developerApplicationRepository.findAllByCourseIterationId(courseIteration.getId());
 
-        return studentApplications
+        return applications
                 .stream()
                 .filter(sa -> sa.getStudentPostKickOffSubmission() != null)
                 .map(sa -> {
@@ -87,15 +87,15 @@ public class StudentPostKickoffSubmissionService {
         final Student student = studentRepository.findById(UUID.fromString(studentId))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentId)));
 
-        final StudentApplication studentApplication = studentApplicationRepository
+        final DeveloperApplication application = developerApplicationRepository
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student application for student with id %s not found.", student.getId())));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
 
-        if (!studentApplication.getStudentApplicationAssessment().getAccepted()) {
-            throw new ResourceInvalidParametersException("No student application with provided parameters found.");
+        if (!application.getAssessment().getAccepted()) {
+            throw new ResourceInvalidParametersException("No developer application with provided parameters found.");
         }
 
-       if (studentApplication.getStudentPostKickOffSubmission() != null) {
+       if (application.getStudentPostKickOffSubmission() != null) {
            throw new ResourceConflictException(String.format("Student preferences submission for student with id %s already exists.", student.getId()));
        }
 
@@ -108,19 +108,19 @@ public class StudentPostKickoffSubmissionService {
             }
         });
 
-        studentApplication.setStudentPostKickOffSubmission(studentPostKickOffSubmission);
+        application.setStudentPostKickOffSubmission(studentPostKickOffSubmission);
 
-        return studentApplicationRepository.save(studentApplication).getStudentPostKickOffSubmission();
+        return developerApplicationRepository.save(application).getStudentPostKickOffSubmission();
     }
 
     public List<StudentPostKickoffSubmission> deleteByCourseIteration(final String courseIterationName) {
         final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(courseIterationName)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
 
-        final List<StudentApplication> studentApplications = studentApplicationRepository.findAllByCourseIterationId(courseIteration.getId());
-        return studentApplications.stream().map(sa -> {
+        final List<DeveloperApplication> applications = developerApplicationRepository.findAllByCourseIterationId(courseIteration.getId());
+        return applications.stream().map(sa -> {
             sa.getStudentPostKickOffSubmission().setStudentProjectTeamPreferences(null);
-            return studentApplicationRepository.save(sa).getStudentPostKickOffSubmission();
+            return developerApplicationRepository.save(sa).getStudentPostKickOffSubmission();
         }).toList();
     }
 }

@@ -31,7 +31,7 @@ import { deleteProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/de
 import { fetchProjectTeams } from '../../../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { updateProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/updateProjectTeam'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import { fetchStudentApplications } from '../../../../redux/studentApplicationSlice/thunks/fetchStudentApplications'
+import { fetchDeveloperApplications } from '../../../../redux/studentApplicationSlice/thunks/fetchDeveloperApplications'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 
 interface ProjectTeamDeletionConfirmationProps {
@@ -147,9 +147,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
-  const studentApplications = useAppSelector(
-    (state) => state.studentApplications.studentApplications,
-  )
+  const studentApplications = useAppSelector((state) => state.applications.developerApplications)
   const [projectTeamCreationModalOpen, setProjectTeamCreationModalOpen] = useState(false)
   const [projectTeamEditModalOpen, setProjectTeamEditOpen] = useState(false)
   const [projectTeamMemberListModalOpen, setProjectTeamMemberListModalOpen] = useState(false)
@@ -166,7 +164,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
   useEffect(() => {
     if (selectedCourseIteration) {
       void dispatch(
-        fetchStudentApplications({ courseIteration: selectedCourseIteration.semesterName }),
+        fetchDeveloperApplications({ courseIteration: selectedCourseIteration.semesterName }),
       )
       void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
     }

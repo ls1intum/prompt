@@ -4,12 +4,16 @@ import { Appearance } from 'react-native-web'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ManagementConsole } from './instructor/ManagementConsole'
 import { StudentApplicationOverview } from './instructor/StudentApplicationsView/StudentApplicationOverview'
-import { StudentApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/StudentApplicationSubmissionPage'
+import { ApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/ApplicationSubmissionPage'
 import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
 import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
 import { InfrastructureManagement } from './instructor/InfrastructureManagement/InstrastructureManagement'
 import { Notifications } from '@mantine/notifications'
 import { CourseIterationConsole } from './instructor/CourseIterationManager/CourseIterationConsole'
+import { DeveloperApplicationForm } from './forms/DeveloperApplicationForm'
+import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
+import { CoachApplicationForm } from './forms/CoachApplicationForm'
+import { TutorApplicationForm } from './forms/TutorApplicationForm'
 
 export const App = (): JSX.Element => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
@@ -31,7 +35,7 @@ export const App = (): JSX.Element => {
                 element={<ManagementConsole child={<CourseIterationConsole />} />}
               />
               <Route
-                path='/management/student-applications'
+                path='/management/applications'
                 element={<ManagementConsole child={<StudentApplicationOverview />} />}
               />
               <Route
@@ -46,7 +50,45 @@ export const App = (): JSX.Element => {
                 path='/management'
                 element={<Navigate to='/management/student-applications' replace={true} />}
               />
-              <Route path='/' element={<StudentApplicationSubmissionPage />} />
+              <Route
+                path='/applications/developer'
+                element={
+                  <ApplicationSubmissionPage
+                    child={
+                      <DeveloperApplicationForm
+                        accessMode={ApplicationFormAccessMode.STUDENT}
+                        onSuccess={() => {}}
+                      />
+                    }
+                  />
+                }
+              />
+              <Route
+                path='/applications/coach'
+                element={
+                  <ApplicationSubmissionPage
+                    child={
+                      <CoachApplicationForm
+                        accessMode={ApplicationFormAccessMode.STUDENT}
+                        onSuccess={() => {}}
+                      />
+                    }
+                  />
+                }
+              />
+              <Route
+                path='/applications/tutor'
+                element={
+                  <ApplicationSubmissionPage
+                    child={
+                      <TutorApplicationForm
+                        accessMode={ApplicationFormAccessMode.STUDENT}
+                        onSuccess={() => {}}
+                      />
+                    }
+                  />
+                }
+              />
               <Route
                 path='/kick-off/:studentPublicId'
                 element={<StudentTeamPostKickoffSubmissionPage />}

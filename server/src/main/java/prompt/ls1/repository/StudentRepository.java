@@ -1,10 +1,11 @@
 package prompt.ls1.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import prompt.ls1.model.Student;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,5 +18,9 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
 
     Optional<Student> findByFirstNameAndLastName(final String firstName, final String lastName);
 
-    List<Student> findAllByIdIn(final List<UUID> studentIds);
+    Optional<Student> findByEmail(final String email);
+
+    @Transactional
+    @Query(value="select s from Student s where s.tumId=?1 or s.matriculationNumber=?2")
+    Optional<Student> findByTumIdOrMatriculationNumber(final String tumId, final String matriculationNumber);
 }

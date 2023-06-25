@@ -13,7 +13,7 @@ const store = configureStore({
     auth: authReducer,
     courseIterations: courseIterationReducer,
     coursePhases: coursePhasesReducer,
-    studentApplications: studentApplicationsReducer,
+    applications: studentApplicationsReducer,
     projectTeams: projectTeamsReducer,
     studentPostKickoffSubmissions: studentPostKickoffSubmissionsReducer,
     skills: skillsReducer,
