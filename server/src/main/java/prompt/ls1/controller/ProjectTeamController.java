@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -46,6 +47,7 @@ public class ProjectTeamController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<ProjectTeam> createProjectTeam(@RequestBody @NotNull ProjectTeam projectTeam,
                                                          @RequestParam(name= "courseIteration") @NotNull String courseIterationName) {
         final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
@@ -55,12 +57,14 @@ public class ProjectTeamController {
     }
 
     @PatchMapping(path = "/{projectTeamId}", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<ProjectTeam> updateProjectTeam(@PathVariable UUID projectTeamId, @RequestBody JsonPatch patchProjectTeam)
                         throws JsonPatchException, JsonProcessingException{
         return ResponseEntity.ok(projectTeamService.update(projectTeamId, patchProjectTeam));
     }
 
     @DeleteMapping(path = "/{projectTeamId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<UUID> deleteProjectTeam(@PathVariable UUID projectTeamId) {
         return ResponseEntity.ok(projectTeamService.delete(projectTeamId));
     }

@@ -297,7 +297,7 @@ export const DefaultApplicationForm = ({
                 })}
               />
             </Group>
-            {form.values.assessment.blockedByPM && (
+            {form.values.assessment?.blockedByPM && (
               <Textarea
                 autosize
                 label='Reason for Blocked by PM'
@@ -334,7 +334,7 @@ export const DefaultApplicationForm = ({
               <Text fz='sm' weight={500}>
                 Additional Notes
               </Text>
-              {form.values.assessment.instructorComments.map((comment) => (
+              {form.values.assessment?.instructorComments.map((comment) => (
                 <div key={`${comment.id ?? ''} ${comment.timestamp ?? ''}`}>
                   <StudentApplicationComment instructorComment={comment} />
                 </div>
@@ -351,7 +351,7 @@ export const DefaultApplicationForm = ({
               />
               <Button
                 onClick={() => {
-                  if (note && note.length !== 0) {
+                  if (note && note.length !== 0 && form.values.assessment) {
                     form.setValues({
                       ...form.values,
                       assessment: {

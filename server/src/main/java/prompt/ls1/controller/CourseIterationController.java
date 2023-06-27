@@ -5,6 +5,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,11 +42,13 @@ public class CourseIterationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<CourseIteration> createCourseIteration(@RequestBody CourseIteration courseIteration) {
         return ResponseEntity.ok(courseIterationService.create(courseIteration));
     }
 
     @PatchMapping(path = "/{courseIterationId}", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<CourseIteration> updateCourseIteration(@PathVariable UUID courseIterationId,
                                                                      @RequestBody JsonPatch patchCourseIteration)
             throws JsonPatchException, JsonProcessingException{
@@ -53,12 +56,14 @@ public class CourseIterationController {
     }
 
     @PostMapping("/{courseIterationId}/course-iteration-phase-check-entries/{courseIterationPhaseCheckEntryId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<CourseIteration> toggleCourseIterationPhaseCheckEntry(@PathVariable final UUID courseIterationId,
                                                                                 @PathVariable final UUID courseIterationPhaseCheckEntryId) {
         return ResponseEntity.ok(courseIterationService.toggleCourseIterationPhaseCheckEntry(courseIterationId, courseIterationPhaseCheckEntryId));
     }
 
     @DeleteMapping("/{courseIterationId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<UUID> deleteCourseIteration(@PathVariable UUID courseIterationId) {
         return ResponseEntity.ok(courseIterationService.deleteById(courseIterationId));
     }

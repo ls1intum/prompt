@@ -2,6 +2,7 @@ package prompt.ls1.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class StudentPostKickoffSubmissionController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<StudentPostKickoffSubmission>> getProjectTeamPreferencesSubmissions(
             @RequestParam(name = "courseIteration") final String courseIterationName
     ) {
@@ -50,6 +52,7 @@ public class StudentPostKickoffSubmissionController {
     }
 
     @DeleteMapping("/project-team-preferences")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<StudentPostKickoffSubmission>> deleteAllStudentProjectTeamPreferencesForCourseIteration(
             @RequestParam(name = "courseIteration") final String courseIterationName
     ) {

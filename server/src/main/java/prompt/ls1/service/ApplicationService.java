@@ -78,6 +78,8 @@ public class ApplicationService {
                     developerApplication.getStudent().getTumId()));
         }
 
+        developerApplication.setAssessment(null);
+
         return developerApplicationRepository.save(developerApplication);
     }
 
@@ -100,6 +102,8 @@ public class ApplicationService {
                     tutorApplication.getStudent().getTumId()));
         }
 
+        tutorApplication.setAssessment(null);
+
         return tutorApplicationRepository.save(tutorApplication);
     }
 
@@ -121,6 +125,8 @@ public class ApplicationService {
             throw new ResourceConflictException(String.format("Coach application for student %s already exists. ",
                     coachApplication.getStudent().getTumId()));
         }
+
+        coachApplication.setAssessment(null);
 
         return coachApplicationRepository.save(coachApplication);
     }
