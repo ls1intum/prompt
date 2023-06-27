@@ -47,7 +47,6 @@ export const CoachApplicationForm = ({
     initialValues: coachApplication
       ? {
           ...coachApplication,
-          assessment: { ...coachApplication.assessment },
         }
       : {
           id: '',
@@ -71,16 +70,6 @@ export const CoachApplicationForm = ({
           experience: '',
           devices: [],
           coursesTaken: [],
-          assessment: {
-            instructorComments: [],
-            suggestedAsCoach: false,
-            suggestedAsTutor: false,
-            blockedByPM: false,
-            reasonForBlockedByPM: '',
-            assessmentScore: 0,
-            assessed: false,
-            accepted: false,
-          },
         },
     validateInputOnBlur: true,
     validate: {
@@ -231,28 +220,29 @@ export const CoachApplicationForm = ({
                           coachApplication
                         ) {
                           // TODO: differentiate between assessment and student application changes
-                          const studentApplicationAssessmentPatchObjectArray: Patch[] = []
-                          Object.keys(defaultForm.values.assessment).forEach((key) => {
-                            if (defaultForm.isTouched('assessment.' + key)) {
-                              const studentApplicationPatchObject = new Map()
-                              studentApplicationPatchObject.set('op', 'replace')
-                              studentApplicationPatchObject.set('path', '/' + key)
-                              studentApplicationPatchObject.set(
-                                'value',
-                                defaultForm.getInputProps('assessment.' + key).value,
-                              )
-                              const obj = Object.fromEntries(studentApplicationPatchObject)
-                              studentApplicationAssessmentPatchObjectArray.push(obj)
-                            }
-                          })
-
-                          /* void dispatch(
-                updateDeveloperApplicationAssessment({
-                  applicationId: developerApplication.id,
-                  applicationAssessmentPatch: studentApplicationAssessmentPatchObjectArray,
-                }),
-              ) */
-                          onSuccess()
+                          if (defaultForm.values.assessment) {
+                            const studentApplicationAssessmentPatchObjectArray: Patch[] = []
+                            Object.keys(defaultForm.values.assessment).forEach((key) => {
+                              if (defaultForm.isTouched('assessment.' + key)) {
+                                const studentApplicationPatchObject = new Map()
+                                studentApplicationPatchObject.set('op', 'replace')
+                                studentApplicationPatchObject.set('path', '/' + key)
+                                studentApplicationPatchObject.set(
+                                  'value',
+                                  defaultForm.getInputProps('assessment.' + key).value,
+                                )
+                                const obj = Object.fromEntries(studentApplicationPatchObject)
+                                studentApplicationAssessmentPatchObjectArray.push(obj)
+                              }
+                            })
+                            /* void dispatch(
+                  updateDeveloperApplicationAssessment({
+                    applicationId: developerApplication.id,
+                    applicationAssessmentPatch: studentApplicationAssessmentPatchObjectArray,
+                  }),
+                ) */
+                            onSuccess()
+                          }
                         }
                       }}
                     >

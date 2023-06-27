@@ -59,7 +59,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
             }`.includes(searchQuery)
           })
           .filter((studentApplication) =>
-            showOnlyNotAssessed ? !studentApplication.assessment.assessed : true,
+            showOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
           )
           .slice(from, to),
       )
@@ -72,7 +72,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
             } ${student.matriculationNumber ?? ''}`.includes(searchQuery)
           })
           .filter((studentApplication) =>
-            showOnlyNotAssessed ? !studentApplication.assessment.assessed : true,
+            showOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
           )
           .slice(from, to),
       )
@@ -85,7 +85,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
             } ${student.matriculationNumber ?? ''}`.includes(searchQuery)
           })
           .filter((studentApplication) =>
-            showOnlyNotAssessed ? !studentApplication.assessment.assessed : true,
+            showOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
           )
           .slice(from, to),
       )
@@ -190,8 +190,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
               accessor: 'applicationStatus',
               title: <Text>Application Status</Text>,
               render: (studentApplication) => {
-                const isAccepted = studentApplication.assessment.accepted
-                const isAssessed = studentApplication.assessment.assessed
+                const isAccepted = studentApplication.assessment?.accepted
+                const isAssessed = studentApplication.assessment?.assessed
                 return (
                   <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
                     {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}
@@ -291,8 +291,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
               accessor: 'applicationStatus',
               title: <Text>Application Status</Text>,
               render: (studentApplication) => {
-                const isAccepted = studentApplication.assessment.accepted
-                const isAssessed = studentApplication.assessment.assessed
+                const isAccepted = studentApplication.assessment?.accepted
+                const isAssessed = studentApplication.assessment?.assessed
                 return (
                   <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
                     {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}
@@ -384,8 +384,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
               accessor: 'applicationStatus',
               title: <Text>Application Status</Text>,
               render: (studentApplication) => {
-                const isAccepted = studentApplication.assessment.accepted
-                const isAssessed = studentApplication.assessment.assessed
+                const isAccepted = studentApplication.assessment?.accepted
+                const isAssessed = studentApplication.assessment?.assessed
                 return (
                   <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
                     {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}

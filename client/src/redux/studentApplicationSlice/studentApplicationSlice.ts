@@ -84,7 +84,7 @@ interface Application {
   experience?: string
   devices: Device[]
   coursesTaken: Course[]
-  assessment: ApplicationAssessment
+  assessment?: ApplicationAssessment
 }
 
 interface DeveloperApplication extends Application {
