@@ -1,4 +1,4 @@
-import { AppShell, Center, Loader } from '@mantine/core'
+import { AppShell, Card, Center, Loader, Title, Text } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { NavigationBar } from '../utilities/NavigationBar/NavigationBar'
@@ -11,11 +11,25 @@ import { setAuthState } from '../redux/authSlice/authSlice'
 import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
 
+const AccessRestricted = (): JSX.Element => {
+  return (
+    <div
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+    >
+      <Card withBorder p='xl'>
+        <Title order={5}>Restricted acccess!</Title>
+        <Text c='dimmed'>You do not have the necessary permissions to access this resource..</Text>
+      </Card>
+    </div>
+  )
+}
+
 interface DashboardProps {
   child: React.ReactNode
 }
 
 export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
+  const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
   const keycloak = new Keycloak({
     realm: keycloakRealmName,
     url: keycloakUrl,
@@ -39,7 +53,6 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
         localStorage.setItem('jwt_token', keycloak.token ?? '')
         localStorage.setItem('refreshToken', keycloak.refreshToken ?? '')
         try {
-          console.log(keycloak.token)
           if (keycloak.token) {
             const decodedJwt = jwtDecode<{
               given_name: string
@@ -53,6 +66,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
                 lastName: decodedJwt.family_name,
                 email: decodedJwt.email,
                 username: decodedJwt.preferred_username,
+                mgmtAccess: keycloak.hasResourceRole('ipraktikum-pm', 'prompt-server'),
               }),
             )
           }
@@ -63,6 +77,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
               lastName: '',
               email: '',
               username: '',
+              mgmtAccess: false,
               error,
             }),
           )
@@ -91,9 +106,15 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
     }
   }, [currentState, courseIterations])
 
+  useEffect(() => {
+    if (authenticated && !mgmtAccess) {
+      void keycloakValue.logout()
+    }
+  }, [authenticated, mgmtAccess])
+
   return (
     <>
-      {authenticated ? (
+      {authenticated && mgmtAccess ? (
         <div>
           {currentState ? (
             <AppShell navbar={<NavigationBar keycloak={keycloakValue} />}>
@@ -112,9 +133,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
             height: '100vh',
           }}
         >
-          <Center>
-            <Loader />
-          </Center>
+          <Center>{authenticated && !mgmtAccess ? <AccessRestricted /> : <Loader />}</Center>
         </div>
       )}
     </>

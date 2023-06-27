@@ -31,6 +31,9 @@ services:
       - "traefik.http.services.server.loadbalancer.server.port=8080"
       - "traefik.http.routers.server.entrypoints=websecure"
       - "traefik.http.routers.server.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.api-ratelimit.ratelimit.average=300"
+      - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=100"
+      - "traefik.http.routers.server.middlewares=api-ratelimit"
     depends_on:
       db:
         condition: service_healthy

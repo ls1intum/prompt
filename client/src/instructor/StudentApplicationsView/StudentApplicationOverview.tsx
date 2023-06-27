@@ -203,6 +203,14 @@ export const StudentApplicationOverview = (): JSX.Element => {
               accessor: 'student.tumId',
               title: 'TUM ID',
             },
+            {
+              accessor: 'student.matriculationNumber',
+              title: 'Matriculation Nr.',
+            },
+            {
+              accessor: 'student.email',
+              title: 'Email',
+            },
             { accessor: 'student.firstName', title: 'First Name' },
             { accessor: 'student.lastName', title: 'Last Name' },
             {

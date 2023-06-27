@@ -197,7 +197,7 @@ export const TutorApplicationForm = ({
                       mt='md'
                       label={
                         <Text>
-                          I’m aware that the course will take place before the semester starts. The
+                          I am aware that the course will take place before the semester starts. The
                           exact dates are listed on our{' '}
                           <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
                             website
@@ -210,7 +210,9 @@ export const TutorApplicationForm = ({
                   </Stack>
                   <Group position='right' mt='md'>
                     <Button
-                      disabled={!defaultForm.isValid() || !tutorForm.isValid()}
+                      disabled={
+                        !defaultForm.isValid() || !tutorForm.isValid() || !consentForm.isValid()
+                      }
                       type='submit'
                       onClick={() => {
                         if (
