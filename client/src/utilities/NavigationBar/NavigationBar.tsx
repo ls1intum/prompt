@@ -43,7 +43,7 @@ const navigationContents = [
     icon: IconAppsFilled,
     link: '/management/course-iterations',
   },
-  { label: 'Student Applications', icon: IconNews, link: '/management/student-applications' },
+  { label: 'Student Applications', icon: IconNews, link: '/management/applications' },
   { label: 'Team Allocation', icon: IconUsers, link: '/management/team-allocation' },
   { label: 'Infrastructure', icon: IconDeviceDesktop, link: '/management/infrastructure' },
   { label: 'Grading', icon: IconStairs, link: '/student-applications' },

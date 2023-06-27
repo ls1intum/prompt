@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import prompt.ls1.model.Student;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,5 +16,7 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
 
     Optional<Student> findByFirstNameAndLastName(final String firstName, final String lastName);
 
-    List<Student> findAllByIdIn(final List<UUID> studentIds);
+    Optional<Student> findByEmail(final String email);
+
+    Optional<Student> findByMatriculationNumber(final String matriculationNumber);
 }

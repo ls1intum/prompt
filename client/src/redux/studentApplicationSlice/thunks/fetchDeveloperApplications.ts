@@ -2,8 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { serverBaseUrl } from '../../../service/configService'
 
-export const fetchStudentApplications = createAsyncThunk(
-  'studentApplications/fetchAllStudentApplications',
+export const fetchDeveloperApplications = createAsyncThunk(
+  'studentApplications/fetchDeveloperApplications',
 
   async (
     { courseIteration, accepted }: { courseIteration: string; accepted?: boolean },
@@ -12,7 +12,7 @@ export const fetchStudentApplications = createAsyncThunk(
     try {
       return (
         await axios.get(
-          `${serverBaseUrl}/api/student-applications?courseIteration=${courseIteration}${
+          `${serverBaseUrl}/api/applications/developer?courseIteration=${courseIteration}${
             accepted ? '&accepted=true' : ''
           }`,
           {

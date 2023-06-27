@@ -1,17 +1,17 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { type StudentApplication } from '../studentApplicationSlice'
+import { type TutorApplication } from '../studentApplicationSlice'
 import { serverBaseUrl } from '../../../service/configService'
 
-export const createStudentApplication = createAsyncThunk(
-  'studentApplications/createStudentApplication',
+export const createTutorApplication = createAsyncThunk(
+  'studentApplications/createTutorApplication',
 
   async (
     {
-      studentApplication,
+      application,
       courseIteration,
     }: {
-      studentApplication: StudentApplication
+      application: TutorApplication
       courseIteration: string
     },
     { rejectWithValue },
@@ -19,8 +19,8 @@ export const createStudentApplication = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/student-applications?courseIteration=${courseIteration}`,
-          studentApplication,
+          `${serverBaseUrl}/api/applications/tutor?courseIteration=${courseIteration}`,
+          application,
         )
       ).data
     } catch (err) {

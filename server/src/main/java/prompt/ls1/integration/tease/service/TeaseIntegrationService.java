@@ -8,12 +8,12 @@ import prompt.ls1.integration.tease.model.Allocation;
 import prompt.ls1.integration.tease.model.Skill;
 import prompt.ls1.integration.tease.model.Student;
 import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.ProjectTeam;
-import prompt.ls1.model.StudentApplication;
+import prompt.ls1.service.ApplicationService;
 import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.ProjectTeamService;
 import prompt.ls1.service.SkillService;
-import prompt.ls1.service.StudentApplicationService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class TeaseIntegrationService {
     private final CourseIterationService courseIterationService;
-    private final StudentApplicationService studentApplicationService;
+    private final ApplicationService applicationService;
     private final ProjectTeamService projectTeamService;
     private final SkillService skillService;
     private final TeaseStudentMapper teaseStudentMapper;
@@ -30,13 +30,13 @@ public class TeaseIntegrationService {
 
     @Autowired
     public TeaseIntegrationService(final CourseIterationService courseIterationService,
-                                   final StudentApplicationService studentApplicationService,
+                                   final ApplicationService applicationService,
                                    final ProjectTeamService projectTeamService,
                                    final SkillService skillService,
                                    final TeaseStudentMapper teaseStudentMapper,
                                    final TeaseSkillMapper teaseSkillMapper) {
         this.courseIterationService = courseIterationService;
-        this.studentApplicationService = studentApplicationService;
+        this.applicationService = applicationService;
         this.projectTeamService = projectTeamService;
         this.skillService = skillService;
         this.teaseStudentMapper = teaseStudentMapper;
@@ -45,10 +45,10 @@ public class TeaseIntegrationService {
 
     public List<Student> getStudents() {
         final CourseIteration courseIteration = courseIterationService.findWithOpenApplicationPeriod();
-        final List<StudentApplication> studentApplications = studentApplicationService.findAllByCourseIteration(courseIteration.getId(), true);
+        final List<DeveloperApplication> applications = applicationService.findAllDeveloperApplicationsByCourseIteration(courseIteration.getId(), true);
         final List<ProjectTeam> projectTeams = projectTeamService.findAllByCourseIterationId(courseIteration.getId());
 
-        return studentApplications.stream().map(studentApplication ->
+        return applications.stream().map(studentApplication ->
             teaseStudentMapper.toTeaseStudent(studentApplication, projectTeams)
         ).toList();
     }
@@ -62,7 +62,7 @@ public class TeaseIntegrationService {
         allocations.forEach(allocation -> {
             final UUID projectTeamId = UUID.fromString(allocation.getProject().getId());
             Arrays.stream(allocation.getStudents()).toList().forEach(student ->
-                    studentApplicationService.assignProjectTeam(UUID.fromString(student.getId()), projectTeamId));
+                    applicationService.assignDeveloperApplicationToProjectTeam(UUID.fromString(student.getId()), projectTeamId));
         });
     }
 }

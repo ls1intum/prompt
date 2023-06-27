@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import { assignStudentApplicationToProjectTeam } from '../../../../redux/studentApplicationSlice/thunks/assignStudentApplicationToProjectTeam'
-import { fetchStudentApplications } from '../../../../redux/studentApplicationSlice/thunks/fetchStudentApplications'
-import { removeStudentApplicationFromProjectTeam } from '../../../../redux/studentApplicationSlice/thunks/removeStudentApplicationFromProjectTeam'
+import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/studentApplicationSlice/thunks/assignDeveloperApplicationToProjectTeam'
+import { fetchDeveloperApplications } from '../../../../redux/studentApplicationSlice/thunks/fetchDeveloperApplications'
+import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/studentApplicationSlice/thunks/removeDeveloperApplicationFromProjectTeam'
 
 interface ProjectTeamMemberListModalProps {
   projectTeam: ProjectTeam
@@ -20,15 +20,13 @@ export const ProjectTeamMemberListModal = ({
 }: ProjectTeamMemberListModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const studentApplications = useAppSelector(
-    (state) => state.studentApplications.studentApplications,
-  )
+  const developerApplications = useAppSelector((state) => state.applications.developerApplications)
   const [data, setData] = useState<TransferListData>([[], []])
 
   useEffect(() => {
     if (selectedCourseIteration) {
       void dispatch(
-        fetchStudentApplications({
+        fetchDeveloperApplications({
           courseIteration: selectedCourseIteration.semesterName,
           accepted: true,
         }),
@@ -38,37 +36,37 @@ export const ProjectTeamMemberListModal = ({
 
   useEffect(() => {
     setData([
-      studentApplications
+      developerApplications
         .filter((studentApplication) => {
           return studentApplication.projectTeam?.id !== projectTeam.id
         })
         .map((studentApplication) => {
           return {
             value: studentApplication.id,
-            label: `${studentApplication.student.firstName} ${
-              studentApplication.student.lastName
+            label: `${studentApplication.student.firstName ?? ''} ${
+              studentApplication.student.lastName ?? ''
             } ${studentApplication.projectTeam ? `(${studentApplication.projectTeam.name})` : ''}`,
           }
         }),
-      studentApplications
+      developerApplications
         .filter((studentApplication) => studentApplication.projectTeam?.id === projectTeam.id)
         .map((studentApplication) => {
           return {
             value: studentApplication.id,
-            label: `${studentApplication.student.firstName} ${
-              studentApplication.student.lastName
+            label: `${studentApplication.student.firstName ?? ''} ${
+              studentApplication.student.lastName ?? ''
             } ${studentApplication.projectTeam ? `(${studentApplication.projectTeam.name})` : ''}`,
           }
         }),
     ])
-  }, [projectTeam, studentApplications])
+  }, [projectTeam, developerApplications])
 
   const save = (): void => {
-    const studentApplicationsPreviouslyInProjectTeam = studentApplications.filter(
+    const studentApplicationsPreviouslyInProjectTeam = developerApplications.filter(
       (studentApplication) => studentApplication.projectTeam?.id === projectTeam.id,
     )
 
-    const studentApplicationsCurrentlyInProjectTeam = studentApplications.filter(
+    const studentApplicationsCurrentlyInProjectTeam = developerApplications.filter(
       (studentApplication) => data[1].map((entry) => entry.value).includes(studentApplication.id),
     )
 
@@ -86,7 +84,7 @@ export const ProjectTeamMemberListModal = ({
     studentApplicationsAddedToProjectTeam.forEach((studentApplication) => {
       if (selectedCourseIteration) {
         void dispatch(
-          assignStudentApplicationToProjectTeam({
+          assignDeveloperApplicationToProjectTeam({
             studentApplicationId: studentApplication.id,
             projectTeamId: projectTeam.id,
             courseIteration: selectedCourseIteration?.semesterName,
@@ -98,8 +96,8 @@ export const ProjectTeamMemberListModal = ({
     studentApplicationsRemovedFromProjectTeam.forEach((studentApplication) => {
       if (selectedCourseIteration) {
         void dispatch(
-          removeStudentApplicationFromProjectTeam({
-            studentApplicationId: studentApplication.id,
+          removeDeveloperApplicationFromProjectTeam({
+            applicationId: studentApplication.id,
             courseIteration: selectedCourseIteration.semesterName,
           }),
         )

@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface CourseIterationRepository extends JpaRepository<CourseIteration, UUID> {
     Optional<CourseIteration> findBySemesterName(final String semesterName);
 
-    @Query("select s from CourseIteration s where s.applicationPeriodStart <= ?1 and s.applicationPeriodEnd > ?1")
+    @Query("select s from CourseIteration s where s.applicationPeriodStart <= ?1 and s.applicationPeriodEnd >= ?1")
     Optional<CourseIteration> findWithApplicationPeriodIncludes(final Date date);
 
     @Query("select s from CourseIteration s where (s.applicationPeriodStart <= ?1 and s.applicationPeriodEnd >= ?2)" +
