@@ -27,7 +27,6 @@ export const ProjectTeamPreferencesSubmissionCodeModal = ({
         { headers: { 'Content-Type': 'text/plain' } },
       )
       if (response.data) {
-        console.log(response.data)
         setError('')
         onSubmit(response.data)
         onClose()

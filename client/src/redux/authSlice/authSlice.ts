@@ -5,6 +5,7 @@ interface AuthSliceState {
   lastName: string
   email: string
   username: string
+  mgmtAccess: boolean
   error?: any
 }
 
@@ -13,6 +14,7 @@ const initialState: AuthSliceState = {
   lastName: '',
   email: '',
   username: '',
+  mgmtAccess: false,
 }
 
 export const authSlice = createSlice({
@@ -24,6 +26,7 @@ export const authSlice = createSlice({
       state.lastName = action.payload.lastName
       state.email = action.payload.email
       state.username = action.payload.username
+      state.mgmtAccess = action.payload.mgmtAccess
     },
   },
 })

@@ -210,7 +210,9 @@ export const TutorApplicationForm = ({
                   </Stack>
                   <Group position='right' mt='md'>
                     <Button
-                      disabled={!defaultForm.isValid() || !tutorForm.isValid()}
+                      disabled={
+                        !defaultForm.isValid() || !tutorForm.isValid() || !consentForm.isValid()
+                      }
                       type='submit'
                       onClick={() => {
                         if (

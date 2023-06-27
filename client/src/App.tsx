@@ -48,7 +48,7 @@ export const App = (): JSX.Element => {
               />
               <Route
                 path='/management'
-                element={<Navigate to='/management/student-applications' replace={true} />}
+                element={<Navigate to='/management/applications' replace={true} />}
               />
               <Route
                 path='/applications/developer'

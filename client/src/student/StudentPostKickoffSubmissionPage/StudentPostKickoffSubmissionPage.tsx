@@ -293,7 +293,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
           variant='filled'
           disabled={!courseIterationWithOpenApplicationPeriod || !form.isValid()}
           onClick={() => {
-            console.log(studentId)
             if (studentId) {
               const preferencesMap = new Map()
               state.forEach((preference, index) => {
