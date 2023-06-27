@@ -187,7 +187,7 @@ export const DeveloperApplicationForm = ({
                       mt='md'
                       label={
                         <Text>
-                          ’m aware that I have to take part and pass the on-site iPraktikum intro
+                          I am aware that I have to take part and pass the on-site iPraktikum intro
                           course. The course will take place before the semester starts. The exact
                           dates are listed on our{' '}
                           <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
@@ -206,7 +206,7 @@ export const DeveloperApplicationForm = ({
                     <Checkbox
                       label={
                         <Text>
-                          I’m aware that I have to solve a coding challenge linked on our{' '}
+                          I am aware that I have to solve a coding challenge linked on our{' '}
                           <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
                             website
                           </Anchor>
