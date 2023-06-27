@@ -124,6 +124,7 @@ public class ApplicationController {
     }
 
     @PatchMapping(path = "/developer/{developerApplicationId}", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> updateProjectTeam(@PathVariable final UUID developerApplicationId,
                                                          @RequestBody JsonPatch patchStudentApplication)
             throws JsonPatchException, JsonProcessingException {
@@ -131,6 +132,7 @@ public class ApplicationController {
     }
 
     @PatchMapping(path = "/developer/{developerApplicationId}/assessment", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> updateStudentApplicationAssessment(@PathVariable final UUID developerApplicationId,
                                                                           @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
@@ -138,12 +140,14 @@ public class ApplicationController {
     }
 
     @PostMapping("/developer/{developerApplicationId}/instructor-comments")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> createNote(@PathVariable UUID developerApplicationId,
                                                   @RequestBody InstructorComment instructorComment) {
         return ResponseEntity.ok(applicationService.createInstructorComment(developerApplicationId, instructorComment));
     }
 
     @PostMapping(path = "/developer/{developerApplicationId}/project-team/{projectTeamId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> assignStudentApplicationToProjectTeam(
             @RequestParam(name="courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId,
@@ -155,6 +159,7 @@ public class ApplicationController {
     }
 
     @DeleteMapping(path = "/developer/{developerApplicationId}/project-team")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> removeStudentApplicationFromProjectTeam(
             @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId
