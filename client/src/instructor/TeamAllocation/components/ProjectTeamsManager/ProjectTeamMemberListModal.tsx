@@ -43,8 +43,8 @@ export const ProjectTeamMemberListModal = ({
         .map((studentApplication) => {
           return {
             value: studentApplication.id,
-            label: `${studentApplication.student.firstName} ${
-              studentApplication.student.lastName
+            label: `${studentApplication.student.firstName ?? ''} ${
+              studentApplication.student.lastName ?? ''
             } ${studentApplication.projectTeam ? `(${studentApplication.projectTeam.name})` : ''}`,
           }
         }),
@@ -53,8 +53,8 @@ export const ProjectTeamMemberListModal = ({
         .map((studentApplication) => {
           return {
             value: studentApplication.id,
-            label: `${studentApplication.student.firstName} ${
-              studentApplication.student.lastName
+            label: `${studentApplication.student.firstName ?? ''} ${
+              studentApplication.student.lastName ?? ''
             } ${studentApplication.projectTeam ? `(${studentApplication.projectTeam.name})` : ''}`,
           }
         }),

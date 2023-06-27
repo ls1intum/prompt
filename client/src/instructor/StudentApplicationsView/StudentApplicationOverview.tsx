@@ -54,9 +54,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
       setDeveloperTableRecords(
         developerApplications
           .filter(({ student }) => {
-            return `${student.firstName ?? ''} ${student.lastName} ${student.email} ${
-              student.tumId
-            } ${student.matriculationNumber}`.includes(searchQuery)
+            return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
+              student.matriculationNumber ?? ''
+            }`.includes(searchQuery)
           })
           .filter((studentApplication) =>
             showOnlyNotAssessed ? !studentApplication.assessment.assessed : true,
@@ -67,9 +67,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
       setCoachTableRecords(
         coachApplications
           .filter(({ student }) => {
-            return `${student.firstName ?? ''} ${student.lastName} ${student.email} ${
-              student.tumId
-            } ${student.matriculationNumber}`.includes(searchQuery)
+            return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.email ?? ''} ${
+              student.tumId ?? ''
+            } ${student.matriculationNumber ?? ''}`.includes(searchQuery)
           })
           .filter((studentApplication) =>
             showOnlyNotAssessed ? !studentApplication.assessment.assessed : true,
@@ -80,9 +80,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
       setTutorTableRecords(
         tutorApplications
           .filter(({ student }) => {
-            return `${student.firstName ?? ''} ${student.lastName} ${student.email} ${
-              student.tumId
-            } ${student.matriculationNumber}`.includes(searchQuery)
+            return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.email ?? ''} ${
+              student.tumId ?? ''
+            } ${student.matriculationNumber ?? ''}`.includes(searchQuery)
           })
           .filter((studentApplication) =>
             showOnlyNotAssessed ? !studentApplication.assessment.assessed : true,
