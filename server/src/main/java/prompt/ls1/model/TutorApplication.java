@@ -3,6 +3,7 @@ package prompt.ls1.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -16,4 +17,7 @@ public class TutorApplication extends Application {
             joinColumns = @JoinColumn(name = "application_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"))
     private Student student;
+
+    @Lob
+    private String reasonGoodTutor;
 }

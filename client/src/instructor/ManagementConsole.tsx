@@ -39,6 +39,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
         localStorage.setItem('jwt_token', keycloak.token ?? '')
         localStorage.setItem('refreshToken', keycloak.refreshToken ?? '')
         try {
+          console.log(keycloak.token)
           if (keycloak.token) {
             const decodedJwt = jwtDecode<{
               given_name: string

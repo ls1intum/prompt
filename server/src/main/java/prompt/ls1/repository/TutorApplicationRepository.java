@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import prompt.ls1.model.TutorApplication;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,4 +15,8 @@ public interface TutorApplicationRepository extends JpaRepository<TutorApplicati
     @Transactional
     @Query(value="select da from TutorApplication da where da.courseIteration.id=?1")
     List<TutorApplication> findAllByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
+    @Query(value="select da from TutorApplication da where da.courseIteration.id=?2 and da.student.id=?1")
+    Optional<TutorApplication> findByStudentAndCourseIteration(final UUID studentId, final UUID courseIterationId);
 }

@@ -37,10 +37,10 @@ public class Student implements Serializable {
     @Column(unique = true)
     private String email;
 
-    @Column(unique = true)
+    @Column
     private String tumId;
 
-    @Column(unique = true)
+    @Column
     private String matriculationNumber;
 
     @Column

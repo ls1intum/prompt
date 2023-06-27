@@ -1,20 +1,31 @@
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { type ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
-import { Box, Button, Center, Container, Group, Loader, Text } from '@mantine/core'
+import { ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
 import {
-  Gender,
-  StudyDegree,
-  StudyProgram,
-  LanguageProficiency,
+  Anchor,
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  Container,
+  Group,
+  Loader,
+  Spoiler,
+  Stack,
+  Text,
+  Textarea,
+} from '@mantine/core'
+import {
   type Application,
   type TutorApplication,
 } from '../redux/studentApplicationSlice/studentApplicationSlice'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
 import { type Patch } from '../service/configService'
-import { createTutorApplication } from '../redux/studentApplicationSlice/thunks/createTutorApplication'
+import { createTutorApplication } from '../service/applicationsService'
+import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
+import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 
 interface TutorApplicationFormProps {
   tutorApplication?: TutorApplication
@@ -31,6 +42,7 @@ export const TutorApplicationForm = ({
   const courseIterationWithOpenApplicationPeriod = useAppSelector(
     (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
   )
+  const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const loading = useAppSelector((state) => state.courseIterations.status)
   const defaultForm = useForm<Application>({
     initialValues: tutorApplication
@@ -49,13 +61,13 @@ export const TutorApplicationForm = ({
             firstName: '',
             lastName: '',
             nationality: '',
-            gender: Gender.PREFER_NOT_TO_SAY,
+            gender: undefined,
           },
-          studyDegree: StudyDegree.BACHELOR,
-          studyProgram: StudyProgram.COMPUTER_SCIENCE,
+          studyDegree: undefined,
+          studyProgram: undefined,
           currentSemester: '',
-          englishLanguageProficiency: LanguageProficiency.A1A2,
-          germanLanguageProficiency: LanguageProficiency.A1A2,
+          englishLanguageProficiency: undefined,
+          germanLanguageProficiency: undefined,
           motivation: '',
           experience: '',
           devices: [],
@@ -74,10 +86,14 @@ export const TutorApplicationForm = ({
     validateInputOnBlur: true,
     validate: {
       student: {
-        tumId: (value) =>
-          /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value) ? null : 'This is not a valid TUM ID',
-        matriculationNumber: (value) =>
-          /^[0-9]+$/.test(value) ? null : 'This is not a valid matriculation number.',
+        tumId: (value, values) =>
+          /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value ?? '') || values.student.isExchangeStudent
+            ? null
+            : 'This is not a valid TUM ID',
+        matriculationNumber: (value, values) =>
+          /^[0-9]+$/.test(value ?? '') || values.student.isExchangeStudent
+            ? null
+            : 'This is not a valid matriculation number.',
         firstName: isNotEmpty('Please state your first name.'),
         lastName: isNotEmpty('Please state your last name'),
         email: isEmail('Invalid email'),
@@ -87,12 +103,38 @@ export const TutorApplicationForm = ({
       studyDegree: isNotEmpty('Please state your study degree.'),
       studyProgram: isNotEmpty('Please state your study program.'),
       currentSemester: isNotEmpty('Please state your current semester.'),
-      motivation: (value) =>
-        value.length <= 500 ? null : 'The maximum allowed number of characters is 500.',
-      experience: (value) =>
-        value.length <= 500 ? null : 'The maximum allowed number of characters is 500.',
+      motivation: (value) => {
+        if (isNotEmpty(value) && value && value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        } else if (!isNotEmpty(value)) {
+          return 'Please state your motivation for the course participation.'
+        }
+      },
+      experience: (value) => {
+        if (isNotEmpty(value) && value && value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        } else if (!isNotEmpty(value)) {
+          return 'Please state your experience prior to the course participation.'
+        }
+      },
       englishLanguageProficiency: isNotEmpty('Please state your English language proficiency.'),
       germanLanguageProficiency: isNotEmpty('Please state your German language proficiency.'),
+    },
+  })
+  const tutorForm = useForm({
+    initialValues: {
+      reasonGoodTutor: '',
+    },
+  })
+  const consentForm = useForm({
+    initialValues: {
+      dataConsent: false,
+      introCourseConsent: false,
+    },
+    validateInputOnChange: true,
+    validate: {
+      dataConsent: (value) => !value,
+      introCourseConsent: (value) => !value,
     },
   })
 
@@ -123,58 +165,104 @@ export const TutorApplicationForm = ({
               sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
               mx='auto'
             >
-              <DefaultApplicationForm
-                accessMode={accessMode}
-                form={defaultForm}
-                title='Application for iPraktikum course as a Tutor'
-              />
-              <Group position='right' mt='md'>
-                <Button
-                  type='submit'
-                  onClick={() => {
-                    if (
-                      defaultForm.isValid() &&
-                      courseIterationWithOpenApplicationPeriod &&
-                      !tutorApplication
-                    ) {
-                      void dispatch(
-                        createTutorApplication({
-                          application: {
-                            ...defaultForm.values,
-                          },
-                          courseIteration: courseIterationWithOpenApplicationPeriod.semesterName,
-                        }),
-                      )
-                      onSuccess()
-                    } else if (defaultForm.isValid() && tutorApplication) {
-                      const studentApplicationAssessmentPatchObjectArray: Patch[] = []
-                      Object.keys(defaultForm.values.assessment).forEach((key) => {
-                        if (defaultForm.isTouched('assessment.' + key)) {
-                          const studentApplicationPatchObject = new Map()
-                          studentApplicationPatchObject.set('op', 'replace')
-                          studentApplicationPatchObject.set('path', '/' + key)
-                          studentApplicationPatchObject.set(
-                            'value',
-                            defaultForm.getInputProps('assessment.' + key).value,
-                          )
-                          const obj = Object.fromEntries(studentApplicationPatchObject)
-                          studentApplicationAssessmentPatchObjectArray.push(obj)
-                        }
-                      })
+              {applicationSuccessfullySubmitted ? (
+                <ApplicationSuccessfulSubmission />
+              ) : (
+                <>
+                  <DefaultApplicationForm
+                    accessMode={accessMode}
+                    form={defaultForm}
+                    title='Application for Teaching iOS Practical Course'
+                  />
+                  <Textarea
+                    label='Why do You consider yourself a good tutor?'
+                    disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                    autosize
+                    minRows={5}
+                    placeholder='Why do You consider yourself a good tutor?'
+                    withAsterisk
+                    required
+                    {...tutorForm.getInputProps('reasonGoodTutor')}
+                  />
+                  <Stack>
+                    <Checkbox
+                      mt='md'
+                      label='I have read the declaration of consent below and agree to the processing of my data.'
+                      {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                    />
+                    <Spoiler maxHeight={0} showLabel='View Data Consent Agreement' hideLabel='Hide'>
+                      <DeclarationOfDataConsent />
+                    </Spoiler>
+                    <Checkbox
+                      mt='md'
+                      label={
+                        <Text>
+                          I’m aware that the course will take place before the semester starts. The
+                          exact dates are listed on our{' '}
+                          <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
+                            website
+                          </Anchor>
+                          .
+                        </Text>
+                      }
+                      {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
+                    />
+                  </Stack>
+                  <Group position='right' mt='md'>
+                    <Button
+                      disabled={!defaultForm.isValid() || !tutorForm.isValid()}
+                      type='submit'
+                      onClick={() => {
+                        if (
+                          defaultForm.isValid() &&
+                          courseIterationWithOpenApplicationPeriod &&
+                          !tutorApplication
+                        ) {
+                          createTutorApplication({
+                            application: {
+                              ...defaultForm.values,
+                              ...tutorForm.values,
+                            },
+                            courseIteration: courseIterationWithOpenApplicationPeriod.semesterName,
+                          })
+                            .then((response) => {
+                              if (response) {
+                                setApplicationSuccessfullySubmitted(true)
+                              }
+                            })
+                            .catch(() => {})
+                          onSuccess()
+                        } else if (defaultForm.isValid() && tutorApplication) {
+                          const studentApplicationAssessmentPatchObjectArray: Patch[] = []
+                          Object.keys(defaultForm.values.assessment).forEach((key) => {
+                            if (defaultForm.isTouched('assessment.' + key)) {
+                              const studentApplicationPatchObject = new Map()
+                              studentApplicationPatchObject.set('op', 'replace')
+                              studentApplicationPatchObject.set('path', '/' + key)
+                              studentApplicationPatchObject.set(
+                                'value',
+                                defaultForm.getInputProps('assessment.' + key).value,
+                              )
+                              const obj = Object.fromEntries(studentApplicationPatchObject)
+                              studentApplicationAssessmentPatchObjectArray.push(obj)
+                            }
+                          })
 
-                      /* void dispatch(
+                          /* void dispatch(
                 updateDeveloperApplicationAssessment({
                   applicationId: developerApplication.id,
                   applicationAssessmentPatch: studentApplicationAssessmentPatchObjectArray,
                 }),
               ) */
-                      onSuccess()
-                    }
-                  }}
-                >
-                  Submit
-                </Button>
-              </Group>
+                          onSuccess()
+                        }
+                      }}
+                    >
+                      Submit
+                    </Button>
+                  </Group>
+                </>
+              )}
             </Box>
           ) : (
             <Container>

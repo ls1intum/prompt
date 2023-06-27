@@ -1,6 +1,6 @@
 import { Card, Text, Title } from '@mantine/core'
 
-export const StudentApplicationSuccessfulSubmission = (): JSX.Element => {
+export const ApplicationSuccessfulSubmission = (): JSX.Element => {
   return (
     <div
       style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}

@@ -51,14 +51,14 @@ enum Course {
 
 interface Student {
   id: string
-  tumId: string
-  matriculationNumber: string
+  tumId?: string
+  matriculationNumber?: string
   isExchangeStudent: boolean
-  firstName: string
-  lastName: string
-  gender: Gender
-  nationality: string
-  email: string
+  firstName?: string
+  lastName?: string
+  gender?: Gender
+  nationality?: string
+  email?: string
 }
 
 interface ApplicationAssessment {
@@ -75,13 +75,13 @@ interface ApplicationAssessment {
 interface Application {
   id: string
   student: Student
-  studyDegree: StudyDegree
-  currentSemester: string
-  studyProgram: StudyProgram
-  englishLanguageProficiency: LanguageProficiency
-  germanLanguageProficiency: LanguageProficiency
-  motivation: string
-  experience: string
+  studyDegree?: StudyDegree
+  currentSemester?: string
+  studyProgram?: StudyProgram
+  englishLanguageProficiency?: LanguageProficiency
+  germanLanguageProficiency?: LanguageProficiency
+  motivation?: string
+  experience?: string
   devices: Device[]
   coursesTaken: Course[]
   assessment: ApplicationAssessment
@@ -96,7 +96,9 @@ interface CoachApplication extends Application {
   projectTeam?: ProjectTeam
 }
 
-interface TutorApplication extends Application {}
+interface TutorApplication extends Application {
+  reasonGoodTutor: string
+}
 
 interface InstructorComment {
   id?: string

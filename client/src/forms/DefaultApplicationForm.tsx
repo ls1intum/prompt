@@ -90,18 +90,14 @@ export const DefaultApplicationForm = ({
           <TextInput
             withAsterisk={!form.values.student.isExchangeStudent}
             required={!form.values.student.isExchangeStudent}
-            disabled={
-              accessMode === ApplicationFormAccessMode.INSTRUCTOR ||
-              form.values.student.isExchangeStudent
-            }
+            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             label='TUM ID'
             placeholder='TUM ID'
-            error={!form.values.student.isExchangeStudent ? form.errors.tumId : false}
             {...form.getInputProps('student.tumId')}
           />
           <TextInput
-            withAsterisk
-            required
+            withAsterisk={!form.values.student.isExchangeStudent}
+            required={!form.values.student.isExchangeStudent}
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             label='Matriculation Number'
             placeholder='Matriculation number'

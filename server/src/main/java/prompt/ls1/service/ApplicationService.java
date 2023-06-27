@@ -85,16 +85,19 @@ public class ApplicationService {
         Student student = tutorApplication.getStudent();
         Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
 
-        if (student.getTumId() != null) {
-            existingStudent = studentRepository.findByTumId(student.getTumId());
-        } else if (student.getFirstName() != null && student.getLastName() != null) {
-            existingStudent = studentRepository.findByFirstNameAndLastName(student.getFirstName(), student.getLastName());
-        }
         if (existingStudent.isEmpty()) {
             student.setPublicId(UUID.randomUUID());
             studentRepository.save(student);
         } else {
             tutorApplication.setStudent(existingStudent.get());
+        }
+
+        final Optional<TutorApplication> existingTutorApplication = tutorApplicationRepository.findByStudentAndCourseIteration(
+                tutorApplication.getStudent().getId(),
+                tutorApplication.getCourseIteration().getId());
+        if (existingTutorApplication.isPresent()) {
+            throw new ResourceConflictException(String.format("Tutor application for student %s already exists. ",
+                    tutorApplication.getStudent().getTumId()));
         }
 
         return tutorApplicationRepository.save(tutorApplication);
@@ -104,16 +107,19 @@ public class ApplicationService {
         Student student = coachApplication.getStudent();
         Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
 
-        if (student.getTumId() != null) {
-            existingStudent = studentRepository.findByTumId(student.getTumId());
-        } else if (student.getFirstName() != null && student.getLastName() != null) {
-            existingStudent = studentRepository.findByFirstNameAndLastName(student.getFirstName(), student.getLastName());
-        }
         if (existingStudent.isEmpty()) {
             student.setPublicId(UUID.randomUUID());
             studentRepository.save(student);
         } else {
             coachApplication.setStudent(existingStudent.get());
+        }
+
+        final Optional<CoachApplication> existingCoachApplication = coachApplicationRepository.findByStudentAndCourseIteration(
+                coachApplication.getStudent().getId(),
+                coachApplication.getCourseIteration().getId());
+        if (existingCoachApplication.isPresent()) {
+            throw new ResourceConflictException(String.format("Coach application for student %s already exists. ",
+                    coachApplication.getStudent().getTumId()));
         }
 
         return coachApplicationRepository.save(coachApplication);
@@ -241,8 +247,10 @@ public class ApplicationService {
     }
 
     private Optional<Student> findStudent(final String tumId, final String matriculationNumber, final String email) {
-        if (tumId != null || matriculationNumber != null) {
-            return studentRepository.findByTumIdOrMatriculationNumber(tumId, matriculationNumber);
+        if (tumId != null && !tumId.isBlank()) {
+            return studentRepository.findByTumId(tumId);
+        } else if (matriculationNumber != null && !matriculationNumber.isBlank()) {
+            return studentRepository.findByMatriculationNumber(matriculationNumber);
         }
         return studentRepository.findByEmail(email);
     }
