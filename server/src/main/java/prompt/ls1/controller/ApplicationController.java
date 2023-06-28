@@ -41,8 +41,8 @@ public class ApplicationController {
     private final CourseIterationService courseIterationService;
 
     @Autowired
-    public ApplicationController(ApplicationService applicationService,
-                                 CourseIterationService courseIterationService) {
+    public ApplicationController(final ApplicationService applicationService,
+                                 final CourseIterationService courseIterationService) {
         Bandwidth limit = Bandwidth.classic(100, Refill.greedy(100, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
@@ -167,6 +167,24 @@ public class ApplicationController {
         final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
         return ResponseEntity.ok(applicationService.removeFromProjectTeam(developerApplicationId, courseIteration.getId()));
+    }
+
+    @DeleteMapping("/developer/{developerApplicationId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<UUID> deleteDeveloperApplication(@PathVariable final UUID developerApplicationId) {
+        return ResponseEntity.ok(applicationService.deleteDeveloperApplication(developerApplicationId));
+    }
+
+    @DeleteMapping("/coach/{coachApplicationId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<UUID> deleteCoachApplication(@PathVariable final UUID coachApplicationId) {
+        return ResponseEntity.ok(applicationService.deleteCoachApplication(coachApplicationId));
+    }
+
+    @DeleteMapping("/tutor/{tutorApplicationId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<UUID> deleteTutorApplication(@PathVariable final UUID tutorApplicationId) {
+        return ResponseEntity.ok(applicationService.deleteTutorApplication(tutorApplicationId));
     }
 
 }
