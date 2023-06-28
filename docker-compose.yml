@@ -45,3 +45,13 @@ services:
     hostname: prompt.ase.in.tum.de
     ports:
       - "25:25"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0
+    container_name: prompt_keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    entrypoint: /opt/keycloak/bin/kc.sh start-dev
+    ports:
+      - "8081:8080"
