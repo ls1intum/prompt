@@ -40,20 +40,20 @@ services:
     expose:
       - "8080"
     environment:
-      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
-      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_URL
+      - SPRING_DATASOURCE_USERNAME
+      - SPRING_DATASOURCE_PASSWORD
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - CLIENT_HOST=${CLIENT_HOST}
-      - ATLASSIAN_USERNAME=${ATLASSIAN_USERNAME}
-      - ATLASSIAN_PASSWORD=${ATLASSIAN_PASSWORD}
-      - JIRA_URL=${JIRA_URL}
-      - BITBUCKET_URL=${BITBUCKET_URL}
-      - BAMBOO_URL=${BAMBOO_URL}
-      - CONFLUENCE_URL=${CONFLUENCE_URL}
-      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
-      - KEYCLOAK_ISSUER_URI=${KEYCLOAK_ISSUER_URI}
-      - KEYCLOAK_JWK_SET_URI=${KEYCLOAK_JWK_SET_URI}
+      - CLIENT_HOST
+      - ATLASSIAN_USERNAME
+      - ATLASSIAN_PASSWORD
+      - JIRA_URL
+      - BITBUCKET_URL
+      - BAMBOO_URL
+      - CONFLUENCE_URL
+      - KEYCLOAK_CLIENT_SECRET
+      - KEYCLOAK_ISSUER_URI
+      - KEYCLOAK_JWK_SET_URI
 
   db:
     image: "postgres:15.2-alpine"
@@ -64,11 +64,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -d $$SPRING_DATASOURCE_USERNAME -U $$SPRING_DATASOURCE_PASSWORD",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -91,7 +87,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./postfix-config:/config
-    hostname: prompt.ase.in.tum.de
+    hostname: ${SERVER_HOST}
 
 volumes:
   postgres_data:
