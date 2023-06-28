@@ -24,10 +24,10 @@ import {
   Device,
   Course,
   type Application,
-} from '../redux/studentApplicationSlice/studentApplicationSlice'
+} from '../redux/applicationsSlice/applicationsSlice'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
-import { createInstructorComment } from '../redux/studentApplicationSlice/thunks/createInstructorComment'
+import { createInstructorComment } from '../redux/applicationsSlice/thunks/createInstructorComment'
 import { StudentApplicationComment } from './StudentApplicationComment'
 
 export enum ApplicationFormAccessMode {

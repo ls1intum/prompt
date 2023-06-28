@@ -16,7 +16,7 @@ import {
 import {
   type CoachApplication,
   type Application,
-} from '../redux/studentApplicationSlice/studentApplicationSlice'
+} from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'

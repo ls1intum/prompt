@@ -16,7 +16,7 @@ export const DeletionConfirmationModal = ({
   text,
 }: DeletionConfirmationModalProps): JSX.Element => {
   return (
-    <Modal centered opened={opened} onClose={onClose} title={title}>
+    <Modal centered opened={opened} onClose={onClose} title={title} size='auto'>
       <Stack>
         <Text>{text}</Text>
         <Group position='center'>

@@ -59,6 +59,16 @@ public class ApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application with id %s not found.", developerApplicationId)));
     }
 
+    public CoachApplication findCoachApplicationById(final UUID coachApplicationId) {
+        return coachApplicationRepository.findById(coachApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Coach application with id %s not found.", coachApplicationId)));
+    }
+
+    public TutorApplication findTutorApplicationById(final UUID tutorApplicationId) {
+        return tutorApplicationRepository.findById(tutorApplicationId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Tutor application with id %s not found.", tutorApplicationId)));
+    }
+
     public Application createDeveloperApplication(final DeveloperApplication developerApplication) {
         Student student = developerApplication.getStudent();
         Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
@@ -222,6 +232,27 @@ public class ApplicationService {
 
         application.setProjectTeam(projectTeam);
         developerApplicationRepository.save(application);
+    }
+
+    public UUID deleteDeveloperApplication(final UUID developerApplicationId) {
+        findDeveloperApplicationById(developerApplicationId);
+        developerApplicationRepository.deleteById(developerApplicationId);
+
+        return developerApplicationId;
+    }
+
+    public UUID deleteCoachApplication(final UUID coachApplicationId) {
+        findCoachApplicationById(coachApplicationId);
+        coachApplicationRepository.deleteById(coachApplicationId);
+
+        return coachApplicationId;
+    }
+
+    public UUID deleteTutorApplication(final UUID tutorApplicationId) {
+        findTutorApplicationById(tutorApplicationId);
+        tutorApplicationRepository.deleteById(tutorApplicationId);
+
+        return tutorApplicationId;
     }
 
     private DeveloperApplication applyPatchToDeveloperApplication(
