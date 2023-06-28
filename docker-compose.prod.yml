@@ -86,5 +86,12 @@ services:
     depends_on:
       - server
 
+  postfix:
+    image: harbor.ase.in.tum.de/postfix/postfix:latest
+    restart: unless-stopped
+    volumes:
+      - ./postfix-config:/config
+    hostname: prompt.ase.in.tum.de
+
 volumes:
   postgres_data:
