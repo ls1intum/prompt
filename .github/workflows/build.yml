@@ -198,7 +198,7 @@ jobs:
           proxy_port: ${{ vars.PROXY_PORT }}
           script: |
             touch .env.prod            
-            echo "ATLASSIAN_URSERNAME=${{ vars.ATLASSIAN_USERNAME }}" > .env.prod
+            echo "ATLASSIAN_USERNAME=${{ vars.ATLASSIAN_USERNAME }}" > .env.prod
             echo "ATLASSIAN_PASSWORD=${{ secrets.ATLASSIAN_PASSWORD }}" >> .env.prod
             echo "JIRA_URL=${{ vars.JIRA_URL }}" >> .env.prod
             echo "BITBUCKET_URL=${{ vars.BITBUCKET_URL }}" >> .env.prod
