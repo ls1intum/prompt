@@ -6,9 +6,6 @@ on:
       environment:
         required: true
         type: string
-    secrets:
-      token:
-        required: true
 
 jobs:
   deploy:
