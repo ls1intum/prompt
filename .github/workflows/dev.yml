@@ -11,6 +11,7 @@ jobs:
     with:
       environment: Dev
   deploy-dev-container:
+    needs: build-dev-container
     uses: ./.github/workflows/deploy_docker.yml
     secrets: inherit
     with:
