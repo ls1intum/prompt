@@ -152,7 +152,7 @@ export const DefaultApplicationForm = ({
           withAsterisk
           disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
           required
-          label='Email'
+          label='Email (preferrably a TUM email address)'
           placeholder='your@email.com'
           {...form.getInputProps('student.email')}
         />

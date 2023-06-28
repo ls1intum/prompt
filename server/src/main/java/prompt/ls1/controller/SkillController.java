@@ -20,7 +20,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/skills")
-@PreAuthorize("hasRole('ipraktikum-pm')")
 public class SkillController {
     private final SkillService skillService;
 
@@ -35,16 +34,19 @@ public class SkillController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Skill> createSkill(@RequestBody @NotNull Skill skill) {
         return ResponseEntity.ok(skillService.create(skill));
     }
 
     @PostMapping(path = "/{skillId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Skill> toggleSkill(@PathVariable UUID skillId) {
         return ResponseEntity.ok(skillService.toggle(skillId));
     }
 
     @DeleteMapping(path = "/{skillId}")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<UUID> deleteSkill(@PathVariable UUID skillId) {
         return ResponseEntity.ok(skillService.delete(skillId));
     }
