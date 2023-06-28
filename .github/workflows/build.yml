@@ -184,7 +184,7 @@ jobs:
             }
             return "latest";
 
-      - name: SSH to VM and Execute Docker-Compose Up
+      - name: SSH to VM and create .env.prod file
         uses: appleboy/ssh-action@v0.1.10
         env:
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
@@ -197,6 +197,39 @@ jobs:
           proxy_key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           proxy_port: ${{ vars.PROXY_PORT }}
           script: |
+            touch .env.prod            
+            echo "${{ vars.ATLASSIAN_USERNAME }}" >> .env.prod
+            echo "${{ secrets.ATLASSIAN_PASSWORD }}" >> .env.prod
+            echo "${{ vars.JIRA_URL }}" >> .env.prod
+            echo "${{ vars.BITBUCKET_URL }}" >> .env.prod
+            echo "${{ vars.BAMBOO_URL }}" >> .env.prod
+            echo "${{ vars.CONFLUENCE_URL }}" >> .env.prod
+
+            echo "${{ vars.SPRING_DATASOURCE_URL }}" >> .env.prod
+            echo "${{ vars.SPRING_DATASOURCE_USERNAME }}" >> .env.prod
+            echo "${{ vars.SPRING_DATASOURCE_PASSWORD }}" >> .env.prod
+
+            echo "${{ vars.SERVER_HOST }}" >> .env.prod
+            echo "${{ vars.CLIENT_HOST }}" >> .env.prod
+
+            echo "${{ vars.KEYCLOAK_HOST }}" >> .env.prod
+            echo "${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}" >> .env.prod
+            echo "${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}/protocol/openid-connect/certs" >> .env.prod
+            echo "%{{ secrets.KEYCLOAK_CLIENT_SECRET }}" >> .env.prod
+
+            echo "${{ IMAGE_TAG }}" >> .env.prod
+
+      - name: SSH to VM and Execute Docker-Compose Up
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.PROXY_HOST }}
+          proxy_username: ${{ vars.PROXY_USERNAME }}
+          proxy_key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_port: ${{ vars.PROXY_PORT }}
+          script: |
             echo "${{ secrets.HARBOR_PASSWORD }}" | docker login harbor.ase.in.tum.de/postfix -u '${{ vars.HARBOR_USER }}' --password-stdin
-            IMAGE_TAG=latest docker compose -f docker-compose.prod.yml --env-file=.env.prod up --pull=always -d
+            docker compose -f docker-compose.prod.yml --env-file=.env.prod up --pull=always -d
     
