@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { type InstructorComment } from '../studentApplicationSlice'
+import { type InstructorComment } from '../applicationsSlice'
 import { serverBaseUrl } from '../../../service/configService'
 import { notifications } from '@mantine/notifications'
 

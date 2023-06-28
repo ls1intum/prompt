@@ -15,11 +15,11 @@ import { type ApplicationFormAccessMode, DefaultApplicationForm } from './Defaul
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../redux/store'
-import { updateDeveloperApplicationAssessment } from '../redux/studentApplicationSlice/thunks/updateDeveloperApplicationAssessment'
+import { updateDeveloperApplicationAssessment } from '../redux/applicationsSlice/thunks/updateDeveloperApplicationAssessment'
 import {
   type Application,
   type DeveloperApplication,
-} from '../redux/studentApplicationSlice/studentApplicationSlice'
+} from '../redux/applicationsSlice/applicationsSlice'
 import { type Patch } from '../service/configService'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'

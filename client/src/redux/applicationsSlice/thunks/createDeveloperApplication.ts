@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { type DeveloperApplication } from '../studentApplicationSlice'
+import { type DeveloperApplication } from '../applicationsSlice'
 import { serverBaseUrl } from '../../../service/configService'
 import { notifications } from '@mantine/notifications'
 

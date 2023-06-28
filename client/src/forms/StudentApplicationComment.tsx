@@ -1,5 +1,5 @@
 import { Text } from '@mantine/core'
-import { type InstructorComment } from '../redux/studentApplicationSlice/studentApplicationSlice'
+import { type InstructorComment } from '../redux/applicationsSlice/applicationsSlice'
 import moment from 'moment'
 
 interface StudentApplicationCommentProps {

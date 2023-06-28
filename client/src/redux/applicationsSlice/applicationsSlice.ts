@@ -9,6 +9,9 @@ import { updateDeveloperApplication } from './thunks/updateDeveloperApplication'
 import { updateDeveloperApplicationAssessment } from './thunks/updateDeveloperApplicationAssessment'
 import { fetchCoachApplications } from './thunks/fetchCoachApplications'
 import { fetchTutorApplications } from './thunks/fetchTutorApplications'
+import { deleteDeveloperApplication } from './thunks/deleteDeveloperApplication'
+import { deleteCoachApplication } from './thunks/deleteCoachApplication'
+import { deleteTutorApplication } from './thunks/deleteTutorApplications'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -123,8 +126,8 @@ const initialState: StudentApplicationSliceState = {
   tutorApplications: [],
 }
 
-export const studentApplicationsState = createSlice({
-  name: 'studentApplications',
+export const applicationsState = createSlice({
+  name: 'applications',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -272,11 +275,62 @@ export const studentApplicationsState = createSlice({
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
+
+    builder.addCase(deleteDeveloperApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(deleteDeveloperApplication.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.filter(
+        (developerApplication) => developerApplication.id !== payload,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteDeveloperApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteCoachApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(deleteCoachApplication.fulfilled, (state, { payload }) => {
+      state.coachApplications = state.coachApplications.filter(
+        (coachApplication) => coachApplication.id !== payload,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteCoachApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteTutorApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(deleteTutorApplication.fulfilled, (state, { payload }) => {
+      state.tutorApplications = state.tutorApplications.filter(
+        (tutorApplication) => tutorApplication.id !== payload,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteTutorApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
   },
 })
 
 // export const {} = studentApplicationsState.actions
-export default studentApplicationsState.reducer
+export default applicationsState.reducer
 export {
   type Student,
   type Application,

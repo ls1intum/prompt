@@ -3,7 +3,7 @@ import {
   type CoachApplication,
   type TutorApplication,
   type DeveloperApplication,
-} from '../redux/studentApplicationSlice/studentApplicationSlice'
+} from '../redux/applicationsSlice/applicationsSlice'
 import { serverBaseUrl } from './configService'
 import { notifications } from '@mantine/notifications'
 

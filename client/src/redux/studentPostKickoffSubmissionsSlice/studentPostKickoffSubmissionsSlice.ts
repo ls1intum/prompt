@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { deleteStudentProjectTeamPreferences } from './thunks/deleteStudentProjectTeamPreferences'
-import { type Student } from '../studentApplicationSlice/studentApplicationSlice'
+import { type Student } from '../applicationsSlice/applicationsSlice'
 import { createStudentPostKickoffSubmission } from './thunks/createStudentPostKickoffSubmission'
 import { fetchStudentPostKickoffSubmissions } from './thunks/fetchStudentPostKickoffSubmissions'
 import { type Skill } from '../skillsSlice/skillsSlice'

@@ -30,7 +30,7 @@ import { deleteProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/de
 import { fetchProjectTeams } from '../../../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { updateProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/updateProjectTeam'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import { fetchDeveloperApplications } from '../../../../redux/studentApplicationSlice/thunks/fetchDeveloperApplications'
+import { fetchDeveloperApplications } from '../../../../redux/applicationsSlice/thunks/fetchDeveloperApplications'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 import { DeletionConfirmationModal } from '../../../../utilities/DeletionConfirmationModal'
 
