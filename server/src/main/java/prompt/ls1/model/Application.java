@@ -1,6 +1,8 @@
 package prompt.ls1.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +24,8 @@ public abstract class Application {
 
     private StudyDegree studyDegree;
 
+    @Min(1)
+    @Max(99)
     private Short currentSemester;
 
     private StudyProgram studyProgram;

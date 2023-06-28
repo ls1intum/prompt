@@ -92,7 +92,12 @@ export const DeveloperApplicationForm = ({
       },
       studyDegree: isNotEmpty('Please state your study degree.'),
       studyProgram: isNotEmpty('Please state your study program.'),
-      currentSemester: isNotEmpty('Please state your current semester.'),
+      currentSemester: (value) => {
+        if (!value || value.length === 0) {
+          return null
+        }
+        return /\b([1-9]|[1-9][0-9])\b/.test(value) ? null : 'Please state your current semester.'
+      },
       motivation: (value) => {
         if (isNotEmpty(value) && value && value.length > 500) {
           return 'The maximum allowed number of characters is 500.'
