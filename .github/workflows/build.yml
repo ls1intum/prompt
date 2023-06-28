@@ -217,7 +217,7 @@ jobs:
             echo "${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}/protocol/openid-connect/certs" >> .env.prod
             echo "%{{ secrets.KEYCLOAK_CLIENT_SECRET }}" >> .env.prod
 
-            echo "${{ IMAGE_TAG }}" >> .env.prod
+            echo "${{ env.IMAGE_TAG }}" >> .env.prod
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v0.1.10
