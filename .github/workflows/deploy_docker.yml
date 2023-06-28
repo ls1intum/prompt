@@ -3,7 +3,7 @@ name: Deploy Docker Image
 on:
   workflow_call:
     inputs:
-      config-path:
+      environment:
         required: true
         type: string
     secrets:
