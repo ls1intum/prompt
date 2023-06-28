@@ -187,7 +187,8 @@ jobs:
       - name: SSH to VM and create .env.prod file
         uses: appleboy/ssh-action@v0.1.10
         env:
-          IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+          # TODO IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+          IMAGE_TAG: latest
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
