@@ -6,13 +6,13 @@ import {
   Button,
   Center,
   Checkbox,
-  Container,
   Group,
   Loader,
   Spoiler,
   Stack,
   Text,
   Textarea,
+  Title,
 } from '@mantine/core'
 import {
   type Application,
@@ -263,9 +263,16 @@ export const TutorApplicationForm = ({
               )}
             </Box>
           ) : (
-            <Container>
-              <Text>Application period is closed.</Text>
-            </Container>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+              }}
+            >
+              <Title order={5}>Application period is closed.</Title>
+            </div>
           )}
         </>
       )}

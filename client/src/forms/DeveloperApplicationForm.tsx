@@ -4,12 +4,12 @@ import {
   Button,
   Center,
   Checkbox,
-  Container,
   Group,
   Loader,
   Spoiler,
   Stack,
   Text,
+  Title,
 } from '@mantine/core'
 import { type ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
@@ -268,9 +268,16 @@ export const DeveloperApplicationForm = ({
               )}
             </Box>
           ) : (
-            <Container>
-              <Text>Application period is closed.</Text>
-            </Container>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+              }}
+            >
+              <Title order={5}>Application period is closed.</Title>
+            </div>
           )}
         </>
       )}
