@@ -25,6 +25,7 @@ jobs:
             image: ghcr.io/ls1intum/prompt/prompt-server
             context: ./server
             path: server
+    environment: ${{ inputs.environment }}
     outputs:
       image_tag: ${{ steps.output-tag.outputs.image_tag }}
     steps:

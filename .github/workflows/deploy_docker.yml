@@ -14,9 +14,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: Production
-      url: https://${{ vars.SERVER_HOST }}
+    environment: ${{ inputs.environment }}
     steps:
       - name: SSH to VM and Execute Docker-Compose Down
         uses: appleboy/ssh-action@v0.1.10
