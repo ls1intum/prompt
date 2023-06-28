@@ -4,7 +4,6 @@ import {
   Group,
   Modal,
   Notification,
-  Paper,
   Stack,
   Text,
   TextInput,
@@ -33,33 +32,7 @@ import { updateProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/up
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { fetchDeveloperApplications } from '../../../../redux/studentApplicationSlice/thunks/fetchDeveloperApplications'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
-
-interface ProjectTeamDeletionConfirmationProps {
-  projectTeam: ProjectTeam
-  opened: boolean
-  onClose: () => void
-  onConfirm: () => void
-}
-
-const ProjectTeamDeletionConfirmationModal = ({
-  projectTeam,
-  opened,
-  onClose,
-  onConfirm,
-}: ProjectTeamDeletionConfirmationProps): JSX.Element => {
-  return (
-    <Modal opened={opened} onClose={onClose} centered>
-      <Paper>
-        <Text>
-          Are you sure you want to delete the project team <b>{projectTeam.name}</b>
-        </Text>
-        <Button variant='filled' onClick={onConfirm}>
-          Confirm
-        </Button>
-      </Paper>
-    </Modal>
-  )
-}
+import { DeletionConfirmationModal } from '../../../../utilities/DeletionConfirmationModal'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -216,12 +189,13 @@ export const ProjectTeamsManager = (): JSX.Element => {
         </Button>
       </div>
       {selectedProjectTeam && (
-        <ProjectTeamDeletionConfirmationModal
+        <DeletionConfirmationModal
           opened={projectTeamDeletionConfirmationOpen}
           onClose={() => {
             setProjectTeamDeletionConfirmationOpen(false)
           }}
-          projectTeam={selectedProjectTeam}
+          title={`Delete team project ${selectedProjectTeam.name}`}
+          text={`Are you sure you want to delete the project team ${selectedProjectTeam.name}?`}
           onConfirm={() => {
             if (selectedProjectTeam) {
               void dispatch(deleteProjectTeam(selectedProjectTeam.id))

@@ -85,12 +85,14 @@ export const CourseIterationCreationModal = ({
               if (courseIteration) {
                 const courseIterationPatchObjectArray: Patch[] = []
                 Object.keys(form.values).forEach((key) => {
-                  const courseIterationPatchObject = new Map()
-                  courseIterationPatchObject.set('op', 'replace')
-                  courseIterationPatchObject.set('path', '/' + key)
-                  courseIterationPatchObject.set('value', form.getInputProps(key).value)
-                  const obj = Object.fromEntries(courseIterationPatchObject)
-                  courseIterationPatchObjectArray.push(obj)
+                  if (form.isTouched(key)) {
+                    const courseIterationPatchObject = new Map()
+                    courseIterationPatchObject.set('op', 'replace')
+                    courseIterationPatchObject.set('path', '/' + key)
+                    courseIterationPatchObject.set('value', form.getInputProps(key).value)
+                    const obj = Object.fromEntries(courseIterationPatchObject)
+                    courseIterationPatchObjectArray.push(obj)
+                  }
                 })
                 void dispatch(
                   updateCourseIteration({
