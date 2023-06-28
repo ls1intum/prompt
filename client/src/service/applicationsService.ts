@@ -36,6 +36,14 @@ export const createDeveloperApplication = async ({
         title: 'Error',
         message: `An application for this student already exists. If you haven't submitted it, please contact the program management.`,
       })
+    } else if ((err as AxiosError)?.response?.status === 400) {
+      console.log(err)
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `${((err as AxiosError)?.response?.data as string) ?? ''}`,
+      })
     } else {
       notifications.show({
         color: 'red',
@@ -78,6 +86,14 @@ export const createCoachApplication = async ({
         title: 'Error',
         message: `An application for this student already exists. If you haven't submitted it, please contact the program management.`,
       })
+    } else if ((err as AxiosError)?.response?.status === 400) {
+      console.log(err)
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `${((err as AxiosError)?.response?.data as string) ?? ''}`,
+      })
     } else {
       notifications.show({
         color: 'red',
@@ -119,6 +135,14 @@ export const createTutorApplication = async ({
         autoClose: 10000,
         title: 'Error',
         message: `An application for this student already exists. If you haven't submitted it, please contact the program management.`,
+      })
+    } else if ((err as AxiosError)?.response?.status === 400) {
+      console.log(err)
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `${((err as AxiosError)?.response?.data as string) ?? ''}`,
       })
     } else {
       notifications.show({
