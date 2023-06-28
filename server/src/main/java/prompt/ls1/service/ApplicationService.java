@@ -70,14 +70,14 @@ public class ApplicationService {
     }
 
     public Application createDeveloperApplication(final DeveloperApplication developerApplication) {
-        Student student = developerApplication.getStudent();
-        Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
+        Optional<Student> existingStudent = findStudent(developerApplication.getStudent().getTumId(),
+                developerApplication.getStudent().getMatriculationNumber(), developerApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
-            student.setPublicId(UUID.randomUUID());
-            studentRepository.save(student);
+            developerApplication.getStudent().setPublicId(UUID.randomUUID());
+            studentRepository.save(developerApplication.getStudent());
         } else {
-            developerApplication.setStudent(existingStudent.get());
+            developerApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), developerApplication.getStudent()));
         }
 
         final Optional<DeveloperApplication> existingDeveloperApplication = developerApplicationRepository.findByStudentAndCourseIteration(
@@ -94,14 +94,14 @@ public class ApplicationService {
     }
 
     public Application createTutorApplication(final TutorApplication tutorApplication) {
-        Student student = tutorApplication.getStudent();
-        Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
+        Optional<Student> existingStudent = findStudent(tutorApplication.getStudent().getTumId(),
+                tutorApplication.getStudent().getMatriculationNumber(), tutorApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
-            student.setPublicId(UUID.randomUUID());
-            studentRepository.save(student);
+            tutorApplication.getStudent().setPublicId(UUID.randomUUID());
+            studentRepository.save(tutorApplication.getStudent());
         } else {
-            tutorApplication.setStudent(existingStudent.get());
+            tutorApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), tutorApplication.getStudent()));
         }
 
         final Optional<TutorApplication> existingTutorApplication = tutorApplicationRepository.findByStudentAndCourseIteration(
@@ -118,12 +118,12 @@ public class ApplicationService {
     }
 
     public Application createCoachApplication(final CoachApplication coachApplication) {
-        Student student = coachApplication.getStudent();
-        Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
+        Optional<Student> existingStudent = findStudent(coachApplication.getStudent().getTumId(),
+                coachApplication.getStudent().getMatriculationNumber(), coachApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
-            student.setPublicId(UUID.randomUUID());
-            studentRepository.save(student);
+            coachApplication.getStudent().setPublicId(UUID.randomUUID());
+            studentRepository.save(checkAndUpdateStudent(existingStudent.get(), coachApplication.getStudent()));
         } else {
             coachApplication.setStudent(existingStudent.get());
         }
@@ -284,11 +284,23 @@ public class ApplicationService {
     }
 
     private Optional<Student> findStudent(final String tumId, final String matriculationNumber, final String email) {
-        if (tumId != null && !tumId.isBlank()) {
-            return studentRepository.findByTumId(tumId);
-        } else if (matriculationNumber != null && !matriculationNumber.isBlank()) {
-            return studentRepository.findByMatriculationNumber(matriculationNumber);
+        if ((tumId != null && !tumId.isBlank()) || (matriculationNumber != null && !matriculationNumber.isBlank())) {
+            return studentRepository.findByTumIdOrMatriculationNumber(tumId, matriculationNumber);
         }
         return studentRepository.findByEmail(email);
+    }
+
+    private Student checkAndUpdateStudent(final Student existingStudent, final Student updatedStudent) {
+        if (((existingStudent.getTumId() != null || !existingStudent.getTumId().isBlank()) && !existingStudent.getTumId().equals(updatedStudent.getTumId())) ||
+                (existingStudent.getMatriculationNumber() != null || !existingStudent.getMatriculationNumber().isBlank()) && !existingStudent.getMatriculationNumber().equals(updatedStudent.getMatriculationNumber())) {
+            throw new ResourceInvalidParametersException("Provided TUM ID does not match with the matriculation number you submitted. " +
+                    "If You are sure the data is entered correct, please contact the Program Management.");
+        }
+        existingStudent.setGender(updatedStudent.getGender());
+        existingStudent.setFirstName(updatedStudent.getFirstName());
+        existingStudent.setLastName(updatedStudent.getLastName());
+        existingStudent.setEmail(updatedStudent.getEmail());
+
+        return studentRepository.save(existingStudent);
     }
 }
