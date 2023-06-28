@@ -1,109 +1,16 @@
-name: Build
+name: Deploy Docker Image
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - dockerfile: ./client/Dockerfile
-            image: ghcr.io/ls1intum/prompt/prompt-client
-            context: ./client
-            path: client
-          - dockerfile: ./server/Dockerfile
-            image: ghcr.io/ls1intum/prompt/prompt-server
-            context: ./server
-            path: server
-    outputs:
-      image_tag: ${{ steps.output-tag.outputs.image_tag }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Get changed files in the client folder
-        id: changed-files-client-folder
-        uses: tj-actions/changed-files@v36
-        with:
-          files: client/*
-
-      - name: Get changed files in the server folder
-        id: changed-files-server-folder
-        uses: tj-actions/changed-files@v36
-        with:
-          files: server/*
-
-      - name: Log in to the Container registry
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up QEMU
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: all
-
-      - name: Install Docker Buildx
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Compute Tag
-        uses: actions/github-script@v6
-        id: compute-tag
-        with:
-          result-encoding: string
-          script: |
-            if (context.eventName === "pull_request") {
-              return "pr-" + context.issue.number;
-            }
-            if (context.eventName === "push") {
-              if (context.ref.startsWith("refs/tags/")) {
-                return context.ref.slice(10);
-              }
-              if (context.ref === "refs/heads/develop") {
-                return "develop";
-              }
-            }
-            return "latest";
-
-      - id: output-tag
-        run: echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
-
-      - name: Build and push Docker Image
-        uses: docker/build-push-action@v4
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true' && matrix.path == 'client') || (steps.changed-files-server-folder.outputs.any_changed == 'true' && matrix.path == 'server') }}
-        env:
-          IMAGE_TAG: ${{ steps.compute-tag.outputs.result }}
-        with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ matrix.image }}:${{ env.IMAGE_TAG }}
-          build-args: |
-            "SERVER_HOST=${{ vars.SERVER_HOST }}"
-            "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
-            "KEYCLOAK_REALM_NAME=${{ vars.KEYCLOAK_REALM_NAME }}"
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: Production
-      url: https://${{ vars.SERVER_HOST }}
+    environment: ${{ inputs.environment }}
     steps:
       - name: SSH to VM and Execute Docker-Compose Down
         uses: appleboy/ssh-action@v0.1.10
