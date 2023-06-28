@@ -36,3 +36,12 @@ services:
       - server
     ports:
       - "80:80"
+
+  postfix:
+    image: harbor.ase.in.tum.de/postfix/postfix:latest
+    restart: unless-stopped
+    volumes:
+      - ./postfix-config:/config # See https://github.com/ls1admin/postfix-container-tum-mailrelay/tree/main for details
+    hostname: prompt.ase.in.tum.de
+    ports:
+      - "25:25"
