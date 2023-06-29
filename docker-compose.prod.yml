@@ -83,7 +83,7 @@ services:
       - server
 
   postfix:
-    image: harbor.ase.in.tum.de/postfix/postfix:latest
+    image: ghcr.io/ls1admin/postfix:latest
     restart: unless-stopped
     volumes:
       - ./postfix-config:/config
