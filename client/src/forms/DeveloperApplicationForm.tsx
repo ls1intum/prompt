@@ -11,21 +11,20 @@ import {
   Text,
   Title,
 } from '@mantine/core'
-import { type ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
+import { ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../redux/store'
-import { updateDeveloperApplicationAssessment } from '../redux/applicationsSlice/thunks/updateDeveloperApplicationAssessment'
 import {
   type Application,
   type DeveloperApplication,
 } from '../redux/applicationsSlice/applicationsSlice'
-import { type Patch } from '../service/configService'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { createDeveloperApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
+import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
 
 export interface DeveloperApplicationFormProps {
   developerApplication?: DeveloperApplication
@@ -168,52 +167,71 @@ export const DeveloperApplicationForm = ({
                     form={form}
                     title='Application for iPraktikum Practical Course'
                   />
-                  <Stack>
-                    <Checkbox
-                      mt='md'
-                      label='I have read the declaration of consent below and agree to the processing of my data.'
-                      {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
-                    />
-                    <Spoiler maxHeight={0} showLabel='View Data Consent Agreement' hideLabel='Hide'>
-                      <DeclarationOfDataConsent />
-                    </Spoiler>
-                    <Checkbox
-                      mt='md'
-                      label={
-                        <Text>
-                          I am aware that I have to take part and pass the on-site iPraktikum intro
-                          course. The course will take place before the semester starts. The exact
-                          dates are listed on our{' '}
-                          <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
-                            website
-                          </Anchor>
-                          .
-                        </Text>
-                      }
-                      {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
-                    />
-                    <Checkbox
-                      mt='md'
-                      label={`I am aware that the iPraktikum is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
-                      {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
-                    />
-                    <Checkbox
-                      label={
-                        <Text>
-                          I am aware that I have to solve a coding challenge linked on our{' '}
-                          <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
-                            website
-                          </Anchor>
-                        </Text>
-                      }
-                      mt='md'
-                      {...consentForm.getInputProps('codingChallengeConsent', { type: 'checkbox' })}
-                    />
-                  </Stack>
+                  {accessMode === ApplicationFormAccessMode.STUDENT && (
+                    <Stack>
+                      <Checkbox
+                        mt='md'
+                        label='I have read the declaration of consent below and agree to the processing of my data.'
+                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                      />
+                      <Spoiler
+                        maxHeight={0}
+                        showLabel='View Data Consent Agreement'
+                        hideLabel='Hide'
+                      >
+                        <DeclarationOfDataConsent />
+                      </Spoiler>
+                      <Checkbox
+                        mt='md'
+                        label={
+                          <Text>
+                            I am aware that I have to take part and pass the on-site iPraktikum
+                            intro course. The course will take place before the semester starts. The
+                            exact dates are listed on our{' '}
+                            <Anchor
+                              href='https://ase.cit.tum.de/ios'
+                              target='_blank'
+                              variant='blue'
+                            >
+                              website
+                            </Anchor>
+                            .
+                          </Text>
+                        }
+                        {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
+                      />
+                      <Checkbox
+                        mt='md'
+                        label={`I am aware that the iPraktikum is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
+                        {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
+                      />
+                      <Checkbox
+                        label={
+                          <Text>
+                            I am aware that I have to solve a coding challenge linked on our{' '}
+                            <Anchor
+                              href='https://ase.cit.tum.de/ios'
+                              target='_blank'
+                              variant='blue'
+                            >
+                              website
+                            </Anchor>
+                          </Text>
+                        }
+                        mt='md'
+                        {...consentForm.getInputProps('codingChallengeConsent', {
+                          type: 'checkbox',
+                        })}
+                      />
+                    </Stack>
+                  )}
                   <Group position='right' mt='md'>
                     <Button
                       type='submit'
-                      disabled={!form.isValid() || !consentForm.isValid()}
+                      disabled={
+                        !form.isValid() ||
+                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
+                      }
                       onClick={() => {
                         if (
                           form.isValid() &&
@@ -231,39 +249,19 @@ export const DeveloperApplicationForm = ({
                             })
                             .catch(() => {})
                           onSuccess()
-                        } else if (form.isValid() && developerApplication) {
-                          // TODO: differentiate between assessment and student application changes
-                          if (form.values.assessment) {
-                            const studentApplicationAssessmentPatchObjectArray: Patch[] = []
-                            Object.keys(form.values.assessment).forEach((key) => {
-                              if (form.isTouched('assessment.' + key)) {
-                                const studentApplicationPatchObject = new Map()
-                                studentApplicationPatchObject.set('op', 'replace')
-                                studentApplicationPatchObject.set('path', '/' + key)
-                                studentApplicationPatchObject.set(
-                                  'value',
-                                  form.getInputProps('assessment.' + key).value,
-                                )
-                                const obj = Object.fromEntries(studentApplicationPatchObject)
-                                studentApplicationAssessmentPatchObjectArray.push(obj)
-                              }
-                            })
-
-                            void dispatch(
-                              updateDeveloperApplicationAssessment({
-                                applicationId: developerApplication.id,
-                                applicationAssessmentPatch:
-                                  studentApplicationAssessmentPatchObjectArray,
-                              }),
-                            )
-                            onSuccess()
-                          }
                         }
                       }}
                     >
                       Submit
                     </Button>
                   </Group>
+                  {accessMode === ApplicationFormAccessMode.INSTRUCTOR && developerApplication && (
+                    <ApplicationAssessmentForm
+                      applicationId={developerApplication.id}
+                      assessment={developerApplication.assessment}
+                      applicationType='developer'
+                    />
+                  )}
                 </>
               )}
             </Box>

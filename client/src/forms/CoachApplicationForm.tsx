@@ -24,6 +24,7 @@ import { type Patch } from '../service/configService'
 import { createCoachApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
+import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
 
 interface CoachApplicationFormProps {
   coachApplication?: CoachApplication
@@ -176,25 +177,33 @@ export const CoachApplicationForm = ({
                     required
                     {...coachForm.getInputProps('solvedProblem')}
                   />
-                  <Stack>
-                    <Checkbox
-                      mt='md'
-                      label='I have read the declaration of consent below and agree to the processing of my data.'
-                      {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
-                    />
-                    <Spoiler maxHeight={0} showLabel='View Data Consent Agreement' hideLabel='Hide'>
-                      <DeclarationOfDataConsent />
-                    </Spoiler>
-                    <Checkbox
-                      mt='md'
-                      label={`I am aware that the Agile Project Mamagement is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
-                      {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
-                    />
-                  </Stack>
+                  {accessMode === ApplicationFormAccessMode.STUDENT && (
+                    <Stack>
+                      <Checkbox
+                        mt='md'
+                        label='I have read the declaration of consent below and agree to the processing of my data.'
+                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                      />
+                      <Spoiler
+                        maxHeight={0}
+                        showLabel='View Data Consent Agreement'
+                        hideLabel='Hide'
+                      >
+                        <DeclarationOfDataConsent />
+                      </Spoiler>
+                      <Checkbox
+                        mt='md'
+                        label={`I am aware that the Agile Project Mamagement is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
+                        {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
+                      />
+                    </Stack>
+                  )}
                   <Group position='right' mt='md'>
                     <Button
                       disabled={
-                        !defaultForm.isValid() || !coachForm.isValid() || !consentForm.isValid()
+                        !defaultForm.isValid() ||
+                        !coachForm.isValid() ||
+                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
                       }
                       type='submit'
                       onClick={() => {
@@ -253,6 +262,13 @@ export const CoachApplicationForm = ({
                       Submit
                     </Button>
                   </Group>
+                  {accessMode === ApplicationFormAccessMode.INSTRUCTOR && coachApplication && (
+                    <ApplicationAssessmentForm
+                      applicationId={coachApplication.id}
+                      assessment={coachApplication.assessment}
+                      applicationType='coach'
+                    />
+                  )}
                 </>
               )}
             </Box>

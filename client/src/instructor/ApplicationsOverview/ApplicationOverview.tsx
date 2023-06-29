@@ -3,9 +3,11 @@ import { IconSearch } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
-import { fetchDeveloperApplications } from '../../redux/applicationsSlice/thunks/fetchDeveloperApplications'
-import { fetchCoachApplications } from '../../redux/applicationsSlice/thunks/fetchCoachApplications'
-import { fetchTutorApplications } from '../../redux/applicationsSlice/thunks/fetchTutorApplications'
+import {
+  fetchDeveloperApplications,
+  fetchCoachApplications,
+  fetchTutorApplications,
+} from '../../redux/applicationsSlice/thunks/fetchApplications'
 import { DeveloperApplicationTable } from './components/DeveloperApplicationTable'
 import { CoachApplicationTable } from './components/CoachApplicationTable'
 import { TutorApplicationTable } from './components/TutorApplicationTable'

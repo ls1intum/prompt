@@ -1,17 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { type ProjectTeam } from '../projectTeamsSlice/projectTeamsSlice'
 import { assignDeveloperApplicationToProjectTeam } from './thunks/assignDeveloperApplicationToProjectTeam'
-import { createDeveloperApplication } from './thunks/createDeveloperApplication'
-import { createInstructorComment } from './thunks/createInstructorComment'
-import { fetchDeveloperApplications } from './thunks/fetchDeveloperApplications'
+import {
+  createInstructorCommentForDeveloperApplication,
+  createInstructorCommentForCoachApplication,
+  createInstructorCommentForTutorApplication,
+} from './thunks/createInstructorComment'
+import {
+  fetchDeveloperApplications,
+  fetchCoachApplications,
+  fetchTutorApplications,
+} from './thunks/fetchApplications'
 import { removeDeveloperApplicationFromProjectTeam } from './thunks/removeDeveloperApplicationFromProjectTeam'
 import { updateDeveloperApplication } from './thunks/updateDeveloperApplication'
-import { updateDeveloperApplicationAssessment } from './thunks/updateDeveloperApplicationAssessment'
-import { fetchCoachApplications } from './thunks/fetchCoachApplications'
-import { fetchTutorApplications } from './thunks/fetchTutorApplications'
-import { deleteDeveloperApplication } from './thunks/deleteDeveloperApplication'
-import { deleteCoachApplication } from './thunks/deleteCoachApplication'
-import { deleteTutorApplication } from './thunks/deleteTutorApplications'
+import {
+  updateCoachApplicationAssessment,
+  updateDeveloperApplicationAssessment,
+  updateTutorApplicationAssessment,
+} from './thunks/updateApplicationAssessment'
+import {
+  deleteCoachApplication,
+  deleteDeveloperApplication,
+  deleteTutorApplication,
+} from './thunks/deleteApplication'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -30,6 +41,7 @@ enum StudyProgram {
   INFORMATION_SYSTEMS = 'Information Systems',
   GAMES_ENGINEERING = 'Games Engineering',
   MANAGEMENT_AND_TECHNOLOGY = 'Management and Technology',
+  OTHER = 'Other',
 }
 
 enum Gender {
@@ -181,21 +193,6 @@ export const applicationsState = createSlice({
       state.status = 'idle'
     })
 
-    builder.addCase(createDeveloperApplication.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(createDeveloperApplication.fulfilled, (state, { payload }) => {
-      state.developerApplications.push(payload)
-      state.status = 'idle'
-    })
-
-    builder.addCase(createDeveloperApplication.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
     builder.addCase(updateDeveloperApplication.pending, (state) => {
       state.status = 'loading'
       state.error = null
@@ -230,19 +227,93 @@ export const applicationsState = createSlice({
       state.status = 'idle'
     })
 
-    builder.addCase(createInstructorComment.pending, (state) => {
+    builder.addCase(updateCoachApplicationAssessment.pending, (state) => {
       state.status = 'loading'
       state.error = null
     })
 
-    builder.addCase(createInstructorComment.fulfilled, (state, { payload }) => {
-      state.developerApplications.map((sa) => {
+    builder.addCase(updateCoachApplicationAssessment.fulfilled, (state, { payload }) => {
+      state.coachApplications = state.coachApplications.map((studentApplication) =>
+        studentApplication.id === payload.id ? payload : studentApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateCoachApplicationAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateTutorApplicationAssessment.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateTutorApplicationAssessment.fulfilled, (state, { payload }) => {
+      state.tutorApplications = state.tutorApplications.map((studentApplication) =>
+        studentApplication.id === payload.id ? payload : studentApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateTutorApplicationAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(createInstructorCommentForDeveloperApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(
+      createInstructorCommentForDeveloperApplication.fulfilled,
+      (state, { payload }) => {
+        state.developerApplications.map((sa) => {
+          return sa.id === payload.id ? payload : sa
+        })
+        state.status = 'idle'
+      },
+    )
+
+    builder.addCase(
+      createInstructorCommentForDeveloperApplication.rejected,
+      (state, { payload }) => {
+        if (payload) state.error = 'error'
+        state.status = 'idle'
+      },
+    )
+
+    builder.addCase(createInstructorCommentForCoachApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(createInstructorCommentForCoachApplication.fulfilled, (state, { payload }) => {
+      state.coachApplications.map((sa) => {
         return sa.id === payload.id ? payload : sa
       })
       state.status = 'idle'
     })
 
-    builder.addCase(createInstructorComment.rejected, (state, { payload }) => {
+    builder.addCase(createInstructorCommentForCoachApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(createInstructorCommentForTutorApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(createInstructorCommentForTutorApplication.fulfilled, (state, { payload }) => {
+      state.tutorApplications.map((sa) => {
+        return sa.id === payload.id ? payload : sa
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(createInstructorCommentForTutorApplication.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
@@ -343,6 +414,7 @@ export {
   type CoachApplication,
   type TutorApplication,
   type InstructorComment,
+  type ApplicationAssessment,
   LanguageProficiency,
   StudyDegree,
   StudyProgram,

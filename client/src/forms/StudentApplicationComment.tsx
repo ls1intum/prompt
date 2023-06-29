@@ -22,14 +22,16 @@ export const StudentApplicationComment = ({
     >
       <legend
         style={{
-          textAlign: 'left',
+          textAlign: 'right',
           padding: '0.5vw',
           fontSize: '13px',
           fontWeight: '500',
         }}
       >
         {instructorComment.author} ·{' '}
-        {moment(instructorComment.timestamp).format('DD-MM-YYYY hh:mm')}
+        {moment(instructorComment.timestamp).diff(moment(), 'days') < 7
+          ? moment(instructorComment.timestamp).fromNow()
+          : moment(instructorComment.timestamp).format('DD-MM-YYYY hh:mm')}
       </legend>
       <Text>{instructorComment.text}</Text>
     </fieldset>

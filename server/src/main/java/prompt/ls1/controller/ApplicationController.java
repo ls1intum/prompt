@@ -28,6 +28,7 @@ import prompt.ls1.model.InstructorComment;
 import prompt.ls1.model.TutorApplication;
 import prompt.ls1.service.ApplicationService;
 import prompt.ls1.service.CourseIterationService;
+import prompt.ls1.service.MailingService;
 
 import java.time.Duration;
 import java.util.List;
@@ -39,16 +40,19 @@ public class ApplicationController {
     private final Bucket bucket;
     private final ApplicationService applicationService;
     private final CourseIterationService courseIterationService;
+    private final MailingService mailingService;
 
     @Autowired
     public ApplicationController(final ApplicationService applicationService,
-                                 final CourseIterationService courseIterationService) {
+                                 final CourseIterationService courseIterationService,
+                                 final MailingService mailingService) {
         Bandwidth limit = Bandwidth.classic(100, Refill.greedy(100, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
                 .build();
         this.applicationService = applicationService;
         this.courseIterationService = courseIterationService;
+        this.mailingService = mailingService;
     }
 
     @GetMapping("/developer")
@@ -57,6 +61,7 @@ public class ApplicationController {
             @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @RequestParam(required = false, defaultValue = "false") boolean accepted
     ) {
+        // mailingService.sendSimpleMessage("andraichuk.valeryia@gmail.com", "Hello from PROMPT", "Hello");
         final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
         return ResponseEntity.ok(applicationService.findAllDeveloperApplicationsByCourseIteration(courseIteration.getId(), accepted));
@@ -133,17 +138,47 @@ public class ApplicationController {
 
     @PatchMapping(path = "/developer/{developerApplicationId}/assessment", consumes = "application/json-path+json")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> updateStudentApplicationAssessment(@PathVariable final UUID developerApplicationId,
+    public ResponseEntity<Application> updateDeveloperApplicationAssessment(@PathVariable final UUID developerApplicationId,
                                                                           @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         return ResponseEntity.ok(applicationService.updateDeveloperApplicationAssessment(developerApplicationId, patchStudentApplicationAssessment));
     }
 
-    @PostMapping("/developer/{developerApplicationId}/instructor-comments")
+    @PatchMapping(path = "/coach/{coachApplicationId}/assessment", consumes = "application/json-path+json")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> createNote(@PathVariable UUID developerApplicationId,
+    public ResponseEntity<Application> updateCoachApplicationAssessment(@PathVariable final UUID coachApplicationId,
+                                                                            @RequestBody JsonPatch patchStudentApplicationAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        return ResponseEntity.ok(applicationService.updateCoachApplicationAssessment(coachApplicationId, patchStudentApplicationAssessment));
+    }
+
+    @PatchMapping(path = "/tutor/{tutorApplicationId}/assessment", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> updateTutorApplicationAssessment(@PathVariable final UUID tutorApplicationId,
+                                                                            @RequestBody JsonPatch patchStudentApplicationAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        return ResponseEntity.ok(applicationService.updateTutorApplicationAssessment(tutorApplicationId, patchStudentApplicationAssessment));
+    }
+
+    @PostMapping("/developer/{applicationId}/instructor-comments")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> createInstructorCommentForDeveloperApplication(@PathVariable UUID applicationId,
                                                   @RequestBody InstructorComment instructorComment) {
-        return ResponseEntity.ok(applicationService.createInstructorComment(developerApplicationId, instructorComment));
+        return ResponseEntity.ok(applicationService.createInstructorCommentForDeveloperApplication(applicationId, instructorComment));
+    }
+
+    @PostMapping("/coach/{applicationId}/instructor-comments")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> createInstructorCommentForCoachApplication(@PathVariable UUID applicationId,
+                                                               @RequestBody InstructorComment instructorComment) {
+        return ResponseEntity.ok(applicationService.createInstructorCommentForCoachApplication(applicationId, instructorComment));
+    }
+
+    @PostMapping("/tutor/{applicationId}/instructor-comments")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> createInstructorCommentForTutorApplication(@PathVariable UUID applicationId,
+                                                               @RequestBody InstructorComment instructorComment) {
+        return ResponseEntity.ok(applicationService.createInstructorCommentForTutorApplication(applicationId, instructorComment));
     }
 
     @PostMapping(path = "/developer/{developerApplicationId}/project-team/{projectTeamId}")

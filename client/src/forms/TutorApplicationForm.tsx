@@ -26,6 +26,7 @@ import { type Patch } from '../service/configService'
 import { createTutorApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
+import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
 
 interface TutorApplicationFormProps {
   tutorApplication?: TutorApplication
@@ -178,34 +179,46 @@ export const TutorApplicationForm = ({
                     required
                     {...tutorForm.getInputProps('reasonGoodTutor')}
                   />
-                  <Stack>
-                    <Checkbox
-                      mt='md'
-                      label='I have read the declaration of consent below and agree to the processing of my data.'
-                      {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
-                    />
-                    <Spoiler maxHeight={0} showLabel='View Data Consent Agreement' hideLabel='Hide'>
-                      <DeclarationOfDataConsent />
-                    </Spoiler>
-                    <Checkbox
-                      mt='md'
-                      label={
-                        <Text>
-                          I am aware that the course will take place before the semester starts. The
-                          exact dates are listed on our{' '}
-                          <Anchor href='https://ase.cit.tum.de/ios' target='_blank' variant='blue'>
-                            website
-                          </Anchor>
-                          .
-                        </Text>
-                      }
-                      {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
-                    />
-                  </Stack>
+                  {accessMode === ApplicationFormAccessMode.STUDENT && (
+                    <Stack>
+                      <Checkbox
+                        mt='md'
+                        label='I have read the declaration of consent below and agree to the processing of my data.'
+                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                      />
+                      <Spoiler
+                        maxHeight={0}
+                        showLabel='View Data Consent Agreement'
+                        hideLabel='Hide'
+                      >
+                        <DeclarationOfDataConsent />
+                      </Spoiler>
+                      <Checkbox
+                        mt='md'
+                        label={
+                          <Text>
+                            I am aware that the course will take place before the semester starts.
+                            The exact dates are listed on our{' '}
+                            <Anchor
+                              href='https://ase.cit.tum.de/ios'
+                              target='_blank'
+                              variant='blue'
+                            >
+                              website
+                            </Anchor>
+                            .
+                          </Text>
+                        }
+                        {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
+                      />
+                    </Stack>
+                  )}
                   <Group position='right' mt='md'>
                     <Button
                       disabled={
-                        !defaultForm.isValid() || !tutorForm.isValid() || !consentForm.isValid()
+                        !defaultForm.isValid() ||
+                        !tutorForm.isValid() ||
+                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
                       }
                       type='submit'
                       onClick={() => {
@@ -259,6 +272,13 @@ export const TutorApplicationForm = ({
                       Submit
                     </Button>
                   </Group>
+                  {accessMode === ApplicationFormAccessMode.INSTRUCTOR && tutorApplication && (
+                    <ApplicationAssessmentForm
+                      applicationId={tutorApplication.id}
+                      assessment={tutorApplication.assessment}
+                      applicationType='tutor'
+                    />
+                  )}
                 </>
               )}
             </Box>

@@ -8,7 +8,7 @@ import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
-import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteDeveloperApplication'
+import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 
 interface DeveloperApplicationTableProps {
   developerApplications: DeveloperApplication[]
