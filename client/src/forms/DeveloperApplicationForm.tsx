@@ -176,8 +176,8 @@ export const DeveloperApplicationForm = ({
                       />
                       <Spoiler
                         maxHeight={0}
-                        showLabel='View Data Consent Agreement'
-                        hideLabel='Hide'
+                        showLabel={<Text fz='sm'>Show Data Consent Agreement</Text>}
+                        hideLabel={<Text fz='sm'>Hide</Text>}
                       >
                         <DeclarationOfDataConsent />
                       </Spoiler>

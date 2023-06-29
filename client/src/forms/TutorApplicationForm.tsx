@@ -22,7 +22,6 @@ import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
-import { type Patch } from '../service/configService'
 import { createTutorApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
@@ -188,8 +187,8 @@ export const TutorApplicationForm = ({
                       />
                       <Spoiler
                         maxHeight={0}
-                        showLabel='View Data Consent Agreement'
-                        hideLabel='Hide'
+                        showLabel={<Text fz='sm'>Show Data Consent Agreement</Text>}
+                        hideLabel={<Text fz='sm'>Hide</Text>}
                       >
                         <DeclarationOfDataConsent />
                       </Spoiler>
@@ -241,31 +240,6 @@ export const TutorApplicationForm = ({
                             })
                             .catch(() => {})
                           onSuccess()
-                        } else if (defaultForm.isValid() && tutorApplication) {
-                          const studentApplicationAssessmentPatchObjectArray: Patch[] = []
-                          if (defaultForm.values.assessment) {
-                            Object.keys(defaultForm.values.assessment).forEach((key) => {
-                              if (defaultForm.isTouched('assessment.' + key)) {
-                                const studentApplicationPatchObject = new Map()
-                                studentApplicationPatchObject.set('op', 'replace')
-                                studentApplicationPatchObject.set('path', '/' + key)
-                                studentApplicationPatchObject.set(
-                                  'value',
-                                  defaultForm.getInputProps('assessment.' + key).value,
-                                )
-                                const obj = Object.fromEntries(studentApplicationPatchObject)
-                                studentApplicationAssessmentPatchObjectArray.push(obj)
-                              }
-                            })
-
-                            /* void dispatch(
-                updateDeveloperApplicationAssessment({
-                  applicationId: developerApplication.id,
-                  applicationAssessmentPatch: studentApplicationAssessmentPatchObjectArray,
-                }),
-              ) */
-                            onSuccess()
-                          }
                         }
                       }}
                     >

@@ -9,6 +9,7 @@ import {
   Loader,
   Spoiler,
   Stack,
+  Text,
   Textarea,
   Title,
 } from '@mantine/core'
@@ -20,7 +21,6 @@ import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
-import { type Patch } from '../service/configService'
 import { createCoachApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
@@ -186,8 +186,8 @@ export const CoachApplicationForm = ({
                       />
                       <Spoiler
                         maxHeight={0}
-                        showLabel='View Data Consent Agreement'
-                        hideLabel='Hide'
+                        showLabel={<Text fz='sm'>Show Data Consent Agreement</Text>}
+                        hideLabel={<Text fz='sm'>Hide</Text>}
                       >
                         <DeclarationOfDataConsent />
                       </Spoiler>
@@ -227,35 +227,6 @@ export const CoachApplicationForm = ({
                             })
                             .catch(() => {})
                           onSuccess()
-                        } else if (
-                          defaultForm.isValid() &&
-                          coachForm.isValid() &&
-                          coachApplication
-                        ) {
-                          // TODO: differentiate between assessment and student application changes
-                          if (defaultForm.values.assessment) {
-                            const studentApplicationAssessmentPatchObjectArray: Patch[] = []
-                            Object.keys(defaultForm.values.assessment).forEach((key) => {
-                              if (defaultForm.isTouched('assessment.' + key)) {
-                                const studentApplicationPatchObject = new Map()
-                                studentApplicationPatchObject.set('op', 'replace')
-                                studentApplicationPatchObject.set('path', '/' + key)
-                                studentApplicationPatchObject.set(
-                                  'value',
-                                  defaultForm.getInputProps('assessment.' + key).value,
-                                )
-                                const obj = Object.fromEntries(studentApplicationPatchObject)
-                                studentApplicationAssessmentPatchObjectArray.push(obj)
-                              }
-                            })
-                            /* void dispatch(
-                  updateDeveloperApplicationAssessment({
-                    applicationId: developerApplication.id,
-                    applicationAssessmentPatch: studentApplicationAssessmentPatchObjectArray,
-                  }),
-                ) */
-                            onSuccess()
-                          }
                         }
                       }}
                     >
