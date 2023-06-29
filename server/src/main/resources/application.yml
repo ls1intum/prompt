@@ -26,6 +26,17 @@ spring:
         jwt:
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8081/realms/prompt/protocol/openid-connect/certs}
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/prompt}
+  mail:
+    host: postfix
+    # username:
+    # password:
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          starttls:
+            enable: true
 
 jwt:
   auth:
