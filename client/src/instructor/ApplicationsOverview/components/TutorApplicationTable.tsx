@@ -8,7 +8,7 @@ import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
-import { deleteTutorApplication } from '../../../redux/applicationsSlice/thunks/deleteTutorApplications'
+import { deleteTutorApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 
 interface TutorApplicationTableProps {
   tutorApplications: TutorApplication[]

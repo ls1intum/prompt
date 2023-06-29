@@ -32,6 +32,7 @@ dependencies {
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:3.0.3.201309161630-r'
 	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
+	implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.1'
 
 	// Authentication
 	implementation 'org.springframework.boot:spring-boot-starter-security'

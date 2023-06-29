@@ -8,7 +8,7 @@ import { CoachApplicationForm } from '../../../forms/CoachApplicationForm'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
-import { deleteCoachApplication } from '../../../redux/applicationsSlice/thunks/deleteCoachApplication'
+import { deleteCoachApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 
 interface CoachApplicationTableProps {
   coachApplications: CoachApplication[]

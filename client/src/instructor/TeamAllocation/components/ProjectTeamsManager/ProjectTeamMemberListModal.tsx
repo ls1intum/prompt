@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
-import { fetchDeveloperApplications } from '../../../../redux/applicationsSlice/thunks/fetchDeveloperApplications'
+import { fetchDeveloperApplications } from '../../../../redux/applicationsSlice/thunks/fetchApplications'
 import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
 
 interface ProjectTeamMemberListModalProps {

@@ -25,6 +25,7 @@ import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -151,22 +152,80 @@ public class ApplicationService {
 
     public DeveloperApplication updateDeveloperApplicationAssessment(final UUID developerApplicationId, JsonPatch patchDeveloperApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
-        DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
+        final DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
 
         ApplicationAssessment patchedApplicationAssessment = applyPatchToStudentApplicationAssessment(
-                patchDeveloperApplicationAssessment, application.getAssessment());
+                patchDeveloperApplicationAssessment,
+                application.getAssessment() != null ? application.getAssessment() : new ApplicationAssessment());
 
         application.setAssessment(patchedApplicationAssessment);
         return developerApplicationRepository.save(application);
     }
 
-    public Application createInstructorComment(final UUID developerApplicationId, final InstructorComment instructorComment) {
-        DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
+    public CoachApplication updateCoachApplicationAssessment(final UUID coachApplicationId, JsonPatch patchDeveloperApplicationAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        final CoachApplication application = findCoachApplicationById(coachApplicationId);
+
+        ApplicationAssessment patchedApplicationAssessment = applyPatchToStudentApplicationAssessment(
+                patchDeveloperApplicationAssessment,
+                application.getAssessment() != null ? application.getAssessment() : new ApplicationAssessment());
+
+        application.setAssessment(patchedApplicationAssessment);
+        return coachApplicationRepository.save(application);
+    }
+
+    public TutorApplication updateTutorApplicationAssessment(final UUID tutorApplicationId, JsonPatch patchDeveloperApplicationAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        final TutorApplication application = findTutorApplicationById(tutorApplicationId);
+
+        ApplicationAssessment patchedApplicationAssessment = applyPatchToStudentApplicationAssessment(
+                patchDeveloperApplicationAssessment,
+                application.getAssessment() != null ? application.getAssessment() : new ApplicationAssessment());
+
+        application.setAssessment(patchedApplicationAssessment);
+        return tutorApplicationRepository.save(application);
+    }
+
+    public Application createInstructorCommentForDeveloperApplication(final UUID developerApplicationId, final InstructorComment instructorComment) {
+        final DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
+        if (application.getAssessment() == null) {
+            application.setAssessment(new ApplicationAssessment());
+        }
+        if (application.getAssessment().getInstructorComments() == null) {
+            application.getAssessment().setInstructorComments(new HashSet<>());
+        }
         application.getAssessment().getInstructorComments().add(instructorComment);
         instructorCommentRepository.save(instructorComment);
 
-        return developerApplicationRepository.findById(developerApplicationId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application with id %s not found.", developerApplicationId)));
+        return findDeveloperApplicationById(developerApplicationId);
+    }
+
+    public Application createInstructorCommentForCoachApplication(final UUID coachApplicationId, final InstructorComment instructorComment) {
+        final CoachApplication application = findCoachApplicationById(coachApplicationId);
+        if (application.getAssessment() == null) {
+            application.setAssessment(new ApplicationAssessment());
+        }
+        if (application.getAssessment().getInstructorComments() == null) {
+            application.getAssessment().setInstructorComments(new HashSet<>());
+        }
+        application.getAssessment().getInstructorComments().add(instructorComment);
+        instructorCommentRepository.save(instructorComment);
+
+        return findCoachApplicationById(coachApplicationId);
+    }
+
+    public Application createInstructorCommentForTutorApplication(final UUID tutorApplicationId, final InstructorComment instructorComment) {
+        final TutorApplication application = findTutorApplicationById(tutorApplicationId);
+        if (application.getAssessment() == null) {
+            application.setAssessment(new ApplicationAssessment());
+        }
+        if (application.getAssessment().getInstructorComments() == null) {
+            application.getAssessment().setInstructorComments(new HashSet<>());
+        }
+        application.getAssessment().getInstructorComments().add(instructorComment);
+        instructorCommentRepository.save(instructorComment);
+
+        return findCoachApplicationById(tutorApplicationId);
     }
 
     public Application assignDeveloperApplicationToProjectTeam(final UUID developerApplicationId, final UUID projectTeamId, final UUID courseIterationId) {

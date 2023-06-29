@@ -5,13 +5,13 @@ import {
   Button,
   Center,
   Checkbox,
-  Container,
   Group,
   Loader,
   Spoiler,
   Stack,
   Text,
   Textarea,
+  Title,
 } from '@mantine/core'
 import {
   type CoachApplication,
@@ -21,10 +21,10 @@ import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
-import { type Patch } from '../service/configService'
 import { createCoachApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
+import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
 
 interface CoachApplicationFormProps {
   coachApplication?: CoachApplication
@@ -177,25 +177,33 @@ export const CoachApplicationForm = ({
                     required
                     {...coachForm.getInputProps('solvedProblem')}
                   />
-                  <Stack>
-                    <Checkbox
-                      mt='md'
-                      label='I have read the declaration of consent below and agree to the processing of my data.'
-                      {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
-                    />
-                    <Spoiler maxHeight={0} showLabel='View Data Consent Agreement' hideLabel='Hide'>
-                      <DeclarationOfDataConsent />
-                    </Spoiler>
-                    <Checkbox
-                      mt='md'
-                      label={`I am aware that the Agile Project Mamagement is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
-                      {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
-                    />
-                  </Stack>
+                  {accessMode === ApplicationFormAccessMode.STUDENT && (
+                    <Stack>
+                      <Checkbox
+                        mt='md'
+                        label='I have read the declaration of consent below and agree to the processing of my data.'
+                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                      />
+                      <Spoiler
+                        maxHeight={0}
+                        showLabel={<Text fz='sm'>Show Data Consent Agreement</Text>}
+                        hideLabel={<Text fz='sm'>Hide</Text>}
+                      >
+                        <DeclarationOfDataConsent />
+                      </Spoiler>
+                      <Checkbox
+                        mt='md'
+                        label={`I am aware that the Agile Project Mamagement is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
+                        {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
+                      />
+                    </Stack>
+                  )}
                   <Group position='right' mt='md'>
                     <Button
                       disabled={
-                        !defaultForm.isValid() || !coachForm.isValid() || !consentForm.isValid()
+                        !defaultForm.isValid() ||
+                        !coachForm.isValid() ||
+                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
                       }
                       type='submit'
                       onClick={() => {
@@ -219,48 +227,33 @@ export const CoachApplicationForm = ({
                             })
                             .catch(() => {})
                           onSuccess()
-                        } else if (
-                          defaultForm.isValid() &&
-                          coachForm.isValid() &&
-                          coachApplication
-                        ) {
-                          // TODO: differentiate between assessment and student application changes
-                          if (defaultForm.values.assessment) {
-                            const studentApplicationAssessmentPatchObjectArray: Patch[] = []
-                            Object.keys(defaultForm.values.assessment).forEach((key) => {
-                              if (defaultForm.isTouched('assessment.' + key)) {
-                                const studentApplicationPatchObject = new Map()
-                                studentApplicationPatchObject.set('op', 'replace')
-                                studentApplicationPatchObject.set('path', '/' + key)
-                                studentApplicationPatchObject.set(
-                                  'value',
-                                  defaultForm.getInputProps('assessment.' + key).value,
-                                )
-                                const obj = Object.fromEntries(studentApplicationPatchObject)
-                                studentApplicationAssessmentPatchObjectArray.push(obj)
-                              }
-                            })
-                            /* void dispatch(
-                  updateDeveloperApplicationAssessment({
-                    applicationId: developerApplication.id,
-                    applicationAssessmentPatch: studentApplicationAssessmentPatchObjectArray,
-                  }),
-                ) */
-                            onSuccess()
-                          }
                         }
                       }}
                     >
                       Submit
                     </Button>
                   </Group>
+                  {accessMode === ApplicationFormAccessMode.INSTRUCTOR && coachApplication && (
+                    <ApplicationAssessmentForm
+                      applicationId={coachApplication.id}
+                      assessment={coachApplication.assessment}
+                      applicationType='coach'
+                    />
+                  )}
                 </>
               )}
             </Box>
           ) : (
-            <Container>
-              <Text>Application period is closed.</Text>
-            </Container>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+              }}
+            >
+              <Title order={5}>Application period is closed.</Title>
+            </div>
           )}
         </>
       )}
