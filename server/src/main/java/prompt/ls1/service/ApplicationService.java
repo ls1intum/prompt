@@ -70,7 +70,7 @@ public class ApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Tutor application with id %s not found.", tutorApplicationId)));
     }
 
-    public Application createDeveloperApplication(final DeveloperApplication developerApplication) {
+    public DeveloperApplication createDeveloperApplication(final DeveloperApplication developerApplication) {
         Optional<Student> existingStudent = findStudent(developerApplication.getStudent().getTumId(),
                 developerApplication.getStudent().getMatriculationNumber(), developerApplication.getStudent().getEmail());
 
@@ -94,7 +94,7 @@ public class ApplicationService {
         return developerApplicationRepository.save(developerApplication);
     }
 
-    public Application createTutorApplication(final TutorApplication tutorApplication) {
+    public TutorApplication createTutorApplication(final TutorApplication tutorApplication) {
         Optional<Student> existingStudent = findStudent(tutorApplication.getStudent().getTumId(),
                 tutorApplication.getStudent().getMatriculationNumber(), tutorApplication.getStudent().getEmail());
 
@@ -118,15 +118,15 @@ public class ApplicationService {
         return tutorApplicationRepository.save(tutorApplication);
     }
 
-    public Application createCoachApplication(final CoachApplication coachApplication) {
+    public CoachApplication createCoachApplication(final CoachApplication coachApplication) {
         Optional<Student> existingStudent = findStudent(coachApplication.getStudent().getTumId(),
                 coachApplication.getStudent().getMatriculationNumber(), coachApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
             coachApplication.getStudent().setPublicId(UUID.randomUUID());
-            studentRepository.save(checkAndUpdateStudent(existingStudent.get(), coachApplication.getStudent()));
+            studentRepository.save(coachApplication.getStudent());
         } else {
-            coachApplication.setStudent(existingStudent.get());
+            coachApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), coachApplication.getStudent()));
         }
 
         final Optional<CoachApplication> existingCoachApplication = coachApplicationRepository.findByStudentAndCourseIteration(
@@ -350,8 +350,8 @@ public class ApplicationService {
     }
 
     private Student checkAndUpdateStudent(final Student existingStudent, final Student updatedStudent) {
-        if (((existingStudent.getTumId() != null || !existingStudent.getTumId().isBlank()) && !existingStudent.getTumId().equals(updatedStudent.getTumId())) ||
-                (existingStudent.getMatriculationNumber() != null || !existingStudent.getMatriculationNumber().isBlank()) && !existingStudent.getMatriculationNumber().equals(updatedStudent.getMatriculationNumber())) {
+        if (((existingStudent.getTumId() != null && !existingStudent.getTumId().isBlank()) && !existingStudent.getTumId().equals(updatedStudent.getTumId())) ||
+                (existingStudent.getMatriculationNumber() != null && !existingStudent.getMatriculationNumber().isBlank()) && !existingStudent.getMatriculationNumber().equals(updatedStudent.getMatriculationNumber())) {
             throw new ResourceInvalidParametersException("Provided TUM ID does not match with the matriculation number you submitted. " +
                     "If You are sure the data is entered correct, please contact the Program Management.");
         }

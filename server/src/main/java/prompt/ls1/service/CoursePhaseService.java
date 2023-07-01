@@ -75,17 +75,16 @@ public class CoursePhaseService {
                         "%s.", coursePhaseCheck.getTitle(), coursePhase.getId())));
 
         final List<CourseIteration> courseIterations = courseIterationRepository.findAll();
-        courseIterations.forEach(courseIteration -> {
-            courseIteration.getPhases().stream().filter(phase -> phase.getCoursePhase().getId().equals(coursePhase.getId()))
-                    .findFirst().ifPresent(phase -> {
-                        final CourseIterationPhaseCheckEntry courseIterationPhaseCheckEntry = new CourseIterationPhaseCheckEntry();
-                        courseIterationPhaseCheckEntry.setCoursePhaseCheck(savedCoursePhaseCheck);
-                        courseIterationPhaseCheckEntry.setFulfilled(false);
-                        phase.getCheckEntries()
-                                .add(courseIterationPhaseCheckEntryRepository.save(courseIterationPhaseCheckEntry));
-                        courseIterationPhaseRepository.save(phase);
-                    });
-        });
+        courseIterations.forEach(courseIteration ->
+                courseIteration.getPhases().stream().filter(phase -> phase.getCoursePhase().getId().equals(coursePhase.getId()))
+                .findFirst().ifPresent(phase -> {
+                    final CourseIterationPhaseCheckEntry courseIterationPhaseCheckEntry = new CourseIterationPhaseCheckEntry();
+                    courseIterationPhaseCheckEntry.setCoursePhaseCheck(savedCoursePhaseCheck);
+                    courseIterationPhaseCheckEntry.setFulfilled(false);
+                    phase.getCheckEntries()
+                            .add(courseIterationPhaseCheckEntryRepository.save(courseIterationPhaseCheckEntry));
+                    courseIterationPhaseRepository.save(phase);
+                }));
 
         return savedCoursePhase;
     }
@@ -108,19 +107,16 @@ public class CoursePhaseService {
         coursePhase.getChecks().remove(coursePhaseCheck);
 
         final List<CourseIteration> courseIterations = courseIterationRepository.findAll();
-        courseIterations.forEach(courseIteration -> {
-            courseIteration.getPhases().stream().filter(phase -> phase.getCoursePhase().getId().equals(coursePhase.getId()))
-                    .findFirst().ifPresent(phase -> {
-                        phase.getCheckEntries()
-                                .stream()
-                                .filter(checkEntry -> checkEntry.getCoursePhaseCheck().getId().equals(coursePhaseCheckId))
-                                .findFirst()
-                                .ifPresent(courseIterationPhaseCheckEntry -> {
-                                    phase.getCheckEntries().remove(courseIterationPhaseCheckEntry);
-                                    courseIterationPhaseRepository.save(phase);
-                                });
-                    });
-        });
+        courseIterations.forEach(courseIteration ->
+                courseIteration.getPhases().stream().filter(phase -> phase.getCoursePhase().getId().equals(coursePhase.getId()))
+                .findFirst().ifPresent(phase -> phase.getCheckEntries()
+                        .stream()
+                        .filter(checkEntry -> checkEntry.getCoursePhaseCheck().getId().equals(coursePhaseCheckId))
+                        .findFirst()
+                        .ifPresent(courseIterationPhaseCheckEntry -> {
+                            phase.getCheckEntries().remove(courseIterationPhaseCheckEntry);
+                            courseIterationPhaseRepository.save(phase);
+                        })));
 
         return coursePhaseRepository.save(coursePhase);
     }
