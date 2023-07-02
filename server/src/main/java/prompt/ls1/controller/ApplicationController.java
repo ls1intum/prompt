@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
+import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,6 @@ public class ApplicationController {
             @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @RequestParam(required = false, defaultValue = "false") boolean accepted
     ) {
-        // mailingService.sendSimpleMessage("andraichuk.valeryia@gmail.com", "Hello from PROMPT", "Hello");
         final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
         return ResponseEntity.ok(applicationService.findAllDeveloperApplicationsByCourseIteration(courseIteration.getId(), accepted));
@@ -90,13 +90,15 @@ public class ApplicationController {
     }
 
     @PostMapping("/developer")
-    public ResponseEntity<Application> createDeveloperApplication(@RequestBody DeveloperApplication developerApplication,
-                                              @RequestParam(name = "courseIteration") String courseIterationName) {
+    public ResponseEntity<DeveloperApplication> createDeveloperApplication(@RequestBody DeveloperApplication developerApplication,
+                                              @RequestParam(name = "courseIteration") String courseIterationName) throws MessagingException {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
             developerApplication.setCourseIteration(courseIteration);
 
-            return ResponseEntity.ok(applicationService.createDeveloperApplication(developerApplication));
+            final DeveloperApplication application = applicationService.createDeveloperApplication(developerApplication);
+            mailingService.sendDeveloperApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+            return ResponseEntity.ok(application);
         }
 
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
@@ -104,12 +106,15 @@ public class ApplicationController {
 
     @PostMapping("/tutor")
     public ResponseEntity<Application> createTutorApplication(@RequestBody TutorApplication tutorApplication,
-                                                                  @RequestParam(name = "courseIteration") String courseIterationName) {
+                                                                  @RequestParam(name = "courseIteration") String courseIterationName) throws MessagingException {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
             tutorApplication.setCourseIteration(courseIteration);
 
-            return ResponseEntity.ok(applicationService.createTutorApplication(tutorApplication));
+            final TutorApplication application = applicationService.createTutorApplication(tutorApplication);
+            mailingService.sendTutorApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+
+            return ResponseEntity.ok(application);
         }
 
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
@@ -117,12 +122,15 @@ public class ApplicationController {
 
     @PostMapping("/coach")
     public ResponseEntity<Application> createCoachApplication(@RequestBody CoachApplication coachApplication,
-                                                                  @RequestParam(name = "courseIteration") String courseIterationName) {
+                                                                  @RequestParam(name = "courseIteration") String courseIterationName) throws MessagingException {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
             coachApplication.setCourseIteration(courseIteration);
 
-            return ResponseEntity.ok(applicationService.createCoachApplication(coachApplication));
+            final CoachApplication application = applicationService.createCoachApplication(coachApplication);
+            mailingService.sendCoachApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+
+            return ResponseEntity.ok(application);
         }
 
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
