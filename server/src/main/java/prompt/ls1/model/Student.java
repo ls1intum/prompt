@@ -3,6 +3,7 @@ package prompt.ls1.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -21,26 +22,32 @@ public class Student implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID publicId;
 
-    @Column
+    @Column(length = 50)
+    @Length(max = 50)
     private String firstName;
 
-    @Column
+    @Column(length = 50)
+    @Length(max = 50)
     private String lastName;
 
     @Column
     private Gender gender;
 
-    @Column
+    @Column(length = 10)
+    @Length(max = 10)
     private String nationality;
 
     @Email
-    @Column(unique = true)
+    @Column(unique = true, length = 100)
+    @Length(max = 100)
     private String email;
 
-    @Column
+    @Column(length = 20)
+    @Length(max = 20)
     private String tumId;
 
-    @Column
+    @Column(length = 30)
+    @Length(max = 30)
     private String matriculationNumber;
 
     @Column

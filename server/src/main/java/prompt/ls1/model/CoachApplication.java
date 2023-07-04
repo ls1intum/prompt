@@ -1,6 +1,7 @@
 package prompt.ls1.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -20,6 +21,7 @@ public class CoachApplication extends Application {
     private Student student;
 
     @Lob
+    @Column(length = 500)
     private String solvedProblem;
 
     @ManyToOne(cascade = CascadeType.ALL)

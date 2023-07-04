@@ -32,6 +32,7 @@ public class MailingService {
 
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
         message.setSubject(String.format("iPraktikum %s Application Confirmation", courseIteration.getSemesterName()));
 
         String htmlContent = String.format("""
@@ -99,6 +100,7 @@ public class MailingService {
 
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
         message.setSubject(String.format("Agile Project Management %s Application Confirmation", courseIteration.getSemesterName()));
 
         String htmlContent = String.format("""
@@ -177,6 +179,7 @@ public class MailingService {
 
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
         message.setSubject(String.format("Teaching iOS %s Application Confirmation", courseIteration.getSemesterName()));
 
         String htmlContent = String.format("""

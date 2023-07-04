@@ -39,9 +39,11 @@ public abstract class Application {
     private Set<Course> coursesTaken;
 
     @Lob
+    @Column(length = 500)
     private String experience;
 
     @Lob
+    @Column(length = 500)
     private String motivation;
 
     @OneToOne(cascade = CascadeType.ALL)
