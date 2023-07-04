@@ -83,17 +83,35 @@ export const CourseIterationManager = (): JSX.Element => {
             title: 'iOS Tag',
           },
           {
-            accessor: 'applicationPeriodStart',
-            title: 'Application Period Start',
+            accessor: 'developerApplicationPeriod',
+            title: ' Developer Application Period',
             render: (courseIteration) => (
-              <Text>{moment(courseIteration.applicationPeriodStart).format('DD. MMMM YYYY')}</Text>
+              <Text>
+                {`${moment(courseIteration.developerApplicationPeriodStart).format(
+                  'DD. MMMM YYYY',
+                )} -
+                ${moment(courseIteration.developerApplicationPeriodEnd).format('DD. MMMM YYYY')}`}
+              </Text>
             ),
           },
           {
-            accessor: 'applicationPeriodEnd',
-            title: 'Application Period End',
+            accessor: 'coachApplicationPeriod',
+            title: ' Coach Application Period',
             render: (courseIteration) => (
-              <Text>{moment(courseIteration.applicationPeriodEnd).format('DD. MMMM YYYY')}</Text>
+              <Text>
+                {`${moment(courseIteration.coachApplicationPeriodStart).format('DD. MMMM YYYY')} -
+                ${moment(courseIteration.coachApplicationPeriodEnd).format('DD. MMMM YYYY')}`}
+              </Text>
+            ),
+          },
+          {
+            accessor: 'tutorApplicationPeriod',
+            title: ' Tutor Application Period',
+            render: (courseIteration) => (
+              <Text>
+                {`${moment(courseIteration.tutorApplicationPeriodStart).format('DD. MMMM YYYY')} - 
+                ${moment(courseIteration.tutorApplicationPeriodEnd).format('DD. MMMM YYYY')}`}
+              </Text>
             ),
           },
           {

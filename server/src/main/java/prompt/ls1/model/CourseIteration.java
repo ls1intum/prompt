@@ -22,10 +22,22 @@ public class CourseIteration {
     private String iosTag;
 
     @Column(columnDefinition = "DATE")
-    private Date applicationPeriodStart;
+    private Date developerApplicationPeriodStart;
 
     @Column(columnDefinition = "DATE")
-    private Date applicationPeriodEnd;
+    private Date developerApplicationPeriodEnd;
+
+    @Column(columnDefinition = "DATE")
+    private Date coachApplicationPeriodStart;
+
+    @Column(columnDefinition = "DATE")
+    private Date coachApplicationPeriodEnd;
+
+    @Column(columnDefinition = "DATE")
+    private Date tutorApplicationPeriodStart;
+
+    @Column(columnDefinition = "DATE")
+    private Date tutorApplicationPeriodEnd;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean projectTeamPreferencesSubmissionOpen;

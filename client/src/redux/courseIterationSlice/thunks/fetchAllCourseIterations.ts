@@ -14,12 +14,36 @@ export const fetchAllCourseIterations = createAsyncThunk(
   },
 )
 
-export const fetchCourseIterationsWithOpenApplicationPeriod = createAsyncThunk(
-  'courseIterations/fetchCourseIterationsWithOpenApplicationPeriod',
+export const fetchCourseIterationsWithOpenDeveloperApplicationPeriod = createAsyncThunk(
+  'courseIterations/fetchCourseIterationsWithOpenDeveloperApplicationPeriod',
 
   async (_, { rejectWithValue }) => {
     try {
-      return (await axios.get(`${serverBaseUrl}/api/course-iterations/open`)).data
+      return (await axios.get(`${serverBaseUrl}/api/course-iterations/open/developer`)).data
+    } catch (err) {
+      return rejectWithValue(err)
+    }
+  },
+)
+
+export const fetchCourseIterationsWithOpenCoachApplicationPeriod = createAsyncThunk(
+  'courseIterations/fetchCourseIterationsWithOpenCoachApplicationPeriod',
+
+  async (_, { rejectWithValue }) => {
+    try {
+      return (await axios.get(`${serverBaseUrl}/api/course-iterations/open/coach`)).data
+    } catch (err) {
+      return rejectWithValue(err)
+    }
+  },
+)
+
+export const fetchCourseIterationsWithOpenTutorApplicationPeriod = createAsyncThunk(
+  'courseIterations/fetchCourseIterationsWithOpenTutorApplicationPeriod',
+
+  async (_, { rejectWithValue }) => {
+    try {
+      return (await axios.get(`${serverBaseUrl}/api/course-iterations/open/tutor`)).data
     } catch (err) {
       return rejectWithValue(err)
     }

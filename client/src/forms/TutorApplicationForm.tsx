@@ -19,7 +19,7 @@ import {
   type TutorApplication,
 } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
-import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { fetchCourseIterationsWithOpenTutorApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
 import { createTutorApplication } from '../service/applicationsService'
@@ -39,8 +39,8 @@ export const TutorApplicationForm = ({
   onSuccess,
 }: TutorApplicationFormProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const courseIterationWithOpenApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
+  const courseIterationWithOpenTutorApplicationPeriod = useAppSelector(
+    (state) => state.courseIterations.courseIterationWithOpenTutorApplicationPeriod,
   )
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const loading = useAppSelector((state) => state.courseIterations.status)
@@ -143,7 +143,7 @@ export const TutorApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenTutorApplicationPeriod())
   }, [])
 
   return (
@@ -164,7 +164,7 @@ export const TutorApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenApplicationPeriod ??
+          {courseIterationWithOpenTutorApplicationPeriod ??
           accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
@@ -234,7 +234,7 @@ export const TutorApplicationForm = ({
                       onClick={() => {
                         if (
                           defaultForm.isValid() &&
-                          courseIterationWithOpenApplicationPeriod &&
+                          courseIterationWithOpenTutorApplicationPeriod &&
                           !tutorApplication
                         ) {
                           createTutorApplication({
@@ -242,7 +242,8 @@ export const TutorApplicationForm = ({
                               ...defaultForm.values,
                               ...tutorForm.values,
                             },
-                            courseIteration: courseIterationWithOpenApplicationPeriod.semesterName,
+                            courseIteration:
+                              courseIterationWithOpenTutorApplicationPeriod.semesterName,
                           })
                             .then((response) => {
                               if (response) {

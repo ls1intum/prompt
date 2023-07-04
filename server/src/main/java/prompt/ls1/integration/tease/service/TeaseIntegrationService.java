@@ -44,7 +44,7 @@ public class TeaseIntegrationService {
     }
 
     public List<Student> getStudents() {
-        final CourseIteration courseIteration = courseIterationService.findWithOpenApplicationPeriod();
+        final CourseIteration courseIteration = courseIterationService.findWithOpenDeveloperApplicationPeriod();
         final List<DeveloperApplication> applications = applicationService.findAllDeveloperApplicationsByCourseIteration(courseIteration.getId(), true);
         final List<ProjectTeam> projectTeams = projectTeamService.findAllByCourseIterationId(courseIteration.getId());
 

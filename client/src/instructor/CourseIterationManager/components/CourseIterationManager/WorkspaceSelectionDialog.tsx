@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   Button,
   Center,
+  Group,
   Modal,
   Pagination,
   Paper,
@@ -40,23 +41,41 @@ export const CourseIterationCreationModal = ({
     initialValues: courseIteration
       ? {
           ...courseIteration,
-          applicationPeriodStart: new Date(courseIteration.applicationPeriodStart),
-          applicationPeriodEnd: new Date(courseIteration.applicationPeriodEnd),
+          developerApplicationPeriodStart: new Date(
+            courseIteration.developerApplicationPeriodStart,
+          ),
+          developerApplicationPeriodEnd: new Date(courseIteration.developerApplicationPeriodEnd),
+          coachApplicationPeriodStart: new Date(courseIteration.coachApplicationPeriodStart),
+          coachApplicationPeriodEnd: new Date(courseIteration.coachApplicationPeriodEnd),
+          tutorApplicationPeriodStart: new Date(courseIteration.tutorApplicationPeriodStart),
+          tutorApplicationPeriodEnd: new Date(courseIteration.tutorApplicationPeriodEnd),
         }
       : {
           id: '',
           semesterName: '',
-          applicationPeriodStart: new Date(),
-          applicationPeriodEnd: new Date(),
+          developerApplicationPeriodStart: new Date(),
+          developerApplicationPeriodEnd: new Date(),
+          coachApplicationPeriodStart: new Date(),
+          coachApplicationPeriodEnd: new Date(),
+          tutorApplicationPeriodStart: new Date(),
+          tutorApplicationPeriodEnd: new Date(),
           iosTag: '',
           phases: [],
         },
   })
 
   return (
-    <Modal opened={opened} onClose={onClose} title='Create new workspace' centered>
+    <Modal opened={opened} onClose={onClose} title='Create new workspace' centered size='auto'>
       <Center>
-        <Stack style={{ width: '50vw', height: '60vh', display: 'flex', justifyContent: 'center' }}>
+        <Stack
+          style={{
+            width: '50vw',
+            height: '60vh',
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '10vh 0',
+          }}
+        >
           <TextInput
             withAsterisk
             label='Semester Name'
@@ -69,16 +88,42 @@ export const CourseIterationCreationModal = ({
             placeholder='ss20XX'
             {...form.getInputProps('iosTag')}
           />
-          <DatePickerInput
-            icon={<IconCalendar />}
-            label='Application Period Start'
-            {...form.getInputProps('applicationPeriodStart')}
-          />
-          <DatePickerInput
-            icon={<IconCalendar />}
-            label='Application Period End'
-            {...form.getInputProps('applicationPeriodEnd')}
-          />
+          <Group grow>
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Developer Application Period Start'
+              {...form.getInputProps('developerApplicationPeriodStart')}
+            />
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Developer Application Period End'
+              {...form.getInputProps('developerApplicationPeriodEnd')}
+            />
+          </Group>
+          <Group grow>
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Coach Application Period Start'
+              {...form.getInputProps('coachApplicationPeriodStart')}
+            />
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Coach Application Period End'
+              {...form.getInputProps('coachApplicationPeriodEnd')}
+            />
+          </Group>
+          <Group grow>
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Tutor Application Period Start'
+              {...form.getInputProps('tutorApplicationPeriodStart')}
+            />
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Tutor Application Period End'
+              {...form.getInputProps('tutorApplicationPeriodEnd')}
+            />
+          </Group>
           <Button
             variant='filled'
             onClick={() => {

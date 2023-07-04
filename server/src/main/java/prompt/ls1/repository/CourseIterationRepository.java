@@ -14,12 +14,18 @@ import java.util.UUID;
 public interface CourseIterationRepository extends JpaRepository<CourseIteration, UUID> {
     Optional<CourseIteration> findBySemesterName(final String semesterName);
 
-    @Query("select s from CourseIteration s where s.applicationPeriodStart <= ?1 and s.applicationPeriodEnd >= ?1")
+    @Query("select s from CourseIteration s where s.developerApplicationPeriodStart <= ?1 and s.developerApplicationPeriodEnd >= ?1")
     Optional<CourseIteration> findWithApplicationPeriodIncludes(final Date date);
 
-    @Query("select s from CourseIteration s where (s.applicationPeriodStart <= ?1 and s.applicationPeriodEnd >= ?2)" +
-            " or (s.applicationPeriodStart >= ?1 and s.applicationPeriodEnd <= ?2)" +
-            " or (s.applicationPeriodStart <= ?1 and s.applicationPeriodEnd >= ?1)" +
-            " or (s.applicationPeriodStart >= ?1 and s.applicationPeriodStart <= ?2)")
+    @Query("select s from CourseIteration s where s.coachApplicationPeriodStart <= ?1 and s.coachApplicationPeriodEnd >= ?1")
+    Optional<CourseIteration> findWithCoachApplicationPeriodIncludes(final Date date);
+
+    @Query("select s from CourseIteration s where s.tutorApplicationPeriodStart <= ?1 and s.tutorApplicationPeriodEnd >= ?1")
+    Optional<CourseIteration> findWithTutorApplicationPeriodIncludes(final Date date);
+
+    @Query("select s from CourseIteration s where (s.developerApplicationPeriodStart <= ?1 and s.developerApplicationPeriodEnd >= ?2)" +
+            " or (s.developerApplicationPeriodStart >= ?1 and s.developerApplicationPeriodEnd <= ?2)" +
+            " or (s.developerApplicationPeriodStart <= ?1 and s.developerApplicationPeriodEnd >= ?1)" +
+            " or (s.developerApplicationPeriodStart >= ?1 and s.developerApplicationPeriodStart <= ?2)")
     List<CourseIteration> findWithDateRangeOverlap(final Date startDate, final Date endDate);
 }
