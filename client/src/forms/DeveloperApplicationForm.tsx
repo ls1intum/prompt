@@ -153,7 +153,8 @@ export const DeveloperApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenApplicationPeriod ? (
+          {courseIterationWithOpenApplicationPeriod ??
+          accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
               mx='auto'
