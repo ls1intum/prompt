@@ -20,7 +20,7 @@ import {
   type DeveloperApplication,
 } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
-import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { fetchCourseIterationsWithOpenDeveloperApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { createDeveloperApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
@@ -39,7 +39,7 @@ export const DeveloperApplicationForm = ({
 }: DeveloperApplicationFormProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const courseIterationWithOpenApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
+    (state) => state.courseIterations.courseIterationWithOpenDeveloperApplicationPeriod,
   )
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const loading = useAppSelector((state) => state.courseIterations.status)
@@ -132,7 +132,7 @@ export const DeveloperApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
   }, [])
 
   return (
@@ -153,7 +153,8 @@ export const DeveloperApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenApplicationPeriod ? (
+          {courseIterationWithOpenApplicationPeriod ??
+          accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
               mx='auto'

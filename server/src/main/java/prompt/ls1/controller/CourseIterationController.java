@@ -35,10 +35,19 @@ public class CourseIterationController {
         return ResponseEntity.ok(courseIterationService.findAll());
     }
 
-    @GetMapping ("/open")
-    public ResponseEntity<CourseIteration> getCourseIterationWithOpenApplicationPhase() {
-        return ResponseEntity.ok(courseIterationService.findWithOpenApplicationPeriod());
+    @GetMapping ("/open/developer")
+    public ResponseEntity<CourseIteration> getCourseIterationWithOpenDeveloperApplicationPhase() {
+        return ResponseEntity.ok(courseIterationService.findWithOpenDeveloperApplicationPeriod());
+    }
 
+    @GetMapping ("/open/coach")
+    public ResponseEntity<CourseIteration> getCourseIterationWithOpenCoachApplicationPhase() {
+        return ResponseEntity.ok(courseIterationService.findWithOpenCoachApplicationPeriod());
+    }
+
+    @GetMapping ("/open/tutor")
+    public ResponseEntity<CourseIteration> getCourseIterationWithOpenTutorApplicationPhase() {
+        return ResponseEntity.ok(courseIterationService.findWithOpenTutorApplicationPeriod());
     }
 
     @PostMapping

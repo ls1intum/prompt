@@ -54,6 +54,7 @@ services:
       - KEYCLOAK_CLIENT_SECRET
       - KEYCLOAK_ISSUER_URI
       - KEYCLOAK_JWK_SET_URI
+      - IOS_SENDER_MAIL
 
   db:
     image: "postgres:15.2-alpine"

@@ -225,7 +225,7 @@ public class ApplicationService {
         application.getAssessment().getInstructorComments().add(instructorComment);
         instructorCommentRepository.save(instructorComment);
 
-        return findCoachApplicationById(tutorApplicationId);
+        return findTutorApplicationById(tutorApplicationId);
     }
 
     public Application assignDeveloperApplicationToProjectTeam(final UUID developerApplicationId, final UUID projectTeamId, final UUID courseIterationId) {

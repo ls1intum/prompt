@@ -27,10 +27,9 @@ export enum ApplicationFormAccessMode {
   STUDENT,
 }
 
-interface StudentApplicationFormProps {
+interface DefaultApplicationFormProps {
   title: string
   accessMode: ApplicationFormAccessMode
-  application?: Application
   form: UseFormReturnType<Application, (values: Application) => Application>
 }
 
@@ -47,9 +46,8 @@ const countriesArr = Object.entries(countries.getNames('en', { select: 'official
 export const DefaultApplicationForm = ({
   title,
   accessMode,
-  application: studentApplication,
   form,
-}: StudentApplicationFormProps): JSX.Element => {
+}: DefaultApplicationFormProps): JSX.Element => {
   return (
     <>
       {accessMode === ApplicationFormAccessMode.STUDENT && (

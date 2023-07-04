@@ -47,12 +47,12 @@ public class CourseIterationService {
             throw new ResourceConflictException(String.format("Course iteration with name %s already exists.", courseIteration.getSemesterName()));
         }
 
-        if (courseIteration.getApplicationPeriodStart().after(courseIteration.getApplicationPeriodEnd())) {
+        if (courseIteration.getDeveloperApplicationPeriodStart().after(courseIteration.getDeveloperApplicationPeriodEnd())) {
             throw new ResourceInvalidParametersException("Application period start date is after the end date.");
         }
 
         List<CourseIteration> courseIterationPeriodOverlap = courseIterationRepository
-                .findWithDateRangeOverlap(courseIteration.getApplicationPeriodStart(), courseIteration.getApplicationPeriodEnd());
+                .findWithDateRangeOverlap(courseIteration.getDeveloperApplicationPeriodStart(), courseIteration.getDeveloperApplicationPeriodEnd());
         if (!courseIterationPeriodOverlap.isEmpty()) {
             throw new ResourceInvalidParametersException(String.format("Course iteration application period overlaps with existing course iteration with name %s",
                     courseIterationPeriodOverlap.get(0).getSemesterName()));
@@ -114,9 +114,19 @@ public class CourseIterationService {
         return courseIterationRepository.findAll();
     }
 
-    public CourseIteration findWithOpenApplicationPeriod() {
+    public CourseIteration findWithOpenDeveloperApplicationPeriod() {
         return courseIterationRepository.findWithApplicationPeriodIncludes(new Date())
-                .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open application period not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open developer application period not found."));
+    }
+
+    public CourseIteration findWithOpenCoachApplicationPeriod() {
+        return courseIterationRepository.findWithCoachApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open coach application period not found."));
+    }
+
+    public CourseIteration findWithOpenTutorApplicationPeriod() {
+        return courseIterationRepository.findWithTutorApplicationPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open tutor application period not found."));
     }
 
     private CourseIteration findById(final UUID courseIterationId) {

@@ -2,7 +2,9 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { createCourseIteration } from './thunks/createCourseIteration'
 import {
   fetchAllCourseIterations,
-  fetchCourseIterationsWithOpenApplicationPeriod,
+  fetchCourseIterationsWithOpenCoachApplicationPeriod,
+  fetchCourseIterationsWithOpenDeveloperApplicationPeriod,
+  fetchCourseIterationsWithOpenTutorApplicationPeriod,
 } from './thunks/fetchAllCourseIterations'
 import { deleteCourseIteration } from './thunks/deleteCourseIteration'
 import { updateCourseIteration } from './thunks/updateCourseIteration'
@@ -11,16 +13,24 @@ import { toggleCourseIterationPhaseCheckEntry } from './thunks/toggleCourseItera
 
 interface CourseIterationRequest {
   semesterName: string
-  applicationPeriodStart: Date
-  applicationPeriodEnd: Date
+  developerApplicationPeriodStart: Date
+  developerApplicationPeriodEnd: Date
+  coachApplicationPeriodStart: Date
+  coachApplicationPeriodEnd: Date
+  tutorApplicationPeriodStart: Date
+  tutorApplicationPeriodEnd: Date
   iosTag: string
 }
 
 interface CourseIteration {
   id: string
   semesterName: string
-  applicationPeriodStart: Date
-  applicationPeriodEnd: Date
+  developerApplicationPeriodStart: Date
+  developerApplicationPeriodEnd: Date
+  coachApplicationPeriodStart: Date
+  coachApplicationPeriodEnd: Date
+  tutorApplicationPeriodStart: Date
+  tutorApplicationPeriodEnd: Date
   iosTag: string
   phases: CourseIterationPhase[]
 }
@@ -44,7 +54,9 @@ interface CourseIterationSliceState {
   error: string | null
   currentState: CourseIteration | undefined
   courseIterations: CourseIteration[]
-  courseIterationWithOpenApplicationPeriod: CourseIteration | undefined
+  courseIterationWithOpenDeveloperApplicationPeriod: CourseIteration | undefined
+  courseIterationWithOpenCoachApplicationPeriod: CourseIteration | undefined
+  courseIterationWithOpenTutorApplicationPeriod: CourseIteration | undefined
 }
 
 const initialState: CourseIterationSliceState = {
@@ -52,7 +64,9 @@ const initialState: CourseIterationSliceState = {
   error: null,
   currentState: undefined,
   courseIterations: [],
-  courseIterationWithOpenApplicationPeriod: undefined,
+  courseIterationWithOpenDeveloperApplicationPeriod: undefined,
+  courseIterationWithOpenCoachApplicationPeriod: undefined,
+  courseIterationWithOpenTutorApplicationPeriod: undefined,
 }
 
 export const courseIterationState = createSlice({
@@ -80,21 +94,63 @@ export const courseIterationState = createSlice({
       state.status = 'idle'
     })
 
-    builder.addCase(fetchCourseIterationsWithOpenApplicationPeriod.pending, (state) => {
+    builder.addCase(fetchCourseIterationsWithOpenDeveloperApplicationPeriod.pending, (state) => {
       state.status = 'loading'
       state.error = null
     })
 
     builder.addCase(
-      fetchCourseIterationsWithOpenApplicationPeriod.fulfilled,
+      fetchCourseIterationsWithOpenDeveloperApplicationPeriod.fulfilled,
       (state, { payload }) => {
-        state.courseIterationWithOpenApplicationPeriod = payload
+        state.courseIterationWithOpenDeveloperApplicationPeriod = payload
         state.status = 'idle'
       },
     )
 
     builder.addCase(
-      fetchCourseIterationsWithOpenApplicationPeriod.rejected,
+      fetchCourseIterationsWithOpenDeveloperApplicationPeriod.rejected,
+      (state, { payload }) => {
+        if (payload) state.error = 'error'
+        state.status = 'idle'
+      },
+    )
+
+    builder.addCase(fetchCourseIterationsWithOpenCoachApplicationPeriod.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(
+      fetchCourseIterationsWithOpenCoachApplicationPeriod.fulfilled,
+      (state, { payload }) => {
+        state.courseIterationWithOpenCoachApplicationPeriod = payload
+        state.status = 'idle'
+      },
+    )
+
+    builder.addCase(
+      fetchCourseIterationsWithOpenCoachApplicationPeriod.rejected,
+      (state, { payload }) => {
+        if (payload) state.error = 'error'
+        state.status = 'idle'
+      },
+    )
+
+    builder.addCase(fetchCourseIterationsWithOpenTutorApplicationPeriod.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(
+      fetchCourseIterationsWithOpenTutorApplicationPeriod.fulfilled,
+      (state, { payload }) => {
+        state.courseIterationWithOpenTutorApplicationPeriod = payload
+        state.status = 'idle'
+      },
+    )
+
+    builder.addCase(
+      fetchCourseIterationsWithOpenTutorApplicationPeriod.rejected,
       (state, { payload }) => {
         if (payload) state.error = 'error'
         state.status = 'idle'

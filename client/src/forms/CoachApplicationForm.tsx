@@ -18,7 +18,7 @@ import {
   type Application,
 } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
-import { fetchCourseIterationsWithOpenApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { fetchCourseIterationsWithOpenCoachApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
 import { createCoachApplication } from '../service/applicationsService'
@@ -39,8 +39,8 @@ export const CoachApplicationForm = ({
 }: CoachApplicationFormProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
-  const courseIterationWithOpenApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenApplicationPeriod,
+  const courseIterationWithOpenCoachApplicationPeriod = useAppSelector(
+    (state) => state.courseIterations.courseIterationWithOpenCoachApplicationPeriod,
   )
   const loading = useAppSelector((state) => state.courseIterations.status)
   const defaultForm = useForm<Application>({
@@ -118,6 +118,16 @@ export const CoachApplicationForm = ({
     initialValues: {
       solvedProblem: '',
     },
+    validateInputOnBlur: true,
+    validate: {
+      solvedProblem: (value) => {
+        if (isNotEmpty(value) && value && value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        } else if (!isNotEmpty(value)) {
+          return 'Please state your experience prior to the course participation.'
+        }
+      },
+    },
   })
   const consentForm = useForm({
     initialValues: {
@@ -132,7 +142,7 @@ export const CoachApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenCoachApplicationPeriod())
   }, [])
 
   return (
@@ -153,7 +163,8 @@ export const CoachApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenApplicationPeriod ? (
+          {courseIterationWithOpenCoachApplicationPeriod ??
+          accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
               mx='auto'
@@ -210,7 +221,7 @@ export const CoachApplicationForm = ({
                         if (
                           defaultForm.isValid() &&
                           coachForm.isValid() &&
-                          courseIterationWithOpenApplicationPeriod &&
+                          courseIterationWithOpenCoachApplicationPeriod &&
                           !coachApplication
                         ) {
                           createCoachApplication({
@@ -218,7 +229,8 @@ export const CoachApplicationForm = ({
                               ...defaultForm.values,
                               ...coachForm.values,
                             },
-                            courseIteration: courseIterationWithOpenApplicationPeriod.semesterName,
+                            courseIteration:
+                              courseIterationWithOpenCoachApplicationPeriod.semesterName,
                           })
                             .then((response) => {
                               if (response) {
