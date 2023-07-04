@@ -119,6 +119,16 @@ export const TutorApplicationForm = ({
     initialValues: {
       reasonGoodTutor: '',
     },
+    validateInputOnBlur: true,
+    validate: {
+      reasonGoodTutor: (value) => {
+        if (isNotEmpty(value) && value && value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        } else if (!isNotEmpty(value)) {
+          return 'Please state your experience prior to the course participation.'
+        }
+      },
+    },
   })
   const consentForm = useForm({
     initialValues: {
