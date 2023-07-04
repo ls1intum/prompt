@@ -48,7 +48,7 @@ prompt:
   client:
     host: ${CLIENT_HOST:localhost}
   mail:
-    sender: test@ios.ase.cit.tum.de
+    sender: ${IOS_SENDER_MAIL:test@ios.ase.cit.tum.de}
   atlassian:
     username: ${ATLASSIAN_USERNAME:}
     password: ${ATLASSIAN_PASSWORD:}
