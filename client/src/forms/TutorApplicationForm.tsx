@@ -116,7 +116,7 @@ export const TutorApplicationForm = ({
   })
   const tutorForm = useForm({
     initialValues: {
-      reasonGoodTutor: '',
+      reasonGoodTutor: tutorApplication?.reasonGoodTutor ?? '',
     },
     validateInputOnBlur: true,
     validate: {

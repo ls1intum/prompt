@@ -115,7 +115,7 @@ export const CoachApplicationForm = ({
   })
   const coachForm = useForm({
     initialValues: {
-      solvedProblem: '',
+      solvedProblem: coachApplication?.solvedProblem ?? '',
     },
     validateInputOnBlur: true,
     validate: {
