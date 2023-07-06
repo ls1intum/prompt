@@ -118,7 +118,7 @@ export const DeveloperApplicationTable = ({
         onPageChange={(page) => {
           setTablePage(page)
         }}
-        recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40]}
+        recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40, 50, 100, 200, 300]}
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
