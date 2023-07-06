@@ -40,6 +40,7 @@ services:
     expose:
       - "8080"
     environment:
+      - TZ=Europe/Berlin
       - SPRING_DATASOURCE_URL
       - SPRING_DATASOURCE_USERNAME
       - SPRING_DATASOURCE_PASSWORD
@@ -73,6 +74,8 @@ services:
   client:
     image: "ghcr.io/ls1intum/prompt/prompt-client:${IMAGE_TAG}"
     container_name: orgatool-client
+    environment:
+      - TZ=Europe/Berlin
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.client.rule=Host(`${SERVER_HOST}`)"
