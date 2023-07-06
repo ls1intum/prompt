@@ -92,23 +92,22 @@ export const TutorApplicationForm = ({
       studyDegree: isNotEmpty('Please state your study degree.'),
       studyProgram: isNotEmpty('Please state your study program.'),
       currentSemester: (value) => {
-        if (!value || value.length === 0) {
-          return null
-        }
-        return /\b([1-9]|[1-9][0-9])\b/.test(value) ? null : 'Please state your current semester.'
+        return !value || value.length === 0 || !/\b([1-9]|[1-9][0-9])\b/.test(value)
+          ? 'Please state your current semester.'
+          : null
       },
       motivation: (value) => {
-        if (isNotEmpty(value) && value && value.length > 500) {
-          return 'The maximum allowed number of characters is 500.'
-        } else if (!isNotEmpty(value)) {
+        if (!value || !isNotEmpty(value)) {
           return 'Please state your motivation for the course participation.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
         }
       },
       experience: (value) => {
-        if (isNotEmpty(value) && value && value.length > 500) {
-          return 'The maximum allowed number of characters is 500.'
-        } else if (!isNotEmpty(value)) {
+        if (!value || !isNotEmpty(value)) {
           return 'Please state your experience prior to the course participation.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
         }
       },
       englishLanguageProficiency: isNotEmpty('Please state your English language proficiency.'),
@@ -117,15 +116,15 @@ export const TutorApplicationForm = ({
   })
   const tutorForm = useForm({
     initialValues: {
-      reasonGoodTutor: '',
+      reasonGoodTutor: tutorApplication?.reasonGoodTutor ?? '',
     },
     validateInputOnBlur: true,
     validate: {
       reasonGoodTutor: (value) => {
-        if (isNotEmpty(value) && value && value.length > 500) {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state the reason why you consider yourself a good tutor.'
+        } else if (value.length > 500) {
           return 'The maximum allowed number of characters is 500.'
-        } else if (!isNotEmpty(value)) {
-          return 'Please state your experience prior to the course participation.'
         }
       },
     },

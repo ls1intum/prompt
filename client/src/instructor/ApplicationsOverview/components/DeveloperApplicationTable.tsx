@@ -1,7 +1,7 @@
 import { DataTable } from 'mantine-datatable'
 import { type DeveloperApplication } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
@@ -118,7 +118,7 @@ export const DeveloperApplicationTable = ({
         onPageChange={(page) => {
           setTablePage(page)
         }}
-        recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40]}
+        recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40, 50, 100, 200, 300]}
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
@@ -191,7 +191,7 @@ export const DeveloperApplicationTable = ({
                     setSelectedApplicationToView(application)
                   }}
                 >
-                  <IconEdit size={16} />
+                  <IconEyeEdit size={16} />
                 </ActionIcon>
                 <ActionIcon
                   color='red'

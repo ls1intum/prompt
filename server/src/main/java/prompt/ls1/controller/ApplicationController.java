@@ -8,6 +8,7 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +33,11 @@ import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.MailingService;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/applications")
 public class ApplicationController {
@@ -91,48 +94,69 @@ public class ApplicationController {
 
     @PostMapping("/developer")
     public ResponseEntity<DeveloperApplication> createDeveloperApplication(@RequestBody DeveloperApplication developerApplication,
-                                              @RequestParam(name = "courseIteration") String courseIterationName) throws MessagingException {
+                                              @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
             developerApplication.setCourseIteration(courseIteration);
 
             final DeveloperApplication application = applicationService.createDeveloperApplication(developerApplication);
-            mailingService.sendDeveloperApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+
+            try {
+                mailingService.sendDeveloperApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+            } catch (MessagingException e) {
+                log.error(String.format("Failed to send a confirmation email on POST /applications/developer. Error message: %s. Stacktrace: %s",
+                        e.getMessage(), Arrays.toString(e.getStackTrace())));
+            }
+
             return ResponseEntity.ok(application);
         }
 
+        log.error("Post request on /applications/developer rejected due to exceeded request velocity.");
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
     @PostMapping("/tutor")
     public ResponseEntity<Application> createTutorApplication(@RequestBody TutorApplication tutorApplication,
-                                                                  @RequestParam(name = "courseIteration") String courseIterationName) throws MessagingException {
+                                                                  @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
             tutorApplication.setCourseIteration(courseIteration);
 
             final TutorApplication application = applicationService.createTutorApplication(tutorApplication);
-            mailingService.sendTutorApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+
+            try {
+                mailingService.sendTutorApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+            } catch (MessagingException e) {
+                log.error(String.format("Failed to send a confirmation email on POST /applications/tutor. Error message: %s. Stacktrace: %s",
+                        e.getMessage(), Arrays.toString(e.getStackTrace())));
+            }
 
             return ResponseEntity.ok(application);
         }
 
+        log.error("Post request on /applications/tutor rejected due to exceeded request velocity.");
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
     @PostMapping("/coach")
     public ResponseEntity<Application> createCoachApplication(@RequestBody CoachApplication coachApplication,
-                                                                  @RequestParam(name = "courseIteration") String courseIterationName) throws MessagingException {
+                                                                  @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
             coachApplication.setCourseIteration(courseIteration);
 
             final CoachApplication application = applicationService.createCoachApplication(coachApplication);
-            mailingService.sendCoachApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+            try {
+                mailingService.sendCoachApplicationConfirmationEmail(application.getStudent(), application, courseIteration);
+            } catch (MessagingException e) {
+                log.error(String.format("Failed to send a confirmation email on POST /applications/developer. Error message: %s. Stacktrace: %s",
+                        e.getMessage(), Arrays.toString(e.getStackTrace())));
+            }
 
             return ResponseEntity.ok(application);
         }
 
+        log.error("Post request on /applications/coach rejected due to exceeded request velocity.");
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 

@@ -1,7 +1,7 @@
 import { DataTable } from 'mantine-datatable'
 import { type CoachApplication } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { CoachApplicationForm } from '../../../forms/CoachApplicationForm'
@@ -117,7 +117,7 @@ export const CoachApplicationTable = ({
         onPageChange={(page) => {
           setTablePage(page)
         }}
-        recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40]}
+        recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40, 50, 100, 200, 300]}
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
@@ -190,7 +190,7 @@ export const CoachApplicationTable = ({
                     setSelectedApplicationToView(application)
                   }}
                 >
-                  <IconEdit size={16} />
+                  <IconEyeEdit size={16} />
                 </ActionIcon>
                 <ActionIcon
                   color='red'

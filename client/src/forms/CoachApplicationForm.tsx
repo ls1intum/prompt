@@ -91,23 +91,22 @@ export const CoachApplicationForm = ({
       studyDegree: isNotEmpty('Please state your study degree.'),
       studyProgram: isNotEmpty('Please state your study program.'),
       currentSemester: (value) => {
-        if (!value || value.length === 0) {
-          return null
-        }
-        return /\b([1-9]|[1-9][0-9])\b/.test(value) ? null : 'Please state your current semester.'
+        return !value || value.length === 0 || !/\b([1-9]|[1-9][0-9])\b/.test(value)
+          ? 'Please state your current semester.'
+          : null
       },
       motivation: (value) => {
-        if (isNotEmpty(value) && value && value.length > 500) {
-          return 'The maximum allowed number of characters is 500.'
-        } else if (!isNotEmpty(value)) {
+        if (!value || !isNotEmpty(value)) {
           return 'Please state your motivation for the course participation.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
         }
       },
       experience: (value) => {
-        if (isNotEmpty(value) && value && value.length > 500) {
-          return 'The maximum allowed number of characters is 500.'
-        } else if (!isNotEmpty(value)) {
+        if (!value || !isNotEmpty(value)) {
           return 'Please state your experience prior to the course participation.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
         }
       },
       englishLanguageProficiency: isNotEmpty('Please state your English language proficiency.'),
@@ -116,15 +115,15 @@ export const CoachApplicationForm = ({
   })
   const coachForm = useForm({
     initialValues: {
-      solvedProblem: '',
+      solvedProblem: coachApplication?.solvedProblem ?? '',
     },
     validateInputOnBlur: true,
     validate: {
       solvedProblem: (value) => {
-        if (isNotEmpty(value) && value && value.length > 500) {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state the problem you solved during your participation in the iPraktikum course as a developer.'
+        } else if (value.length > 500) {
           return 'The maximum allowed number of characters is 500.'
-        } else if (!isNotEmpty(value)) {
-          return 'Please state your experience prior to the course participation.'
         }
       },
     },
