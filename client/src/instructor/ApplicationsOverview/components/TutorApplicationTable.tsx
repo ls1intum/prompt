@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
 import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
+import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { deleteTutorApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 
@@ -22,6 +22,7 @@ export const TutorApplicationTable = ({
   filterOnlyNotAssessed,
 }: TutorApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const loadingStatus = useAppSelector((state) => state.applications.status)
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<TutorApplication[]>([])
@@ -43,7 +44,9 @@ export const TutorApplicationTable = ({
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
-          }`.includes(searchQuery)
+          }`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
         })
         .filter((studentApplication) =>
           filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
@@ -102,6 +105,7 @@ export const TutorApplicationTable = ({
         }}
       />
       <DataTable
+        fetching={loadingStatus === 'loading'}
         withBorder
         minHeight={200}
         noRecordsText='No records to show'

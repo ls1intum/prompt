@@ -23,6 +23,8 @@ import {
   deleteDeveloperApplication,
   deleteTutorApplication,
 } from './thunks/deleteApplication'
+import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
+import { updateStudent } from './thunks/updateStudent'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -79,15 +81,16 @@ interface Student {
   gender?: Gender
   nationality?: string
   email?: string
+  suggestedAsCoach: boolean
+  suggestedAsTutor: boolean
+  blockedByPm: boolean
+  reasonForBlockedByPm: string
 }
 
 interface ApplicationAssessment {
   instructorComments: InstructorComment[]
-  suggestedAsCoach: boolean
-  suggestedAsTutor: boolean
-  blockedByPM: boolean
-  reasonForBlockedByPM: string
   assessmentScore: number
+  technicalChallengeScore: number
   assessed: boolean
   accepted: boolean
 }
@@ -193,6 +196,35 @@ export const applicationsState = createSlice({
       state.status = 'idle'
     })
 
+    builder.addCase(updateStudent.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateStudent.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.map((developerApplication) =>
+        developerApplication.student.id === payload.id
+          ? { ...developerApplication, student: payload }
+          : developerApplication,
+      )
+      state.coachApplications = state.coachApplications.map((coachApplication) =>
+        coachApplication.student.id === payload.id
+          ? { ...coachApplication, student: payload }
+          : coachApplication,
+      )
+      state.tutorApplications = state.tutorApplications.map((tutorApplication) =>
+        tutorApplication.student.id === payload.id
+          ? { ...tutorApplication, student: payload }
+          : tutorApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateStudent.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
     builder.addCase(updateDeveloperApplication.pending, (state) => {
       state.status = 'loading'
       state.error = null
@@ -257,6 +289,30 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(updateTutorApplicationAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.map((sa) => {
+        return (
+          payload
+            .filter(
+              (updatedDeveloperApplication: DeveloperApplication) =>
+                updatedDeveloperApplication.id === sa.id,
+            )
+            .at(0) ?? sa
+        )
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

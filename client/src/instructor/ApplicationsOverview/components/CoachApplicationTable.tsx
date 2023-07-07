@@ -7,7 +7,7 @@ import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm
 import { CoachApplicationForm } from '../../../forms/CoachApplicationForm'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
+import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { deleteCoachApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 
 interface CoachApplicationTableProps {
@@ -22,6 +22,7 @@ export const CoachApplicationTable = ({
   filterOnlyNotAssessed,
 }: CoachApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const loadingStatus = useAppSelector((state) => state.applications.status)
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<CoachApplication[]>([])
@@ -43,7 +44,9 @@ export const CoachApplicationTable = ({
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
-          }`.includes(searchQuery)
+          }`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
         })
         .filter((studentApplication) =>
           filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
@@ -103,6 +106,7 @@ export const CoachApplicationTable = ({
         }}
       />
       <DataTable
+        fetching={loadingStatus === 'loading'}
         withBorder
         minHeight={200}
         noRecordsText='No records to show'

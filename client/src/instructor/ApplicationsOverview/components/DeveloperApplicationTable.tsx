@@ -7,8 +7,10 @@ import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationFor
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
+import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
+import { TechnicalChallengeAssessmentModal } from './TechnicalChallengeAssessmentModal'
+import { assignTechnicalChallengeScores } from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
 
 interface DeveloperApplicationTableProps {
   developerApplications: DeveloperApplication[]
@@ -22,6 +24,7 @@ export const DeveloperApplicationTable = ({
   filterOnlyNotAssessed,
 }: DeveloperApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const loadingStatus = useAppSelector((state) => state.applications.status)
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<DeveloperApplication[]>([])
@@ -33,6 +36,8 @@ export const DeveloperApplicationTable = ({
     DeveloperApplication | undefined
   >(undefined)
   const [bulkDeleteConfirmationOpened, setBulkDeleteConfirmationOpened] = useState(false)
+  const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
+    useState(false)
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -43,7 +48,9 @@ export const DeveloperApplicationTable = ({
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
-          }`.includes(searchQuery)
+          }`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
         })
         .filter((studentApplication) =>
           filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
@@ -54,6 +61,31 @@ export const DeveloperApplicationTable = ({
 
   return (
     <Stack>
+      <TechnicalChallengeAssessmentModal
+        opened={technicalChallengeAssessmentModalOpened}
+        onClose={(technicalChallengeResults) => {
+          const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
+          developerApplications.forEach((developerApplication) => {
+            if (
+              technicalChallengeResults
+                .map((tcr) => tcr.tumId)
+                .includes(developerApplication.student.tumId ?? '')
+            ) {
+              developerApplicationIdToScore.set(
+                developerApplication.id,
+                technicalChallengeResults
+                  .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
+                  .at(0)?.score ?? 0,
+              )
+            }
+          })
+          if (developerApplicationIdToScore.size !== 0) {
+            void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
+          }
+
+          setTechnicalChallengeAssessmentModalOpened(false)
+        }}
+      />
       <Modal
         centered
         opened={!!selectedApplicationToView}
@@ -103,7 +135,15 @@ export const DeveloperApplicationTable = ({
           setBulkDeleteConfirmationOpened(false)
         }}
       />
+      <Button
+        onClick={() => {
+          setTechnicalChallengeAssessmentModalOpened(true)
+        }}
+      >
+        Technical Challenge Assessment
+      </Button>
       <DataTable
+        fetching={loadingStatus === 'loading'}
         withBorder
         minHeight={200}
         noRecordsText='No records to show'
@@ -132,17 +172,29 @@ export const DeveloperApplicationTable = ({
           content: ({ record }) => (
             <Stack p='xs' spacing={6}>
               <Group spacing={6}>
-                <Text>
-                  {record.student.firstName}, {record.student.lastName}, {record.student.tumId}
+                <Text fw={700}>
+                  {record.student.firstName} {record.student.lastName}: {record.student.tumId}
                 </Text>
               </Group>
               <Group>
-                <Text>Motivation</Text>
-                <Text>{record.motivation}</Text>
+                <Text fw={700}>Assessment Score:</Text>
+                <Text c='dimmed'>
+                  {record.assessment?.assessmentScore ?? 'No assessment score assigned yet.'}
+                </Text>
               </Group>
-              <Group>
-                <Text>Experience</Text>
-                <Text>{record.experience}</Text>
+              <Group style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <Text fw={700}>Comments:</Text>
+                <Stack>
+                  {record.assessment?.instructorComments.map((comment, idx) => (
+                    <Group
+                      key={`${comment.id ?? ''}-${idx}`}
+                      style={{ display: 'flex', alignItems: 'flex-start' }}
+                    >
+                      <Text fw={700}>{comment.author}</Text>
+                      <Text c='dimmed'>{`${comment.text}`}</Text>
+                    </Group>
+                  ))}
+                </Stack>
               </Group>
             </Stack>
           ),
@@ -154,12 +206,16 @@ export const DeveloperApplicationTable = ({
           {
             accessor: 'applicationStatus',
             title: <Text>Application Status</Text>,
-            render: (studentApplication) => {
-              const isAccepted = studentApplication.assessment?.accepted
-              const isAssessed = studentApplication.assessment?.assessed
+            render: (application) => {
+              const isAccepted = application.assessment?.accepted
+              const isAssessed = application.assessment?.assessed
               return (
                 <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
-                  {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}
+                  {`${isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'} ${
+                    application.assessment?.technicalChallengeScore
+                      ? `${application.assessment?.technicalChallengeScore} %`
+                      : ''
+                  }`}
                 </Badge>
               )
             },
@@ -211,6 +267,7 @@ export const DeveloperApplicationTable = ({
   }} */
       />
       <Button
+        variant='outline'
         leftIcon={<IconTrash />}
         disabled={selectedTableRecords.length === 0}
         onClick={() => {
