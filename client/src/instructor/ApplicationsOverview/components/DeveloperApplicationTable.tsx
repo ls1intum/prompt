@@ -12,8 +12,10 @@ import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationFor
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
+import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
+import { TechnicalChallengeAssessmentModal } from './TechnicalChallengeAssessmentModal'
+import { assignTechnicalChallengeScores } from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
 import { type Filters } from '../ApplicationOverview'
 
 interface DeveloperApplicationTableProps {
@@ -28,6 +30,7 @@ export const DeveloperApplicationTable = ({
   filters,
 }: DeveloperApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const loadingStatus = useAppSelector((state) => state.applications.status)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
@@ -44,6 +47,8 @@ export const DeveloperApplicationTable = ({
     DeveloperApplication | undefined
   >(undefined)
   const [bulkDeleteConfirmationOpened, setBulkDeleteConfirmationOpened] = useState(false)
+  const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
+    useState(false)
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -93,6 +98,31 @@ export const DeveloperApplicationTable = ({
 
   return (
     <Stack>
+      <TechnicalChallengeAssessmentModal
+        opened={technicalChallengeAssessmentModalOpened}
+        onClose={(technicalChallengeResults) => {
+          const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
+          developerApplications.forEach((developerApplication) => {
+            if (
+              technicalChallengeResults
+                .map((tcr) => tcr.tumId)
+                .includes(developerApplication.student.tumId ?? '')
+            ) {
+              developerApplicationIdToScore.set(
+                developerApplication.id,
+                technicalChallengeResults
+                  .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
+                  .at(0)?.score ?? 0,
+              )
+            }
+          })
+          if (developerApplicationIdToScore.size !== 0) {
+            void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
+          }
+
+          setTechnicalChallengeAssessmentModalOpened(false)
+        }}
+      />
       <Modal
         centered
         opened={!!selectedApplicationToView}
@@ -142,7 +172,15 @@ export const DeveloperApplicationTable = ({
           setBulkDeleteConfirmationOpened(false)
         }}
       />
+      <Button
+        onClick={() => {
+          setTechnicalChallengeAssessmentModalOpened(true)
+        }}
+      >
+        Technical Challenge Assessment
+      </Button>
       <DataTable
+        fetching={loadingStatus === 'loading'}
         withBorder
         minHeight={200}
         noRecordsText='No records to show'
@@ -222,10 +260,16 @@ export const DeveloperApplicationTable = ({
             accessor: 'applicationStatus',
             title: 'Application Status',
             textAlignment: 'center',
-            render: (studentApplication) => {
-              const isAccepted = studentApplication.assessment?.accepted
-              const isAssessed = studentApplication.assessment?.assessed
+            render: (application) => {
+              const isAccepted = application.assessment?.accepted
+              const isAssessed = application.assessment?.assessed
               return (
+                <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
+                  {`${isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'} ${
+                    application.assessment?.technicalChallengeScore
+                      ? `${application.assessment?.technicalChallengeScore} %`
+                      : ''
+                  }`}
                 <Badge
                   color={
                     !isAssessed

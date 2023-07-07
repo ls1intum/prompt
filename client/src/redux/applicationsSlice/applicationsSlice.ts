@@ -35,6 +35,7 @@ import {
   sendCoachApplicationAcceptance,
   sendTutorApplicationAcceptance,
 } from './thunks/sendApplicationAcceptance'
+import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -100,6 +101,7 @@ interface ApplicationAssessment {
   blockedByPM: boolean
   reasonForBlockedByPM: string
   assessmentScore: number
+  technicalChallengeScore: number
   assessed: boolean
   accepted: boolean | null
   interviewInviteSent: boolean
@@ -123,7 +125,6 @@ interface Application {
 }
 
 interface DeveloperApplication extends Application {
-  [x: string]: any
   projectTeam?: ProjectTeam
 }
 
@@ -375,6 +376,30 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(sendTutorApplicationRejection.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.map((sa) => {
+        return (
+          payload
+            .filter(
+              (updatedDeveloperApplication: DeveloperApplication) =>
+                updatedDeveloperApplication.id === sa.id,
+            )
+            .at(0) ?? sa
+        )
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

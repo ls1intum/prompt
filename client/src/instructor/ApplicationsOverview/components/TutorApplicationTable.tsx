@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
 import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
+import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
 import { deleteTutorApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 import { type Filters } from '../ApplicationOverview'
@@ -25,6 +25,7 @@ export const TutorApplicationTable = ({
   filters,
 }: TutorApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const loadingStatus = useAppSelector((state) => state.applications.status)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
@@ -138,6 +139,7 @@ export const TutorApplicationTable = ({
         }}
       />
       <DataTable
+        fetching={loadingStatus === 'loading'}
         withBorder
         minHeight={200}
         noRecordsText='No records to show'
