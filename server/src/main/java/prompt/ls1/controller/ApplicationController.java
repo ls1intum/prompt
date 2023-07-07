@@ -35,6 +35,7 @@ import prompt.ls1.service.MailingService;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -158,6 +159,12 @@ public class ApplicationController {
 
         log.error("Post request on /applications/coach rejected due to exceeded request velocity.");
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+    }
+
+    @PostMapping("/developer/technical-challenge-scores")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeScores(@RequestBody final Map<UUID, Double> developerApplicationIdToScoreMap) {
+        return ResponseEntity.ok(applicationService.assignTechnicalChallengeScoresToDeveloperApplications(developerApplicationIdToScoreMap));
     }
 
     @PatchMapping(path = "/developer/{developerApplicationId}", consumes = "application/json-path+json")
