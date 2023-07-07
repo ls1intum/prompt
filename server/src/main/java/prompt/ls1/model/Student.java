@@ -52,4 +52,14 @@ public class Student implements Serializable {
 
     @Column
     private Boolean isExchangeStudent;
+
+    private Boolean suggestedAsCoach;
+
+    private Boolean suggestedAsTutor;
+
+    private Boolean blockedByPm;
+
+    @Lob
+    @Column(length = 500)
+    private String reasonForBlockedByPm;
 }
