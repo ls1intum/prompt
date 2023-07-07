@@ -24,6 +24,8 @@ public class ApplicationAssessment {
 
     private Integer assessmentScore;
 
+    private Double technicalChallengeScore;
+
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<InstructorComment> instructorComments;
 
