@@ -1,5 +1,8 @@
 import { useForm } from '@mantine/form'
-import { type ApplicationAssessment } from '../redux/applicationsSlice/applicationsSlice'
+import {
+  type Student,
+  type ApplicationAssessment,
+} from '../redux/applicationsSlice/applicationsSlice'
 import { Button, Checkbox, Divider, Group, Text, TextInput, Textarea } from '@mantine/core'
 import { StudentApplicationComment } from './StudentApplicationComment'
 import {
@@ -17,15 +20,18 @@ import {
   updateDeveloperApplicationAssessment,
   updateTutorApplicationAssessment,
 } from '../redux/applicationsSlice/thunks/updateApplicationAssessment'
+import { updateStudent } from '../redux/applicationsSlice/thunks/updateStudent'
 
 interface ApplicationAssessmentFormProps {
   applicationId: string
   applicationType: 'developer' | 'coach' | 'tutor'
+  student: Student
   assessment?: ApplicationAssessment
 }
 
 export const ApplicationAssessmentForm = ({
   applicationId,
+  student,
   assessment,
   applicationType,
 }: ApplicationAssessmentFormProps): JSX.Element => {
@@ -35,14 +41,18 @@ export const ApplicationAssessmentForm = ({
   const assessmentForm = useForm<ApplicationAssessment>({
     initialValues: {
       instructorComments: assessment?.instructorComments ?? [],
-      suggestedAsCoach: assessment?.suggestedAsCoach ?? false,
-      suggestedAsTutor: assessment?.suggestedAsTutor ?? false,
-      blockedByPM: assessment?.blockedByPM ?? false,
-      reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
       technicalChallengeScore: assessment?.technicalChallengeScore ?? 0,
       accepted: assessment?.accepted ?? false,
       assessed: assessment?.accepted ?? false,
+    },
+  })
+  const studentFeedbackForm = useForm({
+    initialValues: {
+      suggestedAsCoach: student.suggestedAsCoach ?? false,
+      suggestedAsTutor: student.suggestedAsTutor ?? false,
+      blockedByPm: student.blockedByPm ?? false,
+      reasonForBlockedByPm: student.reasonForBlockedByPm ?? '',
     },
   })
 
@@ -53,32 +63,32 @@ export const ApplicationAssessmentForm = ({
         <Checkbox
           mt='md'
           label='Suggested as Coach'
-          {...assessmentForm.getInputProps('suggestedAsCoach', {
+          {...studentFeedbackForm.getInputProps('suggestedAsCoach', {
             type: 'checkbox',
           })}
         />
         <Checkbox
           mt='md'
           label='Suggested as Tutor'
-          {...assessmentForm.getInputProps('suggestedAsTutor', {
+          {...studentFeedbackForm.getInputProps('suggestedAsTutor', {
             type: 'checkbox',
           })}
         />
         <Checkbox
           mt='md'
           label='Blocked by PM'
-          {...assessmentForm.getInputProps('blockedByPM', {
+          {...studentFeedbackForm.getInputProps('blockedByPm', {
             type: 'checkbox',
           })}
         />
       </Group>
-      {assessmentForm.values.blockedByPM && (
+      {studentFeedbackForm.values.blockedByPm && (
         <Textarea
           autosize
           label='Reason for Blocked by PM'
           placeholder='Reason for blocked by PM'
           minRows={5}
-          {...assessmentForm.getInputProps('reasonForBlockedByPM')}
+          {...studentFeedbackForm.getInputProps('reasonForBlockedByPm')}
         />
       )}
       <TextInput
@@ -106,39 +116,62 @@ export const ApplicationAssessmentForm = ({
       </Group>
       <Group position='right'>
         <Button
-          disabled={!assessmentForm.isDirty()}
+          disabled={!assessmentForm.isDirty() && !studentFeedbackForm.isDirty()}
           onClick={() => {
-            const assessmentPatchObjectArray: Patch[] = []
-            Object.keys(assessmentForm.values).forEach((key) => {
-              if (assessmentForm.isTouched(key)) {
-                const assessmentPatchObject = new Map()
-                assessmentPatchObject.set('op', 'replace')
-                assessmentPatchObject.set('path', '/' + key)
-                assessmentPatchObject.set('value', assessmentForm.getInputProps(key).value)
-                const obj = Object.fromEntries(assessmentPatchObject)
-                assessmentPatchObjectArray.push(obj)
-              }
-            })
+            if (assessmentForm.isDirty()) {
+              const assessmentPatchObjectArray: Patch[] = []
+              Object.keys(assessmentForm.values).forEach((key) => {
+                if (assessmentForm.isTouched(key)) {
+                  const assessmentPatchObject = new Map()
+                  assessmentPatchObject.set('op', 'replace')
+                  assessmentPatchObject.set('path', '/' + key)
+                  assessmentPatchObject.set('value', assessmentForm.getInputProps(key).value)
+                  const obj = Object.fromEntries(assessmentPatchObject)
+                  assessmentPatchObjectArray.push(obj)
+                }
+              })
 
-            if (applicationType === 'developer') {
+              if (applicationType === 'developer') {
+                void dispatch(
+                  updateDeveloperApplicationAssessment({
+                    applicationId,
+                    applicationAssessmentPatch: assessmentPatchObjectArray,
+                  }),
+                )
+              } else if (applicationType === 'coach') {
+                void dispatch(
+                  updateCoachApplicationAssessment({
+                    applicationId,
+                    applicationAssessmentPatch: assessmentPatchObjectArray,
+                  }),
+                )
+              } else if (applicationType === 'tutor') {
+                void dispatch(
+                  updateTutorApplicationAssessment({
+                    applicationId,
+                    applicationAssessmentPatch: assessmentPatchObjectArray,
+                  }),
+                )
+              }
+            }
+
+            if (studentFeedbackForm.isDirty()) {
+              const studentPatchObjectArray: Patch[] = []
+              Object.keys(studentFeedbackForm.values).forEach((key) => {
+                if (studentFeedbackForm.isTouched(key)) {
+                  const studentPatchObject = new Map()
+                  studentPatchObject.set('op', 'replace')
+                  studentPatchObject.set('path', '/' + key)
+                  studentPatchObject.set('value', studentFeedbackForm.getInputProps(key).value)
+                  const obj = Object.fromEntries(studentPatchObject)
+                  studentPatchObjectArray.push(obj)
+                }
+              })
+
               void dispatch(
-                updateDeveloperApplicationAssessment({
-                  applicationId,
-                  applicationAssessmentPatch: assessmentPatchObjectArray,
-                }),
-              )
-            } else if (applicationType === 'coach') {
-              void dispatch(
-                updateCoachApplicationAssessment({
-                  applicationId,
-                  applicationAssessmentPatch: assessmentPatchObjectArray,
-                }),
-              )
-            } else if (applicationType === 'tutor') {
-              void dispatch(
-                updateTutorApplicationAssessment({
-                  applicationId,
-                  applicationAssessmentPatch: assessmentPatchObjectArray,
+                updateStudent({
+                  studentId: student.id,
+                  studentPatch: studentPatchObjectArray,
                 }),
               )
             }
