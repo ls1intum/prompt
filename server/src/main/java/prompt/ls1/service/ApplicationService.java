@@ -27,9 +27,11 @@ import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -277,6 +279,22 @@ public class ApplicationService {
 
         application.setAssessment(patchedApplicationAssessment);
         return tutorApplicationRepository.save(application);
+    }
+
+    public List<DeveloperApplication> assignTechnicalChallengeScoresToDeveloperApplications(final Map<UUID, Double> developerApplicationIdToScoreMap) {
+        final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
+        developerApplicationIdToScoreMap.forEach((developerApplicationId, score) -> {
+            final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
+            developerApplication.getAssessment().setTechnicalChallengeScore(score);
+            if (score < 100) {
+                developerApplication.getAssessment().setAccepted(false);
+                developerApplication.getAssessment().setAssessed(true);
+            }
+
+            updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
+        });
+
+        return updatedDeveloperApplications;
     }
 
     public Application createInstructorCommentForDeveloperApplication(final UUID developerApplicationId, final InstructorComment instructorComment) {
