@@ -44,7 +44,9 @@ export const CoachApplicationTable = ({
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
-          }`.includes(searchQuery)
+          }`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
         })
         .filter((studentApplication) =>
           filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
