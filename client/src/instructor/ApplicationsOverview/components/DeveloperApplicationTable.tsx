@@ -170,17 +170,29 @@ export const DeveloperApplicationTable = ({
           content: ({ record }) => (
             <Stack p='xs' spacing={6}>
               <Group spacing={6}>
-                <Text>
-                  {record.student.firstName}, {record.student.lastName}, {record.student.tumId}
+                <Text fw={700}>
+                  {record.student.firstName} {record.student.lastName}: {record.student.tumId}
                 </Text>
               </Group>
               <Group>
-                <Text>Motivation</Text>
-                <Text>{record.motivation}</Text>
+                <Text fw={700}>Assessment Score:</Text>
+                <Text c='dimmed'>
+                  {record.assessment?.assessmentScore ?? 'No assessment score assigned yet.'}
+                </Text>
               </Group>
-              <Group>
-                <Text>Experience</Text>
-                <Text>{record.experience}</Text>
+              <Group style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <Text fw={700}>Comments:</Text>
+                <Stack>
+                  {record.assessment?.instructorComments.map((comment, idx) => (
+                    <Group
+                      key={`${comment.id ?? ''}-${idx}`}
+                      style={{ display: 'flex', alignItems: 'flex-start' }}
+                    >
+                      <Text fw={700}>{comment.author}</Text>
+                      <Text c='dimmed'>{`${comment.text}`}</Text>
+                    </Group>
+                  ))}
+                </Stack>
               </Group>
             </Stack>
           ),
