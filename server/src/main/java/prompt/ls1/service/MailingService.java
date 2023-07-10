@@ -12,6 +12,9 @@ import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
 
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+
 @Service
 public class MailingService {
 
@@ -246,6 +249,127 @@ public class MailingService {
                 tutorApplication.getMotivation(),
                 tutorApplication.getExperience(),
                 tutorApplication.getReasonGoodTutor());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
+
+    public void sendCoachInterviewInvitationEmail(final Student student,
+                                                  final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("Agile Project Management %s Interview Invitation", courseIteration.getSemesterName()));
+
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+        dateFormat.setTimeZone(timeZone);
+        String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
+
+        String htmlContent = String.format("""
+                        <table align="left" border="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                        <td><strong>Agile Project Management&nbsp %s APM&nbsp;Interviews</strong></td>
+                        </tr>
+                        <tr>
+                        <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                        <td>
+                        <p>Dear %s %s</p>
+                                                
+                        <p>you are receiving this email because you applied for the course Agile Project Management in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
+                                                
+                        <p>The&nbsp;interviews&nbsp;will take place on %s.</strong>&nbsp;You can choose your timeslot in the following form (FCFS):&nbsp;<a href="%s" target="_blank">%s</a><br />
+                        Please use your full name in the form and ensure that you SAVE your vote!</p>
+                                                
+                        <p>The&nbsp;interview&nbsp;will be on Zoom:&nbsp;<a href="%s" target="_blank">%s</a><br />
+                        Please ensure that you are at least<strong>&nbsp;5 min early!</strong>&nbsp;You will be moved to the&nbsp;interview&nbsp;room as soon as we are ready to talk to you.</p>
+                                                
+                        <p>&nbsp;</p>
+                                                
+                        <p>Looking forward to talking to you!</p>
+                                                
+                        <p><br />
+                        Cheers<br />
+                        Agile Project Management Program Management Team</p>
+                        </td>
+                        </tr>
+                        </tbody>
+                        </table>
+                        """,
+                courseIteration.getSemesterName(),
+                student.getFirstName(),
+                student.getLastName(),
+                courseIteration.getSemesterName(),
+                dayOfWeek,
+                courseIteration.getCoachInterviewPlannerLink(),
+                courseIteration.getCoachInterviewPlannerLink(),
+                courseIteration.getCoachInterviewLocation(),
+                courseIteration.getCoachInterviewLocation());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
+
+    public void sendTutorInterviewInvitationEmail(final Student student,
+                                                  final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("Teaching iOS %s Interview Invitation", courseIteration.getSemesterName()));
+
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+        dateFormat.setTimeZone(timeZone);
+        String dayOfWeek = dateFormat.format(courseIteration.getTutorInterviewDate());
+
+        String htmlContent = String.format("""
+                        <table align="left" border="0" cellpadding="0" cellspacing="0">
+                        	<tbody>
+                        		<tr>
+                        			<td><strong>Teaching iOS&nbsp %s APM&nbsp;Interviews</strong></td>
+                        		</tr>
+                        		<tr>
+                        			<td>&nbsp;</td>
+                        		</tr>
+                        		<tr>
+                        			<td>
+                        			<p>Dear %s %s</p>
+                                                
+                        			<p>you are receiving this email because you applied for the course Teaching iOS in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
+                                                
+                        			<p>The&nbsp;interviews&nbsp;will take place on %s.</strong>&nbsp;You can choose your timeslot in the following form (FCFS):&nbsp;<a href="%s" target="_blank">%s</a><br />
+                        			Please use your full name in the form and ensure that you SAVE your vote!</p>
+                                                
+                        			<p>The&nbsp;interview&nbsp;will be on Zoom:&nbsp;<a href="%s" target="_blank">%s</a><br />
+                        			Please ensure that you are at least<strong>&nbsp;5 min early!</strong>&nbsp;You will be moved to the&nbsp;interview&nbsp;room as soon as we are ready to talk to you.</p>
+                                                
+                        			<p>&nbsp;</p>
+                                                
+                        			<p>Looking forward to talking to you!</p>
+                                                
+                        			<p><br />
+                        			Cheers<br />
+                        		    Teaching iOS Program Management Team</p>
+                        			</td>
+                        		</tr>
+                        	</tbody>
+                        </table>""",
+                courseIteration.getSemesterName(),
+                student.getFirstName(),
+                student.getLastName(),
+                courseIteration.getSemesterName(),
+                dayOfWeek,
+                courseIteration.getTutorInterviewPlannerLink(),
+                courseIteration.getTutorInterviewPlannerLink(),
+                courseIteration.getTutorInterviewLocation(),
+                courseIteration.getTutorInterviewLocation());
         message.setContent(htmlContent, "text/html; charset=utf-8");
 
         javaMailSender.send(message);

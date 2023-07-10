@@ -18,6 +18,8 @@ public class ApplicationAssessment {
 
     private Double technicalChallengeScore;
 
+    private Boolean interviewInviteSent;
+
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<InstructorComment> instructorComments;
 

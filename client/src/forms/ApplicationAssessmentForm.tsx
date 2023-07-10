@@ -45,6 +45,7 @@ export const ApplicationAssessmentForm = ({
       technicalChallengeScore: assessment?.technicalChallengeScore ?? 0,
       accepted: assessment?.accepted ?? false,
       assessed: assessment?.accepted ?? false,
+      interviewInviteSent: assessment?.interviewInviteSent ?? false,
     },
   })
   const studentFeedbackForm = useForm({
@@ -113,6 +114,15 @@ export const ApplicationAssessmentForm = ({
             type: 'checkbox',
           })}
         />
+        {(applicationType === 'coach' || applicationType === 'tutor') && (
+          <Checkbox
+            mt='md'
+            label='Selected for Interview'
+            {...assessmentForm.getInputProps('interviewInviteSent', {
+              type: 'checkbox',
+            })}
+          />
+        )}
       </Group>
       <Group position='right'>
         <Button
