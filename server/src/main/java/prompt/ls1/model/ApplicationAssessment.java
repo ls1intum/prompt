@@ -24,6 +24,8 @@ public class ApplicationAssessment {
 
     private Integer assessmentScore;
 
+    private Boolean interviewInviteSent;
+
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<InstructorComment> instructorComments;
 

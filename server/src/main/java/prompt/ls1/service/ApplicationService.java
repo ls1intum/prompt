@@ -150,6 +150,18 @@ public class ApplicationService {
         return developerApplicationRepository.save(patchedApplication);
     }
 
+    public CoachApplication sendCoachInterviewInvite(final UUID applicationId) {
+        final CoachApplication coachApplication = findCoachApplicationById(applicationId);
+        coachApplication.getAssessment().setInterviewInviteSent(true);
+        return coachApplicationRepository.save(coachApplication);
+    }
+
+    public TutorApplication sendTutorInterviewInvite(final UUID applicationId) {
+        final TutorApplication tutorApplication = findTutorApplicationById(applicationId);
+        tutorApplication.getAssessment().setInterviewInviteSent(true);
+        return tutorApplicationRepository.save(tutorApplication);
+    }
+
     public DeveloperApplication updateDeveloperApplicationAssessment(final UUID developerApplicationId, JsonPatch patchDeveloperApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);

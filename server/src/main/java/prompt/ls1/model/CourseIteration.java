@@ -39,6 +39,20 @@ public class CourseIteration {
     @Column(columnDefinition = "DATE")
     private Date tutorApplicationPeriodEnd;
 
+    @Column(columnDefinition = "DATE")
+    private Date coachInterviewDate;
+
+    @Column(columnDefinition = "DATE")
+    private Date tutorInterviewDate;
+
+    private String coachInterviewPlannerLink;
+
+    private String tutorInterviewPlannerLink;
+
+    private String coachInterviewLocation;
+
+    private String tutorInterviewLocation;
+
     @Column(columnDefinition = "boolean default false")
     private Boolean projectTeamPreferencesSubmissionOpen;
 

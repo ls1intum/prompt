@@ -19,6 +19,12 @@ interface CourseIterationRequest {
   coachApplicationPeriodEnd: Date
   tutorApplicationPeriodStart: Date
   tutorApplicationPeriodEnd: Date
+  coachInterviewDate: Date
+  tutorInterviewDate: Date
+  coachInterviewPlannerLink: string
+  tutorInterviewPlannerLink: string
+  coachInterviewLocation: string
+  tutorInterviewLocation: string
   iosTag: string
 }
 
@@ -31,6 +37,12 @@ interface CourseIteration {
   coachApplicationPeriodEnd: Date
   tutorApplicationPeriodStart: Date
   tutorApplicationPeriodEnd: Date
+  coachInterviewDate: Date
+  tutorInterviewDate: Date
+  coachInterviewPlannerLink: string
+  tutorInterviewPlannerLink: string
+  coachInterviewLocation: string
+  tutorInterviewLocation: string
   iosTag: string
   phases: CourseIterationPhase[]
 }
