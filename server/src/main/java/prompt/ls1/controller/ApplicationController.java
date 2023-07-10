@@ -184,12 +184,6 @@ public class ApplicationController {
         return ResponseEntity.ok(tutorApplication);
     }
 
-    @PostMapping("/developer/technical-challenge-scores")
-    @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeScores(@RequestBody final Map<UUID, Double> developerApplicationIdToScoreMap) {
-        return ResponseEntity.ok(applicationService.assignTechnicalChallengeScoresToDeveloperApplications(developerApplicationIdToScoreMap));
-    }
-
     @PatchMapping(path = "/developer/{developerApplicationId}", consumes = "application/json-path+json")
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> updateProjectTeam(@PathVariable final UUID developerApplicationId,
