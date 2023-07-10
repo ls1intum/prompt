@@ -118,7 +118,11 @@ export const ApplicationAssessmentForm = ({
               }
             }}
           >
-            Send Interview Invitation
+            {`Send Interview Invitation ${
+              assessmentForm.values.interviewInviteSent
+                ? '(Invitation has already been sent. Retry?)'
+                : ''
+            }`}
           </Button>
         )}
         <Button

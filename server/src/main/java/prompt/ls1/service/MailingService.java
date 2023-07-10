@@ -264,21 +264,11 @@ public class MailingService {
         message.setSubject(String.format("Agile Project Management %s Interview Invitation", courseIteration.getSemesterName()));
 
         TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
         dateFormat.setTimeZone(timeZone);
         String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
 
         String htmlContent = String.format("""
-                        <table align="left" border="0" cellspacing="0">
-                        <tbody>
-                        <tr>
-                        <td><strong>Agile Project Management&nbsp %s APM&nbsp;Interviews</strong></td>
-                        </tr>
-                        <tr>
-                        <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                        <td>
                         <p>Dear %s %s</p>
                                                 
                         <p>you are receiving this email because you applied for the course Agile Project Management in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
@@ -295,12 +285,7 @@ public class MailingService {
                         <p><br />
                         Cheers<br />
                         Agile Project Management Program Management Team</p>
-                        </td>
-                        </tr>
-                        </tbody>
-                        </table>
                         """,
-                courseIteration.getSemesterName(),
                 student.getFirstName(),
                 student.getLastName(),
                 courseIteration.getSemesterName(),
@@ -324,21 +309,11 @@ public class MailingService {
         message.setSubject(String.format("Teaching iOS %s Interview Invitation", courseIteration.getSemesterName()));
 
         TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
         dateFormat.setTimeZone(timeZone);
         String dayOfWeek = dateFormat.format(courseIteration.getTutorInterviewDate());
 
         String htmlContent = String.format("""
-                        <table align="left" border="0" cellpadding="0" cellspacing="0">
-                        	<tbody>
-                        		<tr>
-                        			<td><strong>Teaching iOS&nbsp %s APM&nbsp;Interviews</strong></td>
-                        		</tr>
-                        		<tr>
-                        			<td>&nbsp;</td>
-                        		</tr>
-                        		<tr>
-                        			<td>
                         			<p>Dear %s %s</p>
                                                 
                         			<p>you are receiving this email because you applied for the course Teaching iOS in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
@@ -356,11 +331,7 @@ public class MailingService {
                         			<p><br />
                         			Cheers<br />
                         		    Teaching iOS Program Management Team</p>
-                        			</td>
-                        		</tr>
-                        	</tbody>
-                        </table>""",
-                courseIteration.getSemesterName(),
+                           """,
                 student.getFirstName(),
                 student.getLastName(),
                 courseIteration.getSemesterName(),
