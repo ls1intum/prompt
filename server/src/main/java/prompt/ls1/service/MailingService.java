@@ -264,7 +264,7 @@ public class MailingService {
         message.setSubject(String.format("Agile Project Management %s Interview Invitation", courseIteration.getSemesterName()));
 
         TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
         dateFormat.setTimeZone(timeZone);
         String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
 
@@ -272,7 +272,7 @@ public class MailingService {
                         <table align="left" border="0" cellspacing="0">
                         <tbody>
                         <tr>
-                        <td><strong>Agile Project Management&nbsp %s APM&nbsp;Interviews</strong></td>
+                        <td><strong>Agile Project Management %s APM&nbsp;Interviews</strong></td>
                         </tr>
                         <tr>
                         <td>&nbsp;</td>
@@ -325,7 +325,7 @@ public class MailingService {
         message.setSubject(String.format("Teaching iOS %s Interview Invitation", courseIteration.getSemesterName()));
 
         TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy");
         dateFormat.setTimeZone(timeZone);
         String dayOfWeek = dateFormat.format(courseIteration.getTutorInterviewDate());
 
@@ -333,7 +333,7 @@ public class MailingService {
                         <table align="left" border="0" cellpadding="0" cellspacing="0">
                         	<tbody>
                         		<tr>
-                        			<td><strong>Teaching iOS&nbsp %s APM&nbsp;Interviews</strong></td>
+                        			<td><strong>Teaching iOS %s APM&nbsp;Interviews</strong></td>
                         		</tr>
                         		<tr>
                         			<td>&nbsp;</td>

@@ -39,10 +39,10 @@ public class CourseIteration {
     @Column(columnDefinition = "DATE")
     private Date tutorApplicationPeriodEnd;
 
-    @Column(columnDefinition = "DATE")
+    @Column(columnDefinition = "TIMESTAMP")
     private Date coachInterviewDate;
 
-    @Column(columnDefinition = "DATE")
+    @Column(columnDefinition = "TIMESTAMP")
     private Date tutorInterviewDate;
 
     private String coachInterviewPlannerLink;
