@@ -17,6 +17,7 @@ import {
   updateDeveloperApplicationAssessment,
   updateTutorApplicationAssessment,
 } from '../redux/applicationsSlice/thunks/updateApplicationAssessment'
+import { sendCoachInvitation, sendTutorInvitation } from '../service/applicationsService'
 
 interface ApplicationAssessmentFormProps {
   applicationId: string
@@ -103,17 +104,23 @@ export const ApplicationAssessmentForm = ({
             type: 'checkbox',
           })}
         />
-        {(applicationType === 'coach' || applicationType === 'tutor') && (
-          <Checkbox
-            mt='md'
-            label='Selected for Interview'
-            {...assessmentForm.getInputProps('interviewInviteSent', {
-              type: 'checkbox',
-            })}
-          />
-        )}
       </Group>
       <Group position='right'>
+        {(applicationType === 'coach' || applicationType === 'tutor') && (
+          <Button
+            variant='outline'
+            disabled={!assessment?.assessed && !assessmentForm.values.assessed}
+            onClick={() => {
+              if (applicationType === 'coach') {
+                void sendCoachInvitation(applicationId)
+              } else if (applicationType === 'tutor') {
+                void sendTutorInvitation(applicationId)
+              }
+            }}
+          >
+            Send Interview Invitation
+          </Button>
+        )}
         <Button
           disabled={!assessmentForm.isDirty()}
           onClick={() => {

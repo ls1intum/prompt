@@ -156,3 +156,45 @@ export const createTutorApplication = async ({
     return undefined
   }
 }
+
+export const sendCoachInvitation = async (applicationId: string): Promise<void> => {
+  try {
+    await axios.post(
+      `${serverBaseUrl}/api/applications/coach/${applicationId}/interview-invitations`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
+      },
+    )
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 5000,
+      title: 'Error',
+      message: `Failed to send an interview invitation.`,
+    })
+  }
+}
+
+export const sendTutorInvitation = async (applicationId: string): Promise<void> => {
+  try {
+    await axios.post(
+      `${serverBaseUrl}/api/applications/tutor/${applicationId}/interview-invitations`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
+      },
+    )
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 5000,
+      title: 'Error',
+      message: `Failed to send an interview invitation.`,
+    })
+  }
+}

@@ -160,8 +160,9 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
-    @PostMapping("/coach/{applicationId}/interview-invite")
-    public ResponseEntity<Application> sendCoachInterviewInvite(@RequestBody UUID applicationId) {
+    @PostMapping("/coach/{applicationId}/interview-invitations")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendCoachInterviewInvite(@PathVariable UUID applicationId) {
         final CoachApplication coachApplication = applicationService.sendCoachInterviewInvite(applicationId);
         try {
             mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
@@ -172,8 +173,9 @@ public class ApplicationController {
         return ResponseEntity.ok(coachApplication);
     }
 
-    @PostMapping("/tutor/{applicationId}/interview-invite")
-    public ResponseEntity<Application> sendTutorInterviewInvite(@RequestBody UUID applicationId) {
+    @PostMapping("/tutor/{applicationId}/interview-invitations")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendTutorInterviewInvite(@PathVariable UUID applicationId) {
         final TutorApplication tutorApplication = applicationService.sendTutorInterviewInvite(applicationId);
         try {
             mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
