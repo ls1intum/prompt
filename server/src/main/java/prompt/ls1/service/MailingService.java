@@ -269,7 +269,7 @@ public class MailingService {
         String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
 
         String htmlContent = String.format("""
-                        <p>Dear %s %s</p>
+                        <p>Dear %s %s,</p>
                                                 
                         <p>you are receiving this email because you applied for the course Agile Project Management in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
                                                 
@@ -314,7 +314,7 @@ public class MailingService {
         String dayOfWeek = dateFormat.format(courseIteration.getTutorInterviewDate());
 
         String htmlContent = String.format("""
-                        <p>Dear %s %s</p>
+                        <p>Dear %s %s,</p>
                                                 
                         <p>you are receiving this email because you applied for the course Teaching iOS in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
                                                 
