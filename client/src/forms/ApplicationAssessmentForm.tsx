@@ -101,6 +101,7 @@ export const ApplicationAssessmentForm = ({
           } else if (applicationType === 'tutor') {
             void sendTutorInvitation(applicationId)
           }
+          setInterviewInvitationSendConfirmationModalOpened(false)
         }}
       />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
