@@ -141,8 +141,10 @@ export const CoachApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenCoachApplicationPeriod())
-  }, [])
+    if (accessMode === ApplicationFormAccessMode.STUDENT) {
+      void dispatch(fetchCourseIterationsWithOpenCoachApplicationPeriod())
+    }
+  }, [accessMode])
 
   return (
     <>

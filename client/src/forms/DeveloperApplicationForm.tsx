@@ -131,8 +131,10 @@ export const DeveloperApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
-  }, [])
+    if (accessMode === ApplicationFormAccessMode.STUDENT) {
+      void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
+    }
+  }, [accessMode])
 
   return (
     <>

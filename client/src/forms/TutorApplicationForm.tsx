@@ -142,8 +142,10 @@ export const TutorApplicationForm = ({
   })
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenTutorApplicationPeriod())
-  }, [])
+    if (accessMode === ApplicationFormAccessMode.STUDENT) {
+      void dispatch(fetchCourseIterationsWithOpenTutorApplicationPeriod())
+    }
+  }, [accessMode])
 
   return (
     <>
