@@ -1,6 +1,6 @@
 import { useForm } from '@mantine/form'
 import { type ApplicationAssessment } from '../redux/applicationsSlice/applicationsSlice'
-import { Button, Checkbox, Divider, Group, Text, TextInput, Textarea } from '@mantine/core'
+import { Button, Checkbox, Divider, Group, Text, TextInput, Textarea, Tooltip } from '@mantine/core'
 import { StudentApplicationComment } from './StudentApplicationComment'
 import {
   createInstructorCommentForCoachApplication,
@@ -107,23 +107,32 @@ export const ApplicationAssessmentForm = ({
       </Group>
       <Group position='right'>
         {(applicationType === 'coach' || applicationType === 'tutor') && (
-          <Button
-            variant='outline'
-            disabled={!assessment?.assessed && !assessmentForm.values.assessed}
-            onClick={() => {
-              if (applicationType === 'coach') {
-                void sendCoachInvitation(applicationId)
-              } else if (applicationType === 'tutor') {
-                void sendTutorInvitation(applicationId)
-              }
-            }}
+          <Tooltip
+            label={
+              assessment?.interviewInviteSent
+                ? 'The interview invitation email has already been sent successfully.'
+                : 'An interview invitation email will be sent out to the student. You can review the interview details in the Course Iteration Management console.'
+            }
+            color='blue'
+            withArrow
+            multiline
           >
-            {`Send Interview Invitation ${
-              assessmentForm.values.interviewInviteSent
-                ? '(Invitation has already been sent. Retry?)'
-                : ''
-            }`}
-          </Button>
+            <div>
+              <Button
+                variant='outline'
+                disabled={assessment?.interviewInviteSent}
+                onClick={() => {
+                  if (applicationType === 'coach') {
+                    void sendCoachInvitation(applicationId)
+                  } else if (applicationType === 'tutor') {
+                    void sendTutorInvitation(applicationId)
+                  }
+                }}
+              >
+                Send Interview Invitation
+              </Button>
+            </div>
+          </Tooltip>
         )}
         <Button
           disabled={!assessmentForm.isDirty()}
@@ -178,8 +187,9 @@ export const ApplicationAssessmentForm = ({
           </div>
         ))}
       </div>
-      <Group position='left' style={{ alignItems: 'center' }}>
+      <Group position='right' style={{ alignContent: 'center' }}>
         <Textarea
+          style={{ width: '100%' }}
           placeholder='Comment'
           value={comment}
           onChange={(e) => {
