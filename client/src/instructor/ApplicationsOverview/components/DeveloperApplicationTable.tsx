@@ -52,6 +52,12 @@ export const DeveloperApplicationTable = ({
         )
         .slice(from, to),
     )
+
+    if (selectedApplicationToView) {
+      setSelectedApplicationToView(
+        developerApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
+      )
+    }
   }, [developerApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
 
   return (

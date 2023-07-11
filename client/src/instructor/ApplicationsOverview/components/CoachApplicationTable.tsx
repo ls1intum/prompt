@@ -52,6 +52,12 @@ export const CoachApplicationTable = ({
         )
         .slice(from, to),
     )
+
+    if (selectedApplicationToView) {
+      setSelectedApplicationToView(
+        coachApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
+      )
+    }
   }, [coachApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
 
   return (

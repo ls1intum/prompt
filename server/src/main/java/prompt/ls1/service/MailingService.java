@@ -344,4 +344,68 @@ public class MailingService {
 
         javaMailSender.send(message);
     }
+
+    public void sendCoachApplicationRejectionEmail(final Student student,
+                                                  final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("Agile Project Management %s Application Rejection", courseIteration.getSemesterName()));
+
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
+        dateFormat.setTimeZone(timeZone);
+        String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
+
+        String htmlContent = String.format("""
+                        <p>Dear %s %s,</p>
+                        
+                        <p>Thank you for your application! Due to the overwhelming demand for the course Agile Project Management %s, we haven&rsquo;t been able to take your application into account for the coming semester but we put you on our waiting list.</p>
+                        
+                        <p>We regret that we cannot accept all of the great candidates. However, we hope to offer the courses again next term and we actively encourage you to apply again!</p>
+                        
+                        <p>Best<br />
+                        Agile Project Management Program Management Team</p>
+                        """,
+                student.getFirstName(),
+                student.getLastName(),
+                courseIteration.getSemesterName());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
+
+    public void sendTutorApplicationRejectionEmail(final Student student,
+                                                  final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("Teaching iOS %s Application Rejection", courseIteration.getSemesterName()));
+
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
+        dateFormat.setTimeZone(timeZone);
+        String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
+
+        String htmlContent = String.format("""
+                        <p>Dear %s %s,</p>
+                        
+                        <p>Thank you for your application! Due to the overwhelming demand for the course Teaching iOS %s, we haven&rsquo;t been able to take your application into account for the coming semester but we put you on our waiting list.</p>
+                        
+                        <p>We regret that we cannot accept all of the great candidates. However, we hope to offer the courses again next term and we actively encourage you to apply again!</p>
+                        
+                        <p>Best<br />
+                        Teaching iOS Program Management Team</p>
+                        """,
+                student.getFirstName(),
+                student.getLastName(),
+                courseIteration.getSemesterName());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
 }

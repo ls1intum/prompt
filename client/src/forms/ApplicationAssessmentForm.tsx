@@ -20,7 +20,7 @@ import {
 } from '../redux/applicationsSlice/thunks/createInstructorComment'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IconSend } from '@tabler/icons-react'
 import { type Patch } from '../service/configService'
 import {
@@ -32,22 +32,30 @@ import {
   sendCoachInterviewInvitation,
   sendTutorInterviewInvitation,
 } from '../redux/applicationsSlice/thunks/sendInterviewInvitation'
+import {
+  sendCoachApplicationRejection,
+  sendTutorApplicationRejection,
+} from '../redux/applicationsSlice/thunks/sendApplicationRejection'
 
-interface InterviewInvitationSendConfirmationModalProps {
+interface ConfirmationModalProps {
+  title: string
+  text: string
   opened: boolean
   onConfirm: () => void
   onClose: () => void
 }
 
-const InterviewInvitationSendConfirmationModal = ({
+const ConfirmationModal = ({
+  title,
+  text,
   opened,
   onClose,
   onConfirm,
-}: InterviewInvitationSendConfirmationModalProps): JSX.Element => {
+}: ConfirmationModalProps): JSX.Element => {
   return (
-    <Modal opened={opened} onClose={onClose} centered title='Confirm Interview Invitation'>
+    <Modal opened={opened} onClose={onClose} centered title={title}>
       <Stack>
-        <Text>Are You sure You would like to send an interview invitation?</Text>
+        <Text>{text}</Text>
         <Group>
           <Button variant='outline' onClick={onClose}>
             Cancel
@@ -77,6 +85,10 @@ export const ApplicationAssessmentForm = ({
     interviewInivitationEmailSendConfirmationModalOpened,
     setInterviewInvitationSendConfirmationModalOpened,
   ] = useState(false)
+  const [
+    applicationRejectionEmailSendConfirmationModalOpened,
+    setApplicationRejectionSendConfirmationModalOpened,
+  ] = useState(false)
   const assessmentForm = useForm<ApplicationAssessment>({
     initialValues: {
       instructorComments: assessment?.instructorComments ?? [],
@@ -91,9 +103,27 @@ export const ApplicationAssessmentForm = ({
     },
   })
 
+  useEffect(() => {
+    assessmentForm.setValues({
+      instructorComments: assessment?.instructorComments ?? [],
+      suggestedAsCoach: assessment?.suggestedAsCoach ?? false,
+      suggestedAsTutor: assessment?.suggestedAsTutor ?? false,
+      blockedByPM: assessment?.blockedByPM ?? false,
+      reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
+      assessmentScore: assessment?.assessmentScore ?? 0,
+      accepted: assessment?.accepted ?? false,
+      assessed: assessment?.accepted ?? false,
+      interviewInviteSent: assessment?.interviewInviteSent ?? false,
+    })
+    assessmentForm.resetDirty()
+    assessmentForm.resetTouched()
+  }, [assessment])
+
   return (
     <>
-      <InterviewInvitationSendConfirmationModal
+      <ConfirmationModal
+        title='Confirm Interview Invitation'
+        text='Are You sure You would like to send an interview invitation?'
         opened={interviewInivitationEmailSendConfirmationModalOpened}
         onClose={() => {
           setInterviewInvitationSendConfirmationModalOpened(false)
@@ -105,6 +135,22 @@ export const ApplicationAssessmentForm = ({
             void dispatch(sendTutorInterviewInvitation(applicationId))
           }
           setInterviewInvitationSendConfirmationModalOpened(false)
+        }}
+      />
+      <ConfirmationModal
+        title='Confirm Application Rejection'
+        text='Are You sure You would like to reject this application?'
+        opened={applicationRejectionEmailSendConfirmationModalOpened}
+        onClose={() => {
+          setApplicationRejectionSendConfirmationModalOpened(false)
+        }}
+        onConfirm={() => {
+          if (applicationType === 'coach') {
+            void dispatch(sendCoachApplicationRejection(applicationId))
+          } else if (applicationType === 'tutor') {
+            void dispatch(sendTutorApplicationRejection(applicationId))
+          }
+          setApplicationRejectionSendConfirmationModalOpened(false)
         }}
       />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
@@ -166,28 +212,40 @@ export const ApplicationAssessmentForm = ({
         </Group>
         <Group position='right'>
           {(applicationType === 'coach' || applicationType === 'tutor') && (
-            <Tooltip
-              label={
-                assessment?.interviewInviteSent
-                  ? 'The interview invitation email has already been sent successfully.'
-                  : 'An interview invitation email will be sent out to the student. You can review the interview details in the Course Iteration Management console.'
-              }
-              color='blue'
-              withArrow
-              multiline
-            >
-              <div>
-                <Button
-                  variant='outline'
-                  disabled={assessment?.interviewInviteSent}
-                  onClick={() => {
-                    setInterviewInvitationSendConfirmationModalOpened(true)
-                  }}
-                >
-                  Send Interview Invitation
-                </Button>
-              </div>
-            </Tooltip>
+            <Group>
+              <Button
+                variant='outline'
+                color='red'
+                disabled={assessment?.accepted}
+                onClick={() => {
+                  setApplicationRejectionSendConfirmationModalOpened(true)
+                }}
+              >
+                Reject Application
+              </Button>
+              <Tooltip
+                label={
+                  assessment?.interviewInviteSent
+                    ? 'The interview invitation email has already been sent successfully.'
+                    : 'An interview invitation email will be sent out to the student. You can review the interview details in the Course Iteration Management console.'
+                }
+                color='blue'
+                withArrow
+                multiline
+              >
+                <div>
+                  <Button
+                    variant='outline'
+                    disabled={assessment?.interviewInviteSent}
+                    onClick={() => {
+                      setInterviewInvitationSendConfirmationModalOpened(true)
+                    }}
+                  >
+                    Send Interview Invitation
+                  </Button>
+                </div>
+              </Tooltip>
+            </Group>
           )}
           <Button
             disabled={!assessmentForm.isDirty()}

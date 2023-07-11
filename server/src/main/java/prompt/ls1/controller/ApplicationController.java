@@ -162,14 +162,26 @@ public class ApplicationController {
 
     @PostMapping("/coach/{applicationId}/interview-invitations")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> sendCoachInterviewInvite(@PathVariable UUID applicationId) {
+    public ResponseEntity<Application> sendCoachInterviewInvitation(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(applicationService.sendCoachInterviewInvite(applicationId));
     }
 
     @PostMapping("/tutor/{applicationId}/interview-invitations")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> sendTutorInterviewInvite(@PathVariable UUID applicationId) {
+    public ResponseEntity<Application> sendTutorInterviewInvitation(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(applicationService.sendTutorInterviewInvite(applicationId));
+    }
+
+    @PostMapping("/coach/{applicationId}/rejection")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendCoachApplicationRejection(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendCoachApplicationRejection(applicationId));
+    }
+
+    @PostMapping("/tutor/{applicationId}/rejection")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendTutorApplicationRejection(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendTutorApplicationRejection(applicationId));
     }
 
     @PatchMapping(path = "/developer/{developerApplicationId}", consumes = "application/json-path+json")

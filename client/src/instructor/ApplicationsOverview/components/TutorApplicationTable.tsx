@@ -52,6 +52,12 @@ export const TutorApplicationTable = ({
         )
         .slice(from, to),
     )
+
+    if (selectedApplicationToView) {
+      setSelectedApplicationToView(
+        tutorApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
+      )
+    }
   }, [tutorApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
 
   return (
