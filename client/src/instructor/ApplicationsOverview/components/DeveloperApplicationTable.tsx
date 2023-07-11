@@ -52,6 +52,12 @@ export const DeveloperApplicationTable = ({
         )
         .slice(from, to),
     )
+
+    if (selectedApplicationToView) {
+      setSelectedApplicationToView(
+        developerApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
+      )
+    }
   }, [developerApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
 
   return (
@@ -167,7 +173,8 @@ export const DeveloperApplicationTable = ({
         columns={[
           {
             accessor: 'applicationStatus',
-            title: <Text>Application Status</Text>,
+            title: 'Application Status',
+            textAlignment: 'center',
             render: (studentApplication) => {
               const isAccepted = studentApplication.assessment?.accepted
               const isAssessed = studentApplication.assessment?.assessed
@@ -177,6 +184,11 @@ export const DeveloperApplicationTable = ({
                 </Badge>
               )
             },
+          },
+          {
+            accessor: 'assessment.assessmentScore',
+            title: 'Score',
+            textAlignment: 'center',
           },
           {
             accessor: 'student.tumId',
@@ -190,8 +202,17 @@ export const DeveloperApplicationTable = ({
             accessor: 'student.email',
             title: 'Email',
           },
-          { accessor: 'student.firstName', title: 'First Name' },
-          { accessor: 'student.lastName', title: 'Last Name' },
+          {
+            accessor: 'fullName',
+            title: 'Full name',
+            render: (developerApplication) => {
+              return (
+                <Text>{`${developerApplication.student.firstName ?? ''} ${
+                  developerApplication.student.lastName ?? ''
+                }`}</Text>
+              )
+            },
+          },
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,

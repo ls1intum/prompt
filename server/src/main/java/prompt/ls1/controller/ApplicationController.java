@@ -162,14 +162,26 @@ public class ApplicationController {
 
     @PostMapping("/coach/{applicationId}/interview-invitations")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> sendCoachInterviewInvite(@PathVariable UUID applicationId) {
+    public ResponseEntity<Application> sendCoachInterviewInvitation(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(applicationService.sendCoachInterviewInvite(applicationId));
     }
 
     @PostMapping("/tutor/{applicationId}/interview-invitations")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> sendTutorInterviewInvite(@PathVariable UUID applicationId) {
+    public ResponseEntity<Application> sendTutorInterviewInvitation(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(applicationService.sendTutorInterviewInvite(applicationId));
+    }
+
+    @PostMapping("/coach/{applicationId}/rejection")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendCoachApplicationRejection(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendCoachApplicationRejection(applicationId));
+    }
+
+    @PostMapping("/tutor/{applicationId}/rejection")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendTutorApplicationRejection(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendTutorApplicationRejection(applicationId));
     }
 
     @PatchMapping(path = "/developer/{developerApplicationId}", consumes = "application/json-path+json")
@@ -194,7 +206,7 @@ public class ApplicationController {
                                                                             @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final CoachApplication coachApplication = applicationService.updateCoachApplicationAssessment(coachApplicationId, patchStudentApplicationAssessment);
-        if (coachApplication.getAssessment().getInterviewInviteSent()) {
+        if (coachApplication.getAssessment().getInterviewInviteSent() != null && coachApplication.getAssessment().getInterviewInviteSent()) {
             try {
                 mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
             } catch (MessagingException e) {
@@ -211,7 +223,7 @@ public class ApplicationController {
                                                                             @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final TutorApplication tutorApplication = applicationService.updateTutorApplicationAssessment(tutorApplicationId, patchStudentApplicationAssessment);
-        if (tutorApplication.getAssessment().getInterviewInviteSent()) {
+        if (tutorApplication.getAssessment().getInterviewInviteSent() != null && tutorApplication.getAssessment().getInterviewInviteSent()) {
             try {
                 mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
             } catch (MessagingException e) {

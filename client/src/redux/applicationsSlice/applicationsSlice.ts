@@ -23,6 +23,14 @@ import {
   deleteDeveloperApplication,
   deleteTutorApplication,
 } from './thunks/deleteApplication'
+import {
+  sendCoachInterviewInvitation,
+  sendTutorInterviewInvitation,
+} from './thunks/sendInterviewInvitation'
+import {
+  sendCoachApplicationRejection,
+  sendTutorApplicationRejection,
+} from './thunks/sendApplicationRejection'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -258,6 +266,74 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(updateTutorApplicationAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendCoachInterviewInvitation.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(sendCoachInterviewInvitation.fulfilled, (state, { payload }) => {
+      state.coachApplications = state.coachApplications.map((coachApplication) =>
+        coachApplication.id === payload.id ? payload : coachApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendCoachInterviewInvitation.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendCoachApplicationRejection.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(sendCoachApplicationRejection.fulfilled, (state, { payload }) => {
+      state.coachApplications = state.coachApplications.map((coachApplication) =>
+        coachApplication.id === payload.id ? payload : coachApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendCoachApplicationRejection.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendTutorInterviewInvitation.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(sendTutorInterviewInvitation.fulfilled, (state, { payload }) => {
+      state.tutorApplications = state.tutorApplications.map((tutorApplication) =>
+        tutorApplication.id === payload.id ? payload : tutorApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendTutorInterviewInvitation.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendTutorApplicationRejection.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(sendTutorApplicationRejection.fulfilled, (state, { payload }) => {
+      state.tutorApplications = state.tutorApplications.map((tutorApplication) =>
+        tutorApplication.id === payload.id ? payload : tutorApplication,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(sendTutorApplicationRejection.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
