@@ -28,7 +28,10 @@ import {
   updateDeveloperApplicationAssessment,
   updateTutorApplicationAssessment,
 } from '../redux/applicationsSlice/thunks/updateApplicationAssessment'
-import { sendCoachInvitation, sendTutorInvitation } from '../service/applicationsService'
+import {
+  sendCoachInterviewInvitation,
+  sendTutorInterviewInvitation,
+} from '../redux/applicationsSlice/thunks/sendInterviewInvitation'
 
 interface InterviewInvitationSendConfirmationModalProps {
   opened: boolean
@@ -97,9 +100,9 @@ export const ApplicationAssessmentForm = ({
         }}
         onConfirm={() => {
           if (applicationType === 'coach') {
-            void sendCoachInvitation(applicationId)
+            void dispatch(sendCoachInterviewInvitation(applicationId))
           } else if (applicationType === 'tutor') {
-            void sendTutorInvitation(applicationId)
+            void dispatch(sendTutorInterviewInvitation(applicationId))
           }
           setInterviewInvitationSendConfirmationModalOpened(false)
         }}

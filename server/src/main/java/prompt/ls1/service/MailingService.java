@@ -283,7 +283,7 @@ public class MailingService {
                         <p>Looking forward to talking to you!</p>
                                                 
                         <p><br />
-                        Cheers<br />
+                        Cheers,<br />
                         Agile Project Management Program Management Team</p>
                         """,
                 student.getFirstName(),
@@ -329,7 +329,7 @@ public class MailingService {
                         <p>Looking forward to talking to you!</p>
                                                 
                         <p><br />
-                        Cheers<br />
+                        Cheers,<br />
                         Teaching iOS Program Management Team</p>
                         """,
                 student.getFirstName(),
