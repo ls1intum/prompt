@@ -21,7 +21,7 @@ import {
   setCurrentState,
 } from '../../../../redux/courseIterationSlice/courseIterationSlice'
 import { createCourseIteration } from '../../../../redux/courseIterationSlice/thunks/createCourseIteration'
-import { DatePickerInput } from '@mantine/dates'
+import { DatePickerInput, DateTimePicker } from '@mantine/dates'
 import { IconCalendar } from '@tabler/icons-react'
 import { updateCourseIteration } from '../../../../redux/courseIterationSlice/thunks/updateCourseIteration'
 import { type Patch } from '../../../../service/configService'
@@ -119,8 +119,9 @@ export const CourseIterationCreationModal = ({
               {...form.getInputProps('coachApplicationPeriodEnd')}
             />
           </Group>
-          <DatePickerInput
+          <DateTimePicker
             icon={<IconCalendar />}
+            withAsterisk
             label='Coach Interview Date'
             {...form.getInputProps('coachInterviewDate')}
           />
@@ -147,8 +148,9 @@ export const CourseIterationCreationModal = ({
               {...form.getInputProps('tutorApplicationPeriodEnd')}
             />
           </Group>
-          <DatePickerInput
+          <DateTimePicker
             icon={<IconCalendar />}
+            withAsterisk
             label='Tutor Interview Date'
             {...form.getInputProps('tutorInterviewDate')}
           />
