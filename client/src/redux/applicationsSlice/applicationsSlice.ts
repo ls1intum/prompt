@@ -99,6 +99,7 @@ interface ApplicationAssessment {
   assessed: boolean
   accepted: boolean
   interviewInviteSent: boolean
+  rejectionSent: boolean
 }
 
 interface Application {

@@ -26,6 +26,8 @@ public class ApplicationAssessment {
 
     private Boolean interviewInviteSent;
 
+    private Boolean rejectionSent;
+
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<InstructorComment> instructorComments;
 

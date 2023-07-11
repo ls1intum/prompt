@@ -100,6 +100,7 @@ export const ApplicationAssessmentForm = ({
       accepted: assessment?.accepted ?? false,
       assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
+      rejectionSent: assessment?.rejectionSent ?? false,
     },
   })
 
@@ -213,16 +214,29 @@ export const ApplicationAssessmentForm = ({
         <Group position='right'>
           {(applicationType === 'coach' || applicationType === 'tutor') && (
             <Group>
-              <Button
-                variant='outline'
-                color='red'
-                disabled={assessment?.accepted}
-                onClick={() => {
-                  setApplicationRejectionSendConfirmationModalOpened(true)
-                }}
+              <Tooltip
+                label={
+                  assessment?.rejectionSent
+                    ? 'The application rejection email has already been sent successfully.'
+                    : 'An application rejection email will be sent out to the student.'
+                }
+                color='blue'
+                withArrow
+                multiline
               >
-                Reject Application
-              </Button>
+                <div>
+                  <Button
+                    variant='outline'
+                    color='red'
+                    disabled={assessment?.rejectionSent}
+                    onClick={() => {
+                      setApplicationRejectionSendConfirmationModalOpened(true)
+                    }}
+                  >
+                    Reject Application
+                  </Button>
+                </div>
+              </Tooltip>
               <Tooltip
                 label={
                   assessment?.interviewInviteSent
