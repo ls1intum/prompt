@@ -91,11 +91,13 @@ jobs:
             }
             return "latest";
 
+      - id: output-tag
+        run: echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
+
       - name: SSH to VM and create .env.prod file
         uses: appleboy/ssh-action@v0.1.10
         env:
-          # TODO IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ steps.compute-tag.outputs.result }}
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}

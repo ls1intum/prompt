@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.exception.ResourceConflictException;
@@ -25,11 +27,13 @@ import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class ApplicationService {
     private final DeveloperApplicationRepository developerApplicationRepository;
@@ -38,6 +42,7 @@ public class ApplicationService {
     private final InstructorCommentRepository instructorCommentRepository;
     private final StudentRepository studentRepository;
     private final ProjectTeamRepository projectTeamRepository;
+    private final MailingService mailingService;
 
     @Autowired
     public ApplicationService(
@@ -46,13 +51,15 @@ public class ApplicationService {
             final CoachApplicationRepository coachApplicationRepository,
             final InstructorCommentRepository instructorCommentRepository,
             final StudentRepository studentRepository,
-            final ProjectTeamRepository projectTeamRepository) {
+            final ProjectTeamRepository projectTeamRepository,
+            final MailingService mailingService) {
         this.developerApplicationRepository = developerApplicationRepository;
         this.tutorApplicationRepository = tutorApplicationRepository;
         this.coachApplicationRepository = coachApplicationRepository;
         this.instructorCommentRepository = instructorCommentRepository;
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
+        this.mailingService = mailingService;
     }
 
     public DeveloperApplication findDeveloperApplicationById(final UUID developerApplicationId) {
@@ -148,6 +155,34 @@ public class ApplicationService {
 
         DeveloperApplication patchedApplication = applyPatchToDeveloperApplication(patchDeveloperApplication, existingApplication);
         return developerApplicationRepository.save(patchedApplication);
+    }
+
+    public CoachApplication sendCoachInterviewInvite(final UUID applicationId) {
+        final CoachApplication coachApplication = findCoachApplicationById(applicationId);
+
+        try {
+            mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
+        } catch (MessagingException e) {
+            log.error(String.format("Failed to send a coach interview invitation email. Error message: %s. Stacktrace: %s",
+                    e.getMessage(), Arrays.toString(e.getStackTrace())));
+        }
+
+        coachApplication.getAssessment().setInterviewInviteSent(true);
+        return coachApplicationRepository.save(coachApplication);
+    }
+
+    public TutorApplication sendTutorInterviewInvite(final UUID applicationId) {
+        final TutorApplication tutorApplication = findTutorApplicationById(applicationId);
+
+        try {
+            mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
+        } catch (MessagingException e) {
+            log.error(String.format("Failed to send a tutor interview invitation email. Error message: %s. Stacktrace: %s",
+                    e.getMessage(), Arrays.toString(e.getStackTrace())));
+        }
+
+        tutorApplication.getAssessment().setInterviewInviteSent(true);
+        return tutorApplicationRepository.save(tutorApplication);
     }
 
     public DeveloperApplication updateDeveloperApplicationAssessment(final UUID developerApplicationId, JsonPatch patchDeveloperApplicationAssessment)

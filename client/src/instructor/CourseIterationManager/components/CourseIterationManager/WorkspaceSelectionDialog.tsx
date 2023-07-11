@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   Button,
   Center,
+  Divider,
   Group,
   Modal,
   Pagination,
@@ -49,16 +50,24 @@ export const CourseIterationCreationModal = ({
           coachApplicationPeriodEnd: new Date(courseIteration.coachApplicationPeriodEnd),
           tutorApplicationPeriodStart: new Date(courseIteration.tutorApplicationPeriodStart),
           tutorApplicationPeriodEnd: new Date(courseIteration.tutorApplicationPeriodEnd),
+          coachInterviewDate: new Date(courseIteration.coachInterviewDate),
+          tutorInterviewDate: new Date(courseIteration.tutorInterviewDate),
         }
       : {
           id: '',
           semesterName: '',
+          coachInterviewPlannerLink: '',
+          tutorInterviewPlannerLink: '',
+          coachInterviewLocation: '',
+          tutorInterviewLocation: '',
           developerApplicationPeriodStart: new Date(),
           developerApplicationPeriodEnd: new Date(),
           coachApplicationPeriodStart: new Date(),
           coachApplicationPeriodEnd: new Date(),
           tutorApplicationPeriodStart: new Date(),
           tutorApplicationPeriodEnd: new Date(),
+          coachInterviewDate: new Date(),
+          tutorInterviewDate: new Date(),
           iosTag: '',
           phases: [],
         },
@@ -70,10 +79,7 @@ export const CourseIterationCreationModal = ({
         <Stack
           style={{
             width: '50vw',
-            height: '60vh',
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '10vh 0',
+            margin: '5vh 3vw',
           }}
         >
           <TextInput
@@ -100,6 +106,7 @@ export const CourseIterationCreationModal = ({
               {...form.getInputProps('developerApplicationPeriodEnd')}
             />
           </Group>
+          <Divider />
           <Group grow>
             <DatePickerInput
               icon={<IconCalendar />}
@@ -112,6 +119,22 @@ export const CourseIterationCreationModal = ({
               {...form.getInputProps('coachApplicationPeriodEnd')}
             />
           </Group>
+          <DatePickerInput
+            icon={<IconCalendar />}
+            label='Coach Interview Date'
+            {...form.getInputProps('coachInterviewDate')}
+          />
+          <TextInput
+            withAsterisk
+            label='Coach Interview Planner Link'
+            {...form.getInputProps('coachInterviewPlannerLink')}
+          />
+          <TextInput
+            withAsterisk
+            label='Coach Interview Location'
+            {...form.getInputProps('coachInterviewLocation')}
+          />
+          <Divider />
           <Group grow>
             <DatePickerInput
               icon={<IconCalendar />}
@@ -124,6 +147,21 @@ export const CourseIterationCreationModal = ({
               {...form.getInputProps('tutorApplicationPeriodEnd')}
             />
           </Group>
+          <DatePickerInput
+            icon={<IconCalendar />}
+            label='Tutor Interview Date'
+            {...form.getInputProps('tutorInterviewDate')}
+          />
+          <TextInput
+            withAsterisk
+            label='Tutor Interview Planner Link'
+            {...form.getInputProps('tutorInterviewPlannerLink')}
+          />
+          <TextInput
+            withAsterisk
+            label='Tutor Interview Location'
+            {...form.getInputProps('tutorInterviewLocation')}
+          />
           <Button
             variant='filled'
             onClick={() => {

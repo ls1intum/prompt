@@ -160,6 +160,18 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
+    @PostMapping("/coach/{applicationId}/interview-invitations")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendCoachInterviewInvite(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendCoachInterviewInvite(applicationId));
+    }
+
+    @PostMapping("/tutor/{applicationId}/interview-invitations")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendTutorInterviewInvite(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendTutorInterviewInvite(applicationId));
+    }
+
     @PatchMapping(path = "/developer/{developerApplicationId}", consumes = "application/json-path+json")
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> updateProjectTeam(@PathVariable final UUID developerApplicationId,
@@ -181,7 +193,16 @@ public class ApplicationController {
     public ResponseEntity<Application> updateCoachApplicationAssessment(@PathVariable final UUID coachApplicationId,
                                                                             @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
-        return ResponseEntity.ok(applicationService.updateCoachApplicationAssessment(coachApplicationId, patchStudentApplicationAssessment));
+        final CoachApplication coachApplication = applicationService.updateCoachApplicationAssessment(coachApplicationId, patchStudentApplicationAssessment);
+        if (coachApplication.getAssessment().getInterviewInviteSent()) {
+            try {
+                mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
+            } catch (MessagingException e) {
+                log.error(String.format("Failed to send a coach interview invitation email. Error message: %s. Stacktrace: %s",
+                        e.getMessage(), Arrays.toString(e.getStackTrace())));
+            }
+        }
+        return ResponseEntity.ok(coachApplication);
     }
 
     @PatchMapping(path = "/tutor/{tutorApplicationId}/assessment", consumes = "application/json-path+json")
@@ -189,7 +210,16 @@ public class ApplicationController {
     public ResponseEntity<Application> updateTutorApplicationAssessment(@PathVariable final UUID tutorApplicationId,
                                                                             @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
-        return ResponseEntity.ok(applicationService.updateTutorApplicationAssessment(tutorApplicationId, patchStudentApplicationAssessment));
+        final TutorApplication tutorApplication = applicationService.updateTutorApplicationAssessment(tutorApplicationId, patchStudentApplicationAssessment);
+        if (tutorApplication.getAssessment().getInterviewInviteSent()) {
+            try {
+                mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
+            } catch (MessagingException e) {
+                log.error(String.format("Failed to send a tutor interview invitation email. Error message: %s. Stacktrace: %s",
+                        e.getMessage(), Arrays.toString(e.getStackTrace())));
+            }
+        }
+        return ResponseEntity.ok(tutorApplication);
     }
 
     @PostMapping("/developer/{applicationId}/instructor-comments")

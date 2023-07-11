@@ -90,6 +90,7 @@ interface ApplicationAssessment {
   assessmentScore: number
   assessed: boolean
   accepted: boolean
+  interviewInviteSent: boolean
 }
 
 interface Application {
