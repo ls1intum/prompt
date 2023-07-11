@@ -194,7 +194,7 @@ public class ApplicationController {
                                                                             @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final CoachApplication coachApplication = applicationService.updateCoachApplicationAssessment(coachApplicationId, patchStudentApplicationAssessment);
-        if (coachApplication.getAssessment().getInterviewInviteSent()) {
+        if (coachApplication.getAssessment().getInterviewInviteSent() != null && coachApplication.getAssessment().getInterviewInviteSent()) {
             try {
                 mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
             } catch (MessagingException e) {
@@ -211,7 +211,7 @@ public class ApplicationController {
                                                                             @RequestBody JsonPatch patchStudentApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final TutorApplication tutorApplication = applicationService.updateTutorApplicationAssessment(tutorApplicationId, patchStudentApplicationAssessment);
-        if (tutorApplication.getAssessment().getInterviewInviteSent()) {
+        if (tutorApplication.getAssessment().getInterviewInviteSent() != null && tutorApplication.getAssessment().getInterviewInviteSent()) {
             try {
                 mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
             } catch (MessagingException e) {
