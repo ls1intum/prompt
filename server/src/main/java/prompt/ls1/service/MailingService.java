@@ -354,11 +354,6 @@ public class MailingService {
         message.addRecipients(MimeMessage.RecipientType.TO, sender);
         message.setSubject(String.format("Agile Project Management %s Application Rejection", courseIteration.getSemesterName()));
 
-        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
-        dateFormat.setTimeZone(timeZone);
-        String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
-
         String htmlContent = String.format("""
                         <p>Dear %s %s,</p>
                         
@@ -385,11 +380,6 @@ public class MailingService {
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
         message.addRecipients(MimeMessage.RecipientType.TO, sender);
         message.setSubject(String.format("Teaching iOS %s Application Rejection", courseIteration.getSemesterName()));
-
-        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy 'starting at' HH.mm");
-        dateFormat.setTimeZone(timeZone);
-        String dayOfWeek = dateFormat.format(courseIteration.getCoachInterviewDate());
 
         String htmlContent = String.format("""
                         <p>Dear %s %s,</p>

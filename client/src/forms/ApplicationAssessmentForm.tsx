@@ -98,7 +98,7 @@ export const ApplicationAssessmentForm = ({
       reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
       accepted: assessment?.accepted ?? false,
-      assessed: assessment?.accepted ?? false,
+      assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
     },
   })
@@ -112,7 +112,7 @@ export const ApplicationAssessmentForm = ({
       reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
       accepted: assessment?.accepted ?? false,
-      assessed: assessment?.accepted ?? false,
+      assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
     })
     assessmentForm.resetDirty()
