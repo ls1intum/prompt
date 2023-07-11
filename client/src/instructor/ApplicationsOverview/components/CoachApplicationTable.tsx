@@ -154,7 +154,8 @@ export const CoachApplicationTable = ({
         columns={[
           {
             accessor: 'applicationStatus',
-            title: <Text>Application Status</Text>,
+            title: 'Application Status',
+            textAlignment: 'center',
             render: (studentApplication) => {
               const isAccepted = studentApplication.assessment?.accepted
               const isAssessed = studentApplication.assessment?.assessed
@@ -164,6 +165,11 @@ export const CoachApplicationTable = ({
                 </Badge>
               )
             },
+          },
+          {
+            accessor: 'assessment.assessmentScore',
+            title: 'Score',
+            textAlignment: 'center',
           },
           {
             accessor: 'student.tumId',
@@ -177,8 +183,17 @@ export const CoachApplicationTable = ({
             accessor: 'student.email',
             title: 'Email',
           },
-          { accessor: 'student.firstName', title: 'First Name' },
-          { accessor: 'student.lastName', title: 'Last Name' },
+          {
+            accessor: 'fullName',
+            title: 'Full name',
+            render: (coachApplication) => {
+              return (
+                <Text>{`${coachApplication.student.firstName ?? ''} ${
+                  coachApplication.student.lastName ?? ''
+                }`}</Text>
+              )
+            },
+          },
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,
