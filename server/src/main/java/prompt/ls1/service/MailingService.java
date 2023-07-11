@@ -314,24 +314,24 @@ public class MailingService {
         String dayOfWeek = dateFormat.format(courseIteration.getTutorInterviewDate());
 
         String htmlContent = String.format("""
-                        			<p>Dear %s %s</p>
+                        <p>Dear %s %s</p>
                                                 
-                        			<p>you are receiving this email because you applied for the course Teaching iOS in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
+                        <p>you are receiving this email because you applied for the course Teaching iOS in the&nbsp;iPraktikum&nbsp;%s and we would like to invite you to a personal&nbsp;interview.</p>
                                                 
-                        			<p>The&nbsp;interviews&nbsp;will take place on %s.</strong>&nbsp;You can choose your timeslot in the following form (FCFS):&nbsp;<a href="%s" target="_blank">%s</a><br />
-                        			Please use your full name in the form and ensure that you SAVE your vote!</p>
+                        <p>The&nbsp;interviews&nbsp;will take place on %s.</strong>&nbsp;You can choose your timeslot in the following form (FCFS):&nbsp;<a href="%s" target="_blank">%s</a><br />
+                        Please use your full name in the form and ensure that you SAVE your vote!</p>
                                                 
-                        			<p>The&nbsp;interview&nbsp;will be on Zoom:&nbsp;<a href="%s" target="_blank">%s</a><br />
-                        			Please ensure that you are at least<strong>&nbsp;5 min early!</strong>&nbsp;You will be moved to the&nbsp;interview&nbsp;room as soon as we are ready to talk to you.</p>
+                        <p>The&nbsp;interview&nbsp;will be on Zoom:&nbsp;<a href="%s" target="_blank">%s</a><br />
+                        Please ensure that you are at least<strong>&nbsp;5 min early!</strong>&nbsp;You will be moved to the&nbsp;interview&nbsp;room as soon as we are ready to talk to you.</p>
                                                 
-                        			<p>&nbsp;</p>
+                        <p>&nbsp;</p>
                                                 
-                        			<p>Looking forward to talking to you!</p>
+                        <p>Looking forward to talking to you!</p>
                                                 
-                        			<p><br />
-                        			Cheers<br />
-                        		    Teaching iOS Program Management Team</p>
-                           """,
+                        <p><br />
+                        Cheers<br />
+                        Teaching iOS Program Management Team</p>
+                        """,
                 student.getFirstName(),
                 student.getLastName(),
                 courseIteration.getSemesterName(),
