@@ -14,5 +14,5 @@ jobs:
     secrets: inherit
     with:
       environment: Dev
-      image_tag: "latest"
+      image_tag: "${{ needs.build-dev-container.outputs.image_tag }}"
     
