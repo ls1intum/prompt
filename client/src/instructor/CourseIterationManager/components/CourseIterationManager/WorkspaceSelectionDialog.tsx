@@ -74,7 +74,7 @@ export const CourseIterationCreationModal = ({
   })
 
   return (
-    <Modal opened={opened} onClose={onClose} title='Create new workspace' centered size='auto'>
+    <Modal opened={opened} onClose={onClose} centered size='auto'>
       <Center>
         <Stack
           style={{
