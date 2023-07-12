@@ -26,8 +26,8 @@ jobs:
       #     script: |
       #       docker compose -f docker-compose.prod.yml --env-file=.env.prod down --remove-orphans --rmi all
 
-      # - name: checkout
-      #   uses: actions/checkout@v3
+      - name: checkout
+        uses: actions/checkout@v3
 
       # - name: 'Create main.cf and master.cf file'
       #   run: |
