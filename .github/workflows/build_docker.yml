@@ -19,7 +19,7 @@ jobs:
             context: ./server
             path: server
     outputs:
-      image_tag: ${{ steps.output-tag.outputs.image_tag }}
+      image_tag: ${{ steps.compute-tag.outputs.result }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -75,9 +75,6 @@ jobs:
               }
             }
             return "latest";
-
-      - id: output-tag
-        run: echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4
