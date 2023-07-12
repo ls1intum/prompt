@@ -130,7 +130,7 @@ export const DeveloperApplicationTable = ({
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
-        rowExpansion={{
+        /* rowExpansion={{
           allowMultiple: true,
           collapseProps: {
             transitionDuration: 500,
@@ -166,7 +166,7 @@ export const DeveloperApplicationTable = ({
               </Group>
             </Stack>
           ),
-        }}
+        }} */
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
@@ -241,9 +241,9 @@ export const DeveloperApplicationTable = ({
             ),
           },
         ]}
-        /* onRowClick={({ firstName }: StudentApplication) => {
-    alert(`You clicked on ${firstName}`)
-  }} */
+        onRowClick={(application) => {
+          setSelectedApplicationToView(application)
+        }}
       />
       <Button
         leftIcon={<IconTrash />}

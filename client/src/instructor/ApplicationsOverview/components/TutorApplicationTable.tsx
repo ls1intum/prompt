@@ -128,7 +128,7 @@ export const TutorApplicationTable = ({
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
-        rowExpansion={{
+        /* rowExpansion={{
           allowMultiple: true,
           collapseProps: {
             transitionDuration: 500,
@@ -152,7 +152,7 @@ export const TutorApplicationTable = ({
               </Group>
             </Stack>
           ),
-        }}
+        }} */
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
@@ -227,9 +227,9 @@ export const TutorApplicationTable = ({
             ),
           },
         ]}
-        /* onRowClick={({ firstName }: StudentApplication) => {
-    alert(`You clicked on ${firstName}`)
-  }} */
+        onRowClick={(application) => {
+          setSelectedApplicationToView(application)
+        }}
       />
       <Button
         leftIcon={<IconTrash />}

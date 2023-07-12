@@ -179,16 +179,23 @@ export const CoachApplicationForm = ({
                     form={defaultForm}
                     title='Application for Agile Project Management Practical Course'
                   />
-                  <Textarea
-                    label='Challenge'
-                    disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                    autosize
-                    minRows={5}
-                    placeholder='Describe a problem that occurred in a team and how you solved it'
-                    withAsterisk
-                    required
-                    {...coachForm.getInputProps('solvedProblem')}
-                  />
+                  <div>
+                    <Textarea
+                      label='Challenge'
+                      disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                      autosize
+                      minRows={5}
+                      placeholder='Describe a problem that occurred in a team and how you solved it'
+                      withAsterisk
+                      required
+                      {...coachForm.getInputProps('solvedProblem')}
+                    />
+                    {!coachForm.errors.solvedProblem && (
+                      <Text fz='xs' ta='right'>{`${
+                        coachForm.values.solvedProblem?.length ?? 0
+                      } / 500`}</Text>
+                    )}
+                  </div>
                   {accessMode === ApplicationFormAccessMode.STUDENT && (
                     <Stack>
                       <Checkbox
