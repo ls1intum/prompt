@@ -15,4 +15,3 @@ jobs:
     with:
       environment: Dev
       image_tag: "${{ needs.build-dev-container.outputs.image_tag }}"
-    
