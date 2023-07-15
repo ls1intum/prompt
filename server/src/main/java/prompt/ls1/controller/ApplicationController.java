@@ -172,6 +172,18 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.sendTutorInterviewInvite(applicationId));
     }
 
+    @PostMapping("/coach/{applicationId}/acceptance")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendCoachApplicationAcceptance(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendCoachApplicationAcceptance(applicationId));
+    }
+
+    @PostMapping("/tutor/{applicationId}/acceptance")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> sendTutorApplicationAcceptance(@PathVariable UUID applicationId) {
+        return ResponseEntity.ok(applicationService.sendTutorApplicationAcceptance(applicationId));
+    }
+
     @PostMapping("/coach/{applicationId}/rejection")
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> sendCoachApplicationRejection(@PathVariable UUID applicationId) {

@@ -398,4 +398,86 @@ public class MailingService {
 
         javaMailSender.send(message);
     }
+
+    public void sendCoachApplicationAcceptanceEmail(final Student student,
+                                                   final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("Agile Project Management %s Application Acceptance", courseIteration.getSemesterName()));
+
+        String htmlContent = String.format("""
+                            <table align="left" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>iPraktikum&nbsp;%s APM&nbsp;Accept</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        <p>Dear %s,</p>
+                            
+                                        <p><br />
+                                        Congratulations, you have been&nbsp;accepted&nbsp;as a Coach in the&nbsp;iPraktikum!&nbsp;</p>
+                            
+                                        <p>In order to complete your registration,&nbsp; please log in at&nbsp;<a href="https://lists.ase.in.tum.de/links/DnJKYSWUiH/XpGznUsipz/hOMCKCIxFy/zkcCoueKil" target="_blank">https://matching.in.tum.de</a>&nbsp;and prioritize the &quot;Praktikum&nbsp;- Agile Project Management (IN0012, IN2106, IN2175, IN4087)&quot; - NOT the&nbsp;iPraktikum&nbsp;itself!! It is very important that you give this course the highest priority and that it is the only lab course you prioritize - this means no other courses should be on the list at all.</p>
+                            
+                                        <p>Best Regards,<br />
+                                        Agile Project Management Program Management</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        """,
+                courseIteration.getSemesterName(),
+                student.getFirstName());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
+
+    public void sendTutorApplicationAcceptanceEmail(final Student student,
+                                                   final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("Teaching iOS %s Application Acceptance", courseIteration.getSemesterName()));
+
+        String htmlContent = String.format("""
+                            <table align="left" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Teaching iOD&nbsp;%s &nbsp;Accept</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        <p>Dear %s,</p>
+                            
+                                        <p><br />
+                                        Congratulations, you have been&nbsp;accepted&nbsp;as a Tutor for the Teaching iOS Course!&nbsp;</p>
+                            
+                                        <p>In order to complete your registration,&nbsp; please log in at&nbsp;<a href="https://lists.ase.in.tum.de/links/DnJKYSWUiH/XpGznUsipz/hOMCKCIxFy/zkcCoueKil" target="_blank">https://matching.in.tum.de</a>&nbsp;and prioritize the &quot;Seminar - Teaching iOS (IN0014, IN2107, IN4741)&quot;! It is very important that you give this course the highest priority and that it is the only lab course you prioritize - this means no other courses should be on the list at all.</p>
+                            
+                                        <p>Best Regards,<br />
+                                        Teaching iOS Program Management</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        """,
+                courseIteration.getSemesterName(),
+                student.getFirstName());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
 }

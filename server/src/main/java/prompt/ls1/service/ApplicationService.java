@@ -213,6 +213,34 @@ public class ApplicationService {
         return tutorApplicationRepository.save(tutorApplication);
     }
 
+    public CoachApplication sendCoachApplicationAcceptance(final UUID applicationId) {
+        final CoachApplication coachApplication = findCoachApplicationById(applicationId);
+
+        try {
+            mailingService.sendCoachApplicationAcceptanceEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
+        } catch (MessagingException e) {
+            log.error(String.format("Failed to send a coach application acceptance email. Error message: %s. Stacktrace: %s",
+                    e.getMessage(), Arrays.toString(e.getStackTrace())));
+        }
+
+        coachApplication.getAssessment().setAcceptanceSent(true);
+        return coachApplicationRepository.save(coachApplication);
+    }
+
+    public TutorApplication sendTutorApplicationAcceptance(final UUID applicationId) {
+        final TutorApplication tutorApplication = findTutorApplicationById(applicationId);
+
+        try {
+            mailingService.sendTutorApplicationAcceptanceEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
+        } catch (MessagingException e) {
+            log.error(String.format("Failed to send a tutor application acceptance email. Error message: %s. Stacktrace: %s",
+                    e.getMessage(), Arrays.toString(e.getStackTrace())));
+        }
+
+        tutorApplication.getAssessment().setAcceptanceSent(true);
+        return tutorApplicationRepository.save(tutorApplication);
+    }
+
     public DeveloperApplication updateDeveloperApplicationAssessment(final UUID developerApplicationId, JsonPatch patchDeveloperApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
