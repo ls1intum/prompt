@@ -1,5 +1,8 @@
 import { DataTable } from 'mantine-datatable'
-import { type DeveloperApplication } from '../../../redux/applicationsSlice/applicationsSlice'
+import {
+  Gender,
+  type DeveloperApplication,
+} from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
@@ -9,17 +12,18 @@ import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmati
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
+import { type Filters } from '../ApplicationOverview'
 
 interface DeveloperApplicationTableProps {
   developerApplications: DeveloperApplication[]
   searchQuery: string
-  filterOnlyNotAssessed: boolean
+  filters: Filters
 }
 
 export const DeveloperApplicationTable = ({
   developerApplications,
   searchQuery,
-  filterOnlyNotAssessed,
+  filters,
 }: DeveloperApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const [tablePage, setTablePage] = useState(1)
@@ -37,6 +41,8 @@ export const DeveloperApplicationTable = ({
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
     const to = from + tablePageSize
+    console.log(developerApplications.map((d) => d.student.gender))
+    console.log(Gender.FEMALE)
 
     setTableRecords(
       developerApplications
@@ -47,9 +53,17 @@ export const DeveloperApplicationTable = ({
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         })
-        .filter((studentApplication) =>
-          filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
+        .filter((application) => (filters.accepted ? application.assessment?.accepted : true))
+        .filter((application) =>
+          filters.rejected
+            ? application.assessment?.assessed && !application.assessment.accepted
+            : true,
         )
+        .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
+        .filter((application) =>
+          filters.female ? application.student.gender === Gender.FEMALE : true,
+        )
+        .filter((application) => (filters.male ? application.student.gender === Gender.MALE : true))
         .slice(from, to),
     )
 
@@ -58,7 +72,7 @@ export const DeveloperApplicationTable = ({
         developerApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [developerApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
+  }, [developerApplications, tablePageSize, tablePage, searchQuery, filters])
 
   return (
     <Stack>

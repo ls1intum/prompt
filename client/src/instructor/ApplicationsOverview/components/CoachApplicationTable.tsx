@@ -1,5 +1,5 @@
 import { DataTable } from 'mantine-datatable'
-import { type CoachApplication } from '../../../redux/applicationsSlice/applicationsSlice'
+import { Gender, type CoachApplication } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
@@ -9,17 +9,18 @@ import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmati
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
 import { deleteCoachApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
+import { type Filters } from '../ApplicationOverview'
 
 interface CoachApplicationTableProps {
   coachApplications: CoachApplication[]
   searchQuery: string
-  filterOnlyNotAssessed: boolean
+  filters: Filters
 }
 
 export const CoachApplicationTable = ({
   coachApplications,
   searchQuery,
-  filterOnlyNotAssessed,
+  filters,
 }: CoachApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const [tablePage, setTablePage] = useState(1)
@@ -47,9 +48,17 @@ export const CoachApplicationTable = ({
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         })
-        .filter((studentApplication) =>
-          filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
+        .filter((application) => (filters.accepted ? application.assessment?.accepted : true))
+        .filter((application) =>
+          filters.rejected
+            ? application.assessment?.assessed && !application.assessment.accepted
+            : true,
         )
+        .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
+        .filter((application) =>
+          filters.female ? application.student.gender === Gender.FEMALE : true,
+        )
+        .filter((application) => (filters.male ? application.student.gender === Gender.MALE : true))
         .slice(from, to),
     )
 
@@ -58,7 +67,7 @@ export const CoachApplicationTable = ({
         coachApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [coachApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
+  }, [coachApplications, tablePageSize, tablePage, searchQuery, filters])
 
   return (
     <Stack>
