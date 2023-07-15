@@ -36,7 +36,10 @@ import {
   sendCoachApplicationRejection,
   sendTutorApplicationRejection,
 } from '../redux/applicationsSlice/thunks/sendApplicationRejection'
-import { sendCoachApplicationAcceptance } from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
+import {
+  sendCoachApplicationAcceptance,
+  sendTutorApplicationAcceptance,
+} from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
 
 interface ConfirmationModalProps {
   title: string
@@ -155,7 +158,7 @@ export const ApplicationAssessmentForm = ({
           if (applicationType === 'coach') {
             void dispatch(sendCoachApplicationAcceptance(applicationId))
           } else if (applicationType === 'tutor') {
-            void dispatch(sendCoachApplicationRejection(applicationId))
+            void dispatch(sendTutorApplicationAcceptance(applicationId))
           }
           setApplicationAcceptanceSendConfirmationModalOpened(false)
         }}
