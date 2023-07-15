@@ -36,6 +36,10 @@ import {
   sendCoachApplicationRejection,
   sendTutorApplicationRejection,
 } from '../redux/applicationsSlice/thunks/sendApplicationRejection'
+import {
+  sendCoachApplicationAcceptance,
+  sendTutorApplicationAcceptance,
+} from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
 
 interface ConfirmationModalProps {
   title: string
@@ -89,6 +93,10 @@ export const ApplicationAssessmentForm = ({
     applicationRejectionEmailSendConfirmationModalOpened,
     setApplicationRejectionSendConfirmationModalOpened,
   ] = useState(false)
+  const [
+    applicationAcceptanceEmailSendConfirmationModalOpened,
+    setApplicationAcceptanceSendConfirmationModalOpened,
+  ] = useState(false)
   const assessmentForm = useForm<ApplicationAssessment>({
     initialValues: {
       instructorComments: assessment?.instructorComments ?? [],
@@ -100,6 +108,7 @@ export const ApplicationAssessmentForm = ({
       accepted: assessment?.accepted ?? false,
       assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
+      acceptanceSent: assessment?.acceptanceSent ?? false,
       rejectionSent: assessment?.rejectionSent ?? false,
     },
   })
@@ -136,6 +145,22 @@ export const ApplicationAssessmentForm = ({
             void dispatch(sendTutorInterviewInvitation(applicationId))
           }
           setInterviewInvitationSendConfirmationModalOpened(false)
+        }}
+      />
+      <ConfirmationModal
+        title='Confirm Application Acceptance'
+        text='Are You sure You would like to accept this application?'
+        opened={applicationAcceptanceEmailSendConfirmationModalOpened}
+        onClose={() => {
+          setApplicationAcceptanceSendConfirmationModalOpened(false)
+        }}
+        onConfirm={() => {
+          if (applicationType === 'coach') {
+            void dispatch(sendCoachApplicationAcceptance(applicationId))
+          } else if (applicationType === 'tutor') {
+            void dispatch(sendTutorApplicationAcceptance(applicationId))
+          }
+          setApplicationAcceptanceSendConfirmationModalOpened(false)
         }}
       />
       <ConfirmationModal
@@ -237,6 +262,29 @@ export const ApplicationAssessmentForm = ({
                     }}
                   >
                     Reject Application
+                  </Button>
+                </div>
+              </Tooltip>
+              <Tooltip
+                label={
+                  assessment?.acceptanceSent
+                    ? 'The application acceptance email has already been sent successfully.'
+                    : 'An application acceptance email will be sent out to the student.'
+                }
+                color='blue'
+                withArrow
+                multiline
+              >
+                <div>
+                  <Button
+                    variant='outline'
+                    color='green'
+                    disabled={assessment?.acceptanceSent}
+                    onClick={() => {
+                      setApplicationAcceptanceSendConfirmationModalOpened(true)
+                    }}
+                  >
+                    Accept Application
                   </Button>
                 </div>
               </Tooltip>
