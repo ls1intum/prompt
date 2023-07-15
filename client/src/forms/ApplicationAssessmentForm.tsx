@@ -189,6 +189,9 @@ export const ApplicationAssessmentForm = ({
           />
         )}
         <TextInput
+          onWheel={(e) => {
+            e.currentTarget.blur()
+          }}
           withAsterisk
           type='number'
           label='Assessment Score'

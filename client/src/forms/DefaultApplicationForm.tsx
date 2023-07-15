@@ -173,6 +173,9 @@ export const DefaultApplicationForm = ({
             {...form.getInputProps('studyProgram')}
           />
           <TextInput
+            onWheel={(e) => {
+              e.currentTarget.blur()
+            }}
             withAsterisk
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             required
