@@ -86,14 +86,12 @@ jobs:
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4
         if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true' && matrix.path == 'client') || (steps.changed-files-server-folder.outputs.any_changed == 'true' && matrix.path == 'server') }}
-        env:
-          IMAGE_TAG: ${{ steps.compute-tag.outputs.result }}
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ matrix.image }}:${{ env.IMAGE_TAG }}
+          tags: ${{ matrix.image }}:${{ steps.output-tag.outputs.image_tag }}
           build-args: |
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
             "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
