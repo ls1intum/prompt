@@ -2,6 +2,10 @@ name: Build Docker Image
 
 on:
   workflow_call:
+    outputs:
+      image_tag: 
+        description: "The tag of the image that was built"
+        value: ${{ jobs.build.outputs.image_tag }}
 
 jobs:
   build:
@@ -19,7 +23,7 @@ jobs:
             context: ./server
             path: server
     outputs:
-      image_tag: "${{ steps.compute-tag.outputs.result }}"
+      image_tag: "${{ steps.output-tag.outputs.result }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -75,6 +79,9 @@ jobs:
               }
             }
             return "latest";
+
+      - id: output-tag
+        run: echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4
