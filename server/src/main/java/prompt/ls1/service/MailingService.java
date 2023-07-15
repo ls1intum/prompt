@@ -412,7 +412,7 @@ public class MailingService {
                             <table align="left" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                     <tr>
-                                        <td><strong>iPraktikum&nbsp;%s APM&nbsp;Accept</strong></td>
+                                        <td><strong>iPraktikum %s APM Accept</strong></td>
                                     </tr>
                                     <tr>
                                         <td>&nbsp;</td>
@@ -453,7 +453,7 @@ public class MailingService {
                             <table align="left" border="0" cellpadding="0" cellspacing="0">
                                 <tbody>
                                     <tr>
-                                        <td><strong>Teaching iOD&nbsp;%s &nbsp;Accept</strong></td>
+                                        <td><strong>Teaching iOS %s Accept</strong></td>
                                     </tr>
                                     <tr>
                                         <td>&nbsp;</td>
