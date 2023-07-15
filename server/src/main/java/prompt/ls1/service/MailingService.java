@@ -421,7 +421,7 @@ public class MailingService {
                                         <td>
                                         <p>Dear %s,</p>
                             
-                                        <p><br />
+                                        <p>
                                         Congratulations, you have been&nbsp;accepted&nbsp;as a Coach in the&nbsp;iPraktikum!&nbsp;</p>
                             
                                         <p>In order to complete your registration,&nbsp; please log in at&nbsp;<a href="https://lists.ase.in.tum.de/links/DnJKYSWUiH/XpGznUsipz/hOMCKCIxFy/zkcCoueKil" target="_blank">https://matching.in.tum.de</a>&nbsp;and prioritize the &quot;Praktikum&nbsp;- Agile Project Management (IN0012, IN2106, IN2175, IN4087)&quot; - NOT the&nbsp;iPraktikum&nbsp;itself!! It is very important that you give this course the highest priority and that it is the only lab course you prioritize - this means no other courses should be on the list at all.</p>
@@ -462,7 +462,7 @@ public class MailingService {
                                         <td>
                                         <p>Dear %s,</p>
                             
-                                        <p><br />
+                                        <p>
                                         Congratulations, you have been&nbsp;accepted&nbsp;as a Tutor for the Teaching iOS Course!&nbsp;</p>
                             
                                         <p>In order to complete your registration,&nbsp; please log in at&nbsp;<a href="https://lists.ase.in.tum.de/links/DnJKYSWUiH/XpGznUsipz/hOMCKCIxFy/zkcCoueKil" target="_blank">https://matching.in.tum.de</a>&nbsp;and prioritize the &quot;Seminar - Teaching iOS (IN0014, IN2107, IN4741)&quot;! It is very important that you give this course the highest priority and that it is the only lab course you prioritize - this means no other courses should be on the list at all.</p>
