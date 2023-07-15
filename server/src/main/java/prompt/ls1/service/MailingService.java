@@ -361,7 +361,7 @@ public class MailingService {
                         
                         <p>We regret that we cannot accept all of the great candidates. However, we hope to offer the courses again next term and we actively encourage you to apply again!</p>
                         
-                        <p>Best<br />
+                        <p>Best Regards,<br />
                         Agile Project Management Program Management Team</p>
                         """,
                 student.getFirstName(),
@@ -388,7 +388,7 @@ public class MailingService {
                         
                         <p>We regret that we cannot accept all of the great candidates. However, we hope to offer the courses again next term and we actively encourage you to apply again!</p>
                         
-                        <p>Best<br />
+                        <p>Best Regards,<br />
                         Teaching iOS Program Management Team</p>
                         """,
                 student.getFirstName(),

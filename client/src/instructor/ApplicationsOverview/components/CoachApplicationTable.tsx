@@ -129,7 +129,7 @@ export const CoachApplicationTable = ({
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
-        rowExpansion={{
+        /* rowExpansion={{
           allowMultiple: true,
           collapseProps: {
             transitionDuration: 500,
@@ -153,7 +153,7 @@ export const CoachApplicationTable = ({
               </Group>
             </Stack>
           ),
-        }}
+        }} */
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
@@ -228,9 +228,9 @@ export const CoachApplicationTable = ({
             ),
           },
         ]}
-        /* onRowClick={({ firstName }: StudentApplication) => {
-    alert(`You clicked on ${firstName}`)
-  }} */
+        onRowClick={(application) => {
+          setSelectedApplicationToView(application)
+        }}
       />
       <Button
         leftIcon={<IconTrash />}

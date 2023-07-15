@@ -180,16 +180,23 @@ export const TutorApplicationForm = ({
                     form={defaultForm}
                     title='Application for Teaching iOS Practical Course'
                   />
-                  <Textarea
-                    label='Why do You consider yourself a good tutor?'
-                    disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                    autosize
-                    minRows={5}
-                    placeholder='Why do You consider yourself a good tutor?'
-                    withAsterisk
-                    required
-                    {...tutorForm.getInputProps('reasonGoodTutor')}
-                  />
+                  <div>
+                    <Textarea
+                      label='Why do You consider yourself a good tutor?'
+                      disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                      autosize
+                      minRows={5}
+                      placeholder='Why do You consider yourself a good tutor?'
+                      withAsterisk
+                      required
+                      {...tutorForm.getInputProps('reasonGoodTutor')}
+                    />
+                    {!tutorForm.errors.reasonGoodTutor && (
+                      <Text fz='xs' ta='right'>{`${
+                        tutorForm.values.reasonGoodTutor?.length ?? 0
+                      } / 500`}</Text>
+                    )}
+                  </div>
                   {accessMode === ApplicationFormAccessMode.STUDENT && (
                     <Stack>
                       <Checkbox

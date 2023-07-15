@@ -4,6 +4,7 @@ import {
   Image,
   MultiSelect,
   Select,
+  Text,
   Textarea,
   TextInput,
   Title,
@@ -237,26 +238,36 @@ export const DefaultApplicationForm = ({
           placeholder='Available Devices'
           {...form.getInputProps('devices')}
         />
-        <Textarea
-          label='Motivation'
-          disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-          autosize
-          minRows={5}
-          placeholder='Why do you want to participate in iPraktikum?'
-          withAsterisk
-          required
-          {...form.getInputProps('motivation')}
-        />
-        <Textarea
-          label='Experience'
-          disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-          autosize
-          minRows={5}
-          placeholder='What is your experience with Swift?'
-          withAsterisk
-          required
-          {...form.getInputProps('experience')}
-        />
+        <div>
+          <Textarea
+            label='Motivation'
+            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+            autosize
+            minRows={5}
+            placeholder='Why do you want to participate in iPraktikum?'
+            withAsterisk
+            required
+            {...form.getInputProps('motivation')}
+          />
+          {!form.errors.motivation && (
+            <Text fz='xs' ta='right'>{`${form.values.motivation?.length ?? 0} / 500`}</Text>
+          )}
+        </div>
+        <div>
+          <Textarea
+            label='Experience'
+            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+            autosize
+            minRows={5}
+            placeholder='What is your experience with Swift?'
+            withAsterisk
+            required
+            {...form.getInputProps('experience')}
+          />
+          {!form.errors.experience && (
+            <Text fz='xs' ta='right'>{`${form.values.experience?.length ?? 0} / 500`}</Text>
+          )}
+        </div>
       </form>
     </>
   )
