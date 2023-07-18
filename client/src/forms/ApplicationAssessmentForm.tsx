@@ -6,6 +6,7 @@ import {
   Divider,
   Group,
   Modal,
+  Select,
   Stack,
   Text,
   TextInput,
@@ -131,7 +132,7 @@ export const ApplicationAssessmentForm = ({
       blockedByPM: assessment?.blockedByPM ?? false,
       reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
-      accepted: assessment?.accepted ?? false,
+      accepted: assessment?.accepted ?? null,
       assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
     })
@@ -329,12 +330,24 @@ export const ApplicationAssessmentForm = ({
             }
           >
             <Stack>
-              <Checkbox
-                mt='md'
-                label='Accepted for the Course'
-                {...assessmentForm.getInputProps('accepted', {
-                  type: 'checkbox',
-                })}
+              <Select
+                data={[
+                  { label: 'Pending', value: '0' },
+                  { label: 'Accepted', value: '1' },
+                  { label: 'Rejected', value: '-1' },
+                ]}
+                value={
+                  assessmentForm.values.accepted == null
+                    ? '0'
+                    : assessmentForm.values.accepted
+                    ? '1'
+                    : '-1'
+                }
+                onChange={(value) => {
+                  assessmentForm.setValues({
+                    accepted: value === '0' ? null : value === '1' ?? false,
+                  })
+                }}
               />
               {(applicationType === 'coach' || applicationType === 'tutor') && (
                 <Group>
@@ -395,7 +408,7 @@ export const ApplicationAssessmentForm = ({
             onClick={() => {
               const assessmentPatchObjectArray: Patch[] = []
               Object.keys(assessmentForm.values).forEach((key) => {
-                if (assessmentForm.isTouched(key)) {
+                if (assessmentForm.isDirty(key)) {
                   const assessmentPatchObject = new Map()
                   assessmentPatchObject.set('op', 'replace')
                   assessmentPatchObject.set('path', '/' + key)
