@@ -92,7 +92,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ matrix.image }}:${{ steps.output-tag.outputs.image_tag }}
+          tags: ${{ matrix.image }}:${{ steps.compute-tag.outputs.result }}
           build-args: |
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
             "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
