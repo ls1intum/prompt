@@ -179,8 +179,24 @@ export const DeveloperApplicationTable = ({
               const isAccepted = studentApplication.assessment?.accepted
               const isAssessed = studentApplication.assessment?.assessed
               return (
-                <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
-                  {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}
+                <Badge
+                  color={
+                    !isAssessed
+                      ? 'gray'
+                      : isAccepted
+                      ? 'green'
+                      : isAccepted === null
+                      ? 'gray'
+                      : 'red'
+                  }
+                >
+                  {!isAssessed
+                    ? 'Not Assessed'
+                    : isAccepted
+                    ? 'Accepted'
+                    : isAccepted === null
+                    ? 'Pending'
+                    : 'Rejected'}
                 </Badge>
               )
             },
