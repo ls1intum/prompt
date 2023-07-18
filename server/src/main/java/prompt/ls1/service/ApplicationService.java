@@ -223,6 +223,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
+        coachApplication.getAssessment().setAccepted(true);
         coachApplication.getAssessment().setAcceptanceSent(true);
         return coachApplicationRepository.save(coachApplication);
     }
@@ -237,6 +238,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
+        tutorApplication.getAssessment().setAccepted(true);
         tutorApplication.getAssessment().setAcceptanceSent(true);
         return tutorApplicationRepository.save(tutorApplication);
     }
