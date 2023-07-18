@@ -277,42 +277,41 @@ export const ApplicationAssessmentForm = ({
               />
             </Stack>
           </Timeline.Item>
-          {applicationType === 'coach' ||
-            (applicationType === 'tutor' && (
-              <Timeline.Item
-                title={
-                  <Text fz='sm' c='dimmed' fw={500}>
-                    Interview Invitation
-                  </Text>
-                }
-                bullet={<IconCalendarEvent size={12} />}
-              >
-                <Stack>
-                  <Tooltip
-                    label={
-                      assessment?.interviewInviteSent
-                        ? 'The interview invitation email has already been sent successfully.'
-                        : 'An interview invitation email will be sent out to the student. You can review the interview details in the Course Iteration Management console.'
-                    }
-                    color='blue'
-                    withArrow
-                    multiline
-                  >
-                    <div>
-                      <Button
-                        variant='outline'
-                        disabled={assessment?.interviewInviteSent}
-                        onClick={() => {
-                          setInterviewInvitationSendConfirmationModalOpened(true)
-                        }}
-                      >
-                        Send Interview Invitation
-                      </Button>
-                    </div>
-                  </Tooltip>
-                </Stack>
-              </Timeline.Item>
-            ))}
+          {(applicationType === 'coach' || applicationType === 'tutor') && (
+            <Timeline.Item
+              title={
+                <Text fz='sm' c='dimmed' fw={500}>
+                  Interview Invitation
+                </Text>
+              }
+              bullet={<IconCalendarEvent size={12} />}
+            >
+              <Stack>
+                <Tooltip
+                  label={
+                    assessment?.interviewInviteSent
+                      ? 'The interview invitation email has already been sent successfully.'
+                      : 'An interview invitation email will be sent out to the student. You can review the interview details in the Course Iteration Management console.'
+                  }
+                  color='blue'
+                  withArrow
+                  multiline
+                >
+                  <div>
+                    <Button
+                      variant='outline'
+                      disabled={assessment?.interviewInviteSent}
+                      onClick={() => {
+                        setInterviewInvitationSendConfirmationModalOpened(true)
+                      }}
+                    >
+                      Send Interview Invitation
+                    </Button>
+                  </div>
+                </Tooltip>
+              </Stack>
+            </Timeline.Item>
+          )}
           <Timeline.Item
             title={
               <Text fz='sm' c='dimmed' fw={500}>
@@ -337,57 +336,56 @@ export const ApplicationAssessmentForm = ({
                   type: 'checkbox',
                 })}
               />
-              {applicationType === 'coach' ||
-                (applicationType === 'tutor' && (
-                  <Group>
-                    <Tooltip
-                      label={
-                        assessment?.rejectionSent
-                          ? 'The application rejection email has already been sent successfully.'
-                          : 'An application rejection email will be sent out to the student.'
-                      }
-                      color='blue'
-                      withArrow
-                      multiline
-                    >
-                      <div>
-                        <Button
-                          variant='outline'
-                          color='red'
-                          disabled={assessment?.rejectionSent}
-                          onClick={() => {
-                            setApplicationRejectionSendConfirmationModalOpened(true)
-                          }}
-                        >
-                          Reject Application
-                        </Button>
-                      </div>
-                    </Tooltip>
-                    <Tooltip
-                      label={
-                        assessment?.acceptanceSent
-                          ? 'The application acceptance email has already been sent successfully.'
-                          : 'An application acceptance email will be sent out to the student.'
-                      }
-                      color='blue'
-                      withArrow
-                      multiline
-                    >
-                      <div>
-                        <Button
-                          variant='outline'
-                          color='green'
-                          disabled={assessment?.acceptanceSent}
-                          onClick={() => {
-                            setApplicationAcceptanceSendConfirmationModalOpened(true)
-                          }}
-                        >
-                          Accept Application
-                        </Button>
-                      </div>
-                    </Tooltip>
-                  </Group>
-                ))}
+              {(applicationType === 'coach' || applicationType === 'tutor') && (
+                <Group>
+                  <Tooltip
+                    label={
+                      assessment?.rejectionSent
+                        ? 'The application rejection email has already been sent successfully.'
+                        : 'An application rejection email will be sent out to the student.'
+                    }
+                    color='blue'
+                    withArrow
+                    multiline
+                  >
+                    <div>
+                      <Button
+                        variant='outline'
+                        color='red'
+                        disabled={assessment?.rejectionSent}
+                        onClick={() => {
+                          setApplicationRejectionSendConfirmationModalOpened(true)
+                        }}
+                      >
+                        Reject Application
+                      </Button>
+                    </div>
+                  </Tooltip>
+                  <Tooltip
+                    label={
+                      assessment?.acceptanceSent
+                        ? 'The application acceptance email has already been sent successfully.'
+                        : 'An application acceptance email will be sent out to the student.'
+                    }
+                    color='blue'
+                    withArrow
+                    multiline
+                  >
+                    <div>
+                      <Button
+                        variant='outline'
+                        color='green'
+                        disabled={assessment?.acceptanceSent}
+                        onClick={() => {
+                          setApplicationAcceptanceSendConfirmationModalOpened(true)
+                        }}
+                      >
+                        Accept Application
+                      </Button>
+                    </div>
+                  </Tooltip>
+                </Group>
+              )}
             </Stack>
           </Timeline.Item>
         </Timeline>
