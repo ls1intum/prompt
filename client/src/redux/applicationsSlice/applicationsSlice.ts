@@ -101,7 +101,7 @@ interface ApplicationAssessment {
   reasonForBlockedByPM: string
   assessmentScore: number
   assessed: boolean
-  accepted: boolean
+  accepted: boolean | null
   interviewInviteSent: boolean
   acceptanceSent: boolean
   rejectionSent: boolean
