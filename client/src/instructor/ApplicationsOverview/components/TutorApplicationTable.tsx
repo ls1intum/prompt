@@ -67,7 +67,7 @@ export const TutorApplicationTable = ({
         onClose={() => {
           setSelectedApplicationToView(undefined)
         }}
-        size='xl'
+        size='80%'
       >
         <div style={{ padding: '3vh 3vw' }}>
           <TutorApplicationForm

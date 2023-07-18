@@ -68,7 +68,7 @@ export const DeveloperApplicationTable = ({
         onClose={() => {
           setSelectedApplicationToView(undefined)
         }}
-        size='auto'
+        size='80%'
       >
         <div style={{ padding: '3vh 3vw' }}>
           <DeveloperApplicationForm
