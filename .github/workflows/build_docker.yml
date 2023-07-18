@@ -3,9 +3,12 @@ name: Build Docker Image
 on:
   workflow_call:
     outputs:
-      image_tag: 
-        description: "The tag of the image that was built"
-        value: ${{ jobs.build.outputs.image_tag }}
+      server_image_tag: 
+        description: "The tag of the server image that was built"
+        value: ${{ jobs.build.outputs.server_image_tag }}
+      client_image_tag: 
+        description: "The tag of the client image that was built"
+        value: ${{ jobs.build.outputs.client_image_tag }}
 
 jobs:
   build:
@@ -23,7 +26,8 @@ jobs:
             context: ./server
             path: server
     outputs:
-      image_tag: "${{ steps.output-tag.outputs.image_tag }}"
+      server_image_tag: "${{ steps.output-tag.outputs.image_tag }}"
+      client_image_tag: "${{ steps.output-tag.outputs.image_tag }}"
     steps:
       - name: Compute Tag
         uses: actions/github-script@v6
@@ -43,9 +47,6 @@ jobs:
               }
             }
             return "latest";
-
-      - id: output-tag
-        run: echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -96,3 +97,13 @@ jobs:
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
             "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
             "KEYCLOAK_REALM_NAME=${{ vars.KEYCLOAK_REALM_NAME }}"
+
+      - id: output-tag
+        run: |
+          if [[ "${{ matrix.path }}" == "client" ]] && [[ "${{ steps.changed-files-client-folder.outputs.any_changed }}" == "true" ]]; then
+            echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
+          if [[ "${{ matrix.path }}" == "server" ]] && [[ "${{ steps.changed-files-server-folder.outputs.any_changed }}" == "true" ]]; then
+            echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "image_tag=latest" >> "$GITHUB_OUTPUT"
+          fi
