@@ -14,5 +14,6 @@ jobs:
     secrets: inherit
     with:
       environment: Production
-      image_tag: "latest"
+      server_image_tag: "latest"
+      client_image_tag: "latest"
     
