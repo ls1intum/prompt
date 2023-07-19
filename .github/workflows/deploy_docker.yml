@@ -6,12 +6,24 @@ on:
       environment:
         required: true
         type: string
+      server_image_tag:
+        required: true
+        type: string
+      client_image_tag:
+          required: true
+          type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
+      - name: Use Computed Server Tag
+        run: echo "The computed server tag is ${{ inputs.server_image_tag }}"
+
+      - name: Use Computed Client Tag
+        run: echo "The computed client tag is ${{ inputs.client_image_tag }}"
+
       - name: SSH to VM and Execute Docker-Compose Down
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -72,32 +84,8 @@ jobs:
           source: "master.cf"
           target: /home/${{ vars.VM_USERNAME }}/postfix-config/
 
-      - name: Compute Tag
-        uses: actions/github-script@v6
-        id: compute-tag
-        with:
-          result-encoding: string
-          script: |
-            if (context.eventName === "pull_request") {
-              return "pr-" + context.issue.number;
-            }
-            if (context.eventName === "push") {
-              if (context.ref.startsWith("refs/tags/")) {
-                return context.ref.slice(10);
-              }
-              if (context.ref === "refs/heads/develop") {
-                return "develop";
-              }
-            }
-            return "latest";
-
-      - id: output-tag
-        run: echo "image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
-
       - name: SSH to VM and create .env.prod file
         uses: appleboy/ssh-action@v0.1.10
-        env:
-          IMAGE_TAG: ${{ steps.compute-tag.outputs.result }}
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -128,7 +116,8 @@ jobs:
             echo "KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }}" >> .env.prod
             echo "IOS_SENDER_MAIL=${{ vars.IOS_SENDER_MAIL }}" >> .env.prod
 
-            echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" >> .env.prod
+            echo "SERVER_IMAGE_TAG=${{ inputs.server_image_tag }}" >> .env.prod
+            echo "CLIENT_IMAGE_TAG=${{ inputs.client_image_tag }}" >> .env.prod
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v0.1.10

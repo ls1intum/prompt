@@ -14,4 +14,5 @@ jobs:
     secrets: inherit
     with:
       environment: Dev
-    
+      server_image_tag: "${{ needs.build-dev-container.outputs.server_image_tag }}"
+      client_image_tag: "${{ needs.build-dev-container.outputs.client_image_tag }}"
