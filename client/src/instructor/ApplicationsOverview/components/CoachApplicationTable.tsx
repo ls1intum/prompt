@@ -1,4 +1,6 @@
-import { DataTable } from 'mantine-datatable'
+import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
+import sortBy from 'lodash/sortBy'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { Gender, type CoachApplication } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
@@ -23,10 +25,15 @@ export const CoachApplicationTable = ({
   filters,
 }: CoachApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<CoachApplication[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<CoachApplication[]>([])
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+    columnAccessor: 'fullName',
+    direction: 'asc',
+  })
   const [selectedApplicationToView, setSelectedApplicationToView] = useState<
     CoachApplication | undefined
   >(undefined)
@@ -39,7 +46,7 @@ export const CoachApplicationTable = ({
     const from = (tablePage - 1) * tablePageSize
     const to = from + tablePageSize
 
-    setTableRecords(
+    const filteredSortedData = sortBy(
       coachApplications
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
@@ -56,10 +63,23 @@ export const CoachApplicationTable = ({
         )
         .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
         .filter((application) =>
-          filters.female ? application.student.gender === Gender.FEMALE : true,
+          filters.female && application.student.gender
+            ? Gender[application.student.gender] === Gender.FEMALE
+            : true,
         )
-        .filter((application) => (filters.male ? application.student.gender === Gender.MALE : true))
+        .filter((application) =>
+          filters.male && application.student.gender
+            ? Gender[application.student.gender] === Gender.MALE
+            : true,
+        )
         .slice(from, to),
+      sortStatus.columnAccessor === 'fullName'
+        ? ['student.firstName', 'student.lastName']
+        : sortStatus.columnAccessor,
+    )
+
+    setTableRecords(
+      sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
     )
 
     if (selectedApplicationToView) {
@@ -67,7 +87,7 @@ export const CoachApplicationTable = ({
         coachApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [coachApplications, tablePageSize, tablePage, searchQuery, filters])
+  }, [coachApplications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
 
   return (
     <Stack>
@@ -138,6 +158,9 @@ export const CoachApplicationTable = ({
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
+        sortStatus={sortStatus}
+        onSortStatusChange={setSortStatus}
+        bodyRef={bodyRef}
         /* rowExpansion={{
           allowMultiple: true,
           collapseProps: {
@@ -185,29 +208,31 @@ export const CoachApplicationTable = ({
             accessor: 'assessment.assessmentScore',
             title: 'Score',
             textAlignment: 'center',
+            sortable: true,
           },
           {
             accessor: 'student.tumId',
             title: 'TUM ID',
+            sortable: true,
           },
           {
             accessor: 'student.matriculationNumber',
             title: 'Matriculation Nr.',
+            sortable: true,
           },
           {
             accessor: 'student.email',
             title: 'Email',
+            sortable: true,
           },
           {
             accessor: 'fullName',
             title: 'Full name',
-            render: (coachApplication) => {
-              return (
-                <Text>{`${coachApplication.student.firstName ?? ''} ${
-                  coachApplication.student.lastName ?? ''
-                }`}</Text>
-              )
-            },
+            sortable: true,
+            render: (coachApplication) =>
+              `${coachApplication.student.firstName ?? ''} ${
+                coachApplication.student.lastName ?? ''
+              }`,
           },
           {
             accessor: 'actions',

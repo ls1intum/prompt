@@ -141,12 +141,12 @@ export const ApplicationAssessmentForm = ({
   }, [assessment])
 
   useEffect(() => {
-    if (!assessmentForm.values.assessed) {
-      setActiveTimelineStatus(1)
-    } else if (assessmentForm.values.interviewInviteSent) {
+    if (assessmentForm.values.interviewInviteSent) {
       setActiveTimelineStatus(3)
     } else if (assessmentForm.values.assessed) {
       setActiveTimelineStatus(2)
+    } else if (!assessmentForm.values.assessed) {
+      setActiveTimelineStatus(1)
     }
   }, [assessment])
 
@@ -346,6 +346,7 @@ export const ApplicationAssessmentForm = ({
                 onChange={(value) => {
                   assessmentForm.setValues({
                     accepted: value === '0' ? null : value === '1' ?? false,
+                    assessed: value === '0' ? assessmentForm.values.assessed : true,
                   })
                 }}
               />

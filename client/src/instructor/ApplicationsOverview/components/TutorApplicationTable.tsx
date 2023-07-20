@@ -1,4 +1,6 @@
-import { DataTable } from 'mantine-datatable'
+import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
+import sortBy from 'lodash/sortBy'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { Gender, type TutorApplication } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
@@ -23,10 +25,15 @@ export const TutorApplicationTable = ({
   filters,
 }: TutorApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<TutorApplication[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<TutorApplication[]>([])
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+    columnAccessor: 'fullName',
+    direction: 'asc',
+  })
   const [selectedApplicationToView, setSelectedApplicationToView] = useState<
     TutorApplication | undefined
   >(undefined)
@@ -39,7 +46,7 @@ export const TutorApplicationTable = ({
     const from = (tablePage - 1) * tablePageSize
     const to = from + tablePageSize
 
-    setTableRecords(
+    const filteredSortedData = sortBy(
       tutorApplications
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
@@ -56,10 +63,23 @@ export const TutorApplicationTable = ({
         )
         .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
         .filter((application) =>
-          filters.female ? application.student.gender === Gender.FEMALE : true,
+          filters.female && application.student.gender
+            ? Gender[application.student.gender] === Gender.FEMALE
+            : true,
         )
-        .filter((application) => (filters.male ? application.student.gender === Gender.MALE : true))
+        .filter((application) =>
+          filters.male && application.student.gender
+            ? Gender[application.student.gender] === Gender.MALE
+            : true,
+        )
         .slice(from, to),
+      sortStatus.columnAccessor === 'fullName'
+        ? ['student.firstName', 'student.lastName']
+        : sortStatus.columnAccessor,
+    )
+
+    setTableRecords(
+      sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
     )
 
     if (selectedApplicationToView) {
@@ -67,7 +87,7 @@ export const TutorApplicationTable = ({
         tutorApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [tutorApplications, tablePageSize, tablePage, searchQuery, filters])
+  }, [tutorApplications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
 
   return (
     <Stack>
@@ -137,6 +157,9 @@ export const TutorApplicationTable = ({
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
+        sortStatus={sortStatus}
+        onSortStatusChange={setSortStatus}
+        bodyRef={bodyRef}
         /* rowExpansion={{
           allowMultiple: true,
           collapseProps: {
@@ -184,29 +207,31 @@ export const TutorApplicationTable = ({
             accessor: 'assessment.assessmentScore',
             title: 'Score',
             textAlignment: 'center',
+            sortable: true,
           },
           {
             accessor: 'student.tumId',
             title: 'TUM ID',
+            sortable: true,
           },
           {
             accessor: 'student.matriculationNumber',
             title: 'Matriculation Nr.',
+            sortable: true,
           },
           {
             accessor: 'student.email',
             title: 'Email',
+            sortable: true,
           },
           {
             accessor: 'fullName',
             title: 'Full name',
-            render: (tutorApplication) => {
-              return (
-                <Text>{`${tutorApplication.student.firstName ?? ''} ${
-                  tutorApplication.student.lastName ?? ''
-                }`}</Text>
-              )
-            },
+            sortable: true,
+            render: (tutorApplication) =>
+              `${tutorApplication.student.firstName ?? ''} ${
+                tutorApplication.student.lastName ?? ''
+              }`,
           },
           {
             accessor: 'actions',

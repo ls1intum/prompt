@@ -80,7 +80,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
           <IconAdjustments />
         </ActionIcon>
       </Group>
-      <Collapse in={filtersOpened}>
+      <Collapse in={filtersOpened} transitionDuration={500}>
         <Stack>
           <Group>
             <Checkbox

@@ -88,7 +88,7 @@ interface Student {
   isExchangeStudent: boolean
   firstName?: string
   lastName?: string
-  gender?: Gender
+  gender?: keyof typeof Gender
   nationality?: string
   email?: string
 }
@@ -123,6 +123,7 @@ interface Application {
 }
 
 interface DeveloperApplication extends Application {
+  [x: string]: any
   projectTeam?: ProjectTeam
 }
 
