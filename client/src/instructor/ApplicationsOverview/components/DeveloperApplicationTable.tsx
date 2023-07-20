@@ -1,5 +1,10 @@
-import { DataTable } from 'mantine-datatable'
-import { type DeveloperApplication } from '../../../redux/applicationsSlice/applicationsSlice'
+import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
+import sortBy from 'lodash/sortBy'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
+import {
+  Gender,
+  type DeveloperApplication,
+} from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
@@ -9,23 +14,29 @@ import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmati
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
+import { type Filters } from '../ApplicationOverview'
 
 interface DeveloperApplicationTableProps {
   developerApplications: DeveloperApplication[]
   searchQuery: string
-  filterOnlyNotAssessed: boolean
+  filters: Filters
 }
 
 export const DeveloperApplicationTable = ({
   developerApplications,
   searchQuery,
-  filterOnlyNotAssessed,
+  filters,
 }: DeveloperApplicationTableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<DeveloperApplication[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<DeveloperApplication[]>([])
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+    columnAccessor: 'fullName',
+    direction: 'asc',
+  })
   const [selectedApplicationToView, setSelectedApplicationToView] = useState<
     DeveloperApplication | undefined
   >(undefined)
@@ -38,7 +49,7 @@ export const DeveloperApplicationTable = ({
     const from = (tablePage - 1) * tablePageSize
     const to = from + tablePageSize
 
-    setTableRecords(
+    const filteredSortedData = sortBy(
       developerApplications
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
@@ -47,10 +58,31 @@ export const DeveloperApplicationTable = ({
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         })
-        .filter((studentApplication) =>
-          filterOnlyNotAssessed ? !studentApplication.assessment?.assessed : true,
+        .filter((application) => (filters.accepted ? application.assessment?.accepted : true))
+        .filter((application) =>
+          filters.rejected
+            ? application.assessment?.accepted !== null && !application.assessment?.accepted
+            : true,
+        )
+        .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
+        .filter((application) =>
+          filters.female && application.student.gender
+            ? Gender[application.student.gender] === Gender.FEMALE
+            : true,
+        )
+        .filter((application) =>
+          filters.male && application.student.gender
+            ? Gender[application.student.gender] === Gender.MALE
+            : true,
         )
         .slice(from, to),
+      sortStatus.columnAccessor === 'fullName'
+        ? ['student.firstName', 'student.lastName']
+        : sortStatus.columnAccessor,
+    )
+
+    setTableRecords(
+      sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
     )
 
     if (selectedApplicationToView) {
@@ -58,7 +90,7 @@ export const DeveloperApplicationTable = ({
         developerApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [developerApplications, tablePageSize, tablePage, searchQuery, filterOnlyNotAssessed])
+  }, [developerApplications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
 
   return (
     <Stack>
@@ -130,6 +162,9 @@ export const DeveloperApplicationTable = ({
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
+        sortStatus={sortStatus}
+        onSortStatusChange={setSortStatus}
+        bodyRef={bodyRef}
         /* rowExpansion={{
           allowMultiple: true,
           collapseProps: {
@@ -205,29 +240,31 @@ export const DeveloperApplicationTable = ({
             accessor: 'assessment.assessmentScore',
             title: 'Score',
             textAlignment: 'center',
+            sortable: true,
           },
           {
             accessor: 'student.tumId',
             title: 'TUM ID',
+            sortable: true,
           },
           {
             accessor: 'student.matriculationNumber',
             title: 'Matriculation Nr.',
+            sortable: true,
           },
           {
             accessor: 'student.email',
             title: 'Email',
+            sortable: true,
           },
           {
             accessor: 'fullName',
             title: 'Full name',
-            render: (developerApplication) => {
-              return (
-                <Text>{`${developerApplication.student.firstName ?? ''} ${
-                  developerApplication.student.lastName ?? ''
-                }`}</Text>
-              )
-            },
+            sortable: true,
+            render: (developerApplication) =>
+              `${developerApplication.student.firstName ?? ''} ${
+                developerApplication.student.lastName ?? ''
+              }`,
           },
           {
             accessor: 'actions',

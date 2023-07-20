@@ -1,5 +1,5 @@
-import { Group, TextInput, Checkbox, Select } from '@mantine/core'
-import { IconSearch } from '@tabler/icons-react'
+import { Group, TextInput, Checkbox, Select, ActionIcon, Stack, Collapse } from '@mantine/core'
+import { IconAdjustments, IconSearch } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
@@ -12,6 +12,14 @@ import { DeveloperApplicationTable } from './components/DeveloperApplicationTabl
 import { CoachApplicationTable } from './components/CoachApplicationTable'
 import { TutorApplicationTable } from './components/TutorApplicationTable'
 
+export interface Filters {
+  accepted: boolean
+  rejected: boolean
+  notAssessed: boolean
+  male: boolean
+  female: boolean
+}
+
 export const StudentApplicationOverview = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const [applicationsFilter, setApplicationsFilter] = useState<string | null>('developer')
@@ -20,7 +28,14 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const tutorApplications = useAppSelector((state) => state.applications.tutorApplications)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
-  const [showOnlyNotAssessed, setShowOnlyNotAssessed] = useState(false)
+  const [filtersOpened, setFiltersOpened] = useState(false)
+  const [filters, setFilters] = useState<Filters>({
+    accepted: false,
+    rejected: false,
+    notAssessed: false,
+    male: false,
+    female: false,
+  })
 
   useEffect(() => {
     if (selectedCourseIteration) {
@@ -37,7 +52,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
   }, [selectedCourseIteration])
 
   return (
-    <>
+    <Stack>
       <Group>
         <TextInput
           sx={{ flexBasis: '40%', margin: '1vh 0' }}
@@ -57,35 +72,76 @@ export const StudentApplicationOverview = (): JSX.Element => {
             { value: 'tutor', label: 'Tutor' },
           ]}
         />
-        <Checkbox
-          label='Show only not assessed'
-          checked={showOnlyNotAssessed}
-          onChange={(e) => {
-            setShowOnlyNotAssessed(e.currentTarget.checked)
+        <ActionIcon
+          onClick={() => {
+            setFiltersOpened(!filtersOpened)
           }}
-        />
+        >
+          <IconAdjustments />
+        </ActionIcon>
       </Group>
+      <Collapse in={filtersOpened} transitionDuration={500}>
+        <Stack>
+          <Group>
+            <Checkbox
+              label='Accepted'
+              checked={filters.accepted}
+              onChange={(e) => {
+                setFilters({ ...filters, accepted: e.currentTarget.checked })
+              }}
+            />
+            <Checkbox
+              label='Rejected'
+              checked={filters.rejected}
+              onChange={(e) => {
+                setFilters({ ...filters, rejected: e.currentTarget.checked })
+              }}
+            />
+            <Checkbox
+              label='Male'
+              checked={filters.male}
+              onChange={(e) => {
+                setFilters({ ...filters, male: e.currentTarget.checked })
+              }}
+            />
+            <Checkbox
+              label='Female'
+              checked={filters.female}
+              onChange={(e) => {
+                setFilters({ ...filters, female: e.currentTarget.checked })
+              }}
+            />
+            <Checkbox
+              label='Not Assessed'
+              checked={filters.notAssessed}
+              onChange={(e) => {
+                setFilters({ ...filters, notAssessed: e.currentTarget.checked })
+              }}
+            />
+          </Group>
+        </Stack>
+      </Collapse>
       {applicationsFilter === 'developer' && (
         <DeveloperApplicationTable
           developerApplications={developerApplications}
-          filterOnlyNotAssessed={showOnlyNotAssessed}
+          filters={filters}
           searchQuery={searchQuery}
         />
       )}
       {applicationsFilter === 'coach' && (
         <CoachApplicationTable
           coachApplications={coachApplications}
-          filterOnlyNotAssessed={showOnlyNotAssessed}
+          filters={filters}
           searchQuery={searchQuery}
         />
       )}
       {applicationsFilter === 'tutor' && (
         <TutorApplicationTable
           tutorApplications={tutorApplications}
-          filterOnlyNotAssessed={showOnlyNotAssessed}
+          filters={filters}
           searchQuery={searchQuery}
         />
       )}
-    </>
+    </Stack>
   )
 }
