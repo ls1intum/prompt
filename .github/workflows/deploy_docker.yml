@@ -7,11 +7,11 @@ on:
         required: true
         type: string
       server_image_tag:
-        required: true
+        default: "latest"
         type: string
       client_image_tag:
-          required: true
-          type: string
+        default: "latest"
+        type: string
 
 jobs:
   deploy:
