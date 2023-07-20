@@ -65,60 +65,64 @@ export const StudentApplicationOverview = (): JSX.Element => {
   return (
     <Stack>
       <Group>
-        <TextInput
-          sx={{ flexBasis: '40%', margin: '1vh 0' }}
-          placeholder='Search student applications...'
-          icon={<IconSearch size={16} />}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.currentTarget.value)
-          }}
-        />
-        <Select
-          value={applicationsFilter}
-          onChange={setApplicationsFilter}
-          data={[
-            { value: 'developer', label: 'Developer' },
-            { value: 'coach', label: 'Coach' },
-            { value: 'tutor', label: 'Tutor' },
-          ]}
-        />
-        <ActionIcon
-          onClick={() => {
-            setFiltersOpened(!filtersOpened)
-          }}
-        >
-          <IconAdjustments />
-        </ActionIcon>
-        <Button
-          leftIcon={<IconDownload />}
-          variant='filled'
-          disabled={developerApplications.length === 0}
-          onClick={() => {
-            downloadLinkRef.current?.link?.click()
-          }}
-        >
-          Download
-        </Button>
-        <CSVLink
-          data={(applicationsFilter === 'developer'
-            ? developerApplications
-            : applicationsFilter === 'coach'
-            ? coachApplications
-            : tutorApplications
-          )?.map((da) => {
-            return {
-              firstName: da.student.firstName,
-              lastName: da.student.lastName,
-              matriculationNumber: da.student.matriculationNumber,
-              assessmentScore: da.assessment?.assessmentScore,
-            }
-          })}
-          filename='data.csv'
-          style={{ display: 'hidden' }}
-          ref={downloadLinkRef}
-          target='_blank'
-        />
+        <Group position='left' style={{ width: '60vw' }}>
+          <TextInput
+            sx={{ flexBasis: '60%', margin: '1vh 0' }}
+            placeholder='Search applications...'
+            icon={<IconSearch size={16} />}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.currentTarget.value)
+            }}
+          />
+          <Select
+            value={applicationsFilter}
+            onChange={setApplicationsFilter}
+            data={[
+              { value: 'developer', label: 'Developer' },
+              { value: 'coach', label: 'Coach' },
+              { value: 'tutor', label: 'Tutor' },
+            ]}
+          />
+          <ActionIcon
+            onClick={() => {
+              setFiltersOpened(!filtersOpened)
+            }}
+          >
+            <IconAdjustments />
+          </ActionIcon>
+        </Group>
+        <Group position='right'>
+          <Button
+            leftIcon={<IconDownload />}
+            variant='filled'
+            disabled={developerApplications.length === 0}
+            onClick={() => {
+              downloadLinkRef.current?.link?.click()
+            }}
+          >
+            Download
+          </Button>
+          <CSVLink
+            data={(applicationsFilter === 'developer'
+              ? developerApplications
+              : applicationsFilter === 'coach'
+              ? coachApplications
+              : tutorApplications
+            )?.map((da) => {
+              return {
+                firstName: da.student.firstName,
+                lastName: da.student.lastName,
+                matriculationNumber: da.student.matriculationNumber,
+                assessmentScore: da.assessment?.assessmentScore,
+              }
+            })}
+            filename='data.csv'
+            style={{ display: 'hidden' }}
+            ref={downloadLinkRef}
+            target='_blank'
+          />
+        </Group>
       </Group>
       <Collapse in={filtersOpened} transitionDuration={500}>
         <Stack>
