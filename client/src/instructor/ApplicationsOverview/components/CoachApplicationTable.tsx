@@ -71,12 +71,11 @@ export const CoachApplicationTable = ({
           filters.male && application.student.gender
             ? Gender[application.student.gender] === Gender.MALE
             : true,
-        )
-        .slice(from, to),
+        ),
       sortStatus.columnAccessor === 'fullName'
         ? ['student.firstName', 'student.lastName']
         : sortStatus.columnAccessor,
-    )
+    ).slice(from, to)
 
     setTableRecords(
       sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
