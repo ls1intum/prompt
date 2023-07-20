@@ -5,7 +5,7 @@ import {
   Gender,
   type DeveloperApplication,
 } from '../../../redux/applicationsSlice/applicationsSlice'
-import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
+import { ActionIcon, Badge, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
@@ -204,6 +204,19 @@ export const DeveloperApplicationTable = ({
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
+        rowContextMenu={{
+          items: () => [
+            {
+              key: 'delete',
+              title: `Delete selected items`,
+              icon: <IconTrash />,
+              color: 'red',
+              onClick: () => {
+                setBulkDeleteConfirmationOpened(true)
+              },
+            },
+          ],
+        }}
         columns={[
           {
             accessor: 'applicationStatus',
@@ -297,15 +310,6 @@ export const DeveloperApplicationTable = ({
           setSelectedApplicationToView(application)
         }}
       />
-      <Button
-        leftIcon={<IconTrash />}
-        disabled={selectedTableRecords.length === 0}
-        onClick={() => {
-          setBulkDeleteConfirmationOpened(true)
-        }}
-      >
-        Delete
-      </Button>
     </Stack>
   )
 }

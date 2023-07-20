@@ -2,7 +2,7 @@ import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import sortBy from 'lodash/sortBy'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { Gender, type CoachApplication } from '../../../redux/applicationsSlice/applicationsSlice'
-import { ActionIcon, Badge, Button, Group, Modal, Stack, Text } from '@mantine/core'
+import { ActionIcon, Badge, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
@@ -188,6 +188,19 @@ export const CoachApplicationTable = ({
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
+        rowContextMenu={{
+          items: () => [
+            {
+              key: 'delete',
+              title: `Delete selected items`,
+              icon: <IconTrash />,
+              color: 'red',
+              onClick: () => {
+                setBulkDeleteConfirmationOpened(true)
+              },
+            },
+          ],
+        }}
         columns={[
           {
             accessor: 'applicationStatus',
@@ -265,15 +278,6 @@ export const CoachApplicationTable = ({
           setSelectedApplicationToView(application)
         }}
       />
-      <Button
-        leftIcon={<IconTrash />}
-        disabled={selectedTableRecords.length === 0}
-        onClick={() => {
-          setBulkDeleteConfirmationOpened(true)
-        }}
-      >
-        Delete
-      </Button>
     </Stack>
   )
 }

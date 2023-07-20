@@ -1,7 +1,17 @@
-import { Group, TextInput, Checkbox, Select, ActionIcon, Stack, Collapse } from '@mantine/core'
-import { IconAdjustments, IconSearch } from '@tabler/icons-react'
-import { useState, useEffect } from 'react'
+import {
+  Group,
+  TextInput,
+  Checkbox,
+  Select,
+  ActionIcon,
+  Stack,
+  Collapse,
+  Button,
+} from '@mantine/core'
+import { IconAdjustments, IconDownload, IconSearch } from '@tabler/icons-react'
+import { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
+import { CSVLink } from 'react-csv'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import {
   fetchDeveloperApplications,
@@ -28,6 +38,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const tutorApplications = useAppSelector((state) => state.applications.tutorApplications)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
+  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [filtersOpened, setFiltersOpened] = useState(false)
   const [filters, setFilters] = useState<Filters>({
     accepted: false,
@@ -54,31 +65,64 @@ export const StudentApplicationOverview = (): JSX.Element => {
   return (
     <Stack>
       <Group>
-        <TextInput
-          sx={{ flexBasis: '40%', margin: '1vh 0' }}
-          placeholder='Search student applications...'
-          icon={<IconSearch size={16} />}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.currentTarget.value)
-          }}
-        />
-        <Select
-          value={applicationsFilter}
-          onChange={setApplicationsFilter}
-          data={[
-            { value: 'developer', label: 'Developer' },
-            { value: 'coach', label: 'Coach' },
-            { value: 'tutor', label: 'Tutor' },
-          ]}
-        />
-        <ActionIcon
-          onClick={() => {
-            setFiltersOpened(!filtersOpened)
-          }}
-        >
-          <IconAdjustments />
-        </ActionIcon>
+        <Group position='left' style={{ width: '60vw' }}>
+          <TextInput
+            sx={{ flexBasis: '60%', margin: '1vh 0' }}
+            placeholder='Search applications...'
+            icon={<IconSearch size={16} />}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.currentTarget.value)
+            }}
+          />
+          <Select
+            value={applicationsFilter}
+            onChange={setApplicationsFilter}
+            data={[
+              { value: 'developer', label: 'Developer' },
+              { value: 'coach', label: 'Coach' },
+              { value: 'tutor', label: 'Tutor' },
+            ]}
+          />
+          <ActionIcon
+            onClick={() => {
+              setFiltersOpened(!filtersOpened)
+            }}
+          >
+            <IconAdjustments />
+          </ActionIcon>
+        </Group>
+        <Group position='right'>
+          <Button
+            leftIcon={<IconDownload />}
+            variant='filled'
+            disabled={developerApplications.length === 0}
+            onClick={() => {
+              downloadLinkRef.current?.link?.click()
+            }}
+          >
+            Download
+          </Button>
+          <CSVLink
+            data={(applicationsFilter === 'developer'
+              ? developerApplications
+              : applicationsFilter === 'coach'
+              ? coachApplications
+              : tutorApplications
+            )?.map((da) => {
+              return {
+                firstName: da.student.firstName,
+                lastName: da.student.lastName,
+                matriculationNumber: da.student.matriculationNumber,
+                assessmentScore: da.assessment?.assessmentScore,
+              }
+            })}
+            filename='data.csv'
+            style={{ display: 'hidden' }}
+            ref={downloadLinkRef}
+            target='_blank'
+          />
+        </Group>
       </Group>
       <Collapse in={filtersOpened} transitionDuration={500}>
         <Stack>
