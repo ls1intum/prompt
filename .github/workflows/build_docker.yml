@@ -26,8 +26,8 @@ jobs:
             context: ./server
             path: server
     outputs:
-      server_image_tag: "${{ steps.output-tag-client.outputs.client_image_tag }}"
-      client_image_tag: "${{ steps.output-tag-server.outputs.server_image_tag }}"
+      server_image_tag: "${{ steps.output-tag-server.outputs.server_image_tag }}"
+      client_image_tag: "${{ steps.output-tag-client.outputs.client_image_tag }}"
     steps:
       - name: Compute Tag
         uses: actions/github-script@v6
