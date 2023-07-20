@@ -1,7 +1,17 @@
-import { Group, TextInput, Checkbox, Select, ActionIcon, Stack, Collapse } from '@mantine/core'
-import { IconAdjustments, IconSearch } from '@tabler/icons-react'
-import { useState, useEffect } from 'react'
+import {
+  Group,
+  TextInput,
+  Checkbox,
+  Select,
+  ActionIcon,
+  Stack,
+  Collapse,
+  Button,
+} from '@mantine/core'
+import { IconAdjustments, IconDownload, IconSearch } from '@tabler/icons-react'
+import { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
+import { CSVLink } from 'react-csv'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import {
   fetchDeveloperApplications,
@@ -28,6 +38,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const tutorApplications = useAppSelector((state) => state.applications.tutorApplications)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
+  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [filtersOpened, setFiltersOpened] = useState(false)
   const [filters, setFilters] = useState<Filters>({
     accepted: false,
@@ -79,6 +90,35 @@ export const StudentApplicationOverview = (): JSX.Element => {
         >
           <IconAdjustments />
         </ActionIcon>
+        <Button
+          leftIcon={<IconDownload />}
+          variant='filled'
+          disabled={developerApplications.length === 0}
+          onClick={() => {
+            downloadLinkRef.current?.link?.click()
+          }}
+        >
+          Download
+        </Button>
+        <CSVLink
+          data={(applicationsFilter === 'developer'
+            ? developerApplications
+            : applicationsFilter === 'coach'
+            ? coachApplications
+            : tutorApplications
+          )?.map((da) => {
+            return {
+              firstName: da.student.firstName,
+              lastName: da.student.lastName,
+              matriculationNumber: da.student.matriculationNumber,
+              assessmentScore: da.assessment?.assessmentScore,
+            }
+          })}
+          filename='data.csv'
+          style={{ display: 'hidden' }}
+          ref={downloadLinkRef}
+          target='_blank'
+        />
       </Group>
       <Collapse in={filtersOpened} transitionDuration={500}>
         <Stack>
