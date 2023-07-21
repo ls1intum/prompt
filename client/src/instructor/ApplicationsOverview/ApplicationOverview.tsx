@@ -1,8 +1,7 @@
-import { Group, TextInput, Checkbox, Stack, Button, Menu } from '@mantine/core'
-import { IconAdjustments, IconDownload, IconSearch } from '@tabler/icons-react'
-import { useState, useEffect, useRef } from 'react'
+import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip } from '@mantine/core'
+import { IconAdjustments, IconSearch } from '@tabler/icons-react'
+import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { CSVLink } from 'react-csv'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import {
   fetchDeveloperApplications,
@@ -32,7 +31,6 @@ export const StudentApplicationOverview = (): JSX.Element => {
     useState(false)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
-  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [filters, setFilters] = useState<Filters>({
     accepted: false,
     rejected: false,
@@ -122,68 +120,50 @@ export const StudentApplicationOverview = (): JSX.Element => {
             </Menu.Dropdown>
           </Menu>
         </Group>
-        <Stack spacing='1vh'>
-          <Button
-            leftIcon={<IconDownload />}
-            variant='filled'
-            disabled={developerApplications.length === 0}
-            onClick={() => {
-              downloadLinkRef.current?.link?.click()
-            }}
-          >
-            Download
-          </Button>
-          <CSVLink
-            data={developerApplications?.map((da) => {
-              return {
-                firstName: da.student.firstName,
-                lastName: da.student.lastName,
-                matriculationNumber: da.student.matriculationNumber,
-                assessmentScore: da.assessment?.assessmentScore,
+        <Tooltip
+          withArrow
+          color='blue'
+          label="To start automatic assessment of developer applications based on the technical challenge score, please select solely 'Developer' sorting filter"
+        >
+          <div>
+            <Button
+              disabled={
+                filters.applicationType.length > 1 ||
+                !filters.applicationType.includes(ApplicationType.DEVELOPER)
               }
-            })}
-            filename='data.csv'
-            style={{ display: 'hidden' }}
-            ref={downloadLinkRef}
-            target='_blank'
-          />
-          <Button
-            disabled={
-              filters.applicationType.length > 1 ||
-              !filters.applicationType.includes(ApplicationType.DEVELOPER)
-            }
-            onClick={() => {
-              setTechnicalChallengeAssessmentModalOpened(true)
-            }}
-          >
-            Technical Challenge Assessment
-          </Button>
-          <TechnicalChallengeAssessmentModal
-            opened={technicalChallengeAssessmentModalOpened}
-            onClose={(technicalChallengeResults) => {
-              const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
-              developerApplications.forEach((developerApplication) => {
-                if (
+              onClick={() => {
+                setTechnicalChallengeAssessmentModalOpened(true)
+              }}
+            >
+              Technical Challenge Assessment
+            </Button>
+          </div>
+        </Tooltip>
+        <TechnicalChallengeAssessmentModal
+          opened={technicalChallengeAssessmentModalOpened}
+          onClose={(technicalChallengeResults) => {
+            const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
+            developerApplications.forEach((developerApplication) => {
+              if (
+                technicalChallengeResults
+                  .map((tcr) => tcr.tumId)
+                  .includes(developerApplication.student.tumId ?? '')
+              ) {
+                developerApplicationIdToScore.set(
+                  developerApplication.id,
                   technicalChallengeResults
-                    .map((tcr) => tcr.tumId)
-                    .includes(developerApplication.student.tumId ?? '')
-                ) {
-                  developerApplicationIdToScore.set(
-                    developerApplication.id,
-                    technicalChallengeResults
-                      .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
-                      .at(0)?.score ?? 0,
-                  )
-                }
-              })
-              if (developerApplicationIdToScore.size !== 0) {
-                void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
+                    .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
+                    .at(0)?.score ?? 0,
+                )
               }
+            })
+            if (developerApplicationIdToScore.size !== 0) {
+              void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
+            }
 
-              setTechnicalChallengeAssessmentModalOpened(false)
-            }}
-          />
-        </Stack>
+            setTechnicalChallengeAssessmentModalOpened(false)
+          }}
+        />
       </Group>
       <ApplicationDatatable
         applications={[...developerApplications, ...coachApplications, ...tutorApplications]}

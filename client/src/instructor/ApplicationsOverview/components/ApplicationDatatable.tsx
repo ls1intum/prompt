@@ -1,5 +1,6 @@
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import sortBy from 'lodash/sortBy'
+import { CSVLink } from 'react-csv'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import {
   Gender,
@@ -7,8 +8,8 @@ import {
   ApplicationType,
 } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
-import { IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
+import { useEffect, useRef, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
@@ -33,6 +34,7 @@ export const ApplicationDatatable = ({
   const dispatch = useDispatch<AppDispatch>()
   const loadingStatus = useAppSelector((state) => state.applications.status)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
+  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [tablePage, setTablePage] = useState(1)
   const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(applications.length)
   const [tablePageSize, setTablePageSize] = useState(20)
@@ -153,6 +155,20 @@ export const ApplicationDatatable = ({
           setBulkDeleteConfirmationOpened(false)
         }}
       />
+      <CSVLink
+        data={selectedTableRecords?.map((da) => {
+          return {
+            firstName: da.student.firstName,
+            lastName: da.student.lastName,
+            matriculationNumber: da.student.matriculationNumber,
+            assessmentScore: da.assessment?.assessmentScore,
+          }
+        })}
+        filename='data.csv'
+        style={{ display: 'hidden' }}
+        ref={downloadLinkRef}
+        target='_blank'
+      />
       <DataTable
         fetching={loadingStatus === 'loading'}
         withBorder
@@ -218,6 +234,15 @@ export const ApplicationDatatable = ({
         onSelectedRecordsChange={setSelectedTableRecords}
         rowContextMenu={{
           items: () => [
+            {
+              key: 'download',
+              title: 'Download selected items',
+              icon: <IconDownload />,
+              color: 'blue',
+              onClick: () => {
+                downloadLinkRef.current?.link?.click()
+              },
+            },
             {
               key: 'delete',
               title: `Delete selected items`,
