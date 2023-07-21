@@ -109,8 +109,16 @@ interface ApplicationAssessment {
   rejectionSent: boolean
 }
 
+enum ApplicationType {
+  DEVELOPER = 'Developer',
+  COACH = 'Coach',
+  TUTOR = 'Tutor',
+}
+
 interface Application {
   id: string
+  // The following field is artificially filled out by the client
+  type: ApplicationType
   student: Student
   studyDegree?: StudyDegree
   currentSemester?: string
@@ -119,22 +127,12 @@ interface Application {
   germanLanguageProficiency?: LanguageProficiency
   motivation?: string
   experience?: string
+  solvedProblem?: string
+  reasonGoodTutor?: string
   devices: Device[]
   coursesTaken: Course[]
   assessment?: ApplicationAssessment
-}
-
-interface DeveloperApplication extends Application {
   projectTeam?: ProjectTeam
-}
-
-interface CoachApplication extends Application {
-  solvedProblem: string
-  projectTeam?: ProjectTeam
-}
-
-interface TutorApplication extends Application {
-  reasonGoodTutor: string
 }
 
 interface InstructorComment {
@@ -147,9 +145,9 @@ interface InstructorComment {
 interface StudentApplicationSliceState {
   status: string
   error: string | null
-  developerApplications: DeveloperApplication[]
-  coachApplications: CoachApplication[]
-  tutorApplications: TutorApplication[]
+  developerApplications: Application[]
+  coachApplications: Application[]
+  tutorApplications: Application[]
 }
 
 const initialState: StudentApplicationSliceState = {
@@ -390,7 +388,7 @@ export const applicationsState = createSlice({
         return (
           payload
             .filter(
-              (updatedDeveloperApplication: DeveloperApplication) =>
+              (updatedDeveloperApplication: Application) =>
                 updatedDeveloperApplication.id === sa.id,
             )
             .at(0) ?? sa
@@ -553,11 +551,9 @@ export default applicationsState.reducer
 export {
   type Student,
   type Application,
-  type DeveloperApplication,
-  type CoachApplication,
-  type TutorApplication,
   type InstructorComment,
   type ApplicationAssessment,
+  ApplicationType,
   LanguageProficiency,
   StudyDegree,
   StudyProgram,

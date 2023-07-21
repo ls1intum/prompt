@@ -14,8 +14,6 @@ import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmati
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
-import { TechnicalChallengeAssessmentModal } from './TechnicalChallengeAssessmentModal'
-import { assignTechnicalChallengeScores } from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
 import { type Filters } from '../ApplicationOverview'
 
 interface DeveloperApplicationTableProps {
@@ -33,6 +31,7 @@ export const DeveloperApplicationTable = ({
   const loadingStatus = useAppSelector((state) => state.applications.status)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePage, setTablePage] = useState(1)
+  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(developerApplications.length)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<DeveloperApplication[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<DeveloperApplication[]>([])
@@ -47,8 +46,6 @@ export const DeveloperApplicationTable = ({
     DeveloperApplication | undefined
   >(undefined)
   const [bulkDeleteConfirmationOpened, setBulkDeleteConfirmationOpened] = useState(false)
-  const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
-    useState(false)
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -83,10 +80,15 @@ export const DeveloperApplicationTable = ({
       sortStatus.columnAccessor === 'fullName'
         ? ['student.firstName', 'student.lastName']
         : sortStatus.columnAccessor,
-    ).slice(from, to)
+    )
+
+    setTotalDisplayedRecords(filteredSortedData.length)
 
     setTableRecords(
-      sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
+      (sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData).slice(
+        from,
+        to,
+      ),
     )
 
     if (selectedApplicationToView) {
@@ -98,31 +100,6 @@ export const DeveloperApplicationTable = ({
 
   return (
     <Stack>
-      <TechnicalChallengeAssessmentModal
-        opened={technicalChallengeAssessmentModalOpened}
-        onClose={(technicalChallengeResults) => {
-          const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
-          developerApplications.forEach((developerApplication) => {
-            if (
-              technicalChallengeResults
-                .map((tcr) => tcr.tumId)
-                .includes(developerApplication.student.tumId ?? '')
-            ) {
-              developerApplicationIdToScore.set(
-                developerApplication.id,
-                technicalChallengeResults
-                  .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
-                  .at(0)?.score ?? 0,
-              )
-            }
-          })
-          if (developerApplicationIdToScore.size !== 0) {
-            void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
-          }
-
-          setTechnicalChallengeAssessmentModalOpened(false)
-        }}
-      />
       <Modal
         centered
         opened={!!selectedApplicationToView}
@@ -172,13 +149,6 @@ export const DeveloperApplicationTable = ({
           setBulkDeleteConfirmationOpened(false)
         }}
       />
-      <Button
-        onClick={() => {
-          setTechnicalChallengeAssessmentModalOpened(true)
-        }}
-      >
-        Technical Challenge Assessment
-      </Button>
       <DataTable
         fetching={loadingStatus === 'loading'}
         withBorder
@@ -189,7 +159,7 @@ export const DeveloperApplicationTable = ({
         verticalSpacing='md'
         striped
         highlightOnHover
-        totalRecords={developerApplications.length}
+        totalRecords={totalDisplayedRecords}
         recordsPerPage={tablePageSize}
         page={tablePage}
         onPageChange={(page) => {
@@ -264,12 +234,6 @@ export const DeveloperApplicationTable = ({
               const isAccepted = application.assessment?.accepted
               const isAssessed = application.assessment?.assessed
               return (
-                <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
-                  {`${isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'} ${
-                    application.assessment?.technicalChallengeScore
-                      ? `${application.assessment?.technicalChallengeScore} %`
-                      : ''
-                  }`}
                 <Badge
                   color={
                     !isAssessed
@@ -287,7 +251,12 @@ export const DeveloperApplicationTable = ({
                     ? 'Accepted'
                     : isAccepted === null
                     ? 'Pending'
-                    : 'Rejected'}
+                    : 'Rejected'}{' '}
+                  {`${
+                    application.assessment?.technicalChallengeScore
+                      ? `${application.assessment?.technicalChallengeScore} %`
+                      : ''
+                  }`}
                 </Badge>
               )
             },

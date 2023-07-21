@@ -18,9 +18,9 @@ import {
   fetchCoachApplications,
   fetchTutorApplications,
 } from '../../redux/applicationsSlice/thunks/fetchApplications'
-import { DeveloperApplicationTable } from './components/DeveloperApplicationTable'
-import { CoachApplicationTable } from './components/CoachApplicationTable'
-import { TutorApplicationTable } from './components/TutorApplicationTable'
+import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
+import { assignTechnicalChallengeScores } from '../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
+import { ApplicationDatatable } from './components/ApplicationDatatable'
 
 export interface Filters {
   accepted: boolean
@@ -36,6 +36,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const developerApplications = useAppSelector((state) => state.applications.developerApplications)
   const coachApplications = useAppSelector((state) => state.applications.coachApplications)
   const tutorApplications = useAppSelector((state) => state.applications.tutorApplications)
+  const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
+    useState(false)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
@@ -64,10 +66,10 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   return (
     <Stack>
-      <Group>
-        <Group position='left' style={{ width: '60vw' }}>
+      <Group style={{ justifyContent: 'space-between' }}>
+        <Stack spacing='1vh'>
           <TextInput
-            sx={{ flexBasis: '60%', margin: '1vh 0' }}
+            sx={{ width: '70%', margin: '1vh 0' }}
             placeholder='Search applications...'
             icon={<IconSearch size={16} />}
             value={searchQuery}
@@ -75,24 +77,26 @@ export const StudentApplicationOverview = (): JSX.Element => {
               setSearchQuery(e.currentTarget.value)
             }}
           />
-          <Select
-            value={applicationsFilter}
-            onChange={setApplicationsFilter}
-            data={[
-              { value: 'developer', label: 'Developer' },
-              { value: 'coach', label: 'Coach' },
-              { value: 'tutor', label: 'Tutor' },
-            ]}
-          />
-          <ActionIcon
-            onClick={() => {
-              setFiltersOpened(!filtersOpened)
-            }}
-          >
-            <IconAdjustments />
-          </ActionIcon>
-        </Group>
-        <Group position='right'>
+          <Group>
+            <Select
+              value={applicationsFilter}
+              onChange={setApplicationsFilter}
+              data={[
+                { value: 'developer', label: 'Developer' },
+                { value: 'coach', label: 'Coach' },
+                { value: 'tutor', label: 'Tutor' },
+              ]}
+            />
+            <ActionIcon
+              onClick={() => {
+                setFiltersOpened(!filtersOpened)
+              }}
+            >
+              <IconAdjustments />
+            </ActionIcon>
+          </Group>
+        </Stack>
+        <Stack spacing='1vh'>
           <Button
             leftIcon={<IconDownload />}
             variant='filled'
@@ -122,7 +126,39 @@ export const StudentApplicationOverview = (): JSX.Element => {
             ref={downloadLinkRef}
             target='_blank'
           />
-        </Group>
+          <Button
+            onClick={() => {
+              setTechnicalChallengeAssessmentModalOpened(true)
+            }}
+          >
+            Technical Challenge Assessment
+          </Button>
+          <TechnicalChallengeAssessmentModal
+            opened={technicalChallengeAssessmentModalOpened}
+            onClose={(technicalChallengeResults) => {
+              const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
+              developerApplications.forEach((developerApplication) => {
+                if (
+                  technicalChallengeResults
+                    .map((tcr) => tcr.tumId)
+                    .includes(developerApplication.student.tumId ?? '')
+                ) {
+                  developerApplicationIdToScore.set(
+                    developerApplication.id,
+                    technicalChallengeResults
+                      .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
+                      .at(0)?.score ?? 0,
+                  )
+                }
+              })
+              if (developerApplicationIdToScore.size !== 0) {
+                void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
+              }
+
+              setTechnicalChallengeAssessmentModalOpened(false)
+            }}
+          />
+        </Stack>
       </Group>
       <Collapse in={filtersOpened} transitionDuration={500}>
         <Stack>
@@ -166,22 +202,22 @@ export const StudentApplicationOverview = (): JSX.Element => {
         </Stack>
       </Collapse>
       {applicationsFilter === 'developer' && (
-        <DeveloperApplicationTable
-          developerApplications={developerApplications}
+        <ApplicationDatatable
+          applications={developerApplications}
           filters={filters}
           searchQuery={searchQuery}
         />
       )}
       {applicationsFilter === 'coach' && (
-        <CoachApplicationTable
-          coachApplications={coachApplications}
+        <ApplicationDatatable
+          applications={coachApplications}
           filters={filters}
           searchQuery={searchQuery}
         />
       )}
       {applicationsFilter === 'tutor' && (
-        <TutorApplicationTable
-          tutorApplications={tutorApplications}
+        <ApplicationDatatable
+          applications={tutorApplications}
           filters={filters}
           searchQuery={searchQuery}
         />

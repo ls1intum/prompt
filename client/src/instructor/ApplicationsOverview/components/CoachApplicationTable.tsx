@@ -28,6 +28,7 @@ export const CoachApplicationTable = ({
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const loadingStatus = useAppSelector((state) => state.applications.status)
   const [tablePage, setTablePage] = useState(1)
+  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(coachApplications.length)
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<CoachApplication[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<CoachApplication[]>([])
@@ -76,10 +77,15 @@ export const CoachApplicationTable = ({
       sortStatus.columnAccessor === 'fullName'
         ? ['student.firstName', 'student.lastName']
         : sortStatus.columnAccessor,
-    ).slice(from, to)
+    )
+
+    setTotalDisplayedRecords(filteredSortedData.length)
 
     setTableRecords(
-      sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
+      (sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData).slice(
+        from,
+        to,
+      ),
     )
 
     if (selectedApplicationToView) {
@@ -149,7 +155,7 @@ export const CoachApplicationTable = ({
         verticalSpacing='md'
         striped
         highlightOnHover
-        totalRecords={coachApplications.length}
+        totalRecords={totalDisplayedRecords}
         recordsPerPage={tablePageSize}
         page={tablePage}
         onPageChange={(page) => {
