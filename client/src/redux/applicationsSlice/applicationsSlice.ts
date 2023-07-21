@@ -23,6 +23,7 @@ import {
   deleteDeveloperApplication,
   deleteTutorApplication,
 } from './thunks/deleteApplication'
+import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
 import {
   sendCoachInterviewInvitation,
   sendTutorInterviewInvitation,
@@ -35,7 +36,6 @@ import {
   sendCoachApplicationAcceptance,
   sendTutorApplicationAcceptance,
 } from './thunks/sendApplicationAcceptance'
-import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -285,6 +285,30 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(updateTutorApplicationAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.map((sa) => {
+        return (
+          payload
+            .filter(
+              (updatedDeveloperApplication: DeveloperApplication) =>
+                updatedDeveloperApplication.id === sa.id,
+            )
+            .at(0) ?? sa
+        )
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignTechnicalChallengeScores.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
