@@ -1,4 +1,4 @@
-import { Button, FileInput, Modal, Stack, Table } from '@mantine/core'
+import { Button, FileInput, Modal, Select, Stack, Table } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Papa from 'papaparse'
@@ -25,6 +25,8 @@ export const TechnicalChallengeAssessmentModal = ({
   opened,
   onClose,
 }: TechnicalChallengeAssessmentModalProps): JSX.Element => {
+  const [columnNames, setColumnNames] = useState<string[]>([])
+  const [upload, setUpload] = useState<object[]>()
   const [technicalChallengeReport, setTechnicalChallengeReport] = useState<
     TechnicalChallengeResult[]
   >([])
@@ -36,12 +38,12 @@ export const TechnicalChallengeAssessmentModal = ({
       onClose={() => {
         onClose(technicalChallengeReport)
       }}
-      size='auto'
+      size='90%'
+      title='Technical Challenge Assessment'
     >
       <Stack>
         <FileInput
-          label='Technical Challenge Report'
-          placeholder='Upload .csv file with projects'
+          placeholder='Upload .csv technical challenge export file from Artemis'
           accept='.csv'
           icon={<IconUpload />}
           onChange={(file) => {
@@ -51,6 +53,9 @@ export const TechnicalChallengeAssessmentModal = ({
                 skipEmptyLines: true,
                 delimiter: ';',
                 complete: function (results: {
+                  meta: {
+                    fields: string[]
+                  }
                   data: TechnicalChallengeReportRow[]
                   errors: Array<{ message: string; row: number }>
                 }) {
@@ -62,6 +67,10 @@ export const TechnicalChallengeAssessmentModal = ({
                       message: `Failed to parse .csv due to error: ${results.errors[0].message}`,
                     })
                   }
+                  console.log(results)
+                  console.log(results.data)
+                  setColumnNames(results.meta.fields ?? [])
+                  setUpload(results.data)
                   const scores: TechnicalChallengeResult[] = []
 
                   results.data.forEach((data) => {
@@ -78,6 +87,12 @@ export const TechnicalChallengeAssessmentModal = ({
             }
           }}
         />
+        {upload && (
+          <Select
+            placeholder='Please select the column to read assessment scores from'
+            data={columnNames}
+          />
+        )}
         {technicalChallengeReport && (
           <Button
             onClick={() => {
@@ -91,17 +106,17 @@ export const TechnicalChallengeAssessmentModal = ({
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
-                <th>TUM ID</th>
-                <th>Matriculation Number</th>
-                <th>Programming Score</th>
+                {columnNames.map((columnName) => (
+                  <th key={columnName}>{columnName}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {technicalChallengeReport.map((element) => (
-                <tr key={element.tumId}>
-                  <td>{element.tumId}</td>
-                  <td>{element.matriculationNumber}</td>
-                  <td>{element.score}</td>
+              {upload?.map((element, idx) => (
+                <tr key={idx}>
+                  {columnNames.map((columnName) => (
+                    <td key={columnName}>{(element as any)[columnName]}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>

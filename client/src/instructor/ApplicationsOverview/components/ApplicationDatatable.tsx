@@ -3,11 +3,11 @@ import sortBy from 'lodash/sortBy'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import {
   Gender,
-  Application,
+  type Application,
   ApplicationType,
 } from '../../../redux/applicationsSlice/applicationsSlice'
-import { ActionIcon, Badge, Group, Modal, Stack, Text } from '@mantine/core'
-import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
+import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
+import { IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
@@ -21,12 +21,14 @@ interface ApplicationDatatableProps {
   applications: Application[]
   searchQuery: string
   filters: Filters
+  setFilters: (filters: Filters) => void
 }
 
 export const ApplicationDatatable = ({
   applications,
   searchQuery,
   filters,
+  setFilters,
 }: ApplicationDatatableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const loadingStatus = useAppSelector((state) => state.applications.status)
@@ -53,7 +55,8 @@ export const ApplicationDatatable = ({
     const to = from + tablePageSize
 
     const filteredSortedData = sortBy(
-      (applications as Application[])
+      applications
+        .filter(({ type }) => filters.applicationType.some((selectedType) => selectedType === type))
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
@@ -94,9 +97,7 @@ export const ApplicationDatatable = ({
 
     if (selectedApplicationToView) {
       setSelectedApplicationToView(
-        (applications as Application[])
-          .filter((ca) => ca.id === selectedApplicationToView.id)
-          .at(0),
+        applications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
   }, [applications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
@@ -231,12 +232,35 @@ export const ApplicationDatatable = ({
         columns={[
           {
             accessor: 'type',
-            title: 'Application Type',
             textAlignment: 'center',
+            filter: (
+              <MultiSelect
+                label='Type'
+                description='Show all applications with these types'
+                data={Object.keys(ApplicationType).map((key) => {
+                  return {
+                    label: ApplicationType[key as keyof typeof ApplicationType],
+                    value: ApplicationType[key as keyof typeof ApplicationType],
+                  }
+                })}
+                value={filters.applicationType}
+                placeholder='Search types...'
+                onChange={(value) => {
+                  setFilters({
+                    ...filters,
+                    applicationType: value,
+                  })
+                }}
+                icon={<IconSearch size={16} />}
+                clearable
+                searchable
+              />
+            ),
+            filtering: filters.applicationType.length > 0,
           },
           {
             accessor: 'applicationStatus',
-            title: 'Application Status',
+            title: 'Status',
             textAlignment: 'center',
             render: (application) => {
               const isAccepted = application.assessment?.accepted

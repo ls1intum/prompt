@@ -31,7 +31,10 @@ export enum ApplicationFormAccessMode {
 interface DefaultApplicationFormProps {
   title: string
   accessMode: ApplicationFormAccessMode
-  form: UseFormReturnType<Application, (values: Application) => Application>
+  form: UseFormReturnType<
+    Partial<Application>,
+    (values: Partial<Application>) => Partial<Application>
+  >
 }
 
 countries.registerLocale(enLocale)
@@ -75,16 +78,16 @@ export const DefaultApplicationForm = ({
         />
         <Group grow align='center'>
           <TextInput
-            withAsterisk={!form.values.student.isExchangeStudent}
-            required={!form.values.student.isExchangeStudent}
+            withAsterisk={!form.values.student?.isExchangeStudent}
+            required={!form.values.student?.isExchangeStudent}
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             label='TUM ID'
             placeholder='TUM ID'
             {...form.getInputProps('student.tumId')}
           />
           <TextInput
-            withAsterisk={!form.values.student.isExchangeStudent}
-            required={!form.values.student.isExchangeStudent}
+            withAsterisk={!form.values.student?.isExchangeStudent}
+            required={!form.values.student?.isExchangeStudent}
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             label='Matriculation Number'
             placeholder='Matriculation number'
