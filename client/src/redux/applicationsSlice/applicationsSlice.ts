@@ -296,14 +296,15 @@ export const applicationsState = createSlice({
 
     builder.addCase(assignTechnicalChallengeScores.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((sa) => {
-        return (
-          payload
+        return {
+          ...(payload
             .filter(
-              (updatedDeveloperApplication: DeveloperApplication) =>
+              (updatedDeveloperApplication: Application) =>
                 updatedDeveloperApplication.id === sa.id,
             )
-            .at(0) ?? sa
-        )
+            .at(0) ?? sa),
+          type: ApplicationType.DEVELOPER,
+        }
       })
       state.status = 'idle'
     })
@@ -411,31 +412,6 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(sendTutorApplicationRejection.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
-    builder.addCase(assignTechnicalChallengeScores.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(assignTechnicalChallengeScores.fulfilled, (state, { payload }) => {
-      state.developerApplications = state.developerApplications.map((sa) => {
-        return {
-          ...(payload
-            .filter(
-              (updatedDeveloperApplication: Application) =>
-                updatedDeveloperApplication.id === sa.id,
-            )
-            .at(0) ?? sa),
-          type: ApplicationType.DEVELOPER,
-        }
-      })
-      state.status = 'idle'
-    })
-
-    builder.addCase(assignTechnicalChallengeScores.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
