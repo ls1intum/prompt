@@ -153,29 +153,34 @@ export const TechnicalChallengeAssessmentModal = ({
               const programmingScores: Map<string, number> = new Map<string, number>()
               const quizScores: Map<string, number> = new Map<string, number>()
               upload.forEach((data) => {
-                programmingScores.set(
-                  tumIdToDeveloperApplicationMap.get(
+                if (
+                  tumIdToDeveloperApplicationMap.has(
                     (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
-                  ) ?? '',
-                  parseFloat(
-                    (data as any)[technicalChallengeForm.values.programmingScoreColumnName].replace(
-                      '%',
-                      '',
+                  )
+                ) {
+                  programmingScores.set(
+                    tumIdToDeveloperApplicationMap.get(
+                      (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
+                    ) ?? '',
+                    parseFloat(
+                      (data as any)[
+                        technicalChallengeForm.values.programmingScoreColumnName
+                      ].replace('%', ''),
                     ),
-                  ),
-                )
+                  )
 
-                quizScores.set(
-                  tumIdToDeveloperApplicationMap.get(
-                    (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
-                  ) ?? '',
-                  parseFloat(
-                    (data as any)[technicalChallengeForm.values.quizScoreColumnName].replace(
-                      '%',
-                      '',
+                  quizScores.set(
+                    tumIdToDeveloperApplicationMap.get(
+                      (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
+                    ) ?? '',
+                    parseFloat(
+                      (data as any)[technicalChallengeForm.values.quizScoreColumnName].replace(
+                        '%',
+                        '',
+                      ),
                     ),
-                  ),
-                )
+                  )
+                }
               })
 
               void dispatch(
