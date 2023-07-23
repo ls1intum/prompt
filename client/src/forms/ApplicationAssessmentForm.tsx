@@ -116,6 +116,8 @@ export const ApplicationAssessmentForm = ({
       blockedByPM: assessment?.blockedByPM ?? false,
       reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
+      technicalChallengeProgrammingScore: assessment?.technicalChallengeProgrammingScore ?? 0,
+      technicalChallengeQuizScore: assessment?.technicalChallengeQuizScore ?? 0,
       accepted: assessment?.accepted ?? false,
       assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,

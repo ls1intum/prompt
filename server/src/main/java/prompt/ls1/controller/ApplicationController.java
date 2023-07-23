@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import prompt.ls1.controller.payload.TechnicalChallengeScore;
 import prompt.ls1.model.Application;
 import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.CourseIteration;
@@ -158,6 +159,17 @@ public class ApplicationController {
 
         log.error("Post request on /applications/coach rejected due to exceeded request velocity.");
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+    }
+
+    @PostMapping(value = "/developer/technical-challenge-scores")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeScores(@RequestParam(value = "programmingScoreThreshold") final String programmingScoreThreshold,
+                                                                                     @RequestParam(value = "quizScoreThreshold") final String quizScoreThreshold,
+                                                                                     @RequestBody final List<TechnicalChallengeScore> scores) {
+        return ResponseEntity.ok(applicationService.assignTechnicalChallengeScoresToDeveloperApplications(
+                Double.parseDouble(programmingScoreThreshold),
+                Double.parseDouble(quizScoreThreshold),
+                scores));
     }
 
     @PostMapping("/coach/{applicationId}/interview-invitations")

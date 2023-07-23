@@ -1,26 +1,16 @@
-import {
-  Group,
-  TextInput,
-  Checkbox,
-  Select,
-  ActionIcon,
-  Stack,
-  Collapse,
-  Button,
-} from '@mantine/core'
-import { IconAdjustments, IconDownload, IconSearch } from '@tabler/icons-react'
-import { useState, useEffect, useRef } from 'react'
+import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip } from '@mantine/core'
+import { IconAdjustments, IconSearch } from '@tabler/icons-react'
+import { useState, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { CSVLink } from 'react-csv'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import {
   fetchDeveloperApplications,
   fetchCoachApplications,
   fetchTutorApplications,
 } from '../../redux/applicationsSlice/thunks/fetchApplications'
-import { DeveloperApplicationTable } from './components/DeveloperApplicationTable'
-import { CoachApplicationTable } from './components/CoachApplicationTable'
-import { TutorApplicationTable } from './components/TutorApplicationTable'
+import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
+import { ApplicationDatatable } from './components/ApplicationDatatable'
+import { ApplicationType } from '../../redux/applicationsSlice/applicationsSlice'
 
 export interface Filters {
   accepted: boolean
@@ -28,24 +18,25 @@ export interface Filters {
   notAssessed: boolean
   male: boolean
   female: boolean
+  applicationType: string[]
 }
 
 export const StudentApplicationOverview = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const [applicationsFilter, setApplicationsFilter] = useState<string | null>('developer')
   const developerApplications = useAppSelector((state) => state.applications.developerApplications)
   const coachApplications = useAppSelector((state) => state.applications.coachApplications)
   const tutorApplications = useAppSelector((state) => state.applications.tutorApplications)
+  const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
+    useState(false)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
-  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
-  const [filtersOpened, setFiltersOpened] = useState(false)
   const [filters, setFilters] = useState<Filters>({
     accepted: false,
     rejected: false,
     notAssessed: false,
     male: false,
     female: false,
+    applicationType: [ApplicationType.DEVELOPER],
   })
 
   useEffect(() => {
@@ -62,12 +53,22 @@ export const StudentApplicationOverview = (): JSX.Element => {
     }
   }, [selectedCourseIteration])
 
+  const tumIdToDeveloperApplicationMap = useMemo(() => {
+    const map = new Map<string, string>()
+    developerApplications.forEach((application) => {
+      if (application.student.tumId) {
+        map.set(application.student.tumId, application.id)
+      }
+    })
+    return map
+  }, [developerApplications])
+
   return (
     <Stack>
-      <Group>
-        <Group position='left' style={{ width: '60vw' }}>
+      <Group position='apart'>
+        <Group position='left'>
           <TextInput
-            sx={{ flexBasis: '60%', margin: '1vh 0' }}
+            sx={{ margin: '1vh 0', width: '30vw' }}
             placeholder='Search applications...'
             icon={<IconSearch size={16} />}
             value={searchQuery}
@@ -75,117 +76,92 @@ export const StudentApplicationOverview = (): JSX.Element => {
               setSearchQuery(e.currentTarget.value)
             }}
           />
-          <Select
-            value={applicationsFilter}
-            onChange={setApplicationsFilter}
-            data={[
-              { value: 'developer', label: 'Developer' },
-              { value: 'coach', label: 'Coach' },
-              { value: 'tutor', label: 'Tutor' },
-            ]}
-          />
-          <ActionIcon
-            onClick={() => {
-              setFiltersOpened(!filtersOpened)
-            }}
-          >
-            <IconAdjustments />
-          </ActionIcon>
+          <Menu withArrow closeOnItemClick={false}>
+            <Menu.Target>
+              <IconAdjustments />
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item>
+                <Checkbox
+                  label='Accepted'
+                  checked={filters.accepted}
+                  onChange={(e) => {
+                    setFilters({ ...filters, accepted: e.currentTarget.checked })
+                  }}
+                />
+              </Menu.Item>
+              <Menu.Item>
+                <Checkbox
+                  label='Rejected'
+                  checked={filters.rejected}
+                  onChange={(e) => {
+                    setFilters({ ...filters, rejected: e.currentTarget.checked })
+                  }}
+                />
+              </Menu.Item>
+              <Menu.Item>
+                <Checkbox
+                  label='Male'
+                  checked={filters.male}
+                  onChange={(e) => {
+                    setFilters({ ...filters, male: e.currentTarget.checked })
+                  }}
+                />
+              </Menu.Item>
+              <Menu.Item>
+                <Checkbox
+                  label='Female'
+                  checked={filters.female}
+                  onChange={(e) => {
+                    setFilters({ ...filters, female: e.currentTarget.checked })
+                  }}
+                />
+              </Menu.Item>
+              <Menu.Item>
+                <Checkbox
+                  label='Not Assessed'
+                  checked={filters.notAssessed}
+                  onChange={(e) => {
+                    setFilters({ ...filters, notAssessed: e.currentTarget.checked })
+                  }}
+                />
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </Group>
-        <Group position='right'>
-          <Button
-            leftIcon={<IconDownload />}
-            variant='filled'
-            disabled={developerApplications.length === 0}
-            onClick={() => {
-              downloadLinkRef.current?.link?.click()
-            }}
-          >
-            Download
-          </Button>
-          <CSVLink
-            data={(applicationsFilter === 'developer'
-              ? developerApplications
-              : applicationsFilter === 'coach'
-              ? coachApplications
-              : tutorApplications
-            )?.map((da) => {
-              return {
-                firstName: da.student.firstName,
-                lastName: da.student.lastName,
-                matriculationNumber: da.student.matriculationNumber,
-                assessmentScore: da.assessment?.assessmentScore,
+        <Tooltip
+          withArrow
+          color='blue'
+          label="To start automatic assessment of developer applications based on the technical challenge score, please select solely 'Developer' sorting filter"
+        >
+          <div>
+            <Button
+              disabled={
+                filters.applicationType.length > 1 ||
+                !filters.applicationType.includes(ApplicationType.DEVELOPER)
               }
-            })}
-            filename='data.csv'
-            style={{ display: 'hidden' }}
-            ref={downloadLinkRef}
-            target='_blank'
-          />
-        </Group>
+              onClick={() => {
+                setTechnicalChallengeAssessmentModalOpened(true)
+              }}
+            >
+              Technical Challenge Assessment
+            </Button>
+          </div>
+        </Tooltip>
+        <TechnicalChallengeAssessmentModal
+          opened={technicalChallengeAssessmentModalOpened}
+          onClose={() => {
+            setTechnicalChallengeAssessmentModalOpened(false)
+          }}
+          tumIdToDeveloperApplicationMap={tumIdToDeveloperApplicationMap}
+        />
       </Group>
-      <Collapse in={filtersOpened} transitionDuration={500}>
-        <Stack>
-          <Group>
-            <Checkbox
-              label='Accepted'
-              checked={filters.accepted}
-              onChange={(e) => {
-                setFilters({ ...filters, accepted: e.currentTarget.checked })
-              }}
-            />
-            <Checkbox
-              label='Rejected'
-              checked={filters.rejected}
-              onChange={(e) => {
-                setFilters({ ...filters, rejected: e.currentTarget.checked })
-              }}
-            />
-            <Checkbox
-              label='Male'
-              checked={filters.male}
-              onChange={(e) => {
-                setFilters({ ...filters, male: e.currentTarget.checked })
-              }}
-            />
-            <Checkbox
-              label='Female'
-              checked={filters.female}
-              onChange={(e) => {
-                setFilters({ ...filters, female: e.currentTarget.checked })
-              }}
-            />
-            <Checkbox
-              label='Not Assessed'
-              checked={filters.notAssessed}
-              onChange={(e) => {
-                setFilters({ ...filters, notAssessed: e.currentTarget.checked })
-              }}
-            />
-          </Group>
-        </Stack>
-      </Collapse>
-      {applicationsFilter === 'developer' && (
-        <DeveloperApplicationTable
-          developerApplications={developerApplications}
-          filters={filters}
-          searchQuery={searchQuery}
-        />
-      )}
-      {applicationsFilter === 'coach' && (
-        <CoachApplicationTable
-          coachApplications={coachApplications}
-          filters={filters}
-          searchQuery={searchQuery}
-        />
-      )}
-      {applicationsFilter === 'tutor' && (
-        <TutorApplicationTable
-          tutorApplications={tutorApplications}
-          filters={filters}
-          searchQuery={searchQuery}
-        />
-      )}
+      <ApplicationDatatable
+        applications={[...developerApplications, ...coachApplications, ...tutorApplications]}
+        filters={filters}
+        setFilters={setFilters}
+        searchQuery={searchQuery}
+      />
     </Stack>
   )
 }

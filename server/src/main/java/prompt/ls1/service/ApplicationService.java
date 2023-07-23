@@ -9,6 +9,7 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import prompt.ls1.controller.payload.TechnicalChallengeScore;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
@@ -27,6 +28,7 @@ import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -277,6 +279,25 @@ public class ApplicationService {
 
         application.setAssessment(patchedApplicationAssessment);
         return tutorApplicationRepository.save(application);
+    }
+
+    public List<DeveloperApplication> assignTechnicalChallengeScoresToDeveloperApplications(final Double programmingScoreThreshold,
+                                                                                            final Double quizScoreThreshold,
+                                                                                            final List<TechnicalChallengeScore> scores) {
+        final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
+        scores.forEach(score -> {
+            final DeveloperApplication developerApplication = findDeveloperApplicationById(score.getDeveloperApplicationId());
+            developerApplication.getAssessment().setTechnicalChallengeProgrammingScore(score.getProgrammingScore());
+            developerApplication.getAssessment().setTechnicalChallengeQuizScore(score.getQuizScore());
+            if (score.getProgrammingScore() < programmingScoreThreshold || score.getQuizScore() < quizScoreThreshold) {
+                developerApplication.getAssessment().setAccepted(false);
+                developerApplication.getAssessment().setAssessed(true);
+            }
+
+            updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
+        });
+
+        return updatedDeveloperApplications;
     }
 
     public Application createInstructorCommentForDeveloperApplication(final UUID developerApplicationId, final InstructorComment instructorComment) {

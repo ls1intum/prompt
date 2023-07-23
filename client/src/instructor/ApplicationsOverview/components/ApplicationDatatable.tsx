@@ -1,44 +1,54 @@
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import sortBy from 'lodash/sortBy'
+import { CSVLink } from 'react-csv'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { Gender, type TutorApplication } from '../../../redux/applicationsSlice/applicationsSlice'
-import { ActionIcon, Badge, Group, Modal, Stack, Text } from '@mantine/core'
-import { IconEyeEdit, IconTrash } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import {
+  Gender,
+  type Application,
+  ApplicationType,
+} from '../../../redux/applicationsSlice/applicationsSlice'
+import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
+import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
+import { useEffect, useRef, useState } from 'react'
+import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
-import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
 import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
-import { deleteTutorApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
+import { useDispatch } from 'react-redux'
+import { useAppSelector, type AppDispatch } from '../../../redux/store'
+import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 import { type Filters } from '../ApplicationOverview'
 
-interface TutorApplicationTableProps {
-  tutorApplications: TutorApplication[]
+interface ApplicationDatatableProps {
+  applications: Application[]
   searchQuery: string
   filters: Filters
+  setFilters: (filters: Filters) => void
 }
 
-export const TutorApplicationTable = ({
-  tutorApplications,
+export const ApplicationDatatable = ({
+  applications,
   searchQuery,
   filters,
-}: TutorApplicationTableProps): JSX.Element => {
+  setFilters,
+}: ApplicationDatatableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const loadingStatus = useAppSelector((state) => state.applications.status)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
+  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [tablePage, setTablePage] = useState(1)
+  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(applications.length)
   const [tablePageSize, setTablePageSize] = useState(20)
-  const [tableRecords, setTableRecords] = useState<TutorApplication[]>([])
-  const [selectedTableRecords, setSelectedTableRecords] = useState<TutorApplication[]>([])
+  const [tableRecords, setTableRecords] = useState<Application[]>([])
+  const [selectedTableRecords, setSelectedTableRecords] = useState<Application[]>([])
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: 'fullName',
     direction: 'asc',
   })
   const [selectedApplicationToView, setSelectedApplicationToView] = useState<
-    TutorApplication | undefined
+    Application | undefined
   >(undefined)
   const [selectedApplicationToDelete, setSelectedApplicationToDelete] = useState<
-    TutorApplication | undefined
+    Application | undefined
   >(undefined)
   const [bulkDeleteConfirmationOpened, setBulkDeleteConfirmationOpened] = useState(false)
 
@@ -47,7 +57,8 @@ export const TutorApplicationTable = ({
     const to = from + tablePageSize
 
     const filteredSortedData = sortBy(
-      tutorApplications
+      applications
+        .filter(({ type }) => filters.applicationType.some((selectedType) => selectedType === type))
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
@@ -58,7 +69,7 @@ export const TutorApplicationTable = ({
         .filter((application) => (filters.accepted ? application.assessment?.accepted : true))
         .filter((application) =>
           filters.rejected
-            ? application.assessment?.assessed && !application.assessment.accepted
+            ? application.assessment?.accepted !== null && !application.assessment?.accepted
             : true,
         )
         .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
@@ -75,22 +86,28 @@ export const TutorApplicationTable = ({
       sortStatus.columnAccessor === 'fullName'
         ? ['student.firstName', 'student.lastName']
         : sortStatus.columnAccessor,
-    ).slice(from, to)
+    )
+
+    setTotalDisplayedRecords(filteredSortedData.length)
 
     setTableRecords(
-      sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData,
+      (sortStatus.direction === 'desc' ? filteredSortedData.reverse() : filteredSortedData).slice(
+        from,
+        to,
+      ),
     )
 
     if (selectedApplicationToView) {
       setSelectedApplicationToView(
-        tutorApplications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
+        applications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [tutorApplications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
+  }, [applications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
 
   return (
     <Stack>
       <Modal
+        centered
         opened={!!selectedApplicationToView}
         onClose={() => {
           setSelectedApplicationToView(undefined)
@@ -98,9 +115,9 @@ export const TutorApplicationTable = ({
         size='80%'
       >
         <div style={{ padding: '3vh 3vw' }}>
-          <TutorApplicationForm
+          <DeveloperApplicationForm
             accessMode={ApplicationFormAccessMode.INSTRUCTOR}
-            tutorApplication={selectedApplicationToView}
+            developerApplication={selectedApplicationToView}
             onSuccess={() => {
               setSelectedApplicationToView(undefined)
             }}
@@ -118,26 +135,42 @@ export const TutorApplicationTable = ({
             setSelectedApplicationToDelete(undefined)
           }}
           onConfirm={() => {
-            void dispatch(deleteTutorApplication(selectedApplicationToDelete.id))
+            void dispatch(deleteDeveloperApplication(selectedApplicationToDelete.id))
+            setBulkDeleteConfirmationOpened(false)
           }}
         />
       )}
       <DeletionConfirmationModal
-        title='Delete Selected Tutor Applications'
-        text={`Are You sure You want to delete the ${selectedTableRecords.length} selected tutor applications?`}
+        title='Delete Selected Developer Applications'
+        text={`Are You sure You want to delete the ${selectedTableRecords.length} selected developer applications?`}
         opened={bulkDeleteConfirmationOpened}
         onClose={() => {
           setBulkDeleteConfirmationOpened(false)
         }}
         onConfirm={() => {
           selectedTableRecords.forEach((applicationToDelete) => {
-            void dispatch(deleteTutorApplication(applicationToDelete.id))
+            void dispatch(deleteDeveloperApplication(applicationToDelete.id))
           })
           setSelectedTableRecords([])
           setBulkDeleteConfirmationOpened(false)
         }}
       />
+      <CSVLink
+        data={selectedTableRecords?.map((da) => {
+          return {
+            firstName: da.student.firstName,
+            lastName: da.student.lastName,
+            matriculationNumber: da.student.matriculationNumber,
+            assessmentScore: da.assessment?.assessmentScore,
+          }
+        })}
+        filename='data.csv'
+        style={{ display: 'hidden' }}
+        ref={downloadLinkRef}
+        target='_blank'
+      />
       <DataTable
+        fetching={loadingStatus === 'loading'}
         withBorder
         minHeight={200}
         noRecordsText='No records to show'
@@ -146,7 +179,7 @@ export const TutorApplicationTable = ({
         verticalSpacing='md'
         striped
         highlightOnHover
-        totalRecords={tutorApplications.length}
+        totalRecords={totalDisplayedRecords}
         recordsPerPage={tablePageSize}
         page={tablePage}
         onPageChange={(page) => {
@@ -169,17 +202,29 @@ export const TutorApplicationTable = ({
           content: ({ record }) => (
             <Stack p='xs' spacing={6}>
               <Group spacing={6}>
-                <Text>
-                  {record.student.firstName}, {record.student.lastName}, {record.student.tumId}
+                <Text fw={700}>
+                  {record.student.firstName} {record.student.lastName}: {record.student.tumId}
                 </Text>
               </Group>
               <Group>
-                <Text>Motivation</Text>
-                <Text>{record.motivation}</Text>
+                <Text fw={700}>Assessment Score:</Text>
+                <Text c='dimmed'>
+                  {record.assessment?.assessmentScore ?? 'No assessment score assigned yet.'}
+                </Text>
               </Group>
-              <Group>
-                <Text>Experience</Text>
-                <Text>{record.experience}</Text>
+              <Group style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <Text fw={700}>Comments:</Text>
+                <Stack>
+                  {record.assessment?.instructorComments.map((comment, idx) => (
+                    <Group
+                      key={`${comment.id ?? ''}-${idx}`}
+                      style={{ display: 'flex', alignItems: 'flex-start' }}
+                    >
+                      <Text fw={700}>{comment.author}</Text>
+                      <Text c='dimmed'>{`${comment.text}`}</Text>
+                    </Group>
+                  ))}
+                </Stack>
               </Group>
             </Stack>
           ),
@@ -189,6 +234,15 @@ export const TutorApplicationTable = ({
         onSelectedRecordsChange={setSelectedTableRecords}
         rowContextMenu={{
           items: () => [
+            {
+              key: 'download',
+              title: 'Download selected items',
+              icon: <IconDownload />,
+              color: 'blue',
+              onClick: () => {
+                downloadLinkRef.current?.link?.click()
+              },
+            },
             {
               key: 'delete',
               title: `Delete selected items`,
@@ -202,15 +256,73 @@ export const TutorApplicationTable = ({
         }}
         columns={[
           {
-            accessor: 'applicationStatus',
-            title: 'Application Status',
+            accessor: 'type',
             textAlignment: 'center',
-            render: (studentApplication) => {
-              const isAccepted = studentApplication.assessment?.accepted
-              const isAssessed = studentApplication.assessment?.assessed
+            filter: (
+              <MultiSelect
+                label='Type'
+                description='Show all applications with these types'
+                data={Object.keys(ApplicationType).map((key) => {
+                  return {
+                    label: ApplicationType[key as keyof typeof ApplicationType],
+                    value: ApplicationType[key as keyof typeof ApplicationType],
+                  }
+                })}
+                value={filters.applicationType}
+                placeholder='Search types...'
+                onChange={(value) => {
+                  setFilters({
+                    ...filters,
+                    applicationType: value,
+                  })
+                }}
+                icon={<IconSearch size={16} />}
+                clearable
+                searchable
+              />
+            ),
+            filtering: filters.applicationType.length > 0,
+          },
+          {
+            accessor: 'applicationStatus',
+            title: 'Status',
+            textAlignment: 'center',
+            render: (application) => {
+              const isAccepted = application.assessment?.accepted
+              const isAssessed = application.assessment?.assessed
               return (
-                <Badge color={isAccepted ? 'green' : isAssessed ? 'red' : 'gray'}>
-                  {isAccepted ? 'Accepted' : isAssessed ? 'Rejected' : 'Not Assessed'}
+                <Badge
+                  color={
+                    !isAssessed
+                      ? 'gray'
+                      : isAccepted
+                      ? 'green'
+                      : isAccepted === null
+                      ? 'gray'
+                      : 'red'
+                  }
+                >
+                  {!isAssessed
+                    ? 'Not Assessed'
+                    : isAccepted
+                    ? 'Accepted'
+                    : isAccepted === null
+                    ? 'Pending'
+                    : 'Rejected'}{' '}
+                  {`${
+                    application.assessment?.technicalChallengeProgrammingScore
+                      ? `${application.assessment?.technicalChallengeProgrammingScore} %`
+                      : ''
+                  } ${
+                    application.assessment?.technicalChallengeProgrammingScore &&
+                    application.assessment.technicalChallengeQuizScore
+                      ? '/'
+                      : ''
+                  } ${
+                    application.assessment?.technicalChallengeQuizScore
+                      ? `${application.assessment?.technicalChallengeQuizScore} %`
+                      : ''
+                  }`}
                 </Badge>
               )
             },
@@ -240,9 +352,9 @@ export const TutorApplicationTable = ({
             accessor: 'fullName',
             title: 'Full name',
             sortable: true,
-            render: (tutorApplication) =>
-              `${tutorApplication.student.firstName ?? ''} ${
-                tutorApplication.student.lastName ?? ''
+            render: (developerApplication) =>
+              `${developerApplication.student.firstName ?? ''} ${
+                developerApplication.student.lastName ?? ''
               }`,
           },
           {

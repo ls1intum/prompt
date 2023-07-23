@@ -14,10 +14,7 @@ import {
   Textarea,
   Title,
 } from '@mantine/core'
-import {
-  type Application,
-  type TutorApplication,
-} from '../redux/applicationsSlice/applicationsSlice'
+import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenTutorApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
@@ -28,7 +25,7 @@ import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
 
 interface TutorApplicationFormProps {
-  tutorApplication?: TutorApplication
+  tutorApplication?: Application
   accessMode: ApplicationFormAccessMode
   onSuccess: () => void
 }
@@ -44,7 +41,7 @@ export const TutorApplicationForm = ({
   )
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const loading = useAppSelector((state) => state.courseIterations.status)
-  const defaultForm = useForm<Application>({
+  const defaultForm = useForm<Partial<Application>>({
     initialValues: tutorApplication
       ? {
           ...tutorApplication,
@@ -76,11 +73,11 @@ export const TutorApplicationForm = ({
     validate: {
       student: {
         tumId: (value, values) =>
-          /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value ?? '') || values.student.isExchangeStudent
+          /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value ?? '') || values.student?.isExchangeStudent
             ? null
             : 'This is not a valid TUM ID',
         matriculationNumber: (value, values) =>
-          /^[0-9]+$/.test(value ?? '') || values.student.isExchangeStudent
+          /^[0-9]+$/.test(value ?? '') || values.student?.isExchangeStudent
             ? null
             : 'This is not a valid matriculation number.',
         firstName: isNotEmpty('Please state your first name.'),

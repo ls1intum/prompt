@@ -1,9 +1,5 @@
 import axios, { type AxiosError } from 'axios'
-import {
-  type CoachApplication,
-  type TutorApplication,
-  type DeveloperApplication,
-} from '../redux/applicationsSlice/applicationsSlice'
+import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { serverBaseUrl } from './configService'
 import { notifications } from '@mantine/notifications'
 
@@ -11,9 +7,9 @@ export const createDeveloperApplication = async ({
   application,
   courseIteration,
 }: {
-  application: DeveloperApplication
+  application: Partial<Application>
   courseIteration: string
-}): Promise<DeveloperApplication | undefined> => {
+}): Promise<Application | undefined> => {
   try {
     const response = await axios.post(
       `${serverBaseUrl}/api/applications/developer?courseIteration=${courseIteration}`,
@@ -61,9 +57,9 @@ export const createCoachApplication = async ({
   application,
   courseIteration,
 }: {
-  application: CoachApplication
+  application: Partial<Application>
   courseIteration: string
-}): Promise<CoachApplication | undefined> => {
+}): Promise<Application | undefined> => {
   try {
     const response = await axios.post(
       `${serverBaseUrl}/api/applications/coach?courseIteration=${courseIteration}`,
@@ -111,9 +107,9 @@ export const createTutorApplication = async ({
   application,
   courseIteration,
 }: {
-  application: TutorApplication
+  application: Partial<Application>
   courseIteration: string
-}): Promise<TutorApplication | undefined> => {
+}): Promise<Application | undefined> => {
   try {
     const response = await axios.post(
       `${serverBaseUrl}/api/applications/tutor?courseIteration=${courseIteration}`,

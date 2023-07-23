@@ -15,10 +15,7 @@ import { ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultAppl
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../redux/store'
-import {
-  type Application,
-  type DeveloperApplication,
-} from '../redux/applicationsSlice/applicationsSlice'
+import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenDeveloperApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { createDeveloperApplication } from '../service/applicationsService'
@@ -27,7 +24,7 @@ import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
 
 export interface DeveloperApplicationFormProps {
-  developerApplication?: DeveloperApplication
+  developerApplication?: Application
   accessMode: ApplicationFormAccessMode
   onSuccess: () => void
 }
@@ -43,7 +40,7 @@ export const DeveloperApplicationForm = ({
   )
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const loading = useAppSelector((state) => state.courseIterations.status)
-  const form = useForm<Application>({
+  const form = useForm<Partial<Application>>({
     initialValues: developerApplication
       ? {
           ...developerApplication,
@@ -76,11 +73,11 @@ export const DeveloperApplicationForm = ({
     validate: {
       student: {
         tumId: (value, values) =>
-          /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value ?? '') || values.student.isExchangeStudent
+          /^[A-Za-z]{2}[0-9]{2}[A-Za-z]{3}$/.test(value ?? '') || values.student?.isExchangeStudent
             ? null
             : 'This is not a valid TUM ID',
         matriculationNumber: (value, values) =>
-          /^[0-9]+$/.test(value ?? '') || values.student.isExchangeStudent
+          /^[0-9]+$/.test(value ?? '') || values.student?.isExchangeStudent
             ? null
             : 'This is not a valid matriculation number.',
         firstName: isNotEmpty('Please state your first name.'),
