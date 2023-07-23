@@ -1,5 +1,5 @@
 import { Button, FileInput, Group, Modal, Select, Stack, Table, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { isNotEmpty, useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Papa from 'papaparse'
@@ -46,6 +46,16 @@ export const TechnicalChallengeAssessmentModal = ({
       programmingScoreThreshold: 0,
       quizScoreThreshold: 0,
     },
+    validate: {
+      tumIdColumnName: isNotEmpty('Please select the column to read student TUM ID from'),
+      programmingScoreColumnName: isNotEmpty(
+        'Please select the column to read programming scores from',
+      ),
+      quizScoreColumnName: isNotEmpty('Please select the column to read quiz scores from'),
+      programmingScoreThreshold: isNotEmpty('Please enter the programming score threshold'),
+      quizScoreThreshold: isNotEmpty('Please enter the quiz score threshold'),
+    },
+    validateInputOnBlur: true,
   })
 
   return (
@@ -93,6 +103,8 @@ export const TechnicalChallengeAssessmentModal = ({
         {upload && (
           <>
             <Select
+              withAsterisk
+              required
               label='TUM ID Column Name'
               placeholder='Please select the column to read student TUM ID from'
               data={columnNames}
@@ -100,12 +112,16 @@ export const TechnicalChallengeAssessmentModal = ({
             />
             <Group grow>
               <Select
+                withAsterisk
+                required
                 label='Programming Score Column Name'
                 placeholder='Please select the column to read programming scores from'
                 data={columnNames}
                 {...technicalChallengeForm.getInputProps('programmingScoreColumnName')}
               />
               <Select
+                withAsterisk
+                required
                 label='Quiz Score Column Name'
                 placeholder='Please select the column to read quiz scores from'
                 data={columnNames}
@@ -114,11 +130,15 @@ export const TechnicalChallengeAssessmentModal = ({
             </Group>
             <Group grow>
               <TextInput
+                withAsterisk
+                required
                 label='Programming Score Threshold'
                 type='number'
                 {...technicalChallengeForm.getInputProps('programmingScoreThreshold')}
               />
               <TextInput
+                withAsterisk
+                required
                 label='Quiz Score Threshold'
                 type='number'
                 {...technicalChallengeForm.getInputProps('quizScoreThreshold')}
@@ -128,6 +148,7 @@ export const TechnicalChallengeAssessmentModal = ({
         )}
         {upload && (
           <Button
+            disabled={!technicalChallengeForm.isValid()}
             onClick={() => {
               const programmingScores: Map<string, number> = new Map<string, number>()
               const quizScores: Map<string, number> = new Map<string, number>()
