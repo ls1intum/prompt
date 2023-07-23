@@ -35,10 +35,7 @@ import {
   sendCoachApplicationAcceptance,
   sendTutorApplicationAcceptance,
 } from './thunks/sendApplicationAcceptance'
-import {
-  assignTechnicalChallengeProgrammingScores,
-  assignTechnicalChallengeQuizScores,
-} from './thunks/assignTechnicalChallengeScores'
+import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -293,12 +290,12 @@ export const applicationsState = createSlice({
       state.status = 'idle'
     })
 
-    builder.addCase(assignTechnicalChallengeProgrammingScores.pending, (state) => {
+    builder.addCase(assignTechnicalChallengeScores.pending, (state) => {
       state.status = 'loading'
       state.error = null
     })
 
-    builder.addCase(assignTechnicalChallengeProgrammingScores.fulfilled, (state, { payload }) => {
+    builder.addCase(assignTechnicalChallengeScores.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((sa) => {
         return {
           ...(payload
@@ -313,32 +310,7 @@ export const applicationsState = createSlice({
       state.status = 'idle'
     })
 
-    builder.addCase(assignTechnicalChallengeProgrammingScores.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
-    builder.addCase(assignTechnicalChallengeQuizScores.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(assignTechnicalChallengeQuizScores.fulfilled, (state, { payload }) => {
-      state.developerApplications = state.developerApplications.map((sa) => {
-        return {
-          ...(payload
-            .filter(
-              (updatedDeveloperApplication: Application) =>
-                updatedDeveloperApplication.id === sa.id,
-            )
-            .at(0) ?? sa),
-          type: ApplicationType.DEVELOPER,
-        }
-      })
-      state.status = 'idle'
-    })
-
-    builder.addCase(assignTechnicalChallengeQuizScores.rejected, (state, { payload }) => {
+    builder.addCase(assignTechnicalChallengeScores.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

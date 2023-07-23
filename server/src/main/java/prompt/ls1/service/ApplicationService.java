@@ -9,6 +9,7 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import prompt.ls1.controller.payload.TechnicalChallengeScore;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -281,30 +281,15 @@ public class ApplicationService {
         return tutorApplicationRepository.save(application);
     }
 
-    public List<DeveloperApplication> assignTechnicalChallengeProgrammingScoresToDeveloperApplications(final Double programmingScoreThreshold,
-                                                                                            final Map<UUID, Double> programmingScores) {
+    public List<DeveloperApplication> assignTechnicalChallengeScoresToDeveloperApplications(final Double programmingScoreThreshold,
+                                                                                            final Double quizScoreThreshold,
+                                                                                            final List<TechnicalChallengeScore> scores) {
         final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
-        programmingScores.forEach((developerApplicationId, score) -> {
-            final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
-            developerApplication.getAssessment().setTechnicalChallengeProgrammingScore(score);
-            if (score < programmingScoreThreshold) {
-                developerApplication.getAssessment().setAccepted(false);
-                developerApplication.getAssessment().setAssessed(true);
-            }
-
-            updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
-        });
-
-        return updatedDeveloperApplications;
-    }
-
-    public List<DeveloperApplication> assignTechnicalChallengeQuizScoresToDeveloperApplications(final Double quizScoreThreshold,
-                                                                                                final Map<UUID, Double> quizScores) {
-        final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
-        quizScores.forEach((developerApplicationId, score) -> {
-            final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
-            developerApplication.getAssessment().setTechnicalChallengeQuizScore(score);
-            if (score < quizScoreThreshold) {
+        scores.forEach(score -> {
+            final DeveloperApplication developerApplication = findDeveloperApplicationById(score.getDeveloperApplicationId());
+            developerApplication.getAssessment().setTechnicalChallengeProgrammingScore(score.getProgrammingScore());
+            developerApplication.getAssessment().setTechnicalChallengeQuizScore(score.getQuizScore());
+            if (score.getProgrammingScore() < programmingScoreThreshold || score.getQuizScore() < quizScoreThreshold) {
                 developerApplication.getAssessment().setAccepted(false);
                 developerApplication.getAssessment().setAssessed(true);
             }

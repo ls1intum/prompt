@@ -6,10 +6,7 @@ import Papa from 'papaparse'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
-import {
-  assignTechnicalChallengeProgrammingScores,
-  assignTechnicalChallengeQuizScores,
-} from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
+import { assignTechnicalChallengeScores } from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
 
 export interface TechnicalChallengeResult {
   programmingScoreThreshold: number
@@ -150,53 +147,46 @@ export const TechnicalChallengeAssessmentModal = ({
           <Button
             disabled={!technicalChallengeForm.isValid()}
             onClick={() => {
-              const programmingScores: Map<string, number> = new Map<string, number>()
-              const quizScores: Map<string, number> = new Map<string, number>()
+              const scores: Array<{
+                developerApplicationId: string
+                programmingScore: number
+                quizScore: number
+              }> = []
               upload.forEach((data) => {
                 if (
                   tumIdToDeveloperApplicationMap.has(
                     (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
                   )
                 ) {
-                  programmingScores.set(
-                    tumIdToDeveloperApplicationMap.get(
-                      (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
-                    ) ?? '',
-                    parseFloat(
+                  scores.push({
+                    developerApplicationId:
+                      tumIdToDeveloperApplicationMap.get(
+                        (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
+                      ) ?? '',
+                    programmingScore: parseFloat(
                       (data as any)[
                         technicalChallengeForm.values.programmingScoreColumnName
                       ].replace('%', ''),
                     ),
-                  )
-
-                  quizScores.set(
-                    tumIdToDeveloperApplicationMap.get(
-                      (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
-                    ) ?? '',
-                    parseFloat(
+                    quizScore: parseFloat(
                       (data as any)[technicalChallengeForm.values.quizScoreColumnName].replace(
                         '%',
                         '',
                       ),
                     ),
-                  )
+                  })
                 }
               })
 
               void dispatch(
-                assignTechnicalChallengeProgrammingScores({
+                assignTechnicalChallengeScores({
                   programmingScoreThreshold:
                     technicalChallengeForm.values.programmingScoreThreshold,
-                  programmingScores,
+                  quizScoreThreshold: technicalChallengeForm.values.quizScoreThreshold,
+                  scores,
                 }),
               )
 
-              void dispatch(
-                assignTechnicalChallengeQuizScores({
-                  quizScoreThreshold: technicalChallengeForm.values.quizScoreThreshold,
-                  quizScores,
-                }),
-              )
               onClose()
             }}
           >
