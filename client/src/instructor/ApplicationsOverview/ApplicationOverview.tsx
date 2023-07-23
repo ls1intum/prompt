@@ -1,6 +1,6 @@
 import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip } from '@mantine/core'
 import { IconAdjustments, IconSearch } from '@tabler/icons-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import {
@@ -9,7 +9,6 @@ import {
   fetchTutorApplications,
 } from '../../redux/applicationsSlice/thunks/fetchApplications'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
-import { assignTechnicalChallengeScores } from '../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
 import { ApplicationDatatable } from './components/ApplicationDatatable'
 import { ApplicationType } from '../../redux/applicationsSlice/applicationsSlice'
 
@@ -53,6 +52,16 @@ export const StudentApplicationOverview = (): JSX.Element => {
       )
     }
   }, [selectedCourseIteration])
+
+  const tumIdToDeveloperApplicationMap = useMemo(() => {
+    const map = new Map<string, string>()
+    developerApplications.forEach((application) => {
+      if (application.student.tumId) {
+        map.set(application.student.tumId, application.id)
+      }
+    })
+    return map
+  }, [developerApplications])
 
   return (
     <Stack>
@@ -141,28 +150,10 @@ export const StudentApplicationOverview = (): JSX.Element => {
         </Tooltip>
         <TechnicalChallengeAssessmentModal
           opened={technicalChallengeAssessmentModalOpened}
-          onClose={(technicalChallengeResults) => {
-            const developerApplicationIdToScore: Map<string, number> = new Map<string, number>()
-            developerApplications.forEach((developerApplication) => {
-              if (
-                technicalChallengeResults
-                  .map((tcr) => tcr.tumId)
-                  .includes(developerApplication.student.tumId ?? '')
-              ) {
-                developerApplicationIdToScore.set(
-                  developerApplication.id,
-                  technicalChallengeResults
-                    .filter((ttt) => ttt.tumId === developerApplication.student.tumId)
-                    .at(0)?.score ?? 0,
-                )
-              }
-            })
-            if (developerApplicationIdToScore.size !== 0) {
-              void dispatch(assignTechnicalChallengeScores(developerApplicationIdToScore))
-            }
-
+          onClose={() => {
             setTechnicalChallengeAssessmentModalOpened(false)
           }}
+          tumIdToDeveloperApplicationMap={tumIdToDeveloperApplicationMap}
         />
       </Group>
       <ApplicationDatatable

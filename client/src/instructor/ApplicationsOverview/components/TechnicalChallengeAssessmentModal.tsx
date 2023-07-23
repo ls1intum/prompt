@@ -1,13 +1,21 @@
-import { Button, FileInput, Modal, Select, Stack, Table } from '@mantine/core'
+import { Button, FileInput, Group, Modal, Select, Stack, Table, TextInput } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Papa from 'papaparse'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { type AppDispatch } from '../../../redux/store'
+import {
+  assignTechnicalChallengeProgrammingScores,
+  assignTechnicalChallengeQuizScores,
+} from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
 
 export interface TechnicalChallengeResult {
-  tumId: string
-  matriculationNumber: string
-  score: number
+  programmingScoreThreshold: number
+  quizScoreThreshold: number
+  programmingScores: Map<string, number>
+  quizScores: Map<string, number>
 }
 
 interface TechnicalChallengeReportRow {
@@ -18,26 +26,33 @@ interface TechnicalChallengeReportRow {
 
 interface TechnicalChallengeAssessmentModalProps {
   opened: boolean
-  onClose: (technicalChallengeResults: TechnicalChallengeResult[]) => void
+  onClose: () => void
+  tumIdToDeveloperApplicationMap: Map<string, string>
 }
 
 export const TechnicalChallengeAssessmentModal = ({
   opened,
   onClose,
+  tumIdToDeveloperApplicationMap,
 }: TechnicalChallengeAssessmentModalProps): JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>()
   const [columnNames, setColumnNames] = useState<string[]>([])
   const [upload, setUpload] = useState<object[]>()
-  const [technicalChallengeReport, setTechnicalChallengeReport] = useState<
-    TechnicalChallengeResult[]
-  >([])
+  const technicalChallengeForm = useForm({
+    initialValues: {
+      tumIdColumnName: '',
+      programmingScoreColumnName: '',
+      quizScoreColumnName: '',
+      programmingScoreThreshold: 0,
+      quizScoreThreshold: 0,
+    },
+  })
 
   return (
     <Modal
       centered
       opened={opened}
-      onClose={() => {
-        onClose(technicalChallengeReport)
-      }}
+      onClose={onClose}
       size='90%'
       title='Technical Challenge Assessment'
     >
@@ -67,42 +82,102 @@ export const TechnicalChallengeAssessmentModal = ({
                       message: `Failed to parse .csv due to error: ${results.errors[0].message}`,
                     })
                   }
-                  console.log(results)
-                  console.log(results.data)
+
                   setColumnNames(results.meta.fields ?? [])
                   setUpload(results.data)
-                  const scores: TechnicalChallengeResult[] = []
-
-                  results.data.forEach((data) => {
-                    scores.push({
-                      tumId: data.Username ?? '',
-                      matriculationNumber: data['Registration Number'] ?? '',
-                      score: parseFloat(data['Programming Score'].replace('%', '')),
-                    })
-                  })
-
-                  setTechnicalChallengeReport(scores)
                 },
               })
             }
           }}
         />
         {upload && (
-          <Select
-            placeholder='Please select the column to read assessment scores from'
-            data={columnNames}
-          />
+          <>
+            <Select
+              label='TUM ID Column Name'
+              placeholder='Please select the column to read student TUM ID from'
+              data={columnNames}
+              {...technicalChallengeForm.getInputProps('tumIdColumnName')}
+            />
+            <Group grow>
+              <Select
+                label='Programming Score Column Name'
+                placeholder='Please select the column to read programming scores from'
+                data={columnNames}
+                {...technicalChallengeForm.getInputProps('programmingScoreColumnName')}
+              />
+              <Select
+                label='Quiz Score Column Name'
+                placeholder='Please select the column to read quiz scores from'
+                data={columnNames}
+                {...technicalChallengeForm.getInputProps('quizScoreColumnName')}
+              />
+            </Group>
+            <Group grow>
+              <TextInput
+                label='Programming Score Threshold'
+                type='number'
+                {...technicalChallengeForm.getInputProps('programmingScoreThreshold')}
+              />
+              <TextInput
+                label='Quiz Score Threshold'
+                type='number'
+                {...technicalChallengeForm.getInputProps('quizScoreThreshold')}
+              />
+            </Group>
+          </>
         )}
-        {technicalChallengeReport && (
+        {upload && (
           <Button
             onClick={() => {
-              onClose(technicalChallengeReport)
+              const programmingScores: Map<string, number> = new Map<string, number>()
+              const quizScores: Map<string, number> = new Map<string, number>()
+              upload.forEach((data) => {
+                programmingScores.set(
+                  tumIdToDeveloperApplicationMap.get(
+                    (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
+                  ) ?? '',
+                  parseFloat(
+                    (data as any)[technicalChallengeForm.values.programmingScoreColumnName].replace(
+                      '%',
+                      '',
+                    ),
+                  ),
+                )
+
+                quizScores.set(
+                  tumIdToDeveloperApplicationMap.get(
+                    (data as any)[technicalChallengeForm.values.tumIdColumnName] ?? '',
+                  ) ?? '',
+                  parseFloat(
+                    (data as any)[technicalChallengeForm.values.quizScoreColumnName].replace(
+                      '%',
+                      '',
+                    ),
+                  ),
+                )
+              })
+
+              void dispatch(
+                assignTechnicalChallengeProgrammingScores({
+                  programmingScoreThreshold:
+                    technicalChallengeForm.values.programmingScoreThreshold,
+                  programmingScores,
+                }),
+              )
+
+              void dispatch(
+                assignTechnicalChallengeQuizScores({
+                  quizScoreThreshold: technicalChallengeForm.values.quizScoreThreshold,
+                  quizScores,
+                }),
+              )
+              onClose()
             }}
           >
             Assess
           </Button>
         )}
-        {technicalChallengeReport.length !== 0 && (
+        {upload && (
           <Table striped withBorder withColumnBorders>
             <thead>
               <tr>
@@ -112,7 +187,7 @@ export const TechnicalChallengeAssessmentModal = ({
               </tr>
             </thead>
             <tbody>
-              {upload?.map((element, idx) => (
+              {upload.map((element, idx) => (
                 <tr key={idx}>
                   {columnNames.map((columnName) => (
                     <td key={columnName}>{(element as any)[columnName]}</td>

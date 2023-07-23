@@ -281,12 +281,30 @@ public class ApplicationService {
         return tutorApplicationRepository.save(application);
     }
 
-    public List<DeveloperApplication> assignTechnicalChallengeScoresToDeveloperApplications(final Map<UUID, Double> developerApplicationIdToScoreMap) {
+    public List<DeveloperApplication> assignTechnicalChallengeProgrammingScoresToDeveloperApplications(final Double programmingScoreThreshold,
+                                                                                            final Map<UUID, Double> programmingScores) {
         final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
-        developerApplicationIdToScoreMap.forEach((developerApplicationId, score) -> {
+        programmingScores.forEach((developerApplicationId, score) -> {
             final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
-            developerApplication.getAssessment().setTechnicalChallengeScore(score);
-            if (score < 100) {
+            developerApplication.getAssessment().setTechnicalChallengeProgrammingScore(score);
+            if (score < programmingScoreThreshold) {
+                developerApplication.getAssessment().setAccepted(false);
+                developerApplication.getAssessment().setAssessed(true);
+            }
+
+            updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
+        });
+
+        return updatedDeveloperApplications;
+    }
+
+    public List<DeveloperApplication> assignTechnicalChallengeQuizScoresToDeveloperApplications(final Double quizScoreThreshold,
+                                                                                                final Map<UUID, Double> quizScores) {
+        final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
+        quizScores.forEach((developerApplicationId, score) -> {
+            final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
+            developerApplication.getAssessment().setTechnicalChallengeQuizScore(score);
+            if (score < quizScoreThreshold) {
                 developerApplication.getAssessment().setAccepted(false);
                 developerApplication.getAssessment().setAssessed(true);
             }

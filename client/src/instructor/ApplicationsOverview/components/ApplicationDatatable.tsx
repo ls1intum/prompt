@@ -310,8 +310,17 @@ export const ApplicationDatatable = ({
                     ? 'Pending'
                     : 'Rejected'}{' '}
                   {`${
-                    application.assessment?.technicalChallengeScore
-                      ? `${application.assessment?.technicalChallengeScore} %`
+                    application.assessment?.technicalChallengeProgrammingScore
+                      ? `${application.assessment?.technicalChallengeProgrammingScore} %`
+                      : ''
+                  } ${
+                    application.assessment?.technicalChallengeProgrammingScore &&
+                    application.assessment.technicalChallengeQuizScore
+                      ? '/'
+                      : ''
+                  } ${
+                    application.assessment?.technicalChallengeQuizScore
+                      ? `${application.assessment?.technicalChallengeQuizScore} %`
                       : ''
                   }`}
                 </Badge>

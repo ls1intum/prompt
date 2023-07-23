@@ -24,7 +24,9 @@ public class ApplicationAssessment {
 
     private Integer assessmentScore;
 
-    private Double technicalChallengeScore;
+    private Double technicalChallengeProgrammingScore;
+
+    private Double technicalChallengeQuizScore;
 
     private Boolean interviewInviteSent;
     private Boolean acceptanceSent;

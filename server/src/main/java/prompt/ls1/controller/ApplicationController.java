@@ -161,10 +161,18 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
-    @PostMapping("/developer/technical-challenge-scores")
+    @PostMapping(value = "/developer/technical-challenge/programming-scores")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeScores(@RequestBody final Map<UUID, Double> developerApplicationIdToScoreMap) {
-        return ResponseEntity.ok(applicationService.assignTechnicalChallengeScoresToDeveloperApplications(developerApplicationIdToScoreMap));
+    public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeProgrammingScores(@RequestParam(value = "programmingScoreThreshold") final String programmingScoreThreshold,
+                                                                                     @RequestBody final Map<UUID, Double> programmingScores) {
+        return ResponseEntity.ok(applicationService.assignTechnicalChallengeProgrammingScoresToDeveloperApplications(Double.parseDouble(programmingScoreThreshold), programmingScores));
+    }
+
+    @PostMapping(value = "/developer/technical-challenge/quiz-scores")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeQuizScores(@RequestParam(value = "quizScoreThreshold") final String quizScoreThreshold,
+                                                                                     @RequestBody final Map<UUID, Double> quizScores) {
+        return ResponseEntity.ok(applicationService.assignTechnicalChallengeQuizScoresToDeveloperApplications(Double.parseDouble(quizScoreThreshold), quizScores));
     }
 
     @PostMapping("/coach/{applicationId}/interview-invitations")
