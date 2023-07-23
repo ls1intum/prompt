@@ -102,7 +102,7 @@ jobs:
         run: |
           if [[ "${{ matrix.path }}" == "client" ]] && [[ "${{ steps.changed-files-client-folder.outputs.any_changed }}" == "true" ]]; then
             echo "client_image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
-          else
+          elif [[ "${{ matrix.path }}" == "client" ]]; then
             echo "client_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi
       
@@ -110,6 +110,6 @@ jobs:
         run: |
           if [[ "${{ matrix.path }}" == "server" ]] && [[ "${{ steps.changed-files-server-folder.outputs.any_changed }}" == "true" ]]; then
             echo "server_image_tag=${{ steps.compute-tag.outputs.result }}" >> "$GITHUB_OUTPUT"
-          else
+          elif [[ "${{ matrix.path }}" == "server" ]]; then
             echo "server_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi
