@@ -15,6 +15,7 @@ import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
 import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
 import { RootPage } from './utilities/NavigationBar/RootPage'
+import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
 
@@ -136,6 +137,14 @@ export const App = (): JSX.Element => {
               <Route
                 path='/kick-off/:studentPublicId'
                 element={<StudentTeamPostKickoffSubmissionPage />}
+              />
+              <Route
+                path='/applications/thesis'
+                element={
+                  <ApplicationSubmissionPage
+                    child={<ThesisApplicationForm accessMode={ApplicationFormAccessMode.STUDENT} />}
+                  />
+                }
               />
               <Route path='/' element={<RootPage />} />
             </Routes>
