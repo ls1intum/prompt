@@ -72,7 +72,9 @@ export const ApplicationDatatable = ({
             ? application.assessment?.accepted !== null && !application.assessment?.accepted
             : true,
         )
-        .filter((application) => (filters.notAssessed ? !application.assessment?.assessed : true))
+        .filter((application) =>
+          filters.notAssessed ? application.assessment?.accepted === null : true,
+        )
         .filter((application) =>
           filters.female && application.student.gender
             ? Gender[application.student.gender] === Gender.FEMALE
@@ -288,27 +290,13 @@ export const ApplicationDatatable = ({
             title: 'Status',
             textAlignment: 'center',
             render: (application) => {
-              const isAccepted = application.assessment?.accepted
-              const isAssessed = application.assessment?.assessed
+              const isAccepted = application.assessment?.accepted ?? false
+              const isAssessed =
+                application.assessment?.accepted !== undefined &&
+                application.assessment?.accepted !== null
               return (
-                <Badge
-                  color={
-                    !isAssessed
-                      ? 'gray'
-                      : isAccepted
-                      ? 'green'
-                      : isAccepted === null
-                      ? 'gray'
-                      : 'red'
-                  }
-                >
-                  {!isAssessed
-                    ? 'Not Assessed'
-                    : isAccepted
-                    ? 'Accepted'
-                    : isAccepted === null
-                    ? 'Pending'
-                    : 'Rejected'}{' '}
+                <Badge color={!isAssessed ? 'gray' : isAccepted ? 'green' : 'red'}>
+                  {!isAssessed ? 'Not Assessed' : isAccepted ? 'Accepted' : 'Rejected'}{' '}
                   {`${
                     application.assessment?.technicalChallengeProgrammingScore
                       ? `${application.assessment?.technicalChallengeProgrammingScore} %`

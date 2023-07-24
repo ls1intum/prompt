@@ -8,10 +8,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Table
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class DeveloperApplication extends Application {
     @ManyToOne
     @JoinTable(name = "student_developer_application",

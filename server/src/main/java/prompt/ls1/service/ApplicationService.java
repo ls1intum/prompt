@@ -245,6 +245,16 @@ public class ApplicationService {
         return tutorApplicationRepository.save(tutorApplication);
     }
 
+    public Student updateStudentAssessment(final UUID studentId, JsonPatch patchStudentAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        final Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentId)));
+
+        final Student patchedStudent = applyPatchToStudent(patchStudentAssessment, student);
+
+        return studentRepository.save(patchedStudent);
+    }
+
     public DeveloperApplication updateDeveloperApplicationAssessment(final UUID developerApplicationId, JsonPatch patchDeveloperApplicationAssessment)
             throws JsonPatchException, JsonProcessingException {
         final DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
@@ -294,7 +304,6 @@ public class ApplicationService {
             developerApplication.getAssessment().setTechnicalChallengeQuizScore(score.getQuizScore());
             if (score.getProgrammingScore() < programmingScoreThreshold || score.getQuizScore() < quizScoreThreshold) {
                 developerApplication.getAssessment().setAccepted(false);
-                developerApplication.getAssessment().setAssessed(true);
             }
 
             updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
@@ -429,6 +438,13 @@ public class ApplicationService {
         tutorApplicationRepository.deleteById(tutorApplicationId);
 
         return tutorApplicationId;
+    }
+
+    private Student applyPatchToStudent(
+            JsonPatch patch, Student student) throws JsonPatchException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode patched = patch.apply(objectMapper.convertValue(student, JsonNode.class));
+        return objectMapper.treeToValue(patched, Student.class);
     }
 
     private DeveloperApplication applyPatchToDeveloperApplication(

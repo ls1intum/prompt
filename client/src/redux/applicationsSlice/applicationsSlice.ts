@@ -36,6 +36,7 @@ import {
   sendTutorApplicationAcceptance,
 } from './thunks/sendApplicationAcceptance'
 import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
+import { updateStudentAssessment } from './thunks/updateStudentAssessment'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -92,18 +93,17 @@ interface Student {
   gender?: keyof typeof Gender
   nationality?: string
   email?: string
+  suggestedAsCoach: boolean
+  suggestedAsTutor: boolean
+  blockedByPm: boolean
+  reasonForBlockedByPm: string
 }
 
 interface ApplicationAssessment {
   instructorComments: InstructorComment[]
-  suggestedAsCoach: boolean
-  suggestedAsTutor: boolean
-  blockedByPM: boolean
-  reasonForBlockedByPM: string
   assessmentScore: number
   technicalChallengeProgrammingScore: number
   technicalChallengeQuizScore: number
-  assessed: boolean
   accepted: boolean | null
   interviewInviteSent: boolean
   acceptanceSent: boolean
@@ -164,6 +164,29 @@ export const applicationsState = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(updateStudentAssessment.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateStudentAssessment.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.map((application) =>
+        application.student.id === payload.id ? { ...application, student: payload } : application,
+      )
+      state.coachApplications = state.coachApplications.map((application) =>
+        application.student.id === payload.id ? { ...application, student: payload } : application,
+      )
+      state.tutorApplications = state.tutorApplications.map((application) =>
+        application.student.id === payload.id ? { ...application, student: payload } : application,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateStudentAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
     builder.addCase(fetchDeveloperApplications.pending, (state) => {
       state.status = 'loading'
       state.error = null

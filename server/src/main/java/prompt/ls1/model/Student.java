@@ -50,6 +50,14 @@ public class Student implements Serializable {
     @Length(max = 30)
     private String matriculationNumber;
 
-    @Column
     private Boolean isExchangeStudent;
+
+    private Boolean suggestedAsCoach;
+
+    private Boolean suggestedAsTutor;
+
+    private Boolean blockedByPm;
+
+    @Lob
+    private String reasonForBlockedByPm;
 }
