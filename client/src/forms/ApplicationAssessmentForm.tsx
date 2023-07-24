@@ -118,7 +118,7 @@ export const ApplicationAssessmentForm = ({
       assessmentScore: assessment?.assessmentScore ?? 0,
       technicalChallengeProgrammingScore: assessment?.technicalChallengeProgrammingScore ?? 0,
       technicalChallengeQuizScore: assessment?.technicalChallengeQuizScore ?? 0,
-      accepted: assessment?.accepted ?? false,
+      accepted: assessment?.accepted === null ? null : assessment?.accepted ?? false,
       assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
       acceptanceSent: assessment?.acceptanceSent ?? false,
@@ -134,7 +134,7 @@ export const ApplicationAssessmentForm = ({
       blockedByPM: assessment?.blockedByPM ?? false,
       reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
-      accepted: assessment?.accepted ?? null,
+      accepted: assessment?.accepted,
       assessed: assessment?.assessed ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
     })
