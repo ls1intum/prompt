@@ -58,6 +58,10 @@ export const TutorApplicationForm = ({
             lastName: '',
             nationality: '',
             gender: undefined,
+            suggestedAsCoach: false,
+            suggestedAsTutor: false,
+            blockedByPm: false,
+            reasonForBlockedByPm: '',
           },
           studyDegree: undefined,
           studyProgram: undefined,
@@ -266,6 +270,7 @@ export const TutorApplicationForm = ({
                   {accessMode === ApplicationFormAccessMode.INSTRUCTOR && tutorApplication && (
                     <ApplicationAssessmentForm
                       applicationId={tutorApplication.id}
+                      student={tutorApplication.student}
                       assessment={tutorApplication.assessment}
                       applicationType='tutor'
                     />

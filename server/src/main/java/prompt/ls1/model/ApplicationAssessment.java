@@ -14,14 +14,6 @@ public class ApplicationAssessment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Boolean suggestedAsCoach;
-
-    private Boolean suggestedAsTutor;
-
-    private Boolean blockedByPM;
-
-    private String reasonForBlockedByPM;
-
     private Integer assessmentScore;
 
     private Double technicalChallengeProgrammingScore;
@@ -35,8 +27,6 @@ public class ApplicationAssessment {
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<InstructorComment> instructorComments;
-
-    private Boolean assessed;
 
     private Boolean accepted;
 }

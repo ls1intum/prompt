@@ -28,6 +28,7 @@ import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.InstructorComment;
+import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
 import prompt.ls1.service.ApplicationService;
 import prompt.ls1.service.CourseIterationService;
@@ -214,6 +215,14 @@ public class ApplicationController {
                                                          @RequestBody JsonPatch patchStudentApplication)
             throws JsonPatchException, JsonProcessingException {
         return ResponseEntity.ok(applicationService.updateDeveloperApplication(developerApplicationId, patchStudentApplication));
+    }
+
+    @PatchMapping(path = "/students/{studentId}/assessment", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Student> updateStudentAssessment(@PathVariable final UUID studentId,
+                                                           @RequestBody JsonPatch patchStudentAssessment)
+            throws JsonPatchException, JsonProcessingException {
+        return ResponseEntity.ok(applicationService.updateStudentAssessment(studentId, patchStudentAssessment));
     }
 
     @PatchMapping(path = "/developer/{developerApplicationId}/assessment", consumes = "application/json-path+json")

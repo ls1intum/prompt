@@ -1,5 +1,8 @@
 import { useForm } from '@mantine/form'
-import { type ApplicationAssessment } from '../redux/applicationsSlice/applicationsSlice'
+import {
+  type Student,
+  type ApplicationAssessment,
+} from '../redux/applicationsSlice/applicationsSlice'
 import {
   Button,
   Checkbox,
@@ -50,6 +53,7 @@ import {
   sendCoachApplicationAcceptance,
   sendTutorApplicationAcceptance,
 } from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
+import { updateStudentAssessment } from '../redux/applicationsSlice/thunks/updateStudentAssessment'
 
 interface ConfirmationModalProps {
   title: string
@@ -84,11 +88,13 @@ const ConfirmationModal = ({
 interface ApplicationAssessmentFormProps {
   applicationId: string
   applicationType: 'developer' | 'coach' | 'tutor'
+  student: Student
   assessment?: ApplicationAssessment
 }
 
 export const ApplicationAssessmentForm = ({
   applicationId,
+  student,
   assessment,
   applicationType,
 }: ApplicationAssessmentFormProps): JSX.Element => {
@@ -111,31 +117,36 @@ export const ApplicationAssessmentForm = ({
   const assessmentForm = useForm<ApplicationAssessment>({
     initialValues: {
       instructorComments: assessment?.instructorComments ?? [],
-      suggestedAsCoach: assessment?.suggestedAsCoach ?? false,
-      suggestedAsTutor: assessment?.suggestedAsTutor ?? false,
-      blockedByPM: assessment?.blockedByPM ?? false,
-      reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
       technicalChallengeProgrammingScore: assessment?.technicalChallengeProgrammingScore ?? 0,
       technicalChallengeQuizScore: assessment?.technicalChallengeQuizScore ?? 0,
-      accepted: assessment?.accepted === null ? null : assessment?.accepted ?? false,
-      assessed: assessment?.assessed ?? false,
+      accepted:
+        assessment?.accepted === undefined || assessment?.accepted === null
+          ? null
+          : assessment?.accepted ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
       acceptanceSent: assessment?.acceptanceSent ?? false,
       rejectionSent: assessment?.rejectionSent ?? false,
+    },
+  })
+  const studentForm = useForm<Student>({
+    initialValues: {
+      ...student,
+      suggestedAsCoach: student?.suggestedAsCoach ?? false,
+      suggestedAsTutor: student?.suggestedAsTutor ?? false,
+      blockedByPm: student?.blockedByPm ?? false,
+      reasonForBlockedByPm: student?.reasonForBlockedByPm ?? '',
     },
   })
 
   useEffect(() => {
     assessmentForm.setValues({
       instructorComments: assessment?.instructorComments ?? [],
-      suggestedAsCoach: assessment?.suggestedAsCoach ?? false,
-      suggestedAsTutor: assessment?.suggestedAsTutor ?? false,
-      blockedByPM: assessment?.blockedByPM ?? false,
-      reasonForBlockedByPM: assessment?.reasonForBlockedByPM ?? '',
       assessmentScore: assessment?.assessmentScore ?? 0,
-      accepted: assessment?.accepted,
-      assessed: assessment?.assessed ?? false,
+      accepted:
+        assessment?.accepted === undefined || assessment?.accepted === null
+          ? null
+          : assessment?.accepted ?? false,
       interviewInviteSent: assessment?.interviewInviteSent ?? false,
     })
     assessmentForm.resetDirty()
@@ -143,11 +154,21 @@ export const ApplicationAssessmentForm = ({
   }, [assessment])
 
   useEffect(() => {
+    studentForm.setValues({
+      ...student,
+      suggestedAsCoach: student?.suggestedAsCoach ?? false,
+      suggestedAsTutor: student?.suggestedAsTutor ?? false,
+      blockedByPm: student?.blockedByPm ?? false,
+      reasonForBlockedByPm: student?.reasonForBlockedByPm ?? '',
+    })
+  }, [student])
+
+  useEffect(() => {
     if (assessmentForm.values.interviewInviteSent) {
       setActiveTimelineStatus(3)
-    } else if (assessmentForm.values.assessed) {
+    } else if (assessmentForm.values.assessmentScore) {
       setActiveTimelineStatus(2)
-    } else if (!assessmentForm.values.assessed) {
+    } else if (!assessmentForm.values.assessmentScore) {
       setActiveTimelineStatus(1)
     }
   }, [assessment])
@@ -217,38 +238,38 @@ export const ApplicationAssessmentForm = ({
               <Checkbox
                 mt='md'
                 label='Suggested as Coach'
-                {...assessmentForm.getInputProps('suggestedAsCoach', {
+                {...studentForm.getInputProps('suggestedAsCoach', {
                   type: 'checkbox',
                 })}
               />
               <Checkbox
                 mt='md'
                 label='Suggested as Tutor'
-                {...assessmentForm.getInputProps('suggestedAsTutor', {
+                {...studentForm.getInputProps('suggestedAsTutor', {
                   type: 'checkbox',
                 })}
               />
               <Checkbox
                 mt='md'
                 label='Blocked by PM'
-                {...assessmentForm.getInputProps('blockedByPM', {
+                {...studentForm.getInputProps('blockedByPm', {
                   type: 'checkbox',
                 })}
               />
             </Group>
-            {assessmentForm.values.blockedByPM && (
+            {studentForm.values.blockedByPm && (
               <Textarea
                 autosize
                 label='Reason for Blocked by PM'
                 placeholder='Reason for blocked by PM'
                 minRows={5}
-                {...assessmentForm.getInputProps('reasonForBlockedByPM')}
+                {...studentForm.getInputProps('reasonForBlockedByPm')}
               />
             )}
           </Timeline.Item>
           <Timeline.Item
             bullet={
-              assessmentForm.values.assessed ? (
+              assessmentForm.values.assessmentScore ? (
                 <IconCheck size={12} />
               ) : (
                 <IconQuestionMark size={12} />
@@ -260,25 +281,16 @@ export const ApplicationAssessmentForm = ({
               </Text>
             }
           >
-            <Stack>
-              <Checkbox
-                mt='md'
-                label='Application Assessed'
-                {...assessmentForm.getInputProps('assessed', {
-                  type: 'checkbox',
-                })}
-              />
-              <TextInput
-                onWheel={(e) => {
-                  e.currentTarget.blur()
-                }}
-                withAsterisk
-                type='number'
-                label='Assessment Score'
-                placeholder='Assessment Score'
-                {...assessmentForm.getInputProps('assessmentScore')}
-              />
-            </Stack>
+            <TextInput
+              onWheel={(e) => {
+                e.currentTarget.blur()
+              }}
+              withAsterisk
+              type='number'
+              label='Assessment Score'
+              placeholder='Assessment Score'
+              {...assessmentForm.getInputProps('assessmentScore')}
+            />
           </Timeline.Item>
           {(applicationType === 'coach' || applicationType === 'tutor') && (
             <Timeline.Item
@@ -348,7 +360,6 @@ export const ApplicationAssessmentForm = ({
                 onChange={(value) => {
                   assessmentForm.setValues({
                     accepted: value === '0' ? null : value === '1' ?? false,
-                    assessed: value === '0' ? assessmentForm.values.assessed : true,
                   })
                 }}
               />
@@ -407,41 +418,64 @@ export const ApplicationAssessmentForm = ({
         </Timeline>
         <Group position='right'>
           <Button
-            disabled={!assessmentForm.isDirty()}
+            disabled={!assessmentForm.isDirty() && !studentForm.isDirty()}
             onClick={() => {
-              const assessmentPatchObjectArray: Patch[] = []
-              Object.keys(assessmentForm.values).forEach((key) => {
-                if (assessmentForm.isDirty(key)) {
-                  const assessmentPatchObject = new Map()
-                  assessmentPatchObject.set('op', 'replace')
-                  assessmentPatchObject.set('path', '/' + key)
-                  assessmentPatchObject.set('value', assessmentForm.getInputProps(key).value)
-                  const obj = Object.fromEntries(assessmentPatchObject)
-                  assessmentPatchObjectArray.push(obj)
-                }
-              })
+              if (studentForm.isDirty()) {
+                const studentPatchObjectArray: Patch[] = []
+                Object.keys(studentForm.values).forEach((key) => {
+                  if (studentForm.isDirty(key)) {
+                    const studentPatchObject = new Map()
+                    studentPatchObject.set('op', 'replace')
+                    studentPatchObject.set('path', '/' + key)
+                    studentPatchObject.set('value', studentForm.getInputProps(key).value)
+                    const obj = Object.fromEntries(studentPatchObject)
+                    studentPatchObjectArray.push(obj)
+                  }
+                })
 
-              if (applicationType === 'developer') {
                 void dispatch(
-                  updateDeveloperApplicationAssessment({
-                    applicationId,
-                    applicationAssessmentPatch: assessmentPatchObjectArray,
+                  updateStudentAssessment({
+                    studentId: student.id,
+                    studentAssessmentPatch: studentPatchObjectArray,
                   }),
                 )
-              } else if (applicationType === 'coach') {
-                void dispatch(
-                  updateCoachApplicationAssessment({
-                    applicationId,
-                    applicationAssessmentPatch: assessmentPatchObjectArray,
-                  }),
-                )
-              } else if (applicationType === 'tutor') {
-                void dispatch(
-                  updateTutorApplicationAssessment({
-                    applicationId,
-                    applicationAssessmentPatch: assessmentPatchObjectArray,
-                  }),
-                )
+              }
+
+              if (assessmentForm.isDirty()) {
+                const assessmentPatchObjectArray: Patch[] = []
+                Object.keys(assessmentForm.values).forEach((key) => {
+                  if (assessmentForm.isDirty(key)) {
+                    const assessmentPatchObject = new Map()
+                    assessmentPatchObject.set('op', 'replace')
+                    assessmentPatchObject.set('path', '/' + key)
+                    assessmentPatchObject.set('value', assessmentForm.getInputProps(key).value)
+                    const obj = Object.fromEntries(assessmentPatchObject)
+                    assessmentPatchObjectArray.push(obj)
+                  }
+                })
+
+                if (applicationType === 'developer') {
+                  void dispatch(
+                    updateDeveloperApplicationAssessment({
+                      applicationId,
+                      applicationAssessmentPatch: assessmentPatchObjectArray,
+                    }),
+                  )
+                } else if (applicationType === 'coach') {
+                  void dispatch(
+                    updateCoachApplicationAssessment({
+                      applicationId,
+                      applicationAssessmentPatch: assessmentPatchObjectArray,
+                    }),
+                  )
+                } else if (applicationType === 'tutor') {
+                  void dispatch(
+                    updateTutorApplicationAssessment({
+                      applicationId,
+                      applicationAssessmentPatch: assessmentPatchObjectArray,
+                    }),
+                  )
+                }
               }
             }}
           >
