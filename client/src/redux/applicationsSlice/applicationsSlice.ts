@@ -245,8 +245,8 @@ export const applicationsState = createSlice({
     builder.addCase(updateDeveloperApplicationAssessment.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) =>
         application.id === payload.id
-          ? payload
-          : { ...application, type: ApplicationType.DEVELOPER },
+          ? { ...payload, type: ApplicationType.DEVELOPER }
+          : application,
       )
       state.status = 'idle'
     })
