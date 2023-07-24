@@ -24,7 +24,7 @@ services:
 
   server:
     image: "ghcr.io/ls1intum/prompt/prompt-server:${SERVER_IMAGE_TAG}"
-    container_name: orgatool-server
+    container_name: prompt-server
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.server.rule=Host(`${SERVER_HOST}`) && PathPrefix(`/api`)"
@@ -59,7 +59,7 @@ services:
 
   db:
     image: "postgres:15.2-alpine"
-    container_name: db
+    container_name: prompt-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
       - POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
@@ -73,7 +73,7 @@ services:
 
   client:
     image: "ghcr.io/ls1intum/prompt/prompt-client:${CLIENT_IMAGE_TAG}"
-    container_name: orgatool-client
+    container_name: prompt-client
     environment:
       - TZ=Europe/Berlin
     labels:
@@ -88,6 +88,7 @@ services:
 
   postfix:
     image: ghcr.io/ls1admin/postfix:latest
+    container_name: prompt-postfix
     restart: unless-stopped
     volumes:
       - ./postfix-config:/config
