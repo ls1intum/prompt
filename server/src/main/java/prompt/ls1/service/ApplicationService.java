@@ -287,6 +287,9 @@ public class ApplicationService {
         final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
         scores.forEach(score -> {
             final DeveloperApplication developerApplication = findDeveloperApplicationById(score.getDeveloperApplicationId());
+            if (developerApplication.getAssessment() == null) {
+                developerApplication.setAssessment(new ApplicationAssessment());
+            }
             developerApplication.getAssessment().setTechnicalChallengeProgrammingScore(score.getProgrammingScore());
             developerApplication.getAssessment().setTechnicalChallengeQuizScore(score.getQuizScore());
             if (score.getProgrammingScore() < programmingScoreThreshold || score.getQuizScore() < quizScoreThreshold) {
