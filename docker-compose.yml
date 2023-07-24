@@ -1,37 +1,40 @@
 services:
   server:
-    image: 'orgatool-server:latest'
+    image: ghcr.io/ls1intum/prompt/prompt-server:latest
     build:
       context: ./server
-    container_name: orgatool-server
+    container_name: prompt-server
     depends_on:
       db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/orgatool-postgres
-      - SPRING_DATASOURCE_USERNAME=orgatool-postgres
-      - SPRING_DATASOURCE_PASSWORD=postgress-orgatool
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/prompt
+      - SPRING_DATASOURCE_USERNAME=prompt-postgres
+      - SPRING_DATASOURCE_PASSWORD=prompt-postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
       - "8080:8080"
 
   db:
     image: 'postgres:15.2-alpine'
-    container_name: db
+    container_name: prompt-db
     environment:
-      - POSTGRES_USER=orgatool-postgres
-      - POSTGRES_PASSWORD=postgress-orgatool
+      - POSTGRES_USER=prompt-postgres
+      - POSTGRES_PASSWORD=prompt-postgres
+      - POSTGRES_DB=prompt
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d orgatool-postgres -U orgatool-postgres"]
+      test: ["CMD-SHELL", "pg_isready -d prompt -U prompt-postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
+    ports:
+      - "5432:5432"
 
   client:
-    image: 'orgatool-client:latest'
+    image: ghcr.io/ls1intum/prompt/prompt-client:latest
     build:
       context: ./client
-    container_name: orgatool-client
+    container_name: prompt-client
     depends_on:
       - server
     ports:
@@ -39,6 +42,7 @@ services:
 
   postfix:
     image: ghcr.io/ls1admin/postfix:latest
+    container_name: prompt-postfix
     restart: unless-stopped
     volumes:
       - ./postfix-config:/config # See https://github.com/ls1admin/postfix-container-tum-mailrelay/tree/main for details
@@ -48,7 +52,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:20.0
-    container_name: prompt_keycloak
+    container_name: prompt-keycloak
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin

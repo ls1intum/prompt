@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/prompt}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:airelawaleria060866}
+    username: ${SPRING_DATASOURCE_USERNAME:prompt-postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:prompt-postgres}
   jpa:
     hibernate:
       ddl-auto: update
