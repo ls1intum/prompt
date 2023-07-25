@@ -164,11 +164,11 @@ export const ApplicationAssessmentForm = ({
   }, [student])
 
   useEffect(() => {
-    if (assessmentForm.values.interviewInviteSent) {
+    if (assessmentForm.values.accepted !== undefined && assessmentForm.values.accepted !== null) {
       setActiveTimelineStatus(3)
     } else if (assessmentForm.values.assessmentScore) {
       setActiveTimelineStatus(2)
-    } else if (!assessmentForm.values.assessmentScore) {
+    } else {
       setActiveTimelineStatus(1)
     }
   }, [assessment])
