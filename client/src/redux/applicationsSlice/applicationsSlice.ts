@@ -110,16 +110,12 @@ interface ApplicationAssessment {
   rejectionSent: boolean
 }
 
-enum ApplicationType {
-  DEVELOPER = 'Developer',
-  COACH = 'Coach',
-  TUTOR = 'Tutor',
-}
+type ApplicationType = 'DEVELOPER' | 'COACH' | 'TUTOR'
 
 interface Application {
   id: string
   // The following field is artificially filled out by the client
-  type: keyof typeof ApplicationType
+  type: ApplicationType
   student: Student
   studyDegree?: StudyDegree
   currentSemester?: string
@@ -195,7 +191,7 @@ export const applicationsState = createSlice({
     builder.addCase(fetchDeveloperApplications.fulfilled, (state, { payload }) => {
       state.developerApplications = payload.map((application: Application) => ({
         ...application,
-        type: ApplicationType.DEVELOPER,
+        type: 'DEVELOPER',
       }))
       state.status = 'idle'
     })
@@ -213,7 +209,7 @@ export const applicationsState = createSlice({
     builder.addCase(fetchCoachApplications.fulfilled, (state, { payload }) => {
       state.coachApplications = payload.map((application: Application) => ({
         ...application,
-        type: ApplicationType.COACH,
+        type: 'COACH',
       }))
       state.status = 'idle'
     })
@@ -231,7 +227,7 @@ export const applicationsState = createSlice({
     builder.addCase(fetchTutorApplications.fulfilled, (state, { payload }) => {
       state.tutorApplications = payload.map((application: Application) => ({
         ...application,
-        type: ApplicationType.TUTOR,
+        type: 'TUTOR',
       }))
       state.status = 'idle'
     })
@@ -248,9 +244,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(updateDeveloperApplication.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) =>
-        application.id === payload.id
-          ? payload
-          : { ...application, type: ApplicationType.DEVELOPER },
+        application.id === payload.id ? { ...payload, type: 'DEVELOPER' } : application,
       )
       state.status = 'idle'
     })
@@ -267,9 +261,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(updateDeveloperApplicationAssessment.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) =>
-        application.id === payload.id
-          ? { ...payload, type: ApplicationType.DEVELOPER }
-          : application,
+        application.id === payload.id ? { ...payload, type: 'DEVELOPER' } : application,
       )
       state.status = 'idle'
     })
@@ -286,7 +278,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(updateCoachApplicationAssessment.fulfilled, (state, { payload }) => {
       state.coachApplications = state.coachApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.COACH },
+        application.id === payload.id ? { ...payload, type: 'COACH' } : application,
       )
       state.status = 'idle'
     })
@@ -303,7 +295,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(updateTutorApplicationAssessment.fulfilled, (state, { payload }) => {
       state.tutorApplications = state.tutorApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.TUTOR },
+        application.id === payload.id ? { ...payload, type: 'TUTOR' } : application,
       )
       state.status = 'idle'
     })
@@ -327,7 +319,7 @@ export const applicationsState = createSlice({
                 updatedDeveloperApplication.id === sa.id,
             )
             .at(0) ?? sa),
-          type: ApplicationType.DEVELOPER,
+          type: 'DEVELOPER',
         }
       })
       state.status = 'idle'
@@ -345,7 +337,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(sendCoachInterviewInvitation.fulfilled, (state, { payload }) => {
       state.coachApplications = state.coachApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.COACH },
+        application.id === payload.id ? { ...payload, type: 'COACH' } : application,
       )
       state.status = 'idle'
     })
@@ -362,7 +354,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(sendCoachApplicationAcceptance.fulfilled, (state, { payload }) => {
       state.coachApplications = state.coachApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.COACH },
+        application.id === payload.id ? { ...payload, type: 'COACH' } : application,
       )
       state.status = 'idle'
     })
@@ -379,7 +371,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(sendCoachApplicationRejection.fulfilled, (state, { payload }) => {
       state.coachApplications = state.coachApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.COACH },
+        application.id === payload.id ? { ...payload, type: 'COACH' } : application,
       )
       state.status = 'idle'
     })
@@ -396,7 +388,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(sendTutorInterviewInvitation.fulfilled, (state, { payload }) => {
       state.tutorApplications = state.tutorApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.TUTOR },
+        application.id === payload.id ? { ...payload, type: 'TUTOR' } : application,
       )
       state.status = 'idle'
     })
@@ -413,7 +405,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(sendTutorApplicationAcceptance.fulfilled, (state, { payload }) => {
       state.tutorApplications = state.tutorApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.TUTOR },
+        application.id === payload.id ? { ...payload, type: 'TUTOR' } : application,
       )
       state.status = 'idle'
     })
@@ -430,7 +422,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(sendTutorApplicationRejection.fulfilled, (state, { payload }) => {
       state.tutorApplications = state.tutorApplications.map((application) =>
-        application.id === payload.id ? payload : { ...application, type: ApplicationType.TUTOR },
+        application.id === payload.id ? { ...payload, type: 'TUTOR' } : application,
       )
       state.status = 'idle'
     })
@@ -449,9 +441,7 @@ export const applicationsState = createSlice({
       createInstructorCommentForDeveloperApplication.fulfilled,
       (state, { payload }) => {
         state.developerApplications.map((application) => {
-          return application.id === payload.id
-            ? { ...payload, type: ApplicationType.DEVELOPER }
-            : application
+          return application.id === payload.id ? { ...payload, type: 'DEVELOPER' } : application
         })
         state.status = 'idle'
       },
@@ -472,9 +462,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(createInstructorCommentForCoachApplication.fulfilled, (state, { payload }) => {
       state.coachApplications.map((application) => {
-        return application.id === payload.id
-          ? { ...payload, type: ApplicationType.COACH }
-          : application
+        return application.id === payload.id ? { ...payload, type: 'COACH' } : application
       })
       state.status = 'idle'
     })
@@ -491,9 +479,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(createInstructorCommentForTutorApplication.fulfilled, (state, { payload }) => {
       state.tutorApplications.map((application) => {
-        return application.id === payload.id
-          ? { ...payload, type: ApplicationType.TUTOR }
-          : application
+        return application.id === payload.id ? { ...payload, type: 'TUTOR' } : application
       })
       state.status = 'idle'
     })
@@ -510,9 +496,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(assignDeveloperApplicationToProjectTeam.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) =>
-        application.id === payload.id
-          ? { ...payload, type: ApplicationType.DEVELOPER }
-          : application,
+        application.id === payload.id ? { ...payload, type: 'DEVELOPER' } : application,
       )
       state.status = 'idle'
     })
@@ -529,9 +513,7 @@ export const applicationsState = createSlice({
 
     builder.addCase(removeDeveloperApplicationFromProjectTeam.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) =>
-        application.id === payload.id
-          ? { ...payload, type: ApplicationType.DEVELOPER }
-          : application,
+        application.id === payload.id ? { ...payload, type: 'DEVELOPER' } : application,
       )
       state.status = 'idle'
     })
@@ -601,7 +583,7 @@ export {
   type Application,
   type InstructorComment,
   type ApplicationAssessment,
-  ApplicationType,
+  type ApplicationType,
   LanguageProficiency,
   StudyDegree,
   StudyProgram,
