@@ -38,7 +38,7 @@ interface DefaultApplicationFormProps {
 }
 
 countries.registerLocale(enLocale)
-const countriesArr = Object.entries(countries.getNames('en', { select: 'official' })).map(
+const countriesArr = Object.entries(countries.getNames('en', { select: 'alias' })).map(
   ([key, value]) => {
     return {
       label: value,
