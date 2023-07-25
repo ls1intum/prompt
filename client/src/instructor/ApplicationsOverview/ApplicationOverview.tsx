@@ -10,7 +10,6 @@ import {
 } from '../../redux/applicationsSlice/thunks/fetchApplications'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
 import { ApplicationDatatable } from './components/ApplicationDatatable'
-import { ApplicationType } from '../../redux/applicationsSlice/applicationsSlice'
 
 export interface Filters {
   accepted: boolean
@@ -36,7 +35,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
     notAssessed: false,
     male: false,
     female: false,
-    applicationType: [ApplicationType.DEVELOPER],
+    applicationType: ['DEVELOPER'],
   })
 
   useEffect(() => {
@@ -137,8 +136,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
           <div>
             <Button
               disabled={
-                filters.applicationType.length > 1 ||
-                !filters.applicationType.includes(ApplicationType.DEVELOPER)
+                filters.applicationType.length > 1 || !filters.applicationType.includes('DEVELOPER')
               }
               onClick={() => {
                 setTechnicalChallengeAssessmentModalOpened(true)

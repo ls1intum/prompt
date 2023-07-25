@@ -2,11 +2,7 @@ import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import sortBy from 'lodash/sortBy'
 import { CSVLink } from 'react-csv'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import {
-  Gender,
-  type Application,
-  ApplicationType,
-} from '../../../redux/applicationsSlice/applicationsSlice'
+import { Gender, type Application } from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
 import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
@@ -17,6 +13,8 @@ import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 import { type Filters } from '../ApplicationOverview'
+import { CoachApplicationForm } from '../../../forms/CoachApplicationForm'
+import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
 
 interface ApplicationDatatableProps {
   applications: Application[]
@@ -108,24 +106,66 @@ export const ApplicationDatatable = ({
 
   return (
     <Stack>
-      <Modal
-        centered
-        opened={!!selectedApplicationToView}
-        onClose={() => {
-          setSelectedApplicationToView(undefined)
-        }}
-        size='80%'
-      >
-        <div style={{ padding: '3vh 3vw' }}>
-          <DeveloperApplicationForm
-            accessMode={ApplicationFormAccessMode.INSTRUCTOR}
-            developerApplication={selectedApplicationToView}
-            onSuccess={() => {
-              setSelectedApplicationToView(undefined)
-            }}
-          />
-        </div>
-      </Modal>
+      {selectedApplicationToView?.type === 'DEVELOPER' && (
+        <Modal
+          centered
+          opened={!!selectedApplicationToView}
+          onClose={() => {
+            setSelectedApplicationToView(undefined)
+          }}
+          size='80%'
+        >
+          <div style={{ padding: '3vh 3vw' }}>
+            <DeveloperApplicationForm
+              accessMode={ApplicationFormAccessMode.INSTRUCTOR}
+              developerApplication={selectedApplicationToView}
+              onSuccess={() => {
+                setSelectedApplicationToView(undefined)
+              }}
+            />
+          </div>
+        </Modal>
+      )}
+      {selectedApplicationToView?.type === 'COACH' && (
+        <Modal
+          centered
+          opened={!!selectedApplicationToView}
+          onClose={() => {
+            setSelectedApplicationToView(undefined)
+          }}
+          size='80%'
+        >
+          <div style={{ padding: '3vh 3vw' }}>
+            <CoachApplicationForm
+              accessMode={ApplicationFormAccessMode.INSTRUCTOR}
+              coachApplication={selectedApplicationToView}
+              onSuccess={() => {
+                setSelectedApplicationToView(undefined)
+              }}
+            />
+          </div>
+        </Modal>
+      )}
+      {selectedApplicationToView?.type === 'TUTOR' && (
+        <Modal
+          centered
+          opened={!!selectedApplicationToView}
+          onClose={() => {
+            setSelectedApplicationToView(undefined)
+          }}
+          size='80%'
+        >
+          <div style={{ padding: '3vh 3vw' }}>
+            <TutorApplicationForm
+              accessMode={ApplicationFormAccessMode.INSTRUCTOR}
+              tutorApplication={selectedApplicationToView}
+              onSuccess={() => {
+                setSelectedApplicationToView(undefined)
+              }}
+            />
+          </div>
+        </Modal>
+      )}
       {selectedApplicationToDelete && (
         <DeletionConfirmationModal
           title={`Delete Developer Application`}
@@ -264,12 +304,14 @@ export const ApplicationDatatable = ({
               <MultiSelect
                 label='Type'
                 description='Show all applications with these types'
-                data={Object.keys(ApplicationType).map((key) => {
-                  return {
-                    label: ApplicationType[key as keyof typeof ApplicationType],
-                    value: ApplicationType[key as keyof typeof ApplicationType],
-                  }
-                })}
+                data={[
+                  {
+                    label: 'Developer',
+                    value: 'DEVELOPER',
+                  },
+                  { label: 'Coach', value: 'COACH' },
+                  { label: 'Tutor', value: 'TUTOR' },
+                ]}
                 value={filters.applicationType}
                 placeholder='Search types...'
                 onChange={(value) => {
@@ -284,6 +326,9 @@ export const ApplicationDatatable = ({
               />
             ),
             filtering: filters.applicationType.length > 0,
+            render: ({ type }) => {
+              return `${type.charAt(0)}${type.toLowerCase().slice(1)}`
+            },
           },
           {
             accessor: 'applicationStatus',
