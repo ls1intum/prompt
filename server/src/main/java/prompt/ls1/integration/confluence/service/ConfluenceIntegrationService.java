@@ -14,6 +14,10 @@ public class ConfluenceIntegrationService {
     @Autowired
     private ConfluenceRestClient confluenceRestClient;
 
+    public List<ConfluenceSpace> findSpacesByKeys(final List<String> spaceKeys) {
+        return confluenceRestClient.findSpacesByKeys(spaceKeys);
+    }
+
     public List<ConfluenceSpace> createSpaces(final List<ConfluenceSpace> confluenceSpaces) {
         final List<ConfluenceSpace> confluenceSpacesResult = new ArrayList<>();
         confluenceSpaces.forEach(confluenceSpace -> {

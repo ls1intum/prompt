@@ -49,13 +49,16 @@ export const ManagementSetupModal = ({
         <Stepper.Step description='Create Coaches and Project Leads Confluence Spaces'>
           <ConfluenceSpaceCreationForm
             iosTag={iosTag}
-            spaces={[{ name: 'Coaches and Project Leads', key: 'COACHPL' }]}
+            spaces={[
+              { name: 'Coaches and Project Leads', key: 'COACHPL' },
+              { name: 'CW', key: 'CW' },
+            ]}
           />
         </Stepper.Step>
         <Stepper.Step description='Confluence Space Permissions'>
           <ConfluenceSpacePermissionAssignmentForm
             iosTag={iosTag}
-            spaceKey={`${iosTag.toUpperCase()}COACHPL`}
+            spaceKeys={[`${iosTag.toUpperCase()}COACHPL`, `${iosTag.toUpperCase()}CW`]}
             groupNameSuggestions={JIRA_USER_GROUPS_MGMT.map(
               (userGroup) => `${iosTag.toLowerCase()}${userGroup}`,
             )}

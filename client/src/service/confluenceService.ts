@@ -7,6 +7,33 @@ export interface ConfluenceSpace {
   key: string
 }
 
+export const fetchConfluenceSpacesByKeys = async (
+  spaceKeys: string[],
+): Promise<ConfluenceSpace[] | undefined> => {
+  try {
+    const query = spaceKeys.map((spaceKey) => `spaceKey=${spaceKey}`).join('&')
+    const response = await axios.get(
+      `${serverBaseUrl}/api/infrastructure/confluence/spaces?${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        },
+      },
+    )
+
+    return response.data
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 5000,
+      title: 'Error',
+      message: `Failed to fetch Confluence spaces. Server responded with: ${err as string}`,
+    })
+
+    return undefined
+  }
+}
+
 export const createConfluenceSpaces = async (
   spaces: ConfluenceSpace[],
 ): Promise<ConfluenceSpace[] | undefined> => {

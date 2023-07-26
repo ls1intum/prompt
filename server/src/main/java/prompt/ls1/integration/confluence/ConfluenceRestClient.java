@@ -16,6 +16,8 @@ import prompt.ls1.exception.UnirestRequestException;
 import prompt.ls1.integration.confluence.domain.ConfluenceSpace;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ConfluenceRestClient {
@@ -57,6 +59,25 @@ public class ConfluenceRestClient {
                 }
             }
         });
+    }
+
+    public List<ConfluenceSpace> findSpacesByKeys(final List<String> spaceKeys) {
+        HttpResponse<JsonNode> response = Unirest.get(String.format("%s/rest/api/space", confluenceUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .queryString("spaceKey", spaceKeys)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+
+        try {
+            return Arrays.asList(objectMapper
+                    .readValue(response.getBody().getObject().getJSONArray("results").toString(), ConfluenceSpace[].class));
+        } catch (JsonProcessingException e) {
+            throw new UnirestRequestException(e.getMessage());
+        }
     }
 
     public ConfluenceSpace createSpace(final ConfluenceSpace confluenceSpace) {

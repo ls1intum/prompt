@@ -170,6 +170,12 @@ public class InfrastructureController {
         return ResponseEntity.ok(bambooIntegrationService.createProjects(bambooProjects));
     }
 
+    @GetMapping("/confluence/spaces")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<ConfluenceSpace>> getConfluenceSpacesByKeys(@RequestParam(name = "spaceKey") final List<String> spaceKeys) {
+        return ResponseEntity.ok(confluenceIntegrationService.findSpacesByKeys(spaceKeys));
+    }
+
     @PostMapping("/confluence/spaces")
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<ConfluenceSpace>> createConfluenceSpaces(@RequestBody final List<ConfluenceSpace> confluenceSpaces) {
