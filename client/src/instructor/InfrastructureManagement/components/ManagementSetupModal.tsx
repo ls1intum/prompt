@@ -22,7 +22,7 @@ export const ManagementSetupModal = ({
   const [activeSetupStep, setActiveSetupStep] = useState(0)
   const nextSetupStep = (): void => {
     setActiveSetupStep((current) => {
-      return current < 3 ? current + 1 : current
+      return current < 5 ? current + 1 : current
     })
   }
   const prevSetupStep = (): void => {

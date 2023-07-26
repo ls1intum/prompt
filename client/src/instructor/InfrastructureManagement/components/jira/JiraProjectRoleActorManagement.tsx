@@ -117,22 +117,38 @@ export const JiraProjectRoleActorManager = ({
             )
             if (fetchedRole) {
               if (role === 'users') {
-                payload.push({
-                  projectKey: usersRoleActorsToAdd.at(0)?.projectKey ?? '',
-                  roleId: fetchedRole.id,
-                  groupNames: usersRoleActorsToAdd.map((u) => u.groupName ?? ''),
+                const projectKeys = new Set(usersRoleActorsToAdd.map((u) => u.projectKey))
+                projectKeys.forEach((projectKey) => {
+                  const usersToAdd = usersRoleActorsToAdd.filter((u) => u.projectKey === projectKey)
+                  payload.push({
+                    projectKey,
+                    roleId: fetchedRole.id,
+                    groupNames: usersToAdd.map((u) => u.groupName ?? ''),
+                  })
                 })
               } else if (role === 'developers') {
-                payload.push({
-                  projectKey: developersRoleActorsToAdd.at(0)?.projectKey ?? '',
-                  roleId: fetchedRole.id,
-                  groupNames: developersRoleActorsToAdd.map((u) => u.groupName ?? ''),
+                const projectKeys = new Set(developersRoleActorsToAdd.map((u) => u.projectKey))
+                projectKeys.forEach((projectKey) => {
+                  const developersToAdd = developersRoleActorsToAdd.filter(
+                    (u) => u.projectKey === projectKey,
+                  )
+                  payload.push({
+                    projectKey,
+                    roleId: fetchedRole.id,
+                    groupNames: developersToAdd.map((u) => u.groupName ?? ''),
+                  })
                 })
               } else if (role === 'administrators') {
-                payload.push({
-                  projectKey: administratorsRoleActorsToAdd.at(0)?.projectKey ?? '',
-                  roleId: fetchedRole.id,
-                  groupNames: administratorsRoleActorsToAdd.map((u) => u.groupName ?? ''),
+                const projectKeys = new Set(administratorsRoleActorsToAdd.map((u) => u.projectKey))
+                projectKeys.forEach((projectKey) => {
+                  const administratorsToAdd = administratorsRoleActorsToAdd.filter(
+                    (u) => u.projectKey === projectKey,
+                  )
+                  payload.push({
+                    projectKey,
+                    roleId: fetchedRole.id,
+                    groupNames: administratorsToAdd.map((u) => u.groupName ?? ''),
+                  })
                 })
               }
             }
