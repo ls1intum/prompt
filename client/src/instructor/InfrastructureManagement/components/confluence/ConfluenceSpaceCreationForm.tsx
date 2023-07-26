@@ -1,36 +1,90 @@
-import { Button, MultiSelect, Stack } from '@mantine/core'
-import { useState } from 'react'
-import { createConfluenceSpaces } from '../../../../service/confluenceService'
+import { ActionIcon, Button, Group, Stack, Table, TextInput } from '@mantine/core'
+import { useEffect, useState } from 'react'
+import { type ConfluenceSpace, createConfluenceSpaces } from '../../../../service/confluenceService'
+import { IconX } from '@tabler/icons-react'
+import { useForm } from '@mantine/form'
 
 interface ConfluenceSpaceCreationFormProps {
-  projectNames: string[]
+  iosTag: string
+  spaces: ConfluenceSpace[]
 }
 
 export const ConfluenceSpaceCreationForm = ({
-  projectNames,
+  iosTag,
+  spaces,
 }: ConfluenceSpaceCreationFormProps): JSX.Element => {
-  const [spaceNameSuggestions, setSpaceNameSuggestions] = useState(projectNames)
-  const [spaceNamesToCreate, setSpaceNamesToCreate] = useState(spaceNameSuggestions)
+  const [spacesToCreate, setSpacesToCreate] = useState<ConfluenceSpace[]>([])
+  const newConfluenceSpace = useForm<ConfluenceSpace>({
+    initialValues: {
+      name: '',
+      key: '',
+    },
+  })
+
+  useEffect(() => {
+    setSpacesToCreate([
+      ...spacesToCreate,
+      ...spaces.map((space) => {
+        return {
+          name: `${iosTag.toUpperCase()} ${space.name}`,
+          key: `${iosTag.toUpperCase()}${space.key}`,
+        }
+      }),
+    ])
+  }, [spaces])
 
   return (
     <Stack>
-      <MultiSelect
-        label='Space Names'
-        data={spaceNameSuggestions}
-        placeholder='Select or type space names to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
-        onCreate={(query) => {
-          setSpaceNameSuggestions((current) => [...current, query])
-          return query
-        }}
-        value={spaceNamesToCreate}
-        onChange={setSpaceNamesToCreate}
-      />
+      <Table striped highlightOnHover>
+        <thead>
+          <tr>
+            <th>Space Name</th>
+            <th>Space Key</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {spacesToCreate.map((space) => (
+            <tr key={`${space.key}`}>
+              <td>{space.name}</td>
+              <td>{space.key}</td>
+              <td>
+                <ActionIcon
+                  onClick={() => {
+                    setSpacesToCreate(spaces.filter((s) => s.key !== space.key))
+                  }}
+                >
+                  <IconX />
+                </ActionIcon>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <Group position='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
+        <TextInput
+          placeholder='Space name'
+          label='Space Name'
+          {...newConfluenceSpace.getInputProps('name')}
+        />
+        <TextInput
+          placeholder='Space key'
+          label='Space key'
+          {...newConfluenceSpace.getInputProps('key')}
+        />
+        <Button
+          variant='filled'
+          onClick={() => {
+            setSpacesToCreate([...spacesToCreate, newConfluenceSpace.values])
+            newConfluenceSpace.reset()
+          }}
+        >
+          Add
+        </Button>
+      </Group>
       <Button
         onClick={() => {
-          void createConfluenceSpaces(spaceNamesToCreate)
+          void createConfluenceSpaces(spacesToCreate)
         }}
       >
         Create

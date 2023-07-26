@@ -21,7 +21,6 @@ import { BitbucketProjectsCreationForm } from './bitbucket/BitbucketProjectsCrea
 import { BambooProjectCreationForm } from './bamboo/BambooProjectCreationForm'
 import { JiraPermissionManager } from './jira/JiraPermissionManager'
 import { BitbucketPermissionsManager } from './bitbucket/BitbucketPermissionsManager'
-import { ConfluenceSpaceCreationForm } from './confluence/ConfluenceSpaceCreationForm'
 
 interface TeamsSetupStepperProps {
   opened: boolean
@@ -177,9 +176,9 @@ export const TeamsSetupStepper = ({
         <Stepper.Step description='Create Bamboo Projects'>
           <BambooProjectCreationForm projectNames={projects} />
         </Stepper.Step>
-        <Stepper.Step description='Create Confluence Spaces'>
-          <ConfluenceSpaceCreationForm projectNames={projects} />
-        </Stepper.Step>
+        {/* <Stepper.Step description='Create Confluence Spaces'>
+          <ConfluenceSpaceCreationForm iosTag={iosTag} projectNames={projects} />
+          </Stepper.Step> */}
       </Stepper>
       <Group position='center' style={{ padding: '2vh 0' }}>
         <Button variant='outline' onClick={prevSetupStep}>
