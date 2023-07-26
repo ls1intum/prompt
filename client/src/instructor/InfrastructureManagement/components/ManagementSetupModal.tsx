@@ -4,6 +4,9 @@ import { JiraProjectRoleActorManager } from './jira/JiraProjectRoleActorManageme
 import { JiraGroupsCreationForm } from './jira/JiraGroupsCreationForm'
 import { JiraProjectCategoriesCreationForm } from './jira/JiraProjectCategoriesCreationForm'
 import { JiraProjectsCreationForm } from './jira/JiraProjectsCreationForm'
+import { ConfluenceSpaceCreationForm } from './confluence/ConfluenceSpaceCreationForm'
+import { ConfluenceSpacePermissionAssignmentForm } from './confluence/ConfluenceSpacePermissionAssignmentForm'
+import { JIRA_USER_GROUPS_MGMT } from '../../../service/jiraService'
 
 interface ManagementSetupModalProps {
   opened: boolean
@@ -19,7 +22,7 @@ export const ManagementSetupModal = ({
   const [activeSetupStep, setActiveSetupStep] = useState(0)
   const nextSetupStep = (): void => {
     setActiveSetupStep((current) => {
-      return current < 3 ? current + 1 : current
+      return current < 5 ? current + 1 : current
     })
   }
   const prevSetupStep = (): void => {
@@ -42,6 +45,24 @@ export const ManagementSetupModal = ({
         </Stepper.Step>
         <Stepper.Step description='Add Project Role Actors'>
           <JiraProjectRoleActorManager iosTag={iosTag} />
+        </Stepper.Step>
+        <Stepper.Step description='Create Coaches and Project Leads Confluence Spaces'>
+          <ConfluenceSpaceCreationForm
+            iosTag={iosTag}
+            spaces={[
+              { name: 'Coaches and Project Leads', key: 'COACHPL' },
+              { name: 'CW', key: 'CW' },
+            ]}
+          />
+        </Stepper.Step>
+        <Stepper.Step description='Confluence Space Permissions'>
+          <ConfluenceSpacePermissionAssignmentForm
+            iosTag={iosTag}
+            spaceKeys={[`${iosTag.toUpperCase()}COACHPL`, `${iosTag.toUpperCase()}CW`]}
+            groupNameSuggestions={JIRA_USER_GROUPS_MGMT.map(
+              (userGroup) => `${iosTag.toLowerCase()}${userGroup}`,
+            )}
+          />
         </Stepper.Step>
       </Stepper>
       <Group position='center' style={{ padding: '2vh 0' }}>

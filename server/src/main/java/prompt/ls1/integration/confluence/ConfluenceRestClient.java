@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestParsingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import prompt.ls1.exception.UnirestRequestException;
 import prompt.ls1.integration.confluence.domain.ConfluenceSpace;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ConfluenceRestClient {
@@ -58,11 +61,30 @@ public class ConfluenceRestClient {
         });
     }
 
-    public ConfluenceSpace createSpace(final String spaceName, final String spaceKey) {
+    public List<ConfluenceSpace> findSpacesByKeys(final List<String> spaceKeys) {
+        HttpResponse<JsonNode> response = Unirest.get(String.format("%s/rest/api/space", confluenceUrl))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .queryString("spaceKey", spaceKeys)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
+
+        try {
+            return Arrays.asList(objectMapper
+                    .readValue(response.getBody().getObject().getJSONArray("results").toString(), ConfluenceSpace[].class));
+        } catch (JsonProcessingException e) {
+            throw new UnirestRequestException(e.getMessage());
+        }
+    }
+
+    public ConfluenceSpace createSpace(final ConfluenceSpace confluenceSpace) {
         ObjectNode payload = jsonNodeFactory.objectNode();
 
-        payload.put("key", spaceKey);
-        payload.put("name", spaceName);
+        payload.put("key", confluenceSpace.getKey());
+        payload.put("name", confluenceSpace.getName());
 
         HttpResponse<ConfluenceSpace> response = Unirest.post(String.format("%s/rest/api/space", confluenceUrl))
                 .basicAuth(username, password)
@@ -76,6 +98,31 @@ public class ConfluenceRestClient {
                 });
 
         return response.getBody();
+    }
+
+    public void assignSpacePermissionToUserGroup(final String spaceKey, final String userGroupName, final String permissionName) {
+        ObjectNode payload = jsonNodeFactory.objectNode();
+
+        ObjectNode subjectNode = jsonNodeFactory.objectNode();
+        subjectNode.put("type", "group");
+        subjectNode.put("identifier", userGroupName);
+        payload.set("subject", subjectNode);
+
+        ObjectNode operationNode = jsonNodeFactory.objectNode();
+        operationNode.put("key", permissionName);
+        operationNode.put("target", "space");
+        payload.set("operation", operationNode);
+
+        HttpResponse<JsonNode> response = Unirest.post(String.format("%s/rest/api/space/%s/permission", confluenceUrl, spaceKey))
+                .basicAuth(username, password)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .body(payload)
+                .asJson()
+                .ifFailure(Error.class, error -> {
+                    UnirestParsingException ex = error.getParsingError().get();
+                    throw new UnirestRequestException(ex.getOriginalBody());
+                });
     }
     
 }

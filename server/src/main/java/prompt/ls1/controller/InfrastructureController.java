@@ -51,42 +51,50 @@ public class InfrastructureController {
     }
 
     @PostMapping("/jira/groups")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraGroup>> createJiraGroups(@RequestBody final List<String> jiraGroupNames) {
         return ResponseEntity.ok(jiraIntegrationService.createGroups(jiraGroupNames));
     }
 
     @GetMapping("/jira/groups")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraGroup>> createJiraGroups(@RequestParam final String query) {
         return ResponseEntity.ok(jiraIntegrationService.getGroupsMatchingQuery(query));
     }
 
     @PostMapping("/jira/project-categories")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraProjectCategory>> createJiraProjectCategories(
             @RequestBody final List<String> jiraProjectCategoryNames) {
         return ResponseEntity.ok(jiraIntegrationService.createProjectCategories(jiraProjectCategoryNames));
     }
 
     @GetMapping("/jira/project-categories")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraProjectCategory>> getJiraProjectCategories() {
         return ResponseEntity.ok(jiraIntegrationService.getProjectCategories());
     }
 
     @PostMapping("/jira/projects")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraProject>> createJiraProjects(@RequestBody final List<JiraProject> jiraProjects) {
         return ResponseEntity.ok(jiraIntegrationService.createProjects(jiraProjects));
     }
 
     @GetMapping("/jira/projects")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraProject>> getJiraProjects(@RequestParam final String query) {
         return ResponseEntity.ok(jiraIntegrationService.getProjectsMatchingQuery(query));
     }
 
     @GetMapping("/jira/roles")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<JiraProjectRole>> getAllJiraProjectRoles() {
         return ResponseEntity.ok(jiraIntegrationService.getAllProjectRoles());
     }
 
     @PostMapping("/jira/groups/{groupName}/users")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<String> addUsersToJiraGroup(@PathVariable final String groupName,
                                               @RequestBody final List<String> usernames) {
         jiraIntegrationService.addUsersToGroup(groupName, usernames);
@@ -94,12 +102,14 @@ public class InfrastructureController {
     }
 
     @PostMapping("/jira/projects/roles/actors")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<String> addProjectRoleActors(@RequestBody final List<JiraProjectRoleActor> jiraProjectRoleActors) {
         jiraIntegrationService.addActorsToProjectRole(jiraProjectRoleActors);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/bitbucket/projects")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<BitbucketProject>> createBitbucketProjects(@RequestParam final Boolean withRepository,
             @RequestBody final List<String> projectKeys) {
         final List<BitbucketProject> bitbucketProjects = bitbucketIntegrationService.createProjects(projectKeys);
@@ -112,6 +122,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/bitbucket/projects/{projectKey}/repositories")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<BitbucketRepository>> createBitbucketRepositories(
             @PathVariable final String projectKey,
             @RequestBody final List<String> repositoryNames) {
@@ -119,6 +130,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/bitbucket/projects/permissions")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<String> grantBitbucketProjectPermissions(
             @RequestBody final List<BitbucketProjectPermissionGrant> bitbucketProjectPermissionGrants) {
         bitbucketIntegrationService.grantProjectPermissions(bitbucketProjectPermissionGrants);
@@ -126,6 +138,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/bitbucket/projects/repositories/permissions")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<String> grantBitbucketProjectRepositoryPermissions(
             @RequestBody final List<BitbucketProjectRepositoryPermissionGrant> bitbucketProjectRepositoryPermissionGrants) {
         bitbucketIntegrationService.grantProjectRepositoryPermissions(bitbucketProjectRepositoryPermissionGrants);
@@ -133,28 +146,47 @@ public class InfrastructureController {
     }
 
     @GetMapping("/bitbucket/projects")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<BitbucketProject>> getProjects(@RequestParam final String query) {
         return ResponseEntity.ok(bitbucketIntegrationService.getProjectsMatchingQuery(query));
     }
 
     @GetMapping("/bitbucket/projects/{projectKey}/repositories")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<BitbucketRepository>> getRepositoriesForProject(@PathVariable final String projectKey) {
         return ResponseEntity.ok(bitbucketIntegrationService.getRepositoriesForProject(projectKey));
     }
 
     @PostMapping("/bitbucket/projects/{projectKey}/repositories/{repositorySlug}/setup")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<String> setupBitbucketRepository(@PathVariable final String projectKey, @PathVariable final String repositorySlug) throws GitAPIException, IOException {
         bitbucketIntegrationService.setupRepository(projectKey, repositorySlug);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/bamboo/projects")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<BambooProject>> createBambooProjects(@RequestBody final List<BambooProject> bambooProjects) {
         return ResponseEntity.ok(bambooIntegrationService.createProjects(bambooProjects));
     }
 
+    @GetMapping("/confluence/spaces")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<ConfluenceSpace>> getConfluenceSpacesByKeys(@RequestParam(name = "spaceKey") final List<String> spaceKeys) {
+        return ResponseEntity.ok(confluenceIntegrationService.findSpacesByKeys(spaceKeys));
+    }
+
     @PostMapping("/confluence/spaces")
-    public ResponseEntity<List<ConfluenceSpace>> createConfluenceSpaces(@RequestBody final List<String> confluenceSpaceNames) {
-        return ResponseEntity.ok(confluenceIntegrationService.createSpaces(confluenceSpaceNames));
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<ConfluenceSpace>> createConfluenceSpaces(@RequestBody final List<ConfluenceSpace> confluenceSpaces) {
+        return ResponseEntity.ok(confluenceIntegrationService.createSpaces(confluenceSpaces));
+    }
+
+    @PostMapping("/confluence/spaces/{spaceKey}/permissions")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<String> assignConfluenceSpaceAdminPermissionToUserGroups(@PathVariable final String spaceKey,
+                                                                                                  @RequestBody final List<String> userGroups) {
+        confluenceIntegrationService.assignSpacePermissionToUserGroups(spaceKey, userGroups);
+        return ResponseEntity.ok().build();
     }
 }

@@ -14,12 +14,22 @@ public class ConfluenceIntegrationService {
     @Autowired
     private ConfluenceRestClient confluenceRestClient;
 
-    public List<ConfluenceSpace> createSpaces(final List<String> confluenceSpaceNames) {
-        final List<ConfluenceSpace> confluenceSpaces = new ArrayList<>();
-        confluenceSpaceNames.forEach(confluenceSpaceName -> {
-            confluenceSpaces.add(confluenceRestClient.createSpace(confluenceSpaceName, confluenceSpaceName));
+    public List<ConfluenceSpace> findSpacesByKeys(final List<String> spaceKeys) {
+        return confluenceRestClient.findSpacesByKeys(spaceKeys);
+    }
+
+    public List<ConfluenceSpace> createSpaces(final List<ConfluenceSpace> confluenceSpaces) {
+        final List<ConfluenceSpace> confluenceSpacesResult = new ArrayList<>();
+        confluenceSpaces.forEach(confluenceSpace -> {
+            confluenceSpacesResult.add(confluenceRestClient.createSpace(confluenceSpace));
         });
 
-        return confluenceSpaces;
+        return confluenceSpacesResult;
+    }
+
+    public void assignSpacePermissionToUserGroups(final String spaceKey, final List<String> userGroupNames) {
+        userGroupNames.forEach(userGroupName -> {
+            confluenceRestClient.assignSpacePermissionToUserGroup(spaceKey, userGroupName, "administer");
+        });
     }
 }
