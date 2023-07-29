@@ -1,0 +1,856 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="airelawaleria (generated)" id="1690584580678-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_iteration"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_iteration">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_pkey"/>
+            </column>
+            <column name="coach_application_period_end" type="date"/>
+            <column name="coach_application_period_start" type="date"/>
+            <column name="coach_interview_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="coach_interview_location" type="VARCHAR(255)"/>
+            <column name="coach_interview_planner_link" type="VARCHAR(255)"/>
+            <column name="developer_application_period_end" type="date"/>
+            <column name="developer_application_period_start" type="date"/>
+            <column name="ios_tag" type="VARCHAR(255)"/>
+            <column defaultValueBoolean="false" name="project_team_preferences_submission_open" type="BOOLEAN"/>
+            <column name="semester_name" type="VARCHAR(255)"/>
+            <column name="tutor_application_period_end" type="date"/>
+            <column name="tutor_application_period_start" type="date"/>
+            <column name="tutor_interview_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="tutor_interview_location" type="VARCHAR(255)"/>
+            <column name="tutor_interview_planner_link" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="coach_application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="coach_application">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="coach_application_pkey"/>
+            </column>
+            <column name="courses_taken" type="INT2[]"/>
+            <column name="current_semester" type="SMALLINT"/>
+            <column name="devices" type="INT2[]"/>
+            <column name="english_language_proficiency" type="SMALLINT"/>
+            <column name="experience" type="OID"/>
+            <column name="german_language_proficiency" type="SMALLINT"/>
+            <column name="motivation" type="OID"/>
+            <column name="study_degree" type="SMALLINT"/>
+            <column name="study_program" type="SMALLINT"/>
+            <column name="solved_problem" type="OID"/>
+            <column name="application_assessment_id" type="UUID"/>
+            <column name="course_iteration_id" type="UUID"/>
+            <column name="project_team_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-3">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_phase"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_phase">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_phase_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="sequential_order" type="INTEGER"/>
+            <column name="type" type="SMALLINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-4" context="legacy">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="developer_application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="developer_application">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="developer_application_pkey"/>
+            </column>
+            <column name="courses_taken" type="INT2[]"/>
+            <column name="current_semester" type="SMALLINT"/>
+            <column name="devices" type="INT2[]"/>
+            <column name="english_language_proficiency" type="SMALLINT"/>
+            <column name="experience" type="OID"/>
+            <column name="german_language_proficiency" type="SMALLINT"/>
+            <column name="motivation" type="OID"/>
+            <column name="study_degree" type="SMALLINT"/>
+            <column name="study_program" type="SMALLINT"/>
+            <column name="application_assessment_id" type="UUID"/>
+            <column name="course_iteration_id" type="UUID"/>
+            <column name="intro_course_participation_id" type="UUID"/>
+            <column name="project_team_id" type="UUID"/>
+            <column name="post_kickoff_submission_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="intro_course_participation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="intro_course_participation">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="intro_course_participation_pkey"/>
+            </column>
+            <column name="intro_course_self_assessment" type="SMALLINT"/>
+            <column name="student_comments" type="VARCHAR(255)"/>
+            <column name="supervisor_assessment" type="SMALLINT"/>
+            <column name="tutor_comments" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-6">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_pkey"/>
+            </column>
+            <column name="blocked_by_pm" type="BOOLEAN"/>
+            <column name="email" type="VARCHAR(100)"/>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="gender" type="SMALLINT"/>
+            <column name="is_exchange_student" type="BOOLEAN"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+            <column name="matriculation_number" type="VARCHAR(30)"/>
+            <column name="nationality" type="VARCHAR(10)"/>
+            <column name="public_id" type="UUID"/>
+            <column name="reason_for_blocked_by_pm" type="OID"/>
+            <column name="suggested_as_coach" type="BOOLEAN"/>
+            <column name="suggested_as_tutor" type="BOOLEAN"/>
+            <column name="tum_id" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-7">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_post_kickoff_submission"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_post_kickoff_submission">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_post_kickoff_submission_pkey"/>
+            </column>
+            <column name="apple_id" type="VARCHAR(255)"/>
+            <column name="apple_watch_device_id" type="VARCHAR(255)"/>
+            <column name="i_pad_device_id" type="VARCHAR(255)"/>
+            <column name="i_phone_device_id" type="VARCHAR(255)"/>
+            <column name="mac_book_device_id" type="VARCHAR(255)"/>
+            <column name="reason_for_first_choice" type="OID"/>
+            <column name="reason_for_last_choice" type="OID"/>
+            <column name="self_reported_experience_level" type="SMALLINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-8">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_skill"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_skill">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_skill_pkey"/>
+            </column>
+            <column name="skill_assessment_source" type="SMALLINT"/>
+            <column name="skill_proficiency" type="SMALLINT"/>
+            <column name="skill_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-9">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tutor_application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="tutor_application">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tutor_application_pkey"/>
+            </column>
+            <column name="courses_taken" type="INT2[]"/>
+            <column name="current_semester" type="SMALLINT"/>
+            <column name="devices" type="INT2[]"/>
+            <column name="english_language_proficiency" type="SMALLINT"/>
+            <column name="experience" type="OID"/>
+            <column name="german_language_proficiency" type="SMALLINT"/>
+            <column name="motivation" type="OID"/>
+            <column name="study_degree" type="SMALLINT"/>
+            <column name="study_program" type="SMALLINT"/>
+            <column name="reason_good_tutor" type="OID"/>
+            <column name="application_assessment_id" type="UUID"/>
+            <column name="course_iteration_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-10">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_iteration_phases"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_iteration_phases">
+            <column name="course_iteration_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_phases_pkey"/>
+            </column>
+            <column name="phase_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_phases_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-11">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_iteration_check_entries"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_iteration_check_entries">
+            <column name="course_iteration_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_check_entries_pkey"/>
+            </column>
+            <column name="check_entry_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_check_entries_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-12">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="project_team"/>
+            </not>
+        </preConditions>
+        <createTable tableName="project_team">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="project_team_pkey"/>
+            </column>
+            <column name="customer" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="project_key" type="VARCHAR(255)"/>
+            <column name="course_iteration_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-13">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="application_assessment_instructor_comments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="application_assessment_instructor_comments">
+            <column name="application_assessment_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="application_assessment_instructor_comments_pkey"/>
+            </column>
+            <column name="instructor_comments_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="application_assessment_instructor_comments_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-14">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_phase_course_phase_check"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_phase_course_phase_check">
+            <column name="course_phase_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_phase_course_phase_check_pkey"/>
+            </column>
+            <column name="course_phase_check_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_phase_course_phase_check_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-15">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_post_kickoff_submission_student_project_team_preference"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_post_kickoff_submission_student_project_team_preference">
+            <column name="student_post_kickoff_submission_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_post_kickoff_submission_student_project_team_prefe_pkey"/>
+            </column>
+            <column name="student_project_team_preferences_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_post_kickoff_submission_student_project_team_prefe_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-16">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_post_kickoff_submission_student_skill"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_post_kickoff_submission_student_skill">
+            <column name="student_post_kickoff_submission_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_post_kickoff_submission_student_skill_pkey"/>
+            </column>
+            <column name="student_skill_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_post_kickoff_submission_student_skill_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-17">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_l46lsnjwiwvi1yafw1u97gobb" tableName="course_iteration"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="semester_name" constraintName="uk_l46lsnjwiwvi1yafw1u97gobb" tableName="course_iteration"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-18">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_otdte1ljyda8u9pc9a24sqigj" tableName="course_iteration"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="ios_tag" constraintName="uk_otdte1ljyda8u9pc9a24sqigj" tableName="course_iteration"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-19">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_ctsmypy5fg149tem0bm6xn8um" tableName="coach_application"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="application_assessment_id" constraintName="uk_ctsmypy5fg149tem0bm6xn8um" tableName="coach_application"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-20">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uktq1gcc8t5yxjbith6jychj2cw" tableName="course_phase"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="sequential_order" constraintName="uktq1gcc8t5yxjbith6jychj2cw" tableName="course_phase"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-21">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_3l0klwjq8j7t84qmacpy2vhqo" tableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="intro_course_participation_id" constraintName="uk_3l0klwjq8j7t84qmacpy2vhqo" tableName="developer_application"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-22">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_54dk2ysv7ouxkdrddv82rcjhq" tableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="post_kickoff_submission_id" constraintName="uk_54dk2ysv7ouxkdrddv82rcjhq" tableName="developer_application"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-23">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_7y4i88ju7rfes0ig1d9ye1i83" tableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="application_assessment_id" constraintName="uk_7y4i88ju7rfes0ig1d9ye1i83" tableName="developer_application"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-24">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk3w53vssuqxkdrnocjfgjwuf38" tableName="student"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="public_id" constraintName="uk3w53vssuqxkdrnocjfgjwuf38" tableName="student"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-25">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_fe0i52si7ybu0wjedj6motiim" tableName="student"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="email" constraintName="uk_fe0i52si7ybu0wjedj6motiim" tableName="student"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-26">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="ukfe0i52si7ybu0wjedj6motiim" tableName="student"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="email" constraintName="ukfe0i52si7ybu0wjedj6motiim" tableName="student"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-27">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_bjavqv461tb8fu61c6hna0uuv" tableName="tutor_application"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="application_assessment_id" constraintName="uk_bjavqv461tb8fu61c6hna0uuv" tableName="tutor_application"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-28">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_17hsuoo0oooqrjhyy0vpwd9rw" tableName="course_iteration_phases"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="phase_id" constraintName="uk_17hsuoo0oooqrjhyy0vpwd9rw" tableName="course_iteration_phases"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-29">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_at8h5o385242bogws3i5ea1px" tableName="course_iteration_check_entries"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="check_entry_id" constraintName="uk_at8h5o385242bogws3i5ea1px" tableName="course_iteration_check_entries"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-30">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_bmwex5w2v0sxscp4r3p263bsg" tableName="project_team"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="project_key" constraintName="uk_bmwex5w2v0sxscp4r3p263bsg" tableName="project_team"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-31">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_has4yw25qfdkvke7p4xlf2yuk" tableName="project_team"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="name" constraintName="uk_has4yw25qfdkvke7p4xlf2yuk" tableName="project_team"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-32">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_gydm8omlmnj2vjkw3vyxh8tok" tableName="application_assessment_instructor_comments"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="instructor_comments_id" constraintName="uk_gydm8omlmnj2vjkw3vyxh8tok" tableName="application_assessment_instructor_comments"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-33">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_ittvvl7pqowvohnuojq917nqm" tableName="course_phase_course_phase_check"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="course_phase_check_id" constraintName="uk_ittvvl7pqowvohnuojq917nqm" tableName="course_phase_course_phase_check"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-34">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_iy5pb5h2j1x8xbiqake4lw3hq" tableName="student_post_kickoff_submission_student_project_team_preference"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="student_project_team_preferences_id" constraintName="uk_iy5pb5h2j1x8xbiqake4lw3hq" tableName="student_post_kickoff_submission_student_project_team_preference"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-35">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists constraintName="uk_p2m34rdmc7npr52fdrl6q6p6u" tableName="student_post_kickoff_submission_student_skill"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="student_skill_id" constraintName="uk_p2m34rdmc7npr52fdrl6q6p6u" tableName="student_post_kickoff_submission_student_skill"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-36">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="application_assessment"/>
+            </not>
+        </preConditions>
+        <createTable tableName="application_assessment">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="application_assessment_pkey"/>
+            </column>
+            <column name="acceptance_sent" type="BOOLEAN"/>
+            <column name="accepted" type="BOOLEAN"/>
+            <column name="assessment_score" type="INTEGER"/>
+            <column name="interview_invite_sent" type="BOOLEAN"/>
+            <column name="rejection_sent" type="BOOLEAN"/>
+            <column name="technical_challenge_programming_score" type="FLOAT8"/>
+            <column name="technical_challenge_quiz_score" type="FLOAT8"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-37">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_iteration_phase"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_iteration_phase">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_phase_pkey"/>
+            </column>
+            <column name="end_date" type="date"/>
+            <column name="start_date" type="date"/>
+            <column name="course_phase_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-38">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_iteration_phase_check_entry"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_iteration_phase_check_entry">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_iteration_phase_check_entry_pkey"/>
+            </column>
+            <column name="fulfilled" type="BOOLEAN"/>
+            <column name="course_phase_check_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-39">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="course_phase_check"/>
+            </not>
+        </preConditions>
+        <createTable tableName="course_phase_check">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="course_phase_check_pkey"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="sequential_order" type="INTEGER"/>
+            <column name="title" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-40">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="instructor_comment"/>
+            </not>
+        </preConditions>
+        <createTable tableName="instructor_comment">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="instructor_comment_pkey"/>
+            </column>
+            <column name="author" type="VARCHAR(255)"/>
+            <column name="text" type="OID"/>
+            <column name="timestamp" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-41">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="skill"/>
+            </not>
+        </preConditions>
+        <createTable tableName="skill">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="skill_pkey"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-42">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_coach_application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_coach_application">
+            <column name="student_id" type="UUID"/>
+            <column name="application_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_coach_application_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-43">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_developer_application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_developer_application">
+            <column name="student_id" type="UUID"/>
+            <column name="application_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_developer_application_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-44">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_project_team_preference"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_project_team_preference">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_project_team_preference_pkey"/>
+            </column>
+            <column name="priority_score" type="INTEGER"/>
+            <column name="project_team_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-45">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="student_tutor_application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student_tutor_application">
+            <column name="student_id" type="UUID"/>
+            <column name="application_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_tutor_application_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-46">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk14gc268w7u2gcm7xj2uo7wbg4" foreignKeyTableName="tutor_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_iteration_id" baseTableName="tutor_application" constraintName="fk14gc268w7u2gcm7xj2uo7wbg4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-47">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk49dxh831hl3elllng6uy8lauj" foreignKeyTableName="student_post_kickoff_submission_student_skill"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_post_kickoff_submission_id" baseTableName="student_post_kickoff_submission_student_skill" constraintName="fk49dxh831hl3elllng6uy8lauj" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student_post_kickoff_submission" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-48">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk5c2dhq70aowyn3ijdfa5yl7ga" foreignKeyTableName="application_assessment_instructor_comments"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="instructor_comments_id" baseTableName="application_assessment_instructor_comments" constraintName="fk5c2dhq70aowyn3ijdfa5yl7ga" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="instructor_comment" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-49">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk677t7vt0w3d4edek4ytln195a" foreignKeyTableName="student_skill"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="skill_id" baseTableName="student_skill" constraintName="fk677t7vt0w3d4edek4ytln195a" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="skill" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-50">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk6sutfneg7p86xoxc30895n7yw" foreignKeyTableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_assessment_id" baseTableName="developer_application" constraintName="fk6sutfneg7p86xoxc30895n7yw" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="application_assessment" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-51">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk7bc2o0kv8mun7b4c3q05rp6o4" foreignKeyTableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="intro_course_participation_id" baseTableName="developer_application" constraintName="fk7bc2o0kv8mun7b4c3q05rp6o4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="intro_course_participation" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-52">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk8iibbjdq42f3piaxvc66s0bof" foreignKeyTableName="course_iteration_check_entries"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="check_entry_id" baseTableName="course_iteration_check_entries" constraintName="fk8iibbjdq42f3piaxvc66s0bof" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration_phase_check_entry" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-53">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk9iycprirxmevt56s88nk8vcjn" foreignKeyTableName="tutor_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_assessment_id" baseTableName="tutor_application" constraintName="fk9iycprirxmevt56s88nk8vcjn" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="application_assessment" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-54">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkajx68c6php6c1quhnyrdru0vj" foreignKeyTableName="student_developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="student_developer_application" constraintName="fkajx68c6php6c1quhnyrdru0vj" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-55">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkb48nytoln6kl5k28w8hu4svlu" foreignKeyTableName="student_post_kickoff_submission_student_project_team_preference"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_project_team_preferences_id" baseTableName="student_post_kickoff_submission_student_project_team_preference" constraintName="fkb48nytoln6kl5k28w8hu4svlu" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student_project_team_preference" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-56">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkbhc4xsquqt3xgd0x1wr6ohg1h" foreignKeyTableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="project_team_id" baseTableName="developer_application" constraintName="fkbhc4xsquqt3xgd0x1wr6ohg1h" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="project_team" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-57">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fke50454284my2hbmuiavoanlv4" foreignKeyTableName="student_tutor_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="student_tutor_application" constraintName="fke50454284my2hbmuiavoanlv4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-58">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkeev8v514i85eobl8af4f0n9rm" foreignKeyTableName="course_phase_course_phase_check"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_phase_id" baseTableName="course_phase_course_phase_check" constraintName="fkeev8v514i85eobl8af4f0n9rm" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_phase" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-59">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkeg01ch5vjrstl9j25yghcslbm" foreignKeyTableName="student_coach_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="student_coach_application" constraintName="fkeg01ch5vjrstl9j25yghcslbm" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-60">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkffr0yctspdkwygrcdboj4n27e" foreignKeyTableName="student_post_kickoff_submission_student_project_team_preference"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_post_kickoff_submission_id" baseTableName="student_post_kickoff_submission_student_project_team_preference" constraintName="fkffr0yctspdkwygrcdboj4n27e" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student_post_kickoff_submission" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-61">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkfgtatnxn5rj06r8me7bsftdyo" foreignKeyTableName="coach_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="project_team_id" baseTableName="coach_application" constraintName="fkfgtatnxn5rj06r8me7bsftdyo" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="project_team" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-62">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkgvs2rjrwr63nesoutlhabp1sd" foreignKeyTableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="post_kickoff_submission_id" baseTableName="developer_application" constraintName="fkgvs2rjrwr63nesoutlhabp1sd" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student_post_kickoff_submission" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-63">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkhme1v9iusn3092hgarbiug9na" foreignKeyTableName="student_coach_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_id" baseTableName="student_coach_application" constraintName="fkhme1v9iusn3092hgarbiug9na" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="coach_application" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-64">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkhq0dgjv3enr9b588f93eg8mue" foreignKeyTableName="coach_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_iteration_id" baseTableName="coach_application" constraintName="fkhq0dgjv3enr9b588f93eg8mue" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-65">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkiqwlqawxcnp2tqveo5k4y7byx" foreignKeyTableName="student_developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_id" baseTableName="student_developer_application" constraintName="fkiqwlqawxcnp2tqveo5k4y7byx" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="developer_application" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-66">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkj3a7vv7e2btmdlm6ga58s4b9c" foreignKeyTableName="application_assessment_instructor_comments"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_assessment_id" baseTableName="application_assessment_instructor_comments" constraintName="fkj3a7vv7e2btmdlm6ga58s4b9c" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="application_assessment" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-67">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkkyd9keamm7sbgo729l8rcl682" foreignKeyTableName="project_team"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_iteration_id" baseTableName="project_team" constraintName="fkkyd9keamm7sbgo729l8rcl682" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-68">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkld901bea28e3gvoqcpwwcsdws" foreignKeyTableName="course_phase_course_phase_check"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_phase_check_id" baseTableName="course_phase_course_phase_check" constraintName="fkld901bea28e3gvoqcpwwcsdws" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_phase_check" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-69">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fklqaokd0hvqjvc18wai7h7g8vh" foreignKeyTableName="course_iteration_phases"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="phase_id" baseTableName="course_iteration_phases" constraintName="fklqaokd0hvqjvc18wai7h7g8vh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration_phase" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-70">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkmim9qokekx8cunrpgp6k78cgq" foreignKeyTableName="student_post_kickoff_submission_student_skill"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="student_skill_id" baseTableName="student_post_kickoff_submission_student_skill" constraintName="fkmim9qokekx8cunrpgp6k78cgq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="student_skill" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-71">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkmu7bmqmpb6cblsvveijpqhwqf" foreignKeyTableName="coach_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_assessment_id" baseTableName="coach_application" constraintName="fkmu7bmqmpb6cblsvveijpqhwqf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="application_assessment" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-72">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkn2yoo81pgv36qdj69hlbxerox" foreignKeyTableName="course_iteration_phase_check_entry"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_phase_check_id" baseTableName="course_iteration_phase_check_entry" constraintName="fkn2yoo81pgv36qdj69hlbxerox" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_phase_check" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-73">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fknma0ig7x82rquooqd2wdn4jv" foreignKeyTableName="student_tutor_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="application_id" baseTableName="student_tutor_application" constraintName="fknma0ig7x82rquooqd2wdn4jv" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tutor_application" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-74">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkoj1ibw7qmnma6h01g9is3dglm" foreignKeyTableName="course_iteration_check_entries"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_iteration_id" baseTableName="course_iteration_check_entries" constraintName="fkoj1ibw7qmnma6h01g9is3dglm" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration_phase" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-75">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkrew9ee2sxv2x1fjpk55ml4uh2" foreignKeyTableName="developer_application"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_iteration_id" baseTableName="developer_application" constraintName="fkrew9ee2sxv2x1fjpk55ml4uh2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-76">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fkro67e5co9psfkdp3ntv44b8md" foreignKeyTableName="course_iteration_phase"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_phase_id" baseTableName="course_iteration_phase" constraintName="fkro67e5co9psfkdp3ntv44b8md" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_phase" validate="true"/>
+    </changeSet>
+    <changeSet author="airelawaleria (generated)" id="1690584580678-77">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fksybih3liut5uwlif54wvnbwm4" foreignKeyTableName="course_iteration_phases"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="course_iteration_id" baseTableName="course_iteration_phases" constraintName="fksybih3liut5uwlif54wvnbwm4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="course_iteration" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
