@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import prompt.ls1.model.enums.Course;
 import prompt.ls1.model.enums.Device;
+import prompt.ls1.model.enums.LanguageProficiency;
 import prompt.ls1.model.enums.StudyDegree;
 import prompt.ls1.model.enums.StudyProgram;
 
@@ -36,12 +37,16 @@ public abstract class Application {
     @Enumerated(EnumType.STRING)
     private StudyProgram studyProgram;
 
+    @Enumerated(EnumType.STRING)
     private LanguageProficiency germanLanguageProficiency;
 
+    @Enumerated(EnumType.STRING)
     private LanguageProficiency englishLanguageProficiency;
 
+    @Enumerated(EnumType.STRING)
     private Set<Device> devices;
 
+    @Enumerated(EnumType.STRING)
     private Set<Course> coursesTaken;
 
     @Lob
