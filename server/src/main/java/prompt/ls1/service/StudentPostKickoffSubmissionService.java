@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
+import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.ProjectTeam;
@@ -53,7 +54,7 @@ public class StudentPostKickoffSubmissionService {
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
 
-        if (!developerApplication.getAssessment().getAccepted()) {
+        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)) {
             throw new ResourceInvalidParametersException("No developer application with provided parameters found.");
         }
 
@@ -91,7 +92,7 @@ public class StudentPostKickoffSubmissionService {
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
 
-        if (!application.getAssessment().getAccepted()) {
+        if (!application.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)) {
             throw new ResourceInvalidParametersException("No developer application with provided parameters found.");
         }
 

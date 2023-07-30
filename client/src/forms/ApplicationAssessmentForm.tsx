@@ -9,7 +9,6 @@ import {
   Divider,
   Group,
   Modal,
-  Select,
   Stack,
   Text,
   TextInput,
@@ -120,13 +119,7 @@ export const ApplicationAssessmentForm = ({
       assessmentScore: assessment?.assessmentScore ?? 0,
       technicalChallengeProgrammingScore: assessment?.technicalChallengeProgrammingScore ?? 0,
       technicalChallengeQuizScore: assessment?.technicalChallengeQuizScore ?? 0,
-      accepted:
-        assessment?.accepted === undefined || assessment?.accepted === null
-          ? null
-          : assessment?.accepted ?? false,
-      interviewInviteSent: assessment?.interviewInviteSent ?? false,
-      acceptanceSent: assessment?.acceptanceSent ?? false,
-      rejectionSent: assessment?.rejectionSent ?? false,
+      status: assessment?.status ?? 'NOT_ASSESSED',
     },
   })
   const studentForm = useForm<Student>({
@@ -143,11 +136,7 @@ export const ApplicationAssessmentForm = ({
     assessmentForm.setValues({
       instructorComments: assessment?.instructorComments ?? [],
       assessmentScore: assessment?.assessmentScore ?? 0,
-      accepted:
-        assessment?.accepted === undefined || assessment?.accepted === null
-          ? null
-          : assessment?.accepted ?? false,
-      interviewInviteSent: assessment?.interviewInviteSent ?? false,
+      status: assessment?.status ?? 'NOT_ASSESSED',
     })
     assessmentForm.resetDirty()
     assessmentForm.resetTouched()
@@ -164,7 +153,10 @@ export const ApplicationAssessmentForm = ({
   }, [student])
 
   useEffect(() => {
-    if (assessmentForm.values.accepted !== undefined && assessmentForm.values.accepted !== null) {
+    if (
+      assessmentForm.values.status === 'ACCEPTED' ||
+      assessmentForm.values.status === 'REJECTED'
+    ) {
       setActiveTimelineStatus(3)
     } else if (assessmentForm.values.assessmentScore) {
       setActiveTimelineStatus(2)
@@ -172,6 +164,39 @@ export const ApplicationAssessmentForm = ({
       setActiveTimelineStatus(1)
     }
   }, [assessment])
+
+  const updateAssessmentStatus = (status: string): void => {
+    const assessmentPatchObjectArray: Patch[] = []
+    const assessmentPatchObject = new Map()
+    assessmentPatchObject.set('op', 'replace')
+    assessmentPatchObject.set('path', '/status')
+    assessmentPatchObject.set('value', status)
+    const obj = Object.fromEntries(assessmentPatchObject)
+    assessmentPatchObjectArray.push(obj)
+
+    if (applicationType === 'developer') {
+      void dispatch(
+        updateDeveloperApplicationAssessment({
+          applicationId,
+          applicationAssessmentPatch: assessmentPatchObjectArray,
+        }),
+      )
+    } else if (applicationType === 'coach') {
+      void dispatch(
+        updateCoachApplicationAssessment({
+          applicationId,
+          applicationAssessmentPatch: assessmentPatchObjectArray,
+        }),
+      )
+    } else if (applicationType === 'tutor') {
+      void dispatch(
+        updateTutorApplicationAssessment({
+          applicationId,
+          applicationAssessmentPatch: assessmentPatchObjectArray,
+        }),
+      )
+    }
+  }
 
   return (
     <>
@@ -281,16 +306,87 @@ export const ApplicationAssessmentForm = ({
               </Text>
             }
           >
-            <TextInput
-              onWheel={(e) => {
-                e.currentTarget.blur()
-              }}
-              withAsterisk
-              type='number'
-              label='Assessment Score'
-              placeholder='Assessment Score'
-              {...assessmentForm.getInputProps('assessmentScore')}
-            />
+            <Stack>
+              <TextInput
+                onWheel={(e) => {
+                  e.currentTarget.blur()
+                }}
+                withAsterisk
+                type='number'
+                label='Assessment Score'
+                placeholder='Assessment Score'
+                {...assessmentForm.getInputProps('assessmentScore')}
+              />
+              <Group position='right'>
+                <Button
+                  disabled={!assessmentForm.isDirty() && !studentForm.isDirty()}
+                  onClick={() => {
+                    if (studentForm.isDirty()) {
+                      const studentPatchObjectArray: Patch[] = []
+                      Object.keys(studentForm.values).forEach((key) => {
+                        if (studentForm.isDirty(key)) {
+                          const studentPatchObject = new Map()
+                          studentPatchObject.set('op', 'replace')
+                          studentPatchObject.set('path', '/' + key)
+                          studentPatchObject.set('value', studentForm.getInputProps(key).value)
+                          const obj = Object.fromEntries(studentPatchObject)
+                          studentPatchObjectArray.push(obj)
+                        }
+                      })
+
+                      void dispatch(
+                        updateStudentAssessment({
+                          studentId: student.id,
+                          studentAssessmentPatch: studentPatchObjectArray,
+                        }),
+                      )
+                    }
+
+                    if (assessmentForm.isDirty()) {
+                      const assessmentPatchObjectArray: Patch[] = []
+                      Object.keys(assessmentForm.values).forEach((key) => {
+                        if (assessmentForm.isDirty(key)) {
+                          const assessmentPatchObject = new Map()
+                          assessmentPatchObject.set('op', 'replace')
+                          assessmentPatchObject.set('path', '/' + key)
+                          assessmentPatchObject.set(
+                            'value',
+                            assessmentForm.getInputProps(key).value,
+                          )
+                          const obj = Object.fromEntries(assessmentPatchObject)
+                          assessmentPatchObjectArray.push(obj)
+                        }
+                      })
+
+                      if (applicationType === 'developer') {
+                        void dispatch(
+                          updateDeveloperApplicationAssessment({
+                            applicationId,
+                            applicationAssessmentPatch: assessmentPatchObjectArray,
+                          }),
+                        )
+                      } else if (applicationType === 'coach') {
+                        void dispatch(
+                          updateCoachApplicationAssessment({
+                            applicationId,
+                            applicationAssessmentPatch: assessmentPatchObjectArray,
+                          }),
+                        )
+                      } else if (applicationType === 'tutor') {
+                        void dispatch(
+                          updateTutorApplicationAssessment({
+                            applicationId,
+                            applicationAssessmentPatch: assessmentPatchObjectArray,
+                          }),
+                        )
+                      }
+                    }
+                  }}
+                >
+                  Submit
+                </Button>
+              </Group>
+            </Stack>
           </Timeline.Item>
           {(applicationType === 'coach' || applicationType === 'tutor') && (
             <Timeline.Item
@@ -304,9 +400,7 @@ export const ApplicationAssessmentForm = ({
               <Stack>
                 <Tooltip
                   label={
-                    assessment?.interviewInviteSent
-                      ? 'The interview invitation email has already been sent successfully.'
-                      : 'An interview invitation email will be sent out to the student. You can review the interview details in the Course Iteration Management console.'
+                    'Please keep in mind that the interview invitation might have already been sent out. Make sure to check the outbox. An interview invitation email will be immediately sent out to the student. You can review the interview details in the Course Iteration Management console.'
                   }
                   color='blue'
                   withArrow
@@ -314,8 +408,8 @@ export const ApplicationAssessmentForm = ({
                 >
                   <div>
                     <Button
+                      disabled={assessmentForm.values.status === 'PENDING_INTERVIEW'}
                       variant='outline'
-                      disabled={assessment?.interviewInviteSent}
                       onClick={() => {
                         setInterviewInvitationSendConfirmationModalOpened(true)
                       }}
@@ -334,154 +428,46 @@ export const ApplicationAssessmentForm = ({
               </Text>
             }
             bullet={
-              assessmentForm.values.acceptanceSent ? (
+              assessmentForm.values.status === 'ACCEPTED' ? (
                 <IconCircleCheck size={12} />
-              ) : assessmentForm.values.rejectionSent ? (
+              ) : assessmentForm.values.status === 'REJECTED' ? (
                 <IconBan size={12} />
               ) : (
                 <IconQuestionMark size={12} />
               )
             }
           >
-            <Stack>
-              <Select
-                data={[
-                  { label: 'Pending', value: '0' },
-                  { label: 'Accepted', value: '1' },
-                  { label: 'Rejected', value: '-1' },
-                ]}
-                value={
-                  assessmentForm.values.accepted == null
-                    ? '0'
-                    : assessmentForm.values.accepted
-                    ? '1'
-                    : '-1'
-                }
-                onChange={(value) => {
-                  assessmentForm.setValues({
-                    accepted: value === '0' ? null : value === '1' ?? false,
-                  })
+            <Group position='center'>
+              <Button
+                color='red'
+                variant='outline'
+                disabled={assessmentForm.values.status === 'REJECTED'}
+                onClick={() => {
+                  if (applicationType === 'coach' || applicationType === 'tutor') {
+                    setApplicationRejectionSendConfirmationModalOpened(true)
+                  } else {
+                    updateAssessmentStatus('REJECTED')
+                  }
                 }}
-              />
-              {(applicationType === 'coach' || applicationType === 'tutor') && (
-                <Group>
-                  <Tooltip
-                    label={
-                      assessment?.rejectionSent
-                        ? 'The application rejection email has already been sent successfully.'
-                        : 'An application rejection email will be sent out to the student.'
-                    }
-                    color='blue'
-                    withArrow
-                    multiline
-                  >
-                    <div>
-                      <Button
-                        variant='outline'
-                        color='red'
-                        disabled={assessment?.rejectionSent}
-                        onClick={() => {
-                          setApplicationRejectionSendConfirmationModalOpened(true)
-                        }}
-                      >
-                        Reject Application
-                      </Button>
-                    </div>
-                  </Tooltip>
-                  <Tooltip
-                    label={
-                      assessment?.acceptanceSent
-                        ? 'The application acceptance email has already been sent successfully.'
-                        : 'An application acceptance email will be sent out to the student.'
-                    }
-                    color='blue'
-                    withArrow
-                    multiline
-                  >
-                    <div>
-                      <Button
-                        variant='outline'
-                        color='green'
-                        disabled={assessment?.acceptanceSent}
-                        onClick={() => {
-                          setApplicationAcceptanceSendConfirmationModalOpened(true)
-                        }}
-                      >
-                        Accept Application
-                      </Button>
-                    </div>
-                  </Tooltip>
-                </Group>
-              )}
-            </Stack>
+              >
+                Reject
+              </Button>
+              <Button
+                color='green'
+                disabled={assessmentForm.values.status === 'ACCEPTED'}
+                onClick={() => {
+                  if (applicationType === 'coach' || applicationType === 'tutor') {
+                    setApplicationAcceptanceSendConfirmationModalOpened(true)
+                  } else {
+                    updateAssessmentStatus('ACCEPTED')
+                  }
+                }}
+              >
+                Accept
+              </Button>
+            </Group>
           </Timeline.Item>
         </Timeline>
-        <Group position='right'>
-          <Button
-            disabled={!assessmentForm.isDirty() && !studentForm.isDirty()}
-            onClick={() => {
-              if (studentForm.isDirty()) {
-                const studentPatchObjectArray: Patch[] = []
-                Object.keys(studentForm.values).forEach((key) => {
-                  if (studentForm.isDirty(key)) {
-                    const studentPatchObject = new Map()
-                    studentPatchObject.set('op', 'replace')
-                    studentPatchObject.set('path', '/' + key)
-                    studentPatchObject.set('value', studentForm.getInputProps(key).value)
-                    const obj = Object.fromEntries(studentPatchObject)
-                    studentPatchObjectArray.push(obj)
-                  }
-                })
-
-                void dispatch(
-                  updateStudentAssessment({
-                    studentId: student.id,
-                    studentAssessmentPatch: studentPatchObjectArray,
-                  }),
-                )
-              }
-
-              if (assessmentForm.isDirty()) {
-                const assessmentPatchObjectArray: Patch[] = []
-                Object.keys(assessmentForm.values).forEach((key) => {
-                  if (assessmentForm.isDirty(key)) {
-                    const assessmentPatchObject = new Map()
-                    assessmentPatchObject.set('op', 'replace')
-                    assessmentPatchObject.set('path', '/' + key)
-                    assessmentPatchObject.set('value', assessmentForm.getInputProps(key).value)
-                    const obj = Object.fromEntries(assessmentPatchObject)
-                    assessmentPatchObjectArray.push(obj)
-                  }
-                })
-
-                if (applicationType === 'developer') {
-                  void dispatch(
-                    updateDeveloperApplicationAssessment({
-                      applicationId,
-                      applicationAssessmentPatch: assessmentPatchObjectArray,
-                    }),
-                  )
-                } else if (applicationType === 'coach') {
-                  void dispatch(
-                    updateCoachApplicationAssessment({
-                      applicationId,
-                      applicationAssessmentPatch: assessmentPatchObjectArray,
-                    }),
-                  )
-                } else if (applicationType === 'tutor') {
-                  void dispatch(
-                    updateTutorApplicationAssessment({
-                      applicationId,
-                      applicationAssessmentPatch: assessmentPatchObjectArray,
-                    }),
-                  )
-                }
-              }
-            }}
-          >
-            Submit
-          </Button>
-        </Group>
         <Divider />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
           <Text fz='sm' weight={500}>

@@ -3,6 +3,7 @@ package prompt.ls1.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import prompt.ls1.model.enums.SkillProficiency;
 
 import java.io.Serializable;
 import java.util.Set;

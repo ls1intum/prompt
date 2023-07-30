@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import prompt.ls1.model.enums.Gender;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class Student implements Serializable {
     @Length(max = 50)
     private String lastName;
 
-    @Column
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(length = 10)

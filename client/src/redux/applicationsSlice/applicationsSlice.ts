@@ -75,7 +75,7 @@ enum Device {
 
 enum Course {
   ITSE = 'Introduction to Software Engineering (IN0006)',
-  PISE = 'Patterns in Software Engineering (IN2081)',
+  PSE = 'Patterns in Software Engineering (IN2081)',
   ITP = 'Introduction to Programming (CIT5230000)',
   IPRAKTIKUM = 'iPraktikum (IN0012, IN2106, IN2128)',
   JASS = 'Joint Advanced Student School',
@@ -99,15 +99,20 @@ interface Student {
   reasonForBlockedByPm: string
 }
 
+enum ApplicationStatus {
+  NOT_ASSESSED = 'Not assessed',
+  PENDING_INTERVIEW = 'Pending interview',
+  ACCEPTED = 'Accepted',
+  REJECTED = 'Rejected',
+  ENROLLED = 'Enrolled',
+}
+
 interface ApplicationAssessment {
   instructorComments: InstructorComment[]
   assessmentScore: number
   technicalChallengeProgrammingScore: number
   technicalChallengeQuizScore: number
-  accepted: boolean | null
-  interviewInviteSent: boolean
-  acceptanceSent: boolean
-  rejectionSent: boolean
+  status: keyof typeof ApplicationStatus
 }
 
 type ApplicationType = 'DEVELOPER' | 'COACH' | 'TUTOR'
@@ -588,6 +593,7 @@ export {
   StudyDegree,
   StudyProgram,
   Gender,
+  ApplicationStatus,
   Device,
   Course,
 }

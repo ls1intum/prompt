@@ -1,7 +1,11 @@
 package prompt.ls1.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import prompt.ls1.model.enums.ApplicationStatus;
 
 import java.util.Set;
 import java.util.UUID;
@@ -9,6 +13,9 @@ import java.util.UUID;
 @Data
 @Entity
 @Table
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApplicationAssessment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -20,13 +27,9 @@ public class ApplicationAssessment {
 
     private Double technicalChallengeQuizScore;
 
-    private Boolean interviewInviteSent;
-    private Boolean acceptanceSent;
-
-    private Boolean rejectionSent;
-
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<InstructorComment> instructorComments;
 
-    private Boolean accepted;
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
 }
