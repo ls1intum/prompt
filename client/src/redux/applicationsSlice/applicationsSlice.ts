@@ -37,6 +37,11 @@ import {
 } from './thunks/sendApplicationAcceptance'
 import { assignTechnicalChallengeScores } from './thunks/assignTechnicalChallengeScores'
 import { updateStudentAssessment } from './thunks/updateStudentAssessment'
+import {
+  enrollCoachApplicationsToCourse,
+  enrollDeveloperApplicationsToCourse,
+  enrollTutorApplicationsToCourse,
+} from './thunks/enrollApplicationsToCourse'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -306,6 +311,78 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(updateTutorApplicationAssessment.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(enrollDeveloperApplicationsToCourse.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(enrollDeveloperApplicationsToCourse.fulfilled, (state, { payload }) => {
+      state.developerApplications = state.developerApplications.map((application) => {
+        return (
+          {
+            ...payload
+              .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+              .at(0),
+            type: 'DEVELOPER',
+          } ?? application
+        )
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(enrollDeveloperApplicationsToCourse.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(enrollCoachApplicationsToCourse.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(enrollCoachApplicationsToCourse.fulfilled, (state, { payload }) => {
+      state.coachApplications = state.coachApplications.map((application) => {
+        return (
+          {
+            ...payload
+              .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+              .at(0),
+            type: 'COACH',
+          } ?? application
+        )
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(enrollCoachApplicationsToCourse.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(enrollTutorApplicationsToCourse.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(enrollTutorApplicationsToCourse.fulfilled, (state, { payload }) => {
+      state.tutorApplications = state.tutorApplications.map((application) => {
+        return (
+          {
+            ...payload
+              .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+              .at(0),
+            type: 'TUTOR',
+          } ?? application
+        )
+      })
+      state.status = 'idle'
+    })
+
+    builder.addCase(enrollTutorApplicationsToCourse.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

@@ -344,6 +344,9 @@ export const ApplicationDatatable = ({
                 case 'ACCEPTED':
                   color = 'green'
                   break
+                case 'ENROLLED':
+                  color = 'green'
+                  break
                 case 'REJECTED':
                   color = 'red'
                   break

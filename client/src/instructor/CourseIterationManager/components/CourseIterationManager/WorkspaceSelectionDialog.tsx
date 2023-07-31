@@ -219,7 +219,11 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
   }, [fetchedCourseIterations])
 
   return (
-    <div style={{ paddingTop: '10vh' }}>
+    <div
+      style={{
+        paddingTop: '10vh',
+      }}
+    >
       <CourseIterationCreationModal
         opened={workspaceCreationModalOpen}
         onClose={() => {
@@ -227,7 +231,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
         }}
       />
       <Center>
-        <Title order={3}>Please select a workspace</Title>
+        <Title order={3}>Please select a course iteration</Title>
       </Center>
       {courseIterations.length > 0 ? (
         <div
@@ -271,7 +275,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
         </div>
       ) : (
         <Center style={{ padding: '2vh' }}>
-          <Text>No workspaces found.</Text>
+          <Text c='dimmed'>No course iterations found.</Text>
         </Center>
       )}
       <Center>
@@ -281,7 +285,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
             setWorkspaceCreationModalOpen(true)
           }}
         >
-          Create new workspace
+          Create course iteration
         </Button>
       </Center>
     </div>
