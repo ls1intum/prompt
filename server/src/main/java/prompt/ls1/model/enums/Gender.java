@@ -1,4 +1,4 @@
-package prompt.ls1.model;
+package prompt.ls1.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

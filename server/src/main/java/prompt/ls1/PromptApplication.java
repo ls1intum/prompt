@@ -8,7 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import prompt.ls1.model.CoursePhase;
-import prompt.ls1.model.CoursePhaseType;
+import prompt.ls1.model.enums.CoursePhaseType;
 import prompt.ls1.service.CoursePhaseService;
 
 import java.util.ArrayList;

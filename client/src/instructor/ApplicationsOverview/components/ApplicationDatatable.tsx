@@ -2,7 +2,11 @@ import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import sortBy from 'lodash/sortBy'
 import { CSVLink } from 'react-csv'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { Gender, type Application } from '../../../redux/applicationsSlice/applicationsSlice'
+import {
+  Gender,
+  type Application,
+  ApplicationStatus,
+} from '../../../redux/applicationsSlice/applicationsSlice'
 import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
 import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
@@ -64,14 +68,14 @@ export const ApplicationDatatable = ({
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         })
-        .filter((application) => (filters.accepted ? application.assessment?.accepted : true))
         .filter((application) =>
-          filters.rejected
-            ? application.assessment?.accepted !== null && !application.assessment?.accepted
-            : true,
+          filters.accepted ? application.assessment?.status === 'ACCEPTED' : true,
         )
         .filter((application) =>
-          filters.notAssessed ? application.assessment?.accepted === null : true,
+          filters.rejected ? application.assessment?.status === 'REJECTED' : true,
+        )
+        .filter((application) =>
+          filters.notAssessed ? application.assessment?.status === 'NOT_ASSESSED' : true,
         )
         .filter((application) =>
           filters.female && application.student.gender
@@ -335,13 +339,24 @@ export const ApplicationDatatable = ({
             title: 'Status',
             textAlignment: 'center',
             render: (application) => {
-              const isAccepted = application.assessment?.accepted ?? false
-              const isAssessed =
-                application.assessment?.accepted !== undefined &&
-                application.assessment?.accepted !== null
+              let color: string = 'gray'
+              switch (application.assessment?.status) {
+                case 'ACCEPTED':
+                  color = 'green'
+                  break
+                case 'REJECTED':
+                  color = 'red'
+                  break
+                default:
+                  break
+              }
               return (
-                <Badge color={!isAssessed ? 'gray' : isAccepted ? 'green' : 'red'}>
-                  {!isAssessed ? 'Not Assessed' : isAccepted ? 'Accepted' : 'Rejected'}{' '}
+                <Badge color={color}>
+                  {
+                    ApplicationStatus[
+                      application.assessment?.status as keyof typeof ApplicationStatus
+                    ]
+                  }{' '}
                   {`${
                     application.assessment?.technicalChallengeProgrammingScore
                       ? `${application.assessment?.technicalChallengeProgrammingScore} %`

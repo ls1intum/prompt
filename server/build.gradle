@@ -2,11 +2,14 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.2'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.liquibase.gradle' version '2.2.0'
 }
 
 group = 'prompt.ls1'
 version = '0.0.1'
 sourceCompatibility = '17'
+
+apply plugin: "org.liquibase.gradle"
 
 configurations {
 	compileOnly {
@@ -24,7 +27,8 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation:3.0.4'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'com.github.fge:json-patch:1.7'
@@ -32,12 +36,15 @@ dependencies {
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:3.0.3.201309161630-r'
 	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
-	implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.1'
+
+	// Liquibase
+	implementation 'org.liquibase:liquibase-core:4.23.0'
+	implementation 'org.liquibase:liquibase-groovy-dsl:2.1.1'
 
 	// Authentication
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.1.0'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.keycloak:keycloak-admin-client:21.1.1'
 
 	compileOnly 'org.projectlombok:lombok'

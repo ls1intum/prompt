@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import prompt.ls1.model.enums.CoursePhaseType;
 
 import java.util.Set;
 import java.util.UUID;

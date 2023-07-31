@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import prompt.ls1.integration.tease.model.Project;
 import prompt.ls1.integration.tease.model.StudentSkill;
 import prompt.ls1.model.DeveloperApplication;
-import prompt.ls1.model.Device;
+import prompt.ls1.model.enums.Device;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.StudentProjectTeamPreference;
 

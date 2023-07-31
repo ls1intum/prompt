@@ -15,6 +15,7 @@ import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.Application;
 import prompt.ls1.model.ApplicationAssessment;
+import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.InstructorComment;
@@ -98,7 +99,7 @@ public class ApplicationService {
                     developerApplication.getStudent().getTumId()));
         }
 
-        developerApplication.setAssessment(null);
+        developerApplication.setAssessment(ApplicationAssessment.builder().status(ApplicationStatus.NOT_ASSESSED).build());
 
         return developerApplicationRepository.save(developerApplication);
     }
@@ -122,7 +123,7 @@ public class ApplicationService {
                     tutorApplication.getStudent().getTumId()));
         }
 
-        tutorApplication.setAssessment(null);
+        tutorApplication.setAssessment(ApplicationAssessment.builder().status(ApplicationStatus.NOT_ASSESSED).build());
 
         return tutorApplicationRepository.save(tutorApplication);
     }
@@ -146,7 +147,7 @@ public class ApplicationService {
                     coachApplication.getStudent().getTumId()));
         }
 
-        coachApplication.setAssessment(null);
+        coachApplication.setAssessment(ApplicationAssessment.builder().status(ApplicationStatus.NOT_ASSESSED).build());
 
         return coachApplicationRepository.save(coachApplication);
     }
@@ -169,8 +170,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
-        coachApplication.getAssessment().setInterviewInviteSent(true);
-        return coachApplicationRepository.save(coachApplication);
+        return coachApplicationRepository.save((CoachApplication) setApplicationStatus(coachApplication, ApplicationStatus.PENDING_INTERVIEW));
     }
 
     public TutorApplication sendTutorInterviewInvite(final UUID applicationId) {
@@ -183,8 +183,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
-        tutorApplication.getAssessment().setInterviewInviteSent(true);
-        return tutorApplicationRepository.save(tutorApplication);
+        return tutorApplicationRepository.save((TutorApplication) setApplicationStatus(tutorApplication, ApplicationStatus.PENDING_INTERVIEW));
     }
 
     public CoachApplication sendCoachApplicationRejection(final UUID applicationId) {
@@ -197,8 +196,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
-        coachApplication.getAssessment().setRejectionSent(true);
-        return coachApplicationRepository.save(coachApplication);
+        return coachApplicationRepository.save((CoachApplication) setApplicationStatus(coachApplication, ApplicationStatus.REJECTED));
     }
 
     public TutorApplication sendTutorApplicationRejection(final UUID applicationId) {
@@ -211,8 +209,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
-        tutorApplication.getAssessment().setRejectionSent(true);
-        return tutorApplicationRepository.save(tutorApplication);
+        return tutorApplicationRepository.save((TutorApplication) setApplicationStatus(tutorApplication, ApplicationStatus.REJECTED));
     }
 
     public CoachApplication sendCoachApplicationAcceptance(final UUID applicationId) {
@@ -225,9 +222,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
-        coachApplication.getAssessment().setAccepted(true);
-        coachApplication.getAssessment().setAcceptanceSent(true);
-        return coachApplicationRepository.save(coachApplication);
+        return coachApplicationRepository.save((CoachApplication) setApplicationStatus(coachApplication, ApplicationStatus.ACCEPTED));
     }
 
     public TutorApplication sendTutorApplicationAcceptance(final UUID applicationId) {
@@ -240,9 +235,7 @@ public class ApplicationService {
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
         }
 
-        tutorApplication.getAssessment().setAccepted(true);
-        tutorApplication.getAssessment().setAcceptanceSent(true);
-        return tutorApplicationRepository.save(tutorApplication);
+        return tutorApplicationRepository.save((TutorApplication) setApplicationStatus(tutorApplication, ApplicationStatus.ACCEPTED));
     }
 
     public Student updateStudentAssessment(final UUID studentId, JsonPatch patchStudentAssessment)
@@ -303,7 +296,7 @@ public class ApplicationService {
             developerApplication.getAssessment().setTechnicalChallengeProgrammingScore(score.getProgrammingScore());
             developerApplication.getAssessment().setTechnicalChallengeQuizScore(score.getQuizScore());
             if (score.getProgrammingScore() < programmingScoreThreshold || score.getQuizScore() < quizScoreThreshold) {
-                developerApplication.getAssessment().setAccepted(false);
+                developerApplication.getAssessment().setStatus(ApplicationStatus.REJECTED);
             }
 
             updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
@@ -386,7 +379,7 @@ public class ApplicationService {
         final List<DeveloperApplication> applications = developerApplicationRepository.findAllByCourseIterationId(courseIterationId);
         if (accepted) {
             return applications
-                    .stream().filter(developerApplication -> developerApplication.getAssessment().getAccepted()).toList();
+                    .stream().filter(developerApplication -> developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)).toList();
         }
         return applications;
     }
@@ -395,7 +388,7 @@ public class ApplicationService {
         final List<CoachApplication> applications = coachApplicationRepository.findAllByCourseIterationId(courseIterationId);
         if (accepted) {
             return applications
-                    .stream().filter(developerApplication -> developerApplication.getAssessment().getAccepted()).toList();
+                    .stream().filter(developerApplication -> developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)).toList();
         }
         return applications;
     }
@@ -404,7 +397,7 @@ public class ApplicationService {
         final List<TutorApplication> applications = tutorApplicationRepository.findAllByCourseIterationId(courseIterationId);
         if (accepted) {
             return applications
-                    .stream().filter(developerApplication -> developerApplication.getAssessment().getAccepted()).toList();
+                    .stream().filter(developerApplication -> developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)).toList();
         }
         return applications;
     }
@@ -438,6 +431,14 @@ public class ApplicationService {
         tutorApplicationRepository.deleteById(tutorApplicationId);
 
         return tutorApplicationId;
+    }
+
+    private Application setApplicationStatus(final Application application, final ApplicationStatus status) {
+        if (application.getAssessment() == null) {
+            application.setAssessment(new ApplicationAssessment());
+        }
+        application.getAssessment().setStatus(status);
+        return application;
     }
 
     private Student applyPatchToStudent(
