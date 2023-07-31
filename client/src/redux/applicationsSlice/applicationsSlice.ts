@@ -138,7 +138,7 @@ interface Application {
   reasonGoodTutor?: string
   devices: Device[]
   coursesTaken: Course[]
-  assessment?: ApplicationAssessment
+  assessment: ApplicationAssessment
   projectTeam?: ProjectTeam
 }
 

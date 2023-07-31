@@ -13,12 +13,9 @@ import { ApplicationDatatable } from './components/ApplicationDatatable'
 import { MatchingResultsUploadModal } from './components/MatchingResultsUploadModal'
 
 export interface Filters {
-  enrolled: boolean
-  accepted: boolean
-  rejected: boolean
-  notAssessed: boolean
   male: boolean
   female: boolean
+  status: string[]
   applicationType: string[]
 }
 
@@ -33,12 +30,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<Filters>({
-    enrolled: false,
-    accepted: false,
-    rejected: false,
-    notAssessed: false,
     male: false,
     female: false,
+    status: ['ACCEPTED', 'REJECTED', 'NOT_ASSESSED', 'PENDING_INTERVIEW', 'ENROLLED'],
     applicationType: ['DEVELOPER'],
   })
 
@@ -124,33 +118,6 @@ export const StudentApplicationOverview = (): JSX.Element => {
             <Menu.Dropdown>
               <Menu.Item>
                 <Checkbox
-                  label='Enrolled'
-                  checked={filters.enrolled}
-                  onChange={(e) => {
-                    setFilters({ ...filters, enrolled: e.currentTarget.checked })
-                  }}
-                />
-              </Menu.Item>
-              <Menu.Item>
-                <Checkbox
-                  label='Accepted'
-                  checked={filters.accepted}
-                  onChange={(e) => {
-                    setFilters({ ...filters, accepted: e.currentTarget.checked })
-                  }}
-                />
-              </Menu.Item>
-              <Menu.Item>
-                <Checkbox
-                  label='Rejected'
-                  checked={filters.rejected}
-                  onChange={(e) => {
-                    setFilters({ ...filters, rejected: e.currentTarget.checked })
-                  }}
-                />
-              </Menu.Item>
-              <Menu.Item>
-                <Checkbox
                   label='Male'
                   checked={filters.male}
                   onChange={(e) => {
@@ -164,15 +131,6 @@ export const StudentApplicationOverview = (): JSX.Element => {
                   checked={filters.female}
                   onChange={(e) => {
                     setFilters({ ...filters, female: e.currentTarget.checked })
-                  }}
-                />
-              </Menu.Item>
-              <Menu.Item>
-                <Checkbox
-                  label='Not Assessed'
-                  checked={filters.notAssessed}
-                  onChange={(e) => {
-                    setFilters({ ...filters, notAssessed: e.currentTarget.checked })
                   }}
                 />
               </Menu.Item>

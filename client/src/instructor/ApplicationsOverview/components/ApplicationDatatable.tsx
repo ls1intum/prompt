@@ -69,13 +69,7 @@ export const ApplicationDatatable = ({
             .includes(searchQuery.toLowerCase())
         })
         .filter((application) =>
-          filters.accepted ? application.assessment?.status === 'ACCEPTED' : true,
-        )
-        .filter((application) =>
-          filters.rejected ? application.assessment?.status === 'REJECTED' : true,
-        )
-        .filter((application) =>
-          filters.notAssessed ? application.assessment?.status === 'NOT_ASSESSED' : true,
+          filters.status.includes(application.assessment.status ?? 'NOT_ASSESSED'),
         )
         .filter((application) =>
           filters.female && application.student.gender
@@ -335,9 +329,33 @@ export const ApplicationDatatable = ({
             },
           },
           {
-            accessor: 'applicationStatus',
+            accessor: 'assessment.status',
             title: 'Status',
             textAlignment: 'center',
+            filter: (
+              <MultiSelect
+                label='Status'
+                description='Show all applications having status in'
+                data={Object.keys(ApplicationStatus).map((key) => {
+                  return {
+                    label: ApplicationStatus[key as keyof typeof ApplicationStatus],
+                    value: key,
+                  }
+                })}
+                value={filters.status}
+                placeholder='Search status...'
+                onChange={(value) => {
+                  setFilters({
+                    ...filters,
+                    status: value,
+                  })
+                }}
+                icon={<IconSearch size={16} />}
+                clearable
+                searchable
+              />
+            ),
+            filtering: filters.applicationType.length > 0,
             render: (application) => {
               let color: string = 'gray'
               switch (application.assessment?.status) {
@@ -355,22 +373,18 @@ export const ApplicationDatatable = ({
               }
               return (
                 <Badge color={color}>
-                  {
-                    ApplicationStatus[
-                      application.assessment?.status as keyof typeof ApplicationStatus
-                    ]
-                  }{' '}
+                  {ApplicationStatus[application.assessment.status]}{' '}
                   {`${
-                    application.assessment?.technicalChallengeProgrammingScore
-                      ? `${application.assessment?.technicalChallengeProgrammingScore} %`
+                    application.assessment.technicalChallengeProgrammingScore
+                      ? `${application.assessment.technicalChallengeProgrammingScore} %`
                       : ''
                   } ${
-                    application.assessment?.technicalChallengeProgrammingScore &&
+                    application.assessment.technicalChallengeProgrammingScore &&
                     application.assessment.technicalChallengeQuizScore
                       ? '/'
                       : ''
                   } ${
-                    application.assessment?.technicalChallengeQuizScore
+                    application.assessment.technicalChallengeQuizScore
                       ? `${application.assessment?.technicalChallengeQuizScore} %`
                       : ''
                   }`}
