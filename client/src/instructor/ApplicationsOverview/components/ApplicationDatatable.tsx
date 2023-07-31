@@ -69,7 +69,7 @@ export const ApplicationDatatable = ({
             .includes(searchQuery.toLowerCase())
         })
         .filter((application) =>
-          filters.status.includes(application.assessment.status ?? 'NOT_ASSESSED'),
+          filters.status.includes(application.assessment?.status ?? 'NOT_ASSESSED'),
         )
         .filter((application) =>
           filters.female && application.student.gender
@@ -373,18 +373,18 @@ export const ApplicationDatatable = ({
               }
               return (
                 <Badge color={color}>
-                  {ApplicationStatus[application.assessment.status]}{' '}
+                  {ApplicationStatus[application.assessment?.status]}{' '}
                   {`${
-                    application.assessment.technicalChallengeProgrammingScore
-                      ? `${application.assessment.technicalChallengeProgrammingScore} %`
+                    application.assessment?.technicalChallengeProgrammingScore
+                      ? `${application.assessment?.technicalChallengeProgrammingScore} %`
                       : ''
                   } ${
-                    application.assessment.technicalChallengeProgrammingScore &&
-                    application.assessment.technicalChallengeQuizScore
+                    application.assessment?.technicalChallengeProgrammingScore &&
+                    application.assessment?.technicalChallengeQuizScore
                       ? '/'
                       : ''
                   } ${
-                    application.assessment.technicalChallengeQuizScore
+                    application.assessment?.technicalChallengeQuizScore
                       ? `${application.assessment?.technicalChallengeQuizScore} %`
                       : ''
                   }`}
