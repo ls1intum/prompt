@@ -408,7 +408,10 @@ export const ApplicationAssessmentForm = ({
                 >
                   <div>
                     <Button
-                      disabled={assessmentForm.values.status === 'PENDING_INTERVIEW'}
+                      disabled={
+                        assessmentForm.values.status === 'PENDING_INTERVIEW' ||
+                        assessmentForm.values.status === 'ENROLLED'
+                      }
                       variant='outline'
                       onClick={() => {
                         setInterviewInvitationSendConfirmationModalOpened(true)
@@ -437,11 +440,14 @@ export const ApplicationAssessmentForm = ({
               )
             }
           >
-            <Group position='center'>
+            <Group position='left'>
               <Button
                 color='red'
                 variant='outline'
-                disabled={assessmentForm.values.status === 'REJECTED'}
+                disabled={
+                  assessmentForm.values.status === 'REJECTED' ||
+                  assessmentForm.values.status === 'ENROLLED'
+                }
                 onClick={() => {
                   if (applicationType === 'coach' || applicationType === 'tutor') {
                     setApplicationRejectionSendConfirmationModalOpened(true)
@@ -454,7 +460,10 @@ export const ApplicationAssessmentForm = ({
               </Button>
               <Button
                 color='green'
-                disabled={assessmentForm.values.status === 'ACCEPTED'}
+                disabled={
+                  assessmentForm.values.status === 'ACCEPTED' ||
+                  assessmentForm.values.status === 'ENROLLED'
+                }
                 onClick={() => {
                   if (applicationType === 'coach' || applicationType === 'tutor') {
                     setApplicationAcceptanceSendConfirmationModalOpened(true)

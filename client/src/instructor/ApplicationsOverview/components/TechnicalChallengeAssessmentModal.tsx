@@ -1,4 +1,14 @@
-import { Button, FileInput, Group, Modal, Select, Stack, Table, TextInput } from '@mantine/core'
+import {
+  Button,
+  FileInput,
+  Group,
+  Modal,
+  Select,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+} from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
@@ -61,7 +71,11 @@ export const TechnicalChallengeAssessmentModal = ({
       opened={opened}
       onClose={onClose}
       size='90%'
-      title='Technical Challenge Assessment'
+      title={
+        <Text c='dimmed' fz='sm'>
+          Technical Challenge Assessment
+        </Text>
+      }
     >
       <Stack>
         <FileInput

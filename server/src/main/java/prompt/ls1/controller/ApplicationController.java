@@ -162,6 +162,24 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
     }
 
+    @PostMapping(value = "/developer/enrollment")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<DeveloperApplication>> enrollDeveloperApplicationsForCourse(@RequestBody final List<UUID> developerApplicationIds) {
+        return ResponseEntity.ok(applicationService.enrollDeveloperApplicationToCourse(developerApplicationIds));
+    }
+
+    @PostMapping(value = "/coach/enrollment")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<CoachApplication>> enrollCoachApplicationsForCourse(@RequestBody final List<UUID> coachApplicationIds) {
+        return ResponseEntity.ok(applicationService.enrollCoachApplicationToCourse(coachApplicationIds));
+    }
+
+    @PostMapping(value = "/tutor/enrollment")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<TutorApplication>> enrollTutorApplicationsForCourse(@RequestBody final List<UUID> tutorApplicationIds) {
+        return ResponseEntity.ok(applicationService.enrollTutorApplicationToCourse(tutorApplicationIds));
+    }
+
     @PostMapping(value = "/developer/technical-challenge-scores")
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<DeveloperApplication>> assignTechnicalChallengeScores(@RequestParam(value = "programmingScoreThreshold") final String programmingScoreThreshold,

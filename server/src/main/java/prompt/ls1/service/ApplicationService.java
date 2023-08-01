@@ -284,6 +284,39 @@ public class ApplicationService {
         return tutorApplicationRepository.save(application);
     }
 
+    public List<DeveloperApplication> enrollDeveloperApplicationToCourse(final List<UUID> developerApplicationIds) {
+        final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
+        developerApplicationIds.forEach(developerApplicationId -> {
+            final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
+            setApplicationStatus(developerApplication, ApplicationStatus.ENROLLED);
+            updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
+        });
+
+        return updatedDeveloperApplications;
+    }
+
+    public List<CoachApplication> enrollCoachApplicationToCourse(final List<UUID> coachApplicationIds) {
+        final List<CoachApplication> updatedCoachApplications = new ArrayList<>();
+        coachApplicationIds.forEach(coachApplicationId -> {
+            final CoachApplication coachApplication = findCoachApplicationById(coachApplicationId);
+            setApplicationStatus(coachApplication, ApplicationStatus.ENROLLED);
+            updatedCoachApplications.add(coachApplicationRepository.save(coachApplication));
+        });
+
+        return updatedCoachApplications;
+    }
+
+    public List<TutorApplication> enrollTutorApplicationToCourse(final List<UUID> tutorApplicationIds) {
+        final List<TutorApplication> updatedTutorApplications = new ArrayList<>();
+        tutorApplicationIds.forEach(tutorApplicationId -> {
+            final TutorApplication tutorApplication = findTutorApplicationById(tutorApplicationId);
+            setApplicationStatus(tutorApplication, ApplicationStatus.ENROLLED);
+            updatedTutorApplications.add(tutorApplicationRepository.save(tutorApplication));
+        });
+
+        return updatedTutorApplications;
+    }
+
     public List<DeveloperApplication> assignTechnicalChallengeScoresToDeveloperApplications(final Double programmingScoreThreshold,
                                                                                             final Double quizScoreThreshold,
                                                                                             final List<TechnicalChallengeScore> scores) {
