@@ -322,14 +322,15 @@ export const applicationsState = createSlice({
 
     builder.addCase(enrollDeveloperApplicationsToCourse.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) => {
-        return (
-          {
-            ...payload
-              .filter((updatedApplication: Application) => updatedApplication.id === application.id)
-              .at(0),
-            type: 'DEVELOPER',
-          } ?? application
-        )
+        const updatedApplication = payload
+          .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+          .at(0)
+        return updatedApplication
+          ? {
+              ...updatedApplication,
+              type: 'DEVELOPER',
+            }
+          : application
       })
       state.status = 'idle'
     })
@@ -346,14 +347,15 @@ export const applicationsState = createSlice({
 
     builder.addCase(enrollCoachApplicationsToCourse.fulfilled, (state, { payload }) => {
       state.coachApplications = state.coachApplications.map((application) => {
-        return (
-          {
-            ...payload
-              .filter((updatedApplication: Application) => updatedApplication.id === application.id)
-              .at(0),
-            type: 'COACH',
-          } ?? application
-        )
+        const updatedApplication = payload
+          .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+          .at(0)
+        return updatedApplication
+          ? {
+              ...updatedApplication,
+              type: 'COACH',
+            }
+          : application
       })
       state.status = 'idle'
     })
@@ -370,14 +372,15 @@ export const applicationsState = createSlice({
 
     builder.addCase(enrollTutorApplicationsToCourse.fulfilled, (state, { payload }) => {
       state.tutorApplications = state.tutorApplications.map((application) => {
-        return (
-          {
-            ...payload
-              .filter((updatedApplication: Application) => updatedApplication.id === application.id)
-              .at(0),
-            type: 'TUTOR',
-          } ?? application
-        )
+        const updatedApplication = payload
+          .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+          .at(0)
+        return updatedApplication
+          ? {
+              ...updatedApplication,
+              type: 'TUTOR',
+            }
+          : application
       })
       state.status = 'idle'
     })

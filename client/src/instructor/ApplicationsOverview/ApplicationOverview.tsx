@@ -59,6 +59,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
         }
       })
     } else if (filters.applicationType.includes('COACH')) {
+      console.log(coachApplications)
       coachApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
