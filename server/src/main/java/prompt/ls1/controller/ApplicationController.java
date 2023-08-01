@@ -99,7 +99,7 @@ public class ApplicationController {
                                               @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-            developerApplication.setCourseIteration(courseIteration);
+            developerApplication.setCourseIterationId(courseIteration.getId());
 
             final DeveloperApplication application = applicationService.createDeveloperApplication(developerApplication);
 
@@ -122,7 +122,7 @@ public class ApplicationController {
                                                                   @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-            tutorApplication.setCourseIteration(courseIteration);
+            tutorApplication.setCourseIterationId(courseIteration.getId());
 
             final TutorApplication application = applicationService.createTutorApplication(tutorApplication);
 
@@ -145,7 +145,7 @@ public class ApplicationController {
                                                                   @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-            coachApplication.setCourseIteration(courseIteration);
+            coachApplication.setCourseIterationId(courseIteration.getId());
 
             final CoachApplication application = applicationService.createCoachApplication(coachApplication);
             try {

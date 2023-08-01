@@ -15,6 +15,7 @@ import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.Application;
 import prompt.ls1.model.ApplicationAssessment;
+import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.DeveloperApplication;
@@ -23,6 +24,7 @@ import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
 import prompt.ls1.repository.CoachApplicationRepository;
+import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.DeveloperApplicationRepository;
 import prompt.ls1.repository.InstructorCommentRepository;
 import prompt.ls1.repository.ProjectTeamRepository;
@@ -42,6 +44,7 @@ public class ApplicationService {
     private final DeveloperApplicationRepository developerApplicationRepository;
     private final TutorApplicationRepository tutorApplicationRepository;
     private final CoachApplicationRepository coachApplicationRepository;
+    private final CourseIterationRepository courseIterationRepository;
     private final InstructorCommentRepository instructorCommentRepository;
     private final StudentRepository studentRepository;
     private final ProjectTeamRepository projectTeamRepository;
@@ -52,6 +55,7 @@ public class ApplicationService {
             final DeveloperApplicationRepository developerApplicationRepository,
             final TutorApplicationRepository tutorApplicationRepository,
             final CoachApplicationRepository coachApplicationRepository,
+            final CourseIterationRepository courseIterationRepository,
             final InstructorCommentRepository instructorCommentRepository,
             final StudentRepository studentRepository,
             final ProjectTeamRepository projectTeamRepository,
@@ -59,6 +63,7 @@ public class ApplicationService {
         this.developerApplicationRepository = developerApplicationRepository;
         this.tutorApplicationRepository = tutorApplicationRepository;
         this.coachApplicationRepository = coachApplicationRepository;
+        this.courseIterationRepository = courseIterationRepository;
         this.instructorCommentRepository = instructorCommentRepository;
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
@@ -93,7 +98,7 @@ public class ApplicationService {
 
         final Optional<DeveloperApplication> existingDeveloperApplication = developerApplicationRepository.findByStudentAndCourseIteration(
                 developerApplication.getStudent().getId(),
-                developerApplication.getCourseIteration().getId());
+                developerApplication.getCourseIterationId());
         if (existingDeveloperApplication.isPresent()) {
             throw new ResourceConflictException(String.format("Developer application for student %s already exists. ",
                     developerApplication.getStudent().getTumId()));
@@ -117,7 +122,7 @@ public class ApplicationService {
 
         final Optional<TutorApplication> existingTutorApplication = tutorApplicationRepository.findByStudentAndCourseIteration(
                 tutorApplication.getStudent().getId(),
-                tutorApplication.getCourseIteration().getId());
+                tutorApplication.getCourseIterationId());
         if (existingTutorApplication.isPresent()) {
             throw new ResourceConflictException(String.format("Tutor application for student %s already exists. ",
                     tutorApplication.getStudent().getTumId()));
@@ -141,7 +146,7 @@ public class ApplicationService {
 
         final Optional<CoachApplication> existingCoachApplication = coachApplicationRepository.findByStudentAndCourseIteration(
                 coachApplication.getStudent().getId(),
-                coachApplication.getCourseIteration().getId());
+                coachApplication.getCourseIterationId());
         if (existingCoachApplication.isPresent()) {
             throw new ResourceConflictException(String.format("Coach application for student %s already exists. ",
                     coachApplication.getStudent().getTumId()));
@@ -164,7 +169,10 @@ public class ApplicationService {
         final CoachApplication coachApplication = findCoachApplicationById(applicationId);
 
         try {
-            mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
+            final CourseIteration courseIteration = courseIterationRepository.findById(coachApplication.getCourseIterationId())
+                            .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
+                                    coachApplication.getCourseIterationId())));
+            mailingService.sendCoachInterviewInvitationEmail(coachApplication.getStudent(), courseIteration);
         } catch (MessagingException e) {
             log.error(String.format("Failed to send a coach interview invitation email. Error message: %s. Stacktrace: %s",
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
@@ -177,7 +185,10 @@ public class ApplicationService {
         final TutorApplication tutorApplication = findTutorApplicationById(applicationId);
 
         try {
-            mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
+            final CourseIteration courseIteration = courseIterationRepository.findById(tutorApplication.getCourseIterationId())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
+                            tutorApplication.getCourseIterationId())));
+            mailingService.sendTutorInterviewInvitationEmail(tutorApplication.getStudent(), courseIteration);
         } catch (MessagingException e) {
             log.error(String.format("Failed to send a tutor interview invitation email. Error message: %s. Stacktrace: %s",
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
@@ -190,7 +201,10 @@ public class ApplicationService {
         final CoachApplication coachApplication = findCoachApplicationById(applicationId);
 
         try {
-            mailingService.sendCoachApplicationRejectionEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
+            final CourseIteration courseIteration = courseIterationRepository.findById(coachApplication.getCourseIterationId())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
+                            coachApplication.getCourseIterationId())));
+            mailingService.sendCoachApplicationRejectionEmail(coachApplication.getStudent(), courseIteration);
         } catch (MessagingException e) {
             log.error(String.format("Failed to send a coach application rejection email. Error message: %s. Stacktrace: %s",
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
@@ -203,7 +217,10 @@ public class ApplicationService {
         final TutorApplication tutorApplication = findTutorApplicationById(applicationId);
 
         try {
-            mailingService.sendTutorApplicationRejectionEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
+            final CourseIteration courseIteration = courseIterationRepository.findById(tutorApplication.getCourseIterationId())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
+                            tutorApplication.getCourseIterationId())));
+            mailingService.sendTutorApplicationRejectionEmail(tutorApplication.getStudent(), courseIteration);
         } catch (MessagingException e) {
             log.error(String.format("Failed to send a tutor application rejection email. Error message: %s. Stacktrace: %s",
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
@@ -216,7 +233,10 @@ public class ApplicationService {
         final CoachApplication coachApplication = findCoachApplicationById(applicationId);
 
         try {
-            mailingService.sendCoachApplicationAcceptanceEmail(coachApplication.getStudent(), coachApplication.getCourseIteration());
+            final CourseIteration courseIteration = courseIterationRepository.findById(coachApplication.getCourseIterationId())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
+                            coachApplication.getCourseIterationId())));
+            mailingService.sendCoachApplicationAcceptanceEmail(coachApplication.getStudent(), courseIteration);
         } catch (MessagingException e) {
             log.error(String.format("Failed to send a coach application acceptance email. Error message: %s. Stacktrace: %s",
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
@@ -229,7 +249,10 @@ public class ApplicationService {
         final TutorApplication tutorApplication = findTutorApplicationById(applicationId);
 
         try {
-            mailingService.sendTutorApplicationAcceptanceEmail(tutorApplication.getStudent(), tutorApplication.getCourseIteration());
+            final CourseIteration courseIteration = courseIterationRepository.findById(tutorApplication.getCourseIterationId())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.",
+                            tutorApplication.getCourseIterationId())));
+            mailingService.sendTutorApplicationAcceptanceEmail(tutorApplication.getStudent(), courseIteration);
         } catch (MessagingException e) {
             log.error(String.format("Failed to send a tutor application acceptance email. Error message: %s. Stacktrace: %s",
                     e.getMessage(), Arrays.toString(e.getStackTrace())));
@@ -386,8 +409,8 @@ public class ApplicationService {
         ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
 
-        if (!application.getCourseIteration().getId().equals(projectTeam.getCourseIteration().getId()) ||
-                !application.getCourseIteration().getId().equals(courseIterationId)) {
+        if (!application.getCourseIterationId().equals(projectTeam.getCourseIteration().getId()) ||
+                !application.getCourseIterationId().equals(courseIterationId)) {
             throw new ResourceInvalidParametersException(String.format("Developer application with id %s does not match the course iteration of" +
                     "the project team with id %s.", developerApplicationId, projectTeamId));
         }
@@ -399,7 +422,7 @@ public class ApplicationService {
     public Application removeFromProjectTeam(final UUID studentApplicationId, final UUID courseIterationId) {
         DeveloperApplication application = findDeveloperApplicationById(studentApplicationId);
 
-        if (!application.getCourseIteration().getId().equals(courseIterationId)) {
+        if (!application.getCourseIterationId().equals(courseIterationId)) {
             throw new ResourceInvalidParametersException(String.format("Developer application with id %s does not match with" +
                     "the course iteration with id %s.", studentApplicationId, courseIterationId));
         }

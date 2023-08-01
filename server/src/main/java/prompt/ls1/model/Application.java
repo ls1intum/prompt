@@ -23,9 +23,7 @@ public abstract class Application {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(targetEntity = CourseIteration.class)
-    @JoinColumn(name ="course_iteration_id", referencedColumnName = "id")
-    private CourseIteration courseIteration;
+    private UUID courseIterationId;
 
     @Enumerated(EnumType.STRING)
     private StudyDegree studyDegree;
