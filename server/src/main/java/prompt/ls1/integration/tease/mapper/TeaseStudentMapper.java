@@ -1,12 +1,15 @@
 package prompt.ls1.integration.tease.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import prompt.ls1.integration.tease.model.Project;
 import prompt.ls1.integration.tease.model.StudentSkill;
 import prompt.ls1.model.DeveloperApplication;
+import prompt.ls1.model.IntroCourseParticipation;
 import prompt.ls1.model.enums.Device;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.StudentProjectTeamPreference;
+import prompt.ls1.repository.IntroCourseParticipationRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,6 +17,12 @@ import java.util.Optional;
 
 @Component
 public class TeaseStudentMapper {
+    private final IntroCourseParticipationRepository introCourseParticipationRepository;
+
+    @Autowired
+    public TeaseStudentMapper(final IntroCourseParticipationRepository introCourseParticipationRepository) {
+        this.introCourseParticipationRepository = introCourseParticipationRepository;
+    }
 
     public prompt.ls1.integration.tease.model.Student toTeaseStudent(final DeveloperApplication developerApplication,
                                                                      final List<ProjectTeam> projectTeams) {
@@ -32,11 +41,12 @@ public class TeaseStudentMapper {
         teaseStudent.setGermanLanguageProficiency(developerApplication.getGermanLanguageProficiency().getValue());
         teaseStudent.setEnglishLanguageProficiency(developerApplication.getEnglishLanguageProficiency().getValue());
 
-        if (developerApplication.getIntroCourseParticipation() != null) {
-            teaseStudent.setIntroSelfAssessment(developerApplication.getIntroCourseParticipation().getIntroCourseSelfAssessment().getValue());
-            teaseStudent.setSupervisorAssessment(developerApplication.getIntroCourseParticipation().getSupervisorAssessment().getValue());
-            teaseStudent.setStudentComments(developerApplication.getIntroCourseParticipation().getStudentComments());
-            teaseStudent.setTutorComments(developerApplication.getIntroCourseParticipation().getTutorComments());
+        final Optional<IntroCourseParticipation> introCourseParticipation = introCourseParticipationRepository.findByDeveloperApplicationId(developerApplication.getId());
+        if (introCourseParticipation.isPresent()) {
+            teaseStudent.setIntroSelfAssessment(introCourseParticipation.get().getIntroCourseSelfAssessment().getValue());
+            teaseStudent.setSupervisorAssessment(introCourseParticipation.get().getSupervisorAssessment().getValue());
+            teaseStudent.setStudentComments(introCourseParticipation.get().getStudentComments());
+            teaseStudent.setTutorComments(introCourseParticipation.get().getTutorComments());
         }
 
         teaseStudent.setDevices(developerApplication.getDevices()

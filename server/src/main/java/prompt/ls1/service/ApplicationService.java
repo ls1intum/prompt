@@ -85,6 +85,29 @@ public class ApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Tutor application with id %s not found.", tutorApplicationId)));
     }
 
+    public List<Application> findAllApplicationsByCourseIterationAndApplicationTypeAndApplicationStatus(
+            final UUID courseIterationId,
+            final String applicationType,
+            final Optional<ApplicationStatus> applicationStatus
+    ) {
+        final List<Application> applications = new ArrayList<>();
+
+        switch (applicationType) {
+            case "developer" ->
+                    applications.addAll(developerApplicationRepository.findAllByCourseIterationId(courseIterationId));
+            case "coach" ->
+                    applications.addAll(coachApplicationRepository.findAllByCourseIterationId(courseIterationId));
+            case "tutor" ->
+                    applications.addAll(tutorApplicationRepository.findAllByCourseIterationId(courseIterationId));
+            default ->
+                    throw new ResourceInvalidParametersException(String.format("Application type %s is not supported.", applicationType));
+        }
+
+        return applicationStatus.map(status -> applications
+                .stream().filter(application -> application.getAssessment().getStatus().equals(status))
+                .toList()).orElse(applications);
+    }
+
     public DeveloperApplication createDeveloperApplication(final DeveloperApplication developerApplication) {
         Optional<Student> existingStudent = findStudent(developerApplication.getStudent().getTumId(),
                 developerApplication.getStudent().getMatriculationNumber(), developerApplication.getStudent().getEmail());
@@ -429,33 +452,6 @@ public class ApplicationService {
 
         application.setProjectTeam(null);
         return developerApplicationRepository.save(application);
-    }
-
-    public List<DeveloperApplication> findAllDeveloperApplicationsByCourseIteration(final UUID courseIterationId, final boolean accepted) {
-        final List<DeveloperApplication> applications = developerApplicationRepository.findAllByCourseIterationId(courseIterationId);
-        if (accepted) {
-            return applications
-                    .stream().filter(developerApplication -> developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)).toList();
-        }
-        return applications;
-    }
-
-    public List<CoachApplication> findAllCoachApplicationsByCourseIteration(final UUID courseIterationId, final boolean accepted) {
-        final List<CoachApplication> applications = coachApplicationRepository.findAllByCourseIterationId(courseIterationId);
-        if (accepted) {
-            return applications
-                    .stream().filter(developerApplication -> developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)).toList();
-        }
-        return applications;
-    }
-
-    public List<TutorApplication> findAllTutorApplicationsByCourseIteration(final UUID courseIterationId, final boolean accepted) {
-        final List<TutorApplication> applications = tutorApplicationRepository.findAllByCourseIterationId(courseIterationId);
-        if (accepted) {
-            return applications
-                    .stream().filter(developerApplication -> developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ACCEPTED)).toList();
-        }
-        return applications;
     }
 
     public void assignDeveloperApplicationToProjectTeam(final UUID studentId, final UUID projectTeamId) {
