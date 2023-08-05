@@ -16,6 +16,6 @@ public interface IntroCourseParticipationRepository extends JpaRepository<IntroC
     Optional<IntroCourseParticipation> findByDeveloperApplicationId(final UUID developerApplicationId);
 
     @Transactional
-    @Query(value="select da from IntroCourseParticipation da where da.developerApplication.id in ?1")
-    List<IntroCourseParticipation> findAllByDeveloperApplicationIdIn(List<UUID> developerApplicationIds);
+    @Query(value="select icp from IntroCourseParticipation icp where icp.developerApplication.courseIterationId = ?1")
+    List<IntroCourseParticipation> findAllByCourseIterationId(final UUID courseIterationId);
 }

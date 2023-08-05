@@ -1,6 +1,7 @@
 package prompt.ls1.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +27,9 @@ public class IntroCourseParticipation {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_application_id")
     private DeveloperApplication developerApplication;
+
+    @Column(length = 50)
+    private String seat;
 
     private SkillProficiency introCourseSelfAssessment;
 

@@ -13,20 +13,13 @@ import prompt.ls1.controller.payload.TechnicalChallengeScore;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
-import prompt.ls1.model.Application;
-import prompt.ls1.model.ApplicationAssessment;
-import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.*;
 import prompt.ls1.model.enums.ApplicationStatus;
-import prompt.ls1.model.CoachApplication;
-import prompt.ls1.model.DeveloperApplication;
-import prompt.ls1.model.InstructorComment;
-import prompt.ls1.model.ProjectTeam;
-import prompt.ls1.model.Student;
-import prompt.ls1.model.TutorApplication;
 import prompt.ls1.repository.CoachApplicationRepository;
 import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.DeveloperApplicationRepository;
 import prompt.ls1.repository.InstructorCommentRepository;
+import prompt.ls1.repository.IntroCourseParticipationRepository;
 import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
@@ -48,6 +41,7 @@ public class ApplicationService {
     private final InstructorCommentRepository instructorCommentRepository;
     private final StudentRepository studentRepository;
     private final ProjectTeamRepository projectTeamRepository;
+    private final IntroCourseParticipationRepository introCourseParticipationRepository;
     private final MailingService mailingService;
 
     @Autowired
@@ -59,6 +53,7 @@ public class ApplicationService {
             final InstructorCommentRepository instructorCommentRepository,
             final StudentRepository studentRepository,
             final ProjectTeamRepository projectTeamRepository,
+            final IntroCourseParticipationRepository introCourseParticipationRepository,
             final MailingService mailingService) {
         this.developerApplicationRepository = developerApplicationRepository;
         this.tutorApplicationRepository = tutorApplicationRepository;
@@ -67,6 +62,7 @@ public class ApplicationService {
         this.instructorCommentRepository = instructorCommentRepository;
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
+        this.introCourseParticipationRepository = introCourseParticipationRepository;
         this.mailingService = mailingService;
     }
 
@@ -335,6 +331,9 @@ public class ApplicationService {
         developerApplicationIds.forEach(developerApplicationId -> {
             final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
             setApplicationStatus(developerApplication, ApplicationStatus.ENROLLED);
+            final IntroCourseParticipation introCourseParticipation = new IntroCourseParticipation();
+            introCourseParticipation.setDeveloperApplication(developerApplication);
+            introCourseParticipationRepository.save(introCourseParticipation);
             updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
         });
 
