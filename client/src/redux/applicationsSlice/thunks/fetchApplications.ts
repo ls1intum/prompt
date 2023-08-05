@@ -1,19 +1,23 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { serverBaseUrl } from '../../../service/configService'
+import { type ApplicationStatus } from '../applicationsSlice'
 
 export const fetchDeveloperApplications = createAsyncThunk(
   'applications/fetchDeveloperApplications',
 
   async (
-    { courseIteration, accepted }: { courseIteration: string; accepted?: boolean },
+    {
+      courseIteration,
+      status,
+    }: { courseIteration: string; status?: keyof typeof ApplicationStatus },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.get(
           `${serverBaseUrl}/api/applications/developer?courseIteration=${courseIteration}${
-            accepted ? '&accepted=true' : ''
+            status ? `&applicationStatus=${status}` : ''
           }`,
           {
             headers: {
@@ -32,14 +36,17 @@ export const fetchCoachApplications = createAsyncThunk(
   'applications/fetchCoachApplications',
 
   async (
-    { courseIteration, accepted }: { courseIteration: string; accepted?: boolean },
+    {
+      courseIteration,
+      status,
+    }: { courseIteration: string; status?: keyof typeof ApplicationStatus },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.get(
           `${serverBaseUrl}/api/applications/coach?courseIteration=${courseIteration}${
-            accepted ? '&accepted=true' : ''
+            status ? `&applicationStatus=${status}` : ''
           }`,
           {
             headers: {
@@ -58,14 +65,17 @@ export const fetchTutorApplications = createAsyncThunk(
   'applications/fetchTutorApplications',
 
   async (
-    { courseIteration, accepted }: { courseIteration: string; accepted?: boolean },
+    {
+      courseIteration,
+      status,
+    }: { courseIteration: string; status?: keyof typeof ApplicationStatus },
     { rejectWithValue },
   ) => {
     try {
       return (
         await axios.get(
           `${serverBaseUrl}/api/applications/tutor?courseIteration=${courseIteration}${
-            accepted ? '&accepted=true' : ''
+            status ? `&applicationStatus=${status}` : ''
           }`,
           {
             headers: {

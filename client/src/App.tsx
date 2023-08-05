@@ -15,6 +15,7 @@ import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
 import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
 import { RootPage } from './utilities/NavigationBar/RootPage'
+import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 
 export const App = (): JSX.Element => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
@@ -42,6 +43,10 @@ export const App = (): JSX.Element => {
               <Route
                 path='/management/team-allocation'
                 element={<ManagementConsole child={<TeamAllocationConsole />} />}
+              />
+              <Route
+                path='/management/intro-course'
+                element={<ManagementConsole child={<IntroCourseConsole />} />}
               />
               <Route
                 path='/management/infrastructure'

@@ -28,6 +28,7 @@ import {
   IconCode,
   IconAppsFilled,
   IconLogout,
+  IconSchool,
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -45,6 +46,7 @@ const navigationContents = [
   },
   { label: 'Student Applications', icon: IconNews, link: '/management/applications' },
   { label: 'Team Allocation', icon: IconUsers, link: '/management/team-allocation' },
+  { label: 'Intro Course', icon: IconSchool, link: '/management/intro-course' },
   { label: 'Infrastructure', icon: IconDeviceDesktop, link: '/management/infrastructure' },
   { label: 'Grading', icon: IconStairs, link: '/student-applications' },
   { label: 'Artifacts', icon: IconCode, link: '/student-applications' },
