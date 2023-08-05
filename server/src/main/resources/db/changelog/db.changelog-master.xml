@@ -6,4 +6,5 @@
     <include file="changes/v0002.sql" relativeToChangelogFile="true"/>
     <include file="changes/v0003.sql" relativeToChangelogFile="true"/>
     <include file="changes/v0004.sql" relativeToChangelogFile="true"/>
+    <include file="changes/v0005.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
