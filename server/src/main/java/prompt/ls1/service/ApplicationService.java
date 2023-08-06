@@ -330,9 +330,19 @@ public class ApplicationService {
         final List<DeveloperApplication> updatedDeveloperApplications = new ArrayList<>();
         developerApplicationIds.forEach(developerApplicationId -> {
             final DeveloperApplication developerApplication = findDeveloperApplicationById(developerApplicationId);
+            if (developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED)) {
+                updatedDeveloperApplications.add(developerApplication);
+                return;
+            }
+
             setApplicationStatus(developerApplication, ApplicationStatus.ENROLLED);
-            final IntroCourseParticipation introCourseParticipation = new IntroCourseParticipation();
-            introCourseParticipation.setDeveloperApplication(developerApplication);
+            final IntroCourseParticipation introCourseParticipation = IntroCourseParticipation
+                    .builder()
+                    .courseIterationId(developerApplication.getCourseIterationId())
+                    .student(developerApplication.getStudent())
+                    .chairDeviceRequired(false)
+                    .build();
+
             introCourseParticipationRepository.save(introCourseParticipation);
             updatedDeveloperApplications.add(developerApplicationRepository.save(developerApplication));
         });
