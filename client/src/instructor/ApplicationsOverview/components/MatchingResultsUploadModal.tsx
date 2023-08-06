@@ -132,6 +132,7 @@ export const MatchingResultsUploadModal = ({
               } else if (applicationType === 'TUTOR') {
                 void dispatch(enrollTutorApplicationsToCourse(enrolledApplicationIds))
               }
+              onClose()
             }
           }}
         >

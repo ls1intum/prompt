@@ -1,13 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { type Application } from '../applicationsSlice/applicationsSlice'
+import { type Student } from '../applicationsSlice/applicationsSlice'
 import { fetchIntroCourseParticipations } from './thunks/fetchIntroCourseParticipations'
 import { updateIntroCourseParticipation } from './thunks/updateIntroCourseParticipation'
+import { createSeatPlanAssignments } from './thunks/createSeatPlanAssignments'
+import { createSeatPlan } from './thunks/createSeatPlan'
 
 interface IntroCourseParticipation {
   id: string
-  tutorApplicationId?: string
-  developerApplication: Application
+  tutorId?: string
+  student: Student
   seat?: string
+  chairDeviceRequired: boolean
+}
+
+interface SeatPlanAssignment {
+  introCourseParticipationId: string
+  seat: string
+  tutorId?: string
+}
+
+interface Seat {
+  seat: string
+  withChairDevice: boolean
 }
 
 interface IntroCourseSliceState {
@@ -33,17 +47,61 @@ export const introCourseSlice = createSlice({
     })
 
     builder.addCase(fetchIntroCourseParticipations.fulfilled, (state, { payload }) => {
-      state.participations = payload.map((introCourseParticipation: IntroCourseParticipation) => ({
-        ...introCourseParticipation,
-        developerApplication: {
-          ...introCourseParticipation.developerApplication,
-          type: 'DEVELOPER',
-        },
-      }))
+      state.participations = payload
       state.status = 'idle'
     })
 
     builder.addCase(fetchIntroCourseParticipations.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(createSeatPlanAssignments.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(createSeatPlanAssignments.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        payload.some(
+          (updatedIntroCourseParticipation: IntroCourseParticipation) =>
+            updatedIntroCourseParticipation.id === introCourseParticipation.id,
+        )
+          ? payload.find(
+              (updatedIntroCourseParticipation: IntroCourseParticipation) =>
+                updatedIntroCourseParticipation.id === introCourseParticipation.id,
+            )
+          : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(createSeatPlanAssignments.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(createSeatPlan.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(createSeatPlan.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        payload.some(
+          (updatedIntroCourseParticipation: IntroCourseParticipation) =>
+            updatedIntroCourseParticipation.id === introCourseParticipation.id,
+        )
+          ? payload.find(
+              (updatedIntroCourseParticipation: IntroCourseParticipation) =>
+                updatedIntroCourseParticipation.id === introCourseParticipation.id,
+            )
+          : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(createSeatPlan.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
@@ -76,4 +134,4 @@ export const introCourseSlice = createSlice({
 })
 
 export default introCourseSlice.reducer
-export { type IntroCourseParticipation }
+export { type IntroCourseParticipation, type SeatPlanAssignment, type Seat }

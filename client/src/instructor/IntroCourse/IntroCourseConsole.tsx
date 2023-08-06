@@ -1,5 +1,5 @@
 import { Tabs } from '@mantine/core'
-import { IconChairDirector, IconDeviceLaptop, IconUsers } from '@tabler/icons-react'
+import { IconChairDirector, IconUsers } from '@tabler/icons-react'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../redux/store'
 import { useEffect } from 'react'
@@ -29,18 +29,14 @@ export const IntroCourseConsole = (): JSX.Element => {
         <Tabs.Tab value='seat-plan-management' icon={<IconChairDirector />}>
           Seat Plan Management
         </Tabs.Tab>
-        <Tabs.Tab value='device-management' icon={<IconDeviceLaptop />}>
-          Device Management
-        </Tabs.Tab>
-        <Tabs.Tab value='student-assessments' icon={<IconUsers />}>
-          Student Assessments
+        <Tabs.Tab value='student-mgmt' icon={<IconUsers />}>
+          Student Management
         </Tabs.Tab>
       </Tabs.List>
       <Tabs.Panel value='seat-plan-management'>
         <SeatPlanManager />
       </Tabs.Panel>
-      <Tabs.Panel value='device-management'>Device Management</Tabs.Panel>
-      <Tabs.Panel value='student-assessments'>Student Assessments</Tabs.Panel>
+      <Tabs.Panel value='student-mgmt'>Student Management</Tabs.Panel>
     </Tabs>
   )
 }
