@@ -44,7 +44,7 @@ public class TeaseStudentMapper {
         final Optional<IntroCourseParticipation> introCourseParticipation =
                 introCourseParticipationRepository.findByStudentId(developerApplication.getStudent().getId());
         if (introCourseParticipation.isPresent()) {
-            teaseStudent.setIntroSelfAssessment(introCourseParticipation.get().getIntroCourseSelfAssessment().getValue());
+            teaseStudent.setIntroSelfAssessment(introCourseParticipation.get().getSelfAssessment().getValue());
             teaseStudent.setSupervisorAssessment(introCourseParticipation.get().getSupervisorAssessment().getValue());
             teaseStudent.setStudentComments(introCourseParticipation.get().getStudentComments());
             teaseStudent.setTutorComments(introCourseParticipation.get().getTutorComments());

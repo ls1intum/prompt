@@ -340,7 +340,6 @@ public class ApplicationService {
                     .builder()
                     .courseIterationId(developerApplication.getCourseIterationId())
                     .student(developerApplication.getStudent())
-                    .chairDeviceRequired(false)
                     .build();
 
             introCourseParticipationRepository.save(introCourseParticipation);

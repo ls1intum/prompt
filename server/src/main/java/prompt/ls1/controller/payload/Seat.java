@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class Seat {
     private String seat;
-    private Boolean withChairDevice;
+    private String tutorId;
+    private String chairDevice;
 }

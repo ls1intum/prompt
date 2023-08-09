@@ -1,20 +1,13 @@
 package prompt.ls1.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import prompt.ls1.model.enums.SkillProficiency;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -39,14 +32,24 @@ public class IntroCourseParticipation {
     @Column(length = 50)
     private String seat;
 
-    private Boolean chairDeviceRequired;
+    private String chairDevice;
 
-    private SkillProficiency introCourseSelfAssessment;
+    @Enumerated(EnumType.STRING)
+    private SkillProficiency selfAssessment;
 
+    @Enumerated(EnumType.STRING)
     private SkillProficiency supervisorAssessment;
 
+    @Column(length = 500)
     private String studentComments;
 
+    @Column(length = 500)
     private String tutorComments;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinTable(name="intro_course_participation_absence",
+            joinColumns = @JoinColumn(name = "intro_course_participation_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "intro_course_absence_id", referencedColumnName = "id"))
+    private List<IntroCourseAbsence> absences;
 
 }

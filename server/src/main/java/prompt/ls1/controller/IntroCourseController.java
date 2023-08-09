@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
 import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.IntroCourseAbsence;
 import prompt.ls1.model.IntroCourseParticipation;
+import prompt.ls1.model.Student;
 import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.IntroCourseService;
 
@@ -39,13 +42,30 @@ public class IntroCourseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ipraktikum-pm')")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
     public ResponseEntity<List<IntroCourseParticipation>> getAllIntroCourseParticipations(
             @RequestParam(name = "courseIteration") @NotNull final String courseIterationName
     ) {
         final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
         return ResponseEntity.ok(introCourseService.findAllByCourseIterationId(courseIteration.getId()));
+    }
+
+    @GetMapping("/tutors")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<List<Student>> getAllIntroCourseTutors(
+            @RequestParam(name = "courseIteration") @NotNull final String courseIterationName
+    ) {
+        return ResponseEntity.ok(introCourseService.findAllIntroCourseTutors(courseIterationName));
+    }
+
+    @PatchMapping(path = "/{introCourseParticipationId}", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseParticipation> updateIntroCourseParticipation(
+            @PathVariable UUID introCourseParticipationId,
+            @RequestBody JsonPatch introCourseParticipationPatch)
+            throws JsonPatchException, JsonProcessingException {
+        return ResponseEntity.ok(introCourseService.update(introCourseParticipationId, introCourseParticipationPatch));
     }
 
     @PostMapping("/seat-plan-assignments")
@@ -63,14 +83,19 @@ public class IntroCourseController {
         return ResponseEntity.ok(introCourseService.createSeatPlan(courseIterationId, seatPlan));
     }
 
-    @PatchMapping(path = "/{introCourseParticipationId}", consumes = "application/json-path+json")
-    @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<IntroCourseParticipation> updateIntroCourseParticipation(
-            @PathVariable UUID introCourseParticipationId,
-            @RequestBody JsonPatch introCourseParticipationPatch)
-            throws JsonPatchException, JsonProcessingException {
-        return ResponseEntity.ok(introCourseService.update(introCourseParticipationId, introCourseParticipationPatch));
+    @PostMapping("/{introCourseParticipationId}/absences")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseParticipation> createIntroCourseAbsence(
+            @PathVariable final UUID introCourseParticipationId,
+            @RequestBody @NotNull final IntroCourseAbsence introCourseAbsence) {
+        return ResponseEntity.ok(introCourseService.createIntroCourseAbsence(introCourseParticipationId, introCourseAbsence));
     }
 
-
+    @DeleteMapping("/{introCourseParticipationId}/absences/{introCourseAbsenceId}")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseParticipation> deleteIntroCourseAbsence(
+            @PathVariable final UUID introCourseParticipationId,
+            @PathVariable final UUID introCourseAbsenceId) {
+        return ResponseEntity.ok(introCourseService.deleteIntroCourseAbsence(introCourseParticipationId, introCourseAbsenceId));
+    }
 }
