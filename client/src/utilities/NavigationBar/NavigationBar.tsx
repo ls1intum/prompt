@@ -62,7 +62,7 @@ const navigationContents = [
     label: 'Intro Course',
     icon: IconSchool,
     link: '/management/intro-course',
-    permission: [Permission.TUTOR],
+    permission: [Permission.PM, Permission.TUTOR],
   },
   {
     label: 'Infrastructure',
