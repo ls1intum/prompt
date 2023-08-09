@@ -25,6 +25,8 @@ interface CourseIterationRequest {
   tutorInterviewPlannerLink: string
   coachInterviewLocation: string
   tutorInterviewLocation: string
+  introCourseStart: Date
+  introCourseEnd: Date
   iosTag: string
 }
 
@@ -43,6 +45,8 @@ interface CourseIteration {
   tutorInterviewPlannerLink: string
   coachInterviewLocation: string
   tutorInterviewLocation: string
+  introCourseStart: Date
+  introCourseEnd: Date
   iosTag: string
   phases: CourseIterationPhase[]
 }

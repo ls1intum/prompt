@@ -24,11 +24,17 @@ const AccessRestricted = (): JSX.Element => {
   )
 }
 
-interface DashboardProps {
-  child: React.ReactNode
+interface ManagmentConsoleProps {
+  child: React.ReactElement
+  permission: string
+  onKeycloakValueChange: (keycloak: Keycloak) => void
 }
 
-export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
+export const ManagementConsole = ({
+  child,
+  permission,
+  onKeycloakValueChange,
+}: ManagmentConsoleProps): JSX.Element => {
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
   const keycloak = new Keycloak({
     realm: keycloakRealmName,
@@ -66,7 +72,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
                 lastName: decodedJwt.family_name,
                 email: decodedJwt.email,
                 username: decodedJwt.preferred_username,
-                mgmtAccess: keycloak.hasResourceRole('ipraktikum-pm', 'prompt-server'),
+                mgmtAccess: keycloak.hasResourceRole(permission, 'prompt-server'),
               }),
             )
           }
@@ -83,6 +89,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
           )
         }
         setKeycloakValue(keycloak)
+        onKeycloakValueChange(keycloak)
       })
       .catch((err) => {
         alert(err)
@@ -118,7 +125,7 @@ export const ManagementConsole = ({ child }: DashboardProps): JSX.Element => {
         <div>
           {currentState ? (
             <AppShell navbar={<NavigationBar keycloak={keycloakValue} />}>
-              {authenticated && <div style={{ margin: '5vh 2vw' }}>{child}</div>}
+              {authenticated && <div style={{ margin: '2vh 2vw' }}>{child}</div>}
             </AppShell>
           ) : (
             <WorkspaceSelectionDialog />

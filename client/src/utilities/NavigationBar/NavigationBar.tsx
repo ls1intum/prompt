@@ -37,19 +37,41 @@ import { useDispatch } from 'react-redux'
 import { setCurrentState } from '../../redux/courseIterationSlice/courseIterationSlice'
 import { WorkspaceSelectionDialog } from '../../instructor/CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
 import { useEffect, useState } from 'react'
+import { Permission } from '../../redux/authSlice/authSlice'
 
 const navigationContents = [
   {
     label: 'Course Iteration Management',
     icon: IconAppsFilled,
     link: '/management/course-iterations',
+    permission: Permission.PM,
   },
-  { label: 'Student Applications', icon: IconNews, link: '/management/applications' },
-  { label: 'Team Allocation', icon: IconUsers, link: '/management/team-allocation' },
-  { label: 'Intro Course', icon: IconSchool, link: '/management/intro-course' },
-  { label: 'Infrastructure', icon: IconDeviceDesktop, link: '/management/infrastructure' },
-  { label: 'Grading', icon: IconStairs, link: '/student-applications' },
-  { label: 'Artifacts', icon: IconCode, link: '/student-applications' },
+  {
+    label: 'Student Applications',
+    icon: IconNews,
+    link: '/management/applications',
+    permission: Permission.PM,
+  },
+  {
+    label: 'Team Allocation',
+    icon: IconUsers,
+    link: '/management/team-allocation',
+    permission: Permission.PM,
+  },
+  {
+    label: 'Intro Course',
+    icon: IconSchool,
+    link: '/management/intro-course',
+    permission: Permission.TUTOR,
+  },
+  {
+    label: 'Infrastructure',
+    icon: IconDeviceDesktop,
+    link: '/management/infrastructure',
+    permission: Permission.PM,
+  },
+  { label: 'Grading', icon: IconStairs, link: '/student-applications', permission: Permission.PM },
+  { label: 'Artifacts', icon: IconCode, link: '/student-applications', permission: Permission.PM },
 ]
 
 const useStyles = createStyles((theme) => ({
@@ -163,21 +185,23 @@ export const NavigationBar = ({ keycloak }: { keycloak: Keycloak }): JSX.Element
     setActive(location.pathname)
   }, [location.pathname])
 
-  const linksContent = navigationContents.map((item) => (
-    <a
-      className={cx(classes.link, { [classes.linkActive]: item.link === active })}
-      href={item.link}
-      key={item.label}
-      onClick={(event) => {
-        event.preventDefault()
-        setActive(item.link)
-        navigate(item.link)
-      }}
-    >
-      <item.icon className={classes.linkIcon} stroke={1.5} />
-      <span>{item.label}</span>
-    </a>
-  ))
+  const linksContent = navigationContents
+    .filter((c) => keycloak.hasResourceRole(c.permission, 'prompt-server'))
+    .map((item) => (
+      <a
+        className={cx(classes.link, { [classes.linkActive]: item.link === active })}
+        href={item.link}
+        key={item.label}
+        onClick={(event) => {
+          event.preventDefault()
+          setActive(item.link)
+          navigate(item.link)
+        }}
+      >
+        <item.icon className={classes.linkIcon} stroke={1.5} />
+        <span>{item.label}</span>
+      </a>
+    ))
 
   return (
     <>

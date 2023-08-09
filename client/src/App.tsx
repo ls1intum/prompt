@@ -16,8 +16,10 @@ import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
 import { RootPage } from './utilities/NavigationBar/RootPage'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
+import type Keycloak from 'keycloak-js'
 
 export const App = (): JSX.Element => {
+  const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     Appearance.getColorScheme() ?? 'light',
   )
@@ -34,23 +36,53 @@ export const App = (): JSX.Element => {
             <Routes>
               <Route
                 path='/management/course-iterations'
-                element={<ManagementConsole child={<CourseIterationConsole />} />}
+                element={
+                  <ManagementConsole
+                    child={<CourseIterationConsole />}
+                    permission='ipraktikum-pm'
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/management/applications'
-                element={<ManagementConsole child={<StudentApplicationOverview />} />}
+                element={
+                  <ManagementConsole
+                    child={<StudentApplicationOverview />}
+                    permission='ipraktikum-pm'
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/management/team-allocation'
-                element={<ManagementConsole child={<TeamAllocationConsole />} />}
+                element={
+                  <ManagementConsole
+                    child={<TeamAllocationConsole />}
+                    permission='ipraktikum-pm'
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/management/intro-course'
-                element={<ManagementConsole child={<IntroCourseConsole />} />}
+                element={
+                  <ManagementConsole
+                    child={keycloakValue ? <IntroCourseConsole keycloak={keycloakValue} /> : <></>}
+                    permission='ipraktikum-tutor'
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/management/infrastructure'
-                element={<ManagementConsole child={<InfrastructureManagement />} />}
+                element={
+                  <ManagementConsole
+                    child={<InfrastructureManagement />}
+                    permission='ipraktikum-pm'
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/management'

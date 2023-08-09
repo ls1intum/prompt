@@ -4,13 +4,28 @@ import { fetchIntroCourseParticipations } from './thunks/fetchIntroCoursePartici
 import { updateIntroCourseParticipation } from './thunks/updateIntroCourseParticipation'
 import { createSeatPlanAssignments } from './thunks/createSeatPlanAssignments'
 import { createSeatPlan } from './thunks/createSeatPlan'
+import { createIntroCourseAbsence } from './thunks/createIntroCourseAbsence'
+import { fetchAllIntroCourseTutors } from './thunks/fetchAllIntroCourseTutors'
+import { deleteIntroCourseAbsence } from './thunks/deleteIntroCourseAbsence'
+import { type SkillProficiency } from '../studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
+
+interface IntroCourseAbsence {
+  id: string
+  date: Date
+  excuse: string
+}
 
 interface IntroCourseParticipation {
   id: string
   tutorId?: string
   student: Student
   seat?: string
-  chairDeviceRequired: boolean
+  chairDevice?: string
+  absences: IntroCourseAbsence[]
+  supervisorAssessment?: keyof typeof SkillProficiency
+  selfAssessment?: keyof typeof SkillProficiency
+  studentComments?: string
+  tutorComments?: string
 }
 
 interface SeatPlanAssignment {
@@ -21,19 +36,22 @@ interface SeatPlanAssignment {
 
 interface Seat {
   seat: string
-  withChairDevice: boolean
+  tutorId?: string
+  chairDevice: string
 }
 
 interface IntroCourseSliceState {
   status: string
   error: string | null
   participations: IntroCourseParticipation[]
+  tutors: Student[]
 }
 
 const initialState: IntroCourseSliceState = {
   status: 'idle',
   error: null,
   participations: [],
+  tutors: [],
 }
 
 export const introCourseSlice = createSlice({
@@ -52,6 +70,38 @@ export const introCourseSlice = createSlice({
     })
 
     builder.addCase(fetchIntroCourseParticipations.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchAllIntroCourseTutors.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(fetchAllIntroCourseTutors.fulfilled, (state, { payload }) => {
+      state.tutors = payload
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchAllIntroCourseTutors.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateIntroCourseParticipation.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateIntroCourseParticipation.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateIntroCourseParticipation.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
@@ -106,27 +156,36 @@ export const introCourseSlice = createSlice({
       state.status = 'idle'
     })
 
-    builder.addCase(updateIntroCourseParticipation.pending, (state) => {
+    builder.addCase(createIntroCourseAbsence.pending, (state) => {
       state.status = 'loading'
       state.error = null
     })
 
-    builder.addCase(updateIntroCourseParticipation.fulfilled, (state, { payload }) => {
+    builder.addCase(createIntroCourseAbsence.fulfilled, (state, { payload }) => {
       state.participations = state.participations.map((introCourseParticipation) =>
-        introCourseParticipation.id === payload.id
-          ? {
-              ...payload,
-              developerApplication: {
-                ...payload.developerApplication,
-                type: 'DEVELOPER',
-              },
-            }
-          : introCourseParticipation,
+        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
       )
       state.status = 'idle'
     })
 
-    builder.addCase(updateIntroCourseParticipation.rejected, (state, { payload }) => {
+    builder.addCase(createIntroCourseAbsence.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteIntroCourseAbsence.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(deleteIntroCourseAbsence.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(deleteIntroCourseAbsence.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
@@ -134,4 +193,9 @@ export const introCourseSlice = createSlice({
 })
 
 export default introCourseSlice.reducer
-export { type IntroCourseParticipation, type SeatPlanAssignment, type Seat }
+export {
+  type IntroCourseParticipation,
+  type IntroCourseAbsence,
+  type SeatPlanAssignment,
+  type Seat,
+}

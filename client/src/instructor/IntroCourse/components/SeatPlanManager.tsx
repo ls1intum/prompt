@@ -42,6 +42,7 @@ import { notifications } from '@mantine/notifications'
 import { createSeatPlanAssignments } from '../../../redux/introCourseSlice/thunks/createSeatPlanAssignments'
 import { createSeatPlan } from '../../../redux/introCourseSlice/thunks/createSeatPlan'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import type Keycloak from 'keycloak-js'
 
 interface SeatPlanUploadModalProps {
   opened: boolean
@@ -250,18 +251,38 @@ const SeatPlanUploadModal = ({
               </Stack>
             )}
             {upload && uploadMode === 'plain' && (
-              <Group grow>
-                <Select
-                  label='Seat Join Column'
-                  data={columnNames}
-                  {...joinColumns.getInputProps('seatJoinColumn')}
+              <Stack>
+                <Group grow>
+                  <Select
+                    label='Seat Join Column'
+                    data={columnNames}
+                    {...joinColumns.getInputProps('seatJoinColumn')}
+                  />
+                  <Select
+                    label='Device Availability Join Column'
+                    data={columnNames}
+                    {...joinColumns.getInputProps('withChairDeviceJoinColumn')}
+                  />
+                </Group>
+                <Checkbox
+                  label='Does the upload contain student to tutor assignments?'
+                  {...joinColumns.getInputProps('withTutorAssignment', { type: 'checkbox' })}
                 />
-                <Select
-                  label='Device Availability Join Column'
-                  data={columnNames}
-                  {...joinColumns.getInputProps('withChairDeviceJoinColumn')}
-                />
-              </Group>
+                <Collapse in={joinColumns.values.withTutorAssignment}>
+                  <Group grow>
+                    <Select
+                      label='Tutor Join Column From Table'
+                      data={['tumId', 'matriculationNumber']}
+                      {...joinColumns.getInputProps('tutorJoinColumnFromTable')}
+                    />
+                    <Select
+                      label='Tutor Join Column From Upload'
+                      data={columnNames}
+                      {...joinColumns.getInputProps('tutorJoinColumnFromUpload')}
+                    />
+                  </Group>
+                </Collapse>
+              </Stack>
             )}
             <Button
               disabled={!upload || !joinColumns.isValid()}
@@ -310,10 +331,24 @@ const SeatPlanUploadModal = ({
                   if (selectedCourseIteration) {
                     const seatPlan: Seat[] = []
                     upload?.forEach((element) => {
+                      const tutor = joinColumns.values.withTutorAssignment
+                        ? joinColumns.values.tutorJoinColumnFromTable === 'tumId'
+                          ? tutors.find(
+                              (tutor) =>
+                                tutor.tumId ===
+                                (element as any)[joinColumns.values.tutorJoinColumnFromUpload],
+                            )
+                          : tutors.find(
+                              (tutor) =>
+                                tutor.matriculationNumber ===
+                                (element as any)[joinColumns.values.tutorJoinColumnFromUpload],
+                            )
+                        : undefined
+
                       const seat: Seat = {
                         seat: (element as any)[joinColumns.values.seatJoinColumn],
-                        withChairDevice:
-                          (element as any)[joinColumns.values.withChairDeviceJoinColumn] === 'true',
+                        chairDevice: (element as any)[joinColumns.values.withChairDeviceJoinColumn],
+                        tutorId: tutor?.id ?? undefined,
                       }
                       seatPlan.push(seat)
                     })
@@ -363,6 +398,7 @@ interface SeatPlanEditModalProps {
   onClose: () => void
   introCourseParticipation: IntroCourseParticipation
   tutors: Student[]
+  isTutor: boolean
 }
 
 const SeatPlanEditModal = ({
@@ -370,13 +406,14 @@ const SeatPlanEditModal = ({
   onClose,
   tutors,
   introCourseParticipation,
+  isTutor,
 }: SeatPlanEditModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const introCourseParticipationForm = useForm({
     initialValues: {
       tutorId: introCourseParticipation.tutorId ?? '',
       seat: introCourseParticipation.seat ?? '',
-      chairDeviceRequired: introCourseParticipation.chairDeviceRequired ?? false,
+      chairDevice: introCourseParticipation.chairDevice ?? '',
     },
   })
 
@@ -384,7 +421,7 @@ const SeatPlanEditModal = ({
     introCourseParticipationForm.setValues({
       tutorId: introCourseParticipation.tutorId ?? '',
       seat: introCourseParticipation.seat ?? '',
-      chairDeviceRequired: introCourseParticipation.chairDeviceRequired ?? false,
+      chairDevice: introCourseParticipation.chairDevice ?? '',
     })
   }, [introCourseParticipation])
 
@@ -399,6 +436,7 @@ const SeatPlanEditModal = ({
         <Select
           label='Assigned Tutor'
           placeholder='Assigned tutor'
+          disabled={isTutor}
           withinPortal
           data={tutors.map((tutor) => {
             return {
@@ -413,11 +451,10 @@ const SeatPlanEditModal = ({
           placeholder='Seat'
           {...introCourseParticipationForm.getInputProps('seat')}
         />
-        <Checkbox
-          label='Does the student need a chair device to participate in the Intro Course?'
-          {...introCourseParticipationForm.getInputProps('chairDeviceRequired', {
-            type: 'checkbox',
-          })}
+        <TextInput
+          label='Chair Device'
+          placeholder='Chair device ID'
+          {...introCourseParticipationForm.getInputProps('chairDevice')}
         />
         <Group position='right'>
           <Button
@@ -455,13 +492,13 @@ const SeatPlanEditModal = ({
   )
 }
 
-export const SeatPlanManager = (): JSX.Element => {
+interface SeatPlanManagerProps {
+  keycloak: Keycloak
+}
+
+export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element => {
   const participations = useAppSelector((state) => state.introCourse.participations)
-  const tutors = useAppSelector((state) =>
-    state.applications.tutorApplications
-      .filter((ta) => ta.assessment.status === 'ENROLLED')
-      .map((ta) => ta.student),
-  )
+  const tutors = useAppSelector((state) => state.introCourse.tutors)
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePageSize, setTablePageSize] = useState(20)
@@ -486,8 +523,8 @@ export const SeatPlanManager = (): JSX.Element => {
             student.lastName?.toLowerCase() ?? ''
           } ${seat?.toLowerCase() ?? ''}`.includes(searchQuery.toLowerCase())
         })
-        .filter(({ chairDeviceRequired }) =>
-          chairDeviceRequiredFilter ? chairDeviceRequired : true,
+        .filter(({ chairDevice }) =>
+          chairDeviceRequiredFilter ? chairDevice && chairDevice.length !== 0 : true,
         )
         .filter(({ tutorId }) => {
           if (tutorFilter.length > 0) {
@@ -516,61 +553,69 @@ export const SeatPlanManager = (): JSX.Element => {
           }}
           tutors={tutors}
           introCourseParticipation={selectedParticipation}
+          isTutor={!keycloak.hasResourceRole('ipraktikum-pm', 'prompt-server')}
         />
       )}
-      <SeatPlanUploadModal
-        opened={seatPlanUploadModalOpened}
-        onClose={() => {
-          setSeatPlanUploadModalOpened(false)
-        }}
-        introCourseParticipations={participations}
-        tutors={tutors}
-      />
-      <CSVLink
-        data={participations?.flatMap((participation) => {
-          return {
-            tumId: participation.student?.tumId,
-            firstName: participation.student?.firstName,
-            lastName: participation.student?.lastName,
-            seat: participation.seat,
-            chairDeviceRequired: participation.chairDeviceRequired,
-          }
-        })}
-        filename='seat_plan.csv'
-        style={{ display: 'hidden' }}
-        ref={downloadLinkRef}
-        target='_blank'
-      />
-      <Group position='apart'>
-        <TextInput
-          sx={{ flexBasis: '60%', margin: '1vh 0' }}
-          placeholder='Search students...'
-          icon={<IconSearch size={16} />}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.currentTarget.value)
-          }}
-        />
-        <Group position='right'>
-          <Button
-            variant='outline'
-            leftIcon={<IconDownload size={16} />}
-            onClick={() => {
-              downloadLinkRef.current?.link?.click()
+      {keycloak.hasResourceRole('ipraktikum-pm', 'prompt-server') && (
+        <>
+          <SeatPlanUploadModal
+            opened={seatPlanUploadModalOpened}
+            onClose={() => {
+              setSeatPlanUploadModalOpened(false)
             }}
-          >
-            Export
-          </Button>
-          <Button
-            leftIcon={<IconUpload size={16} />}
-            onClick={() => {
-              setSeatPlanUploadModalOpened(true)
-            }}
-          >
-            Upload Seat Plan
-          </Button>
-        </Group>
-      </Group>
+            introCourseParticipations={participations}
+            tutors={tutors}
+          />
+          <CSVLink
+            data={participations?.flatMap((participation) => {
+              const tutor = tutors.find((tutor) => tutor.id === participation.tutorId)
+              return {
+                tumId: participation.student?.tumId,
+                firstName: participation.student?.firstName,
+                lastName: participation.student?.lastName,
+                tutorTumId: tutor?.tumId ?? '-',
+                tutorName: `${tutor?.firstName ?? '-'} ${tutor?.lastName ?? '-'}`,
+                seat: participation.seat,
+                chairDevice: participation.chairDevice ?? '-',
+              }
+            })}
+            filename='seat_plan.csv'
+            style={{ display: 'hidden' }}
+            ref={downloadLinkRef}
+            target='_blank'
+          />
+          <Group position='apart'>
+            <TextInput
+              sx={{ flexBasis: '60%', margin: '1vh 0' }}
+              placeholder='Search students...'
+              icon={<IconSearch size={16} />}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.currentTarget.value)
+              }}
+            />
+            <Group position='right'>
+              <Button
+                variant='outline'
+                leftIcon={<IconDownload size={16} />}
+                onClick={() => {
+                  downloadLinkRef.current?.link?.click()
+                }}
+              >
+                Export
+              </Button>
+              <Button
+                leftIcon={<IconUpload size={16} />}
+                onClick={() => {
+                  setSeatPlanUploadModalOpened(true)
+                }}
+              >
+                Upload Seat Plan
+              </Button>
+            </Group>
+          </Group>
+        </>
+      )}
       <DataTable
         withBorder
         minHeight={200}
@@ -651,8 +696,15 @@ export const SeatPlanManager = (): JSX.Element => {
               />
             ),
             filtering: chairDeviceRequiredFilter,
-            render: ({ chairDeviceRequired }) => (
-              <>{chairDeviceRequired ? <IconDeviceLaptop color='#2B70BE' /> : <></>}</>
+            render: ({ chairDevice }) => (
+              <>
+                {chairDevice && (
+                  <Group position='center'>
+                    <IconDeviceLaptop color='#2B70BE' />
+                    <Text>{chairDevice}</Text>
+                  </Group>
+                )}
+              </>
             ),
           },
           {
