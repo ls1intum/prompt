@@ -1,8 +1,8 @@
 import { type ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core'
 import { useState } from 'react'
 import { Appearance } from 'react-native-web'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { ManagementConsole } from './instructor/ManagementConsole'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { ManagementConsole, ManagementRoot } from './instructor/ManagementConsole'
 import { StudentApplicationOverview } from './instructor/ApplicationsOverview/ApplicationOverview'
 import { ApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/ApplicationSubmissionPage'
 import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
@@ -39,7 +39,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<CourseIterationConsole />}
-                    permission='ipraktikum-pm'
+                    permission={['ipraktikum-pm']}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -49,7 +49,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<StudentApplicationOverview />}
-                    permission='ipraktikum-pm'
+                    permission={['ipraktikum-pm']}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -59,7 +59,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<TeamAllocationConsole />}
-                    permission='ipraktikum-pm'
+                    permission={['ipraktikum-pm']}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -69,7 +69,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={keycloakValue ? <IntroCourseConsole keycloak={keycloakValue} /> : <></>}
-                    permission='ipraktikum-tutor'
+                    permission={['ipraktikum-pm', 'ipraktikum-tutor']}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -79,14 +79,20 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<InfrastructureManagement />}
-                    permission='ipraktikum-pm'
+                    permission={['ipraktikum-pm']}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
               />
               <Route
                 path='/management'
-                element={<Navigate to='/management/applications' replace={true} />}
+                element={
+                  <ManagementConsole
+                    child={<ManagementRoot />}
+                    permission={['ipraktikum-pm', 'ipraktikum-tutor']}
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/applications/developer'

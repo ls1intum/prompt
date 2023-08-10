@@ -1,4 +1,4 @@
-import { AppShell, Card, Center, Loader, Title, Text } from '@mantine/core'
+import { AppShell, Card, Center, Loader, Title, Text, Group, Transition } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { NavigationBar } from '../utilities/NavigationBar/NavigationBar'
@@ -10,6 +10,37 @@ import jwtDecode from 'jwt-decode'
 import { setAuthState } from '../redux/authSlice/authSlice'
 import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
+import { IconArrowBadgeRightFilled } from '@tabler/icons-react'
+
+export const ManagementRoot = (): JSX.Element => {
+  const [greetingMounted, setGreetingsMounted] = useState(false)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setGreetingsMounted(true)
+    }, 500)
+  }, [])
+
+  return (
+    <Transition
+      mounted={greetingMounted}
+      transition='slide-right'
+      duration={600}
+      timingFunction='ease'
+    >
+      {(styles) => (
+        <Center style={{ ...styles, height: '90vh' }}>
+          <Group>
+            <Title order={3} color='dimmed'>
+              Welcome back to PROMPT
+            </Title>
+            <IconArrowBadgeRightFilled style={{ color: '#2B70BE' }} />
+          </Group>
+        </Center>
+      )}
+    </Transition>
+  )
+}
 
 const AccessRestricted = (): JSX.Element => {
   return (
@@ -26,7 +57,7 @@ const AccessRestricted = (): JSX.Element => {
 
 interface ManagmentConsoleProps {
   child: React.ReactElement
-  permission: string
+  permission: string[]
   onKeycloakValueChange: (keycloak: Keycloak) => void
 }
 
@@ -72,7 +103,7 @@ export const ManagementConsole = ({
                 lastName: decodedJwt.family_name,
                 email: decodedJwt.email,
                 username: decodedJwt.preferred_username,
-                mgmtAccess: keycloak.hasResourceRole(permission, 'prompt-server'),
+                mgmtAccess: permission.some((p) => keycloak.hasResourceRole(p, 'prompt-server')),
               }),
             )
           }
