@@ -77,7 +77,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       iPhoneDeviceId: '',
       iPadDeviceId: '',
       appleWatchDeviceId: '',
-      selfReportedExperienceLevel: SkillProficiency.BEGINNER,
+      selfReportedExperienceLevel: SkillProficiency.NOVICE,
       studentProjectTeamPreferences: [],
       reasonForFirstChoice: '',
       reasonForLastChoice: '',
@@ -104,7 +104,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
         return {
           skill,
           skillAssessmentSource: SkillAssessmentSource.STUDENT,
-          skillProficiency: SkillProficiency.BEGINNER,
+          skillProficiency: SkillProficiency.NOVICE,
         }
       }),
     })

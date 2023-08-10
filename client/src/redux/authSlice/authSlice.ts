@@ -1,5 +1,10 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
+enum Permission {
+  PM = 'ipraktikum-pm',
+  TUTOR = 'ipraktikum-tutor',
+}
+
 interface AuthSliceState {
   firstName: string
   lastName: string
@@ -33,3 +38,4 @@ export const authSlice = createSlice({
 
 export const { setAuthState } = authSlice.actions
 export default authSlice.reducer
+export { Permission }

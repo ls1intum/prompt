@@ -7,6 +7,7 @@ import prompt.ls1.integration.tease.mapper.TeaseStudentMapper;
 import prompt.ls1.integration.tease.model.Allocation;
 import prompt.ls1.integration.tease.model.Skill;
 import prompt.ls1.integration.tease.model.Student;
+import prompt.ls1.model.Application;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.ProjectTeam;
@@ -17,6 +18,7 @@ import prompt.ls1.service.SkillService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,11 +47,11 @@ public class TeaseIntegrationService {
 
     public List<Student> getStudents() {
         final CourseIteration courseIteration = courseIterationService.findWithOpenDeveloperApplicationPeriod();
-        final List<DeveloperApplication> applications = applicationService.findAllDeveloperApplicationsByCourseIteration(courseIteration.getId(), true);
+        final List<Application> applications = applicationService.findAllApplicationsByCourseIterationAndApplicationTypeAndApplicationStatus(courseIteration.getId(), "developer", Optional.empty());
         final List<ProjectTeam> projectTeams = projectTeamService.findAllByCourseIterationId(courseIteration.getId());
 
-        return applications.stream().map(studentApplication ->
-            teaseStudentMapper.toTeaseStudent(studentApplication, projectTeams)
+        return applications.stream().map(application ->
+            teaseStudentMapper.toTeaseStudent((DeveloperApplication) application, projectTeams)
         ).toList();
     }
 

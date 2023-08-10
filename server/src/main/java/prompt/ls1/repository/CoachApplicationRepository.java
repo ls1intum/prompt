@@ -13,10 +13,10 @@ import java.util.UUID;
 @Repository
 public interface CoachApplicationRepository extends JpaRepository<CoachApplication, UUID> {
     @Transactional
-    @Query(value="select da from CoachApplication da where da.courseIteration.id=?1")
+    @Query(value="select da from CoachApplication da where da.courseIterationId=?1")
     List<CoachApplication> findAllByCourseIterationId(final UUID courseIterationId);
 
     @Transactional
-    @Query(value="select da from CoachApplication da where da.courseIteration.id=?2 and da.student.id=?1")
+    @Query(value="select da from CoachApplication da where da.courseIterationId=?2 and da.student.id=?1")
     Optional<CoachApplication> findByStudentAndCourseIteration(final UUID studentId, final UUID courseIterationId);
 }

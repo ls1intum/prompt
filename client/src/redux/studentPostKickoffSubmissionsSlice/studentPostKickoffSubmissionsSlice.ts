@@ -6,7 +6,7 @@ import { fetchStudentPostKickoffSubmissions } from './thunks/fetchStudentPostKic
 import { type Skill } from '../skillsSlice/skillsSlice'
 
 enum SkillProficiency {
-  BEGINNER = 'Beginner',
+  NOVICE = 'Novice',
   INTERMEDIATE = 'Intermediate',
   ADVANCED = 'Advanced',
   EXPERT = 'Expert',

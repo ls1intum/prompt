@@ -28,7 +28,7 @@ export const ProjectTeamMemberListModal = ({
       void dispatch(
         fetchDeveloperApplications({
           courseIteration: selectedCourseIteration.semesterName,
-          accepted: true,
+          status: 'ENROLLED',
         }),
       )
     }

@@ -30,6 +30,7 @@ import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.InstructorComment;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
+import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.service.ApplicationService;
 import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.MailingService;
@@ -37,6 +38,7 @@ import prompt.ls1.service.MailingService;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -61,37 +63,20 @@ public class ApplicationController {
         this.mailingService = mailingService;
     }
 
-    @GetMapping("/developer")
+    @GetMapping("/{applicationType}")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<DeveloperApplication>> getAllDeveloperApplications(
-            @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
-            @RequestParam(required = false, defaultValue = "false") boolean accepted
+    public ResponseEntity<List<Application>> getAllDeveloperApplications(
+            @PathVariable final String applicationType,
+            @RequestParam(name = "courseIteration") @NotNull final String courseIterationName,
+            @RequestParam(required = false) final Optional<ApplicationStatus> applicationStatus
     ) {
         final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
 
-        return ResponseEntity.ok(applicationService.findAllDeveloperApplicationsByCourseIteration(courseIteration.getId(), accepted));
-    }
-
-    @GetMapping("/coach")
-    @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<CoachApplication>> getAllCoachApplications(
-            @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
-            @RequestParam(required = false, defaultValue = "false") boolean accepted
-    ) {
-        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-
-        return ResponseEntity.ok(applicationService.findAllCoachApplicationsByCourseIteration(courseIteration.getId(), accepted));
-    }
-
-    @GetMapping("/tutor")
-    @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<TutorApplication>> getAllTutorApplications(
-            @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
-            @RequestParam(required = false, defaultValue = "false") boolean accepted
-    ) {
-        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-
-        return ResponseEntity.ok(applicationService.findAllTutorApplicationsByCourseIteration(courseIteration.getId(), accepted));
+        return ResponseEntity.ok(applicationService
+                .findAllApplicationsByCourseIterationAndApplicationTypeAndApplicationStatus(
+                        courseIteration.getId(),
+                        applicationType,
+                        applicationStatus));
     }
 
     @PostMapping("/developer")
@@ -99,7 +84,7 @@ public class ApplicationController {
                                               @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-            developerApplication.setCourseIteration(courseIteration);
+            developerApplication.setCourseIterationId(courseIteration.getId());
 
             final DeveloperApplication application = applicationService.createDeveloperApplication(developerApplication);
 
@@ -122,7 +107,7 @@ public class ApplicationController {
                                                                   @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-            tutorApplication.setCourseIteration(courseIteration);
+            tutorApplication.setCourseIterationId(courseIteration.getId());
 
             final TutorApplication application = applicationService.createTutorApplication(tutorApplication);
 
@@ -145,7 +130,7 @@ public class ApplicationController {
                                                                   @RequestParam(name = "courseIteration") String courseIterationName) {
         if (bucket.tryConsume(1)) {
             final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-            coachApplication.setCourseIteration(courseIteration);
+            coachApplication.setCourseIterationId(courseIteration.getId());
 
             final CoachApplication application = applicationService.createCoachApplication(coachApplication);
             try {

@@ -33,7 +33,6 @@ export const createDeveloperApplication = async ({
         message: `An application for this student already exists. If you haven't submitted it, please contact the program management.`,
       })
     } else if ((err as AxiosError)?.response?.status === 400) {
-      console.log(err)
       notifications.show({
         color: 'red',
         autoClose: 10000,
@@ -83,7 +82,6 @@ export const createCoachApplication = async ({
         message: `An application for this student already exists. If you haven't submitted it, please contact the program management.`,
       })
     } else if ((err as AxiosError)?.response?.status === 400) {
-      console.log(err)
       notifications.show({
         color: 'red',
         autoClose: 10000,
@@ -133,7 +131,6 @@ export const createTutorApplication = async ({
         message: `An application for this student already exists. If you haven't submitted it, please contact the program management.`,
       })
     } else if ((err as AxiosError)?.response?.status === 400) {
-      console.log(err)
       notifications.show({
         color: 'red',
         autoClose: 10000,

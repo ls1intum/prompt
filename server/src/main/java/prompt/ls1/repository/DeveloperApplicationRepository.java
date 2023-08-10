@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface DeveloperApplicationRepository extends JpaRepository<DeveloperApplication, UUID> {
 
     @Transactional
-    @Query(value="select da from DeveloperApplication da where da.courseIteration.id=?1")
+    @Query(value="select da from DeveloperApplication da where da.courseIterationId=?1")
     List<DeveloperApplication> findAllByCourseIterationId(final UUID courseIterationId);
 
     @Transactional
@@ -24,7 +24,7 @@ public interface DeveloperApplicationRepository extends JpaRepository<DeveloperA
     Optional<DeveloperApplication> findById(final UUID developerApplicationId);
 
     @Transactional
-    @Query(value="select da from DeveloperApplication da where da.courseIteration.id=?2 and da.student.id=?1")
+    @Query(value="select da from DeveloperApplication da where da.courseIterationId=?2 and da.student.id=?1")
     Optional<DeveloperApplication> findByStudentAndCourseIteration(final UUID studentId, final UUID courseIterationId);
 
 }

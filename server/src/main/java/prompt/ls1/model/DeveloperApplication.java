@@ -19,10 +19,6 @@ public class DeveloperApplication extends Application {
     private Student student;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "intro_course_participation_id")
-    private IntroCourseParticipation introCourseParticipation;
-
-    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "post_kickoff_submission_id")
     private StudentPostKickoffSubmission studentPostKickOffSubmission;
 

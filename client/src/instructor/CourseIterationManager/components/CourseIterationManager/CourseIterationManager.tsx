@@ -73,6 +73,10 @@ export const CourseIterationManager = (): JSX.Element => {
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
+        onRowClick={(courseIteration) => {
+          setSelectedCourseIteration(courseIteration)
+          setEditModalOpen(true)
+        }}
         columns={[
           {
             accessor: 'semesterName',
@@ -111,6 +115,16 @@ export const CourseIterationManager = (): JSX.Element => {
               <Text>
                 {`${moment(courseIteration.tutorApplicationPeriodStart).format('DD. MMMM YYYY')} - 
                 ${moment(courseIteration.tutorApplicationPeriodEnd).format('DD. MMMM YYYY')}`}
+              </Text>
+            ),
+          },
+          {
+            accessor: 'introCourse',
+            title: 'Intro Course',
+            render: (courseIteration) => (
+              <Text>
+                {`${moment(courseIteration.introCourseStart).format('DD. MMMM YYYY')} - 
+                ${moment(courseIteration.introCourseEnd).format('DD. MMMM YYYY')}`}
               </Text>
             ),
           },
