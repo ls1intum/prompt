@@ -56,6 +56,7 @@ public class StudentPostKickoffSubmissionService {
                 .forEach(developerApplication -> {
                     try {
                         mailingService.sendKickoffSubmissionLinkEmail(developerApplication.getStudent(), courseIteration);
+                        log.info(String.format("Kickoff submission invitation email sent to student with id %s.", developerApplication.getStudent().getId()));
                     } catch (MessagingException e) {
                         log.error(String.format("An error occurred while sending the kickoff submission invitation email to student with id %s.",
                                 developerApplication.getStudent().getId()), e);
