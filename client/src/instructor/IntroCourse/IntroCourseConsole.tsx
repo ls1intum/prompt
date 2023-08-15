@@ -47,7 +47,7 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
         <Alert icon={<IconAlertCircle size='1rem' />} title='Action required!' color='red'>
           You have not specified the intro course period for the current semester. Please visit the{' '}
           <Link to='/management/course-iterations'>Course Iteration Management</Link> console and
-          provide the dates!
+          specify the dates!
         </Alert>
       )}
       {selectedCourseIteration?.introCourseStart &&

@@ -21,8 +21,13 @@ export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps)
     },
   })
 
+  const close = (): void => {
+    form.reset()
+    onClose()
+  }
+
   return (
-    <Modal opened={opened} onClose={onClose} centered>
+    <Modal opened={opened} onClose={close} centered>
       <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
         <Stack>
           <TextInput
@@ -48,7 +53,7 @@ export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps)
             leftIcon={<IconPlus />}
             onClick={() => {
               void dispatch(createSkill(form.values))
-              onClose()
+              close()
             }}
           >
             Create

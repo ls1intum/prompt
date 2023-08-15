@@ -13,6 +13,7 @@ import { useForm } from '@mantine/form'
 import {
   IconAlertTriangle,
   IconEdit,
+  IconMailFilled,
   IconPlus,
   IconSearch,
   IconTrash,
@@ -27,12 +28,12 @@ import {
 } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
 import { createProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/createProjectTeam'
 import { deleteProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/deleteProjectTeam'
-import { fetchProjectTeams } from '../../../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { updateProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/updateProjectTeam'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import { fetchDeveloperApplications } from '../../../../redux/applicationsSlice/thunks/fetchApplications'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 import { DeletionConfirmationModal } from '../../../../utilities/DeletionConfirmationModal'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { sendKickoffSubmissionInvitations } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/sendKickoffSubmissionInvitations'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -75,7 +76,6 @@ const ProjectTeamCreationModal = ({
           {...form.getInputProps('customer')}
         />
         <Button
-          variant='outline'
           type='submit'
           onClick={() => {
             if (selectedCourseIteration) {
@@ -127,21 +127,13 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const [selectedProjectTeam, setSelectedProjectTeam] = useState<ProjectTeam | undefined>()
   const [projectTeamDeletionConfirmationOpen, setProjectTeamDeletionConfirmationOpen] =
     useState(false)
+  const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tablePage, setTablePage] = useState(1)
   const [tableRecords, setTableRecords] = useState<ProjectTeam[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteAttemptNonEmptyProjectTeamShowed, setDeleteAttemptNotEmptyProjectTeamShowed] =
     useState(false)
-
-  useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(
-        fetchDeveloperApplications({ courseIteration: selectedCourseIteration.semesterName }),
-      )
-      void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
-    }
-  }, [selectedCourseIteration])
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -158,7 +150,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
   }, [projectTeams, tablePageSize, tablePage, searchQuery])
 
   return (
-    <>
+    <Stack>
       <ProjectTeamCreationModal
         opened={projectTeamCreationModalOpen}
         onClose={() => {
@@ -176,18 +168,40 @@ export const ProjectTeamsManager = (): JSX.Element => {
           projectTeam={selectedProjectTeam}
         />
       )}
-      <div style={{ display: 'flex', justifyContent: 'right', margin: '2vh 0' }}>
-        <Button
-          leftIcon={<IconPlus />}
-          variant='filled'
-          onClick={() => {
-            setProjectTeamCreationModalOpen(true)
-            setSelectedProjectTeam(undefined)
+      <Group position='apart'>
+        <TextInput
+          sx={{ flexBasis: '60%', margin: '1vh 0' }}
+          placeholder='Search project teams...'
+          icon={<IconSearch size={16} />}
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.currentTarget.value)
           }}
-        >
-          Create Project Team
-        </Button>
-      </div>
+        />
+        <Group>
+          <Button
+            leftIcon={<IconMailFilled />}
+            onClick={() => {
+              if (selectedCourseIteration)
+                void dispatch(
+                  sendKickoffSubmissionInvitations(selectedCourseIteration.semesterName),
+                )
+            }}
+          >
+            Send Kick-Off Invitations
+          </Button>
+          <Button
+            leftIcon={<IconPlus />}
+            variant='filled'
+            onClick={() => {
+              setProjectTeamCreationModalOpen(true)
+              setSelectedProjectTeam(undefined)
+            }}
+          >
+            Create Project Team
+          </Button>
+        </Group>
+      </Group>
       {selectedProjectTeam && (
         <DeletionConfirmationModal
           opened={projectTeamDeletionConfirmationOpen}
@@ -215,15 +229,6 @@ export const ProjectTeamsManager = (): JSX.Element => {
           }}
         />
       )}
-      <TextInput
-        sx={{ flexBasis: '60%', margin: '1vh 0' }}
-        placeholder='Search project teams...'
-        icon={<IconSearch size={16} />}
-        value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.currentTarget.value)
-        }}
-      />
       {deleteAttemptNonEmptyProjectTeamShowed && (
         <Notification
           title='Attempt to delete non empty project team'
@@ -246,12 +251,17 @@ export const ProjectTeamsManager = (): JSX.Element => {
         verticalSpacing='md'
         striped
         highlightOnHover
+        bodyRef={bodyRef}
         records={tableRecords}
         totalRecords={projectTeams.length}
         recordsPerPage={tablePageSize}
         page={tablePage}
         onPageChange={(page) => {
           setTablePage(page)
+        }}
+        onRowClick={(projectTeam) => {
+          setSelectedProjectTeam(projectTeam)
+          setProjectTeamEditOpen(true)
         }}
         recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40]}
         onRecordsPerPageChange={(pageSize) => {
@@ -320,6 +330,6 @@ export const ProjectTeamsManager = (): JSX.Element => {
           },
         ]}
       />
-    </>
+    </Stack>
   )
 }

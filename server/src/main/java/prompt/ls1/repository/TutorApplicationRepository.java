@@ -17,6 +17,21 @@ public interface TutorApplicationRepository extends JpaRepository<TutorApplicati
     List<TutorApplication> findAllByCourseIterationId(final UUID courseIterationId);
 
     @Transactional
+    List<TutorApplication> findEnrolledApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
+    List<TutorApplication> findAcceptedApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
+    List<TutorApplication> findRejectedApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
+    List<TutorApplication> findNotAssessedApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
+    List<TutorApplication> findPendingInterviewApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
     @Query(value="select da from TutorApplication da where da.courseIterationId=?2 and da.student.id=?1")
     Optional<TutorApplication> findByStudentAndCourseIteration(final UUID studentId, final UUID courseIterationId);
 }

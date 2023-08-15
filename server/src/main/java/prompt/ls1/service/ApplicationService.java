@@ -89,19 +89,54 @@ public class ApplicationService {
         final List<Application> applications = new ArrayList<>();
 
         switch (applicationType) {
-            case "developer" ->
+            case "developer" -> {
+                if (applicationStatus.isPresent()) {
+                    switch (applicationStatus.get()) {
+                        case ENROLLED -> applications.addAll(developerApplicationRepository.findEnrolledApplicationsByCourseIterationId(courseIterationId));
+                        case ACCEPTED -> applications.addAll(developerApplicationRepository.findAcceptedApplicationsByCourseIterationId(courseIterationId));
+                        case REJECTED -> applications.addAll(developerApplicationRepository.findRejectedApplicationsByCourseIterationId(courseIterationId));
+                        case PENDING_INTERVIEW -> applications.addAll(developerApplicationRepository.findPendingInterviewApplicationsByCourseIterationId(courseIterationId));
+                        case NOT_ASSESSED -> applications.addAll(developerApplicationRepository.findNotAssessedApplicationsByCourseIterationId(courseIterationId));
+                        default -> applications.addAll(developerApplicationRepository.findAllByCourseIterationId(courseIterationId));
+                    }
+                } else {
                     applications.addAll(developerApplicationRepository.findAllByCourseIterationId(courseIterationId));
-            case "coach" ->
+                }
+            }
+            case "coach" -> {
+                if (applicationStatus.isPresent()) {
+                    switch (applicationStatus.get()) {
+                        case ENROLLED -> applications.addAll(coachApplicationRepository.findEnrolledApplicationsByCourseIterationId(courseIterationId));
+                        case ACCEPTED -> applications.addAll(coachApplicationRepository.findAcceptedApplicationsByCourseIterationId(courseIterationId));
+                        case REJECTED -> applications.addAll(coachApplicationRepository.findRejectedApplicationsByCourseIterationId(courseIterationId));
+                        case PENDING_INTERVIEW -> applications.addAll(coachApplicationRepository.findPendingInterviewApplicationsByCourseIterationId(courseIterationId));
+                        case NOT_ASSESSED -> applications.addAll(coachApplicationRepository.findNotAssessedApplicationsByCourseIterationId(courseIterationId));
+                        default -> applications.addAll(coachApplicationRepository.findAllByCourseIterationId(courseIterationId));
+                    }
+                } else {
                     applications.addAll(coachApplicationRepository.findAllByCourseIterationId(courseIterationId));
-            case "tutor" ->
+                }
+            }
+            case "tutor" -> {
+                if (applicationStatus.isPresent()) {
+                    switch (applicationStatus.get()) {
+                        case ENROLLED -> applications.addAll(tutorApplicationRepository.findEnrolledApplicationsByCourseIterationId(courseIterationId));
+                        case ACCEPTED -> applications.addAll(tutorApplicationRepository.findAcceptedApplicationsByCourseIterationId(courseIterationId));
+                        case REJECTED -> applications.addAll(tutorApplicationRepository.findRejectedApplicationsByCourseIterationId(courseIterationId));
+                        case PENDING_INTERVIEW -> applications.addAll(tutorApplicationRepository.findPendingInterviewApplicationsByCourseIterationId(courseIterationId));
+                        case NOT_ASSESSED -> applications.addAll(tutorApplicationRepository.findNotAssessedApplicationsByCourseIterationId(courseIterationId));
+                        default -> applications.addAll(tutorApplicationRepository.findAllByCourseIterationId(courseIterationId));
+                    }
+                } else {
                     applications.addAll(tutorApplicationRepository.findAllByCourseIterationId(courseIterationId));
+                }
+            }
             default ->
-                    throw new ResourceInvalidParametersException(String.format("Application type %s is not supported.", applicationType));
+                    throw new ResourceInvalidParametersException(String.format("Application type %s is not supported.",
+                            applicationType));
         }
 
-        return applicationStatus.map(status -> applications
-                .stream().filter(application -> application.getAssessment().getStatus().equals(status))
-                .toList()).orElse(applications);
+        return applications;
     }
 
     public DeveloperApplication createDeveloperApplication(final DeveloperApplication developerApplication) {

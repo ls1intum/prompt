@@ -110,6 +110,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           <DataTable
             style={styles}
             withBorder
+            minHeight={200}
             withColumnBorders
             highlightOnHover
             noRecordsText='No records to show'
@@ -171,6 +172,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         {(styles) => (
           <DataTable
             style={styles}
+            minHeight={200}
             withBorder
             withColumnBorders
             highlightOnHover
@@ -203,6 +205,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
               content: (record) => (
                 <DataTable
                   noHeader
+                  minHeight={200}
                   noRecordsText='No records to show'
                   columns={[
                     {

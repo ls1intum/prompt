@@ -23,9 +23,18 @@ public interface CourseIterationRepository extends JpaRepository<CourseIteration
     @Query("select s from CourseIteration s where s.tutorApplicationPeriodStart <= ?1 and s.tutorApplicationPeriodEnd >= ?1")
     Optional<CourseIteration> findWithTutorApplicationPeriodIncludes(final Date date);
 
+    @Query("select s from CourseIteration s where s.kickoffSubmissionPeriodStart <= ?1 and s.kickoffSubmissionPeriodEnd >= ?1")
+    Optional<CourseIteration> findWithKickoffSubmissionPeriodIncludes(final Date date);
+
     @Query("select s from CourseIteration s where (s.developerApplicationPeriodStart <= ?1 and s.developerApplicationPeriodEnd >= ?2)" +
             " or (s.developerApplicationPeriodStart >= ?1 and s.developerApplicationPeriodEnd <= ?2)" +
             " or (s.developerApplicationPeriodStart <= ?1 and s.developerApplicationPeriodEnd >= ?1)" +
             " or (s.developerApplicationPeriodStart >= ?1 and s.developerApplicationPeriodStart <= ?2)")
-    List<CourseIteration> findWithDateRangeOverlap(final Date startDate, final Date endDate);
+    List<CourseIteration> findWithApplicationPeriodOverlap(final Date startDate, final Date endDate);
+
+    @Query("select s from CourseIteration s where (s.kickoffSubmissionPeriodStart <= ?1 and s.kickoffSubmissionPeriodEnd >= ?2)" +
+            " or (s.kickoffSubmissionPeriodStart >= ?1 and s.kickoffSubmissionPeriodEnd <= ?2)" +
+            " or (s.kickoffSubmissionPeriodStart <= ?1 and s.kickoffSubmissionPeriodEnd >= ?1)" +
+            " or (s.kickoffSubmissionPeriodStart >= ?1 and s.kickoffSubmissionPeriodStart <= ?2)")
+    List<CourseIteration> findWithKickoffSubmissionPeriodOverlap(final Date startDate, final Date endDate);
 }
