@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { deleteStudentProjectTeamPreferences } from './thunks/deleteStudentProjectTeamPreferences'
 import { type Student } from '../applicationsSlice/applicationsSlice'
-import { createStudentPostKickoffSubmission } from './thunks/createStudentPostKickoffSubmission'
 import { fetchStudentPostKickoffSubmissions } from './thunks/fetchStudentPostKickoffSubmissions'
 import { type Skill } from '../skillsSlice/skillsSlice'
 import { sendKickoffSubmissionInvitations } from './thunks/sendKickoffSubmissionInvitations'
@@ -74,21 +73,6 @@ export const studentPostKickoffSubmissionsSlice = createSlice({
     })
 
     builder.addCase(fetchStudentPostKickoffSubmissions.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
-    builder.addCase(createStudentPostKickoffSubmission.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(createStudentPostKickoffSubmission.fulfilled, (state, { payload }) => {
-      state.studentPostKickoffSubmissions.push(payload)
-      state.status = 'idle'
-    })
-
-    builder.addCase(createStudentPostKickoffSubmission.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

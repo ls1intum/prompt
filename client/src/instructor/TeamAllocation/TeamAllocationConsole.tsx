@@ -14,6 +14,8 @@ import { fetchDeveloperApplications } from '../../redux/applicationsSlice/thunks
 import { useDispatch } from 'react-redux'
 import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { useEffect } from 'react'
+import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
+import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 
 export const TeamAllocationConsole = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
@@ -28,6 +30,8 @@ export const TeamAllocationConsole = (): JSX.Element => {
         }),
       )
       void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
+      void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
+      void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
     }
   }, [selectedCourseIteration])
 

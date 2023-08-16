@@ -500,7 +500,7 @@ public class MailingService {
                         <p>&nbsp;</p>
 
                         <hr />
-                        <p>Please, use the following link: <a href="https://prompt.ase.cit.in.tum.de/kick-off/%s" rel="nofollow" target="_blank">https://prompt.ase.cit.in.tum.de/kick-off/%s</a></p>
+                        <p>Please, use the following link: <a href="https://prompt.ase.cit.tum.de/kick-off/%s" rel="nofollow" target="_blank">https://prompt.ase.cit.tum.de/kick-off/%s</a></p>
                         <p>Make sure NOT TO SHARE this personal link with any third parties.</p>
                         
                         <br/>
