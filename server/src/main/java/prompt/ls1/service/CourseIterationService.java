@@ -52,10 +52,20 @@ public class CourseIterationService {
         }
 
         List<CourseIteration> courseIterationPeriodOverlap = courseIterationRepository
-                .findWithDateRangeOverlap(courseIteration.getDeveloperApplicationPeriodStart(), courseIteration.getDeveloperApplicationPeriodEnd());
+                .findWithApplicationPeriodOverlap(courseIteration.getDeveloperApplicationPeriodStart(), courseIteration.getDeveloperApplicationPeriodEnd());
         if (!courseIterationPeriodOverlap.isEmpty()) {
-            throw new ResourceInvalidParametersException(String.format("Course iteration application period overlaps with existing course iteration with name %s",
-                    courseIterationPeriodOverlap.get(0).getSemesterName()));
+            throw new ResourceInvalidParametersException(
+                    String.format("Course iteration application period overlaps with existing course iteration with name %s",
+                            courseIterationPeriodOverlap.get(0).getSemesterName()));
+        }
+
+        List<CourseIteration> courseIterationKickoffSubmissionPeriodOverlap = courseIterationRepository
+                .findWithKickoffSubmissionPeriodOverlap(courseIteration.getKickoffSubmissionPeriodStart(),
+                        courseIteration.getKickoffSubmissionPeriodEnd());
+        if (!courseIterationKickoffSubmissionPeriodOverlap.isEmpty()) {
+            throw new ResourceInvalidParametersException(
+                    String.format("Course iteration kickoff submission period overlaps with existing course iteration with name %s",
+                            courseIterationPeriodOverlap.get(0).getSemesterName()));
         }
 
         courseIteration.setPhases(new HashSet<>());

@@ -356,7 +356,7 @@ export const StudentManager = (): JSX.Element => {
           }
         }}
       >
-        {students
+        {[...students]
           .sort((a, b) =>
             `${a.student.firstName ?? ''} ${a.student.lastName ?? ''}`.localeCompare(
               `${b.student.firstName ?? ''} ${b.student.lastName ?? ''}`,

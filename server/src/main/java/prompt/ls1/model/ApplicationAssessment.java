@@ -31,5 +31,6 @@ public class ApplicationAssessment {
     private Set<InstructorComment> instructorComments;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "application_status")
     private ApplicationStatus status;
 }

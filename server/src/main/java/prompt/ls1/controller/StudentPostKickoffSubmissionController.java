@@ -27,6 +27,15 @@ public class StudentPostKickoffSubmissionController {
         this.studentPostKickoffSubmissionService = studentPostKickoffSubmissionService;
     }
 
+    @PostMapping("/invitations")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<String> sendKickoffSubmissionInvitations(
+            @RequestParam(name = "courseIteration") final String courseIterationName
+    ) {
+        studentPostKickoffSubmissionService.inviteStudentsToKickoffSubmission(courseIterationName);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<List<StudentPostKickoffSubmission>> getProjectTeamPreferencesSubmissions(

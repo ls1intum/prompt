@@ -59,6 +59,12 @@ public class CourseIteration {
     @Column(columnDefinition = "DATE")
     private Date introCourseEnd;
 
+    @Column(columnDefinition = "DATE")
+    private Date kickoffSubmissionPeriodStart;
+
+    @Column(columnDefinition = "DATE")
+    private Date kickoffSubmissionPeriodEnd;
+
     @Column(columnDefinition = "boolean default false")
     private Boolean projectTeamPreferencesSubmissionOpen;
 

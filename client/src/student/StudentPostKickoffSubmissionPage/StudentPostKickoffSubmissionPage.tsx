@@ -16,6 +16,7 @@ import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import {
   Button,
+  Card,
   Center,
   Container,
   Group,
@@ -37,8 +38,8 @@ import {
   SkillProficiency,
   type StudentPostKickoffSubmission,
 } from '../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
-import { createStudentPostKickoffSubmission } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/createStudentPostKickoffSubmission'
 import { fetchSkills } from '../../redux/skillsSlice/thunks/fetchSkills'
+import { createPostKickoffSubmission } from '../../service/postKickoffSubmissionService'
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -58,6 +59,24 @@ const useStyles = createStyles((theme) => ({
     boxShadow: theme.shadows.sm,
   },
 }))
+
+interface SuccessfulSubmissionProps {
+  title: string
+  text: string
+}
+
+const SuccessfulSubmission = ({ title, text }: SuccessfulSubmissionProps): JSX.Element => {
+  return (
+    <div
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+    >
+      <Card withBorder p='xl'>
+        <Title order={5}>{title}</Title>
+        <Text c='dimmed'>{text}</Text>
+      </Card>
+    </div>
+  )
+}
 
 export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const { classes, cx } = useStyles()
@@ -91,6 +110,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     },
     validateInputOnChange: true,
   })
+  const [formSubmitted, setFormSubmitted] = useState(false)
 
   useEffect(() => {
     void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
@@ -159,168 +179,181 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
 
   return (
     <div style={{ margin: '5vh' }}>
-      <ProjectTeamPreferencesSubmissionCodeModal
-        open={studentVerificationDialogOpened}
-        onClose={() => {
-          setStudentVerificationDialogOpened(false)
-        }}
-        onSubmit={setStudentId}
-      />
-      <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
-        <Title order={2}>Kickoff Submission Form</Title>
-      </Center>
-      <Container size='70vw' style={{ padding: '3vh' }}>
-        <Stack style={{ paddingBottom: '5vh' }}>
-          <TextInput
-            label='Apple ID'
-            placeholder='Apple ID'
-            required
-            withAsterisk
-            {...form.getInputProps('appleId')}
-          />
-          <Group grow>
-            <TextInput
-              label='MacBook Device ID'
-              placeholder='MacBook Device ID'
-              {...form.getInputProps('macBookDeviceId')}
-            />
-            <TextInput
-              label='iPhone Device ID'
-              placeholder='iPhone Device ID'
-              {...form.getInputProps('iPhoneDeviceId')}
-            />
-          </Group>
-          <Group grow>
-            <TextInput
-              label='iPad Device ID'
-              placeholder='iPad Device ID'
-              {...form.getInputProps('iPadDeviceId')}
-            />
-            <TextInput
-              label='Apple Watch Device ID'
-              placeholder='Apple Watch Device ID'
-              {...form.getInputProps('appleWatchDeviceId')}
-            />
-          </Group>
-          <Select
-            withAsterisk
-            required
-            searchable
-            label='Experience level'
-            placeholder='How experience are you with SwiftUI?'
-            data={Object.keys(SkillProficiency).map((key) => {
-              return {
-                label: SkillProficiency[key as keyof typeof SkillProficiency],
-                value: key,
-              }
-            })}
-            {...form.getInputProps('selfReportedExperienceLevel')}
-          />
-          {skills.map((skill, idx) => (
-            <Select
-              key={skill.id}
-              withAsterisk
-              required
-              label={skill.title}
-              placeholder={skill.description}
-              data={Object.keys(SkillProficiency).map((key) => {
-                return {
-                  label: SkillProficiency[key as keyof typeof SkillProficiency],
-                  value: key,
-                }
-              })}
-              {...form.getInputProps('studentSkills.' + idx.toString() + '.skillProficiency')}
-            />
-          ))}
-        </Stack>
-        <Stack>
-          <Text c='dimmed' ta='center' fz='sm'>
-            Please order the projects according to your preferences by dragging the boxes below up
-            and down.
-          </Text>
-          <DragDropContext
-            onDragEnd={({ destination, source }: any) => {
-              handlers.reorder({ from: source.index, to: destination?.index || 0 })
+      {formSubmitted && (
+        <SuccessfulSubmission
+          title='Your priorities have been successfully submitted.'
+          text='You will receive an email from your project lead as soon as you have been allocated to a team.'
+        />
+      )}
+      {!formSubmitted && (
+        <>
+          <ProjectTeamPreferencesSubmissionCodeModal
+            open={studentVerificationDialogOpened}
+            onClose={() => {
+              setStudentVerificationDialogOpened(false)
             }}
-          >
-            <Droppable droppableId='dnd-list' direction='vertical'>
-              {(provided: {
-                droppableProps: JSX.IntrinsicAttributes &
-                  ClassAttributes<HTMLDivElement> &
-                  HTMLAttributes<HTMLDivElement>
-                innerRef: LegacyRef<HTMLDivElement> | undefined
-                placeholder:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | ReactFragment
-                  | ReactPortal
-                  | null
-                  | undefined
-              }) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {items}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </Stack>
-        <Stack>
-          <Textarea
-            autosize
-            minRows={5}
-            withAsterisk
-            label='Reason for the First Choice'
-            placeholder='Reason for high priority'
-            required
-            {...form.getInputProps('reasonForFirstChoice')}
+            onSubmit={setStudentId}
           />
-          <Textarea
-            autosize
-            minRows={5}
-            withAsterisk
-            label='Reason for the Last Choice'
-            placeholder='Reason for low priority'
-            required
-            {...form.getInputProps('reasonForLastChoice')}
-          />
-        </Stack>
-      </Container>
-      <Center>
-        <Button
-          variant='filled'
-          disabled={!courseIterationWithOpenApplicationPeriod || !form.isValid()}
-          onClick={() => {
-            if (studentId) {
-              const preferencesMap = new Map()
-              state.forEach((preference, index) => {
-                preferencesMap.set(preference.id, index)
-              })
+          <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
+            <Title order={2}>Kickoff Submission Form</Title>
+          </Center>
+          <Container size='70vw' style={{ padding: '3vh' }}>
+            <Stack style={{ paddingBottom: '5vh' }}>
+              <TextInput
+                label='Apple ID'
+                placeholder='Apple ID'
+                required
+                withAsterisk
+                {...form.getInputProps('appleId')}
+              />
+              <Group grow>
+                <TextInput
+                  label='MacBook Device ID'
+                  placeholder='MacBook Device ID'
+                  {...form.getInputProps('macBookDeviceId')}
+                />
+                <TextInput
+                  label='iPhone Device ID'
+                  placeholder='iPhone Device ID'
+                  {...form.getInputProps('iPhoneDeviceId')}
+                />
+              </Group>
+              <Group grow>
+                <TextInput
+                  label='iPad Device ID'
+                  placeholder='iPad Device ID'
+                  {...form.getInputProps('iPadDeviceId')}
+                />
+                <TextInput
+                  label='Apple Watch Device ID'
+                  placeholder='Apple Watch Device ID'
+                  {...form.getInputProps('appleWatchDeviceId')}
+                />
+              </Group>
+              <Select
+                withAsterisk
+                required
+                searchable
+                label='Experience level'
+                placeholder='How experience are you with SwiftUI?'
+                data={Object.keys(SkillProficiency).map((key) => {
+                  return {
+                    label: SkillProficiency[key as keyof typeof SkillProficiency],
+                    value: key,
+                  }
+                })}
+                {...form.getInputProps('selfReportedExperienceLevel')}
+              />
+              {skills.map((skill, idx) => (
+                <Select
+                  key={skill.id}
+                  withAsterisk
+                  required
+                  label={skill.title}
+                  placeholder={skill.description}
+                  data={Object.keys(SkillProficiency).map((key) => {
+                    return {
+                      label: SkillProficiency[key as keyof typeof SkillProficiency],
+                      value: key,
+                    }
+                  })}
+                  {...form.getInputProps('studentSkills.' + idx.toString() + '.skillProficiency')}
+                />
+              ))}
+            </Stack>
+            <Stack>
+              <Text c='dimmed' ta='center' fz='sm'>
+                Please order the projects according to your preferences by dragging the boxes below
+                up and down.
+              </Text>
+              <DragDropContext
+                onDragEnd={({ destination, source }: any) => {
+                  handlers.reorder({ from: source.index, to: destination?.index || 0 })
+                }}
+              >
+                <Droppable droppableId='dnd-list' direction='vertical'>
+                  {(provided: {
+                    droppableProps: JSX.IntrinsicAttributes &
+                      ClassAttributes<HTMLDivElement> &
+                      HTMLAttributes<HTMLDivElement>
+                    innerRef: LegacyRef<HTMLDivElement> | undefined
+                    placeholder:
+                      | string
+                      | number
+                      | boolean
+                      | ReactElement<any, string | JSXElementConstructor<any>>
+                      | ReactFragment
+                      | ReactPortal
+                      | null
+                      | undefined
+                  }) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {items}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </Stack>
+            <Stack>
+              <Textarea
+                autosize
+                minRows={5}
+                withAsterisk
+                label='Reason for the First Choice'
+                placeholder='Reason for high priority'
+                required
+                {...form.getInputProps('reasonForFirstChoice')}
+              />
+              <Textarea
+                autosize
+                minRows={5}
+                withAsterisk
+                label='Reason for the Last Choice'
+                placeholder='Reason for low priority'
+                required
+                {...form.getInputProps('reasonForLastChoice')}
+              />
+            </Stack>
+          </Container>
+          <Center>
+            <Button
+              variant='filled'
+              disabled={!courseIterationWithOpenApplicationPeriod || !form.isValid()}
+              onClick={() => {
+                void (async () => {
+                  if (studentId) {
+                    const preferencesMap = new Map()
+                    state.forEach((preference, index) => {
+                      preferencesMap.set(preference.id, index)
+                    })
 
-              if (courseIterationWithOpenApplicationPeriod) {
-                void dispatch(
-                  createStudentPostKickoffSubmission({
-                    studentId,
-                    studentPostKickoffSubmission: {
-                      ...form.values,
-                      studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
-                        return {
-                          projectTeamId: projectTeam.id,
-                          priorityScore,
-                        }
-                      }),
-                    },
-                  }),
-                )
-              }
-            }
-          }}
-        >
-          Submit
-        </Button>
-      </Center>
+                    if (courseIterationWithOpenApplicationPeriod) {
+                      const response = await createPostKickoffSubmission({
+                        studentId,
+                        studentPostKickoffSubmission: {
+                          ...form.values,
+                          studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
+                            return {
+                              projectTeamId: projectTeam.id,
+                              priorityScore,
+                            }
+                          }),
+                        },
+                      })
+                      if (response) {
+                        setFormSubmitted(true)
+                      }
+                    }
+                  }
+                })()
+              }}
+            >
+              Submit
+            </Button>
+          </Center>
+        </>
+      )}
     </div>
   )
 }

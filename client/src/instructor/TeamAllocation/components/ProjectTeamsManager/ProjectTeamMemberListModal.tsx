@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
-import { fetchDeveloperApplications } from '../../../../redux/applicationsSlice/thunks/fetchApplications'
 import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
 
 interface ProjectTeamMemberListModalProps {
@@ -22,17 +21,6 @@ export const ProjectTeamMemberListModal = ({
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const developerApplications = useAppSelector((state) => state.applications.developerApplications)
   const [data, setData] = useState<TransferListData>([[], []])
-
-  useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(
-        fetchDeveloperApplications({
-          courseIteration: selectedCourseIteration.semesterName,
-          status: 'ENROLLED',
-        }),
-      )
-    }
-  }, [selectedCourseIteration])
 
   useEffect(() => {
     setData([

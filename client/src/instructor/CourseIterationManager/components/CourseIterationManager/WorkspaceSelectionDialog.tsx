@@ -54,6 +54,8 @@ export const CourseIterationCreationModal = ({
           tutorInterviewDate: new Date(courseIteration.tutorInterviewDate),
           introCourseStart: new Date(courseIteration.introCourseStart),
           introCourseEnd: new Date(courseIteration.introCourseEnd),
+          kickoffSubmissionPeriodStart: new Date(courseIteration.kickoffSubmissionPeriodStart),
+          kickoffSubmissionPeriodEnd: new Date(courseIteration.kickoffSubmissionPeriodEnd),
         }
       : {
           id: '',
@@ -72,6 +74,8 @@ export const CourseIterationCreationModal = ({
           tutorInterviewDate: new Date(),
           introCourseStart: new Date(),
           introCourseEnd: new Date(),
+          kickoffSubmissionPeriodStart: new Date(),
+          kickoffSubmissionPeriodEnd: new Date(),
           iosTag: '',
           phases: [],
         },
@@ -179,6 +183,19 @@ export const CourseIterationCreationModal = ({
               icon={<IconCalendar />}
               label='Intro Course End'
               {...form.getInputProps('introCourseEnd')}
+            />
+          </Group>
+          <Divider />
+          <Group grow>
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Kickoff Submission Start'
+              {...form.getInputProps('kickoffSubmissionPeriodStart')}
+            />
+            <DatePickerInput
+              icon={<IconCalendar />}
+              label='Kickoff Submission End'
+              {...form.getInputProps('kickoffSubmissionPeriodEnd')}
             />
           </Group>
           <Button

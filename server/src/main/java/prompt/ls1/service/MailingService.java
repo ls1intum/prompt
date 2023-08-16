@@ -480,4 +480,46 @@ public class MailingService {
 
         javaMailSender.send(message);
     }
+
+    public void sendKickoffSubmissionLinkEmail(final Student student,
+                                               final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("iPraktikum %s Kick-off Project Preferences", courseIteration.getSemesterName()));
+
+        String htmlContent = String.format("""
+                        <p>Dear&nbsp;%s %s,</p>
+
+                        <p>we sincerely congratulate you on making it so far to the official iPraktikum %s project start.</p>
+
+                        <p>As a follow-up to the Kick-off event, you have a chance to submit your team preferences based on your project interests.</p>
+
+                        <p>&nbsp;</p>
+
+                        <hr />
+                        <p>Please, use the following link: <a href="https://prompt.ase.cit.tum.de/kick-off/%s" rel="nofollow" target="_blank">https://prompt.ase.cit.tum.de/kick-off/%s</a></p>
+                        <p>Make sure NOT TO SHARE this personal link with any third parties.</p>
+                        
+                        <br/>
+                        
+                        <p><strong>You will need your matriculation number to submit the form.</strong></p>
+
+                        <br />
+
+                        <p>&nbsp;</p>
+
+                        <p>Best regards,<br />
+                        iPraktikum Program Management Team</p>""",
+                student.getFirstName(),
+                student.getLastName(),
+                courseIteration.getSemesterName(),
+                student.getPublicId(),
+                student.getPublicId());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
 }

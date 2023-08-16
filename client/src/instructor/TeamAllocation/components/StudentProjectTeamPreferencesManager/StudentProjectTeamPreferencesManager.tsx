@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button, Group, Switch, Text, Tooltip, Transition, createStyles, px } from '@mantine/core'
 import {
   IconBuilding,
@@ -12,7 +12,6 @@ import {
 import { CSVLink } from 'react-csv'
 import { deleteStudentProjectTeamPreferences } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/deleteStudentProjectTeamPreferences'
 import { DataTable } from 'mantine-datatable'
-import { fetchStudentPostKickoffSubmissions } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
 
 const useStyles = createStyles((theme) => ({
   expandIcon: {
@@ -28,22 +27,20 @@ const useStyles = createStyles((theme) => ({
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const enrolledDeveloperApplications = useAppSelector(
+    (state) => state.applications.developerApplications,
+  ).filter((application) => application.assessment.status === 'ENROLLED')
   const { cx, classes } = useStyles()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const studentPostKickoffSubmissions = useAppSelector(
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
   )
+  const introCourseParticipations = useAppSelector((state) => state.introCourse.participations)
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
   const [expandedStudentPreferences, setExpandedStudentPreferences] = useState<string[]>([])
   const [inverseTableView, setInverseTableView] = useState(false)
-
-  useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
-    }
-  }, [selectedCourseIteration])
 
   return (
     <div>
@@ -91,15 +88,48 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         </Button>
       </div>
       <CSVLink
-        data={studentPostKickoffSubmissions?.flatMap((stp) =>
-          stp.studentProjectTeamPreferences.map((p) => ({
-            courseIterationId: selectedCourseIteration?.id,
-            studentId: stp.student?.id,
-            tumId: stp.student?.tumId,
-            projectTeamId: p.projectTeamId,
-            priorityScore: p.priorityScore,
-          })),
-        )}
+        data={enrolledDeveloperApplications?.map((student) => {
+          let result = {
+            firstName: student.student.firstName,
+            lastName: student.student.lastName,
+            nationality: student.student.nationality,
+            tumId: student.student.tumId,
+            matriculationNumber: student.student.matriculationNumber,
+            email: student.student.email,
+            gender: student.student.gender,
+            major: `${student.studyProgram ?? ''} ${student.studyDegree ?? ''}`,
+            semester: student.currentSemester,
+            germanProficiency: student.germanLanguageProficiency,
+            englishProficiency: student.englishLanguageProficiency,
+            supervisorAssessment: introCourseParticipations
+              .filter((participation) => participation.student.id === student.student.id)
+              .at(0)?.supervisorAssessment,
+            selfAssessment: introCourseParticipations
+              .filter((participation) => participation.student.id === student.student.id)
+              .at(0)?.selfAssessment,
+            devices: student.devices,
+          }
+          studentPostKickoffSubmissions
+            .filter((stp) => stp.student?.id === student.student.id)
+            .forEach((stp) => {
+              const preferences = new Map()
+              stp.studentProjectTeamPreferences.forEach((p, idx) => {
+                preferences.set(
+                  `Priorities[${p.priorityScore + 1}]`,
+                  projectTeams.filter((projectTeam) => projectTeam.id === p.projectTeamId).at(0)
+                    ?.name,
+                )
+              })
+              result = { ...result, ...Object.fromEntries(preferences) }
+
+              const skills = new Map()
+              stp.studentSkills.forEach((skill) => {
+                skills.set(`Skills[${skill.skill.title}]`, skill.skillProficiency)
+              })
+              result = { ...result, ...Object.fromEntries(skills) }
+            })
+          return result
+        })}
         filename='data.csv'
         style={{ display: 'hidden' }}
         ref={downloadLinkRef}
@@ -110,6 +140,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           <DataTable
             style={styles}
             withBorder
+            minHeight={200}
             withColumnBorders
             highlightOnHover
             noRecordsText='No records to show'
@@ -171,6 +202,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         {(styles) => (
           <DataTable
             style={styles}
+            minHeight={200}
             withBorder
             withColumnBorders
             highlightOnHover
@@ -203,6 +235,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
               content: (record) => (
                 <DataTable
                   noHeader
+                  minHeight={200}
                   noRecordsText='No records to show'
                   columns={[
                     {
