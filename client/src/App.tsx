@@ -18,6 +18,7 @@ import { RootPage } from './utilities/NavigationBar/RootPage'
 import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
+import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
@@ -35,6 +36,10 @@ export const App = (): JSX.Element => {
           <Notifications limit={5} />
           <BrowserRouter>
             <Routes>
+              <Route
+                path='/management/thesis-applications'
+                element={<ThesisApplicationsManagementConsole />}
+              />
               <Route
                 path='/management/course-iterations'
                 element={
