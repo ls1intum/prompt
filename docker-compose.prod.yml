@@ -37,6 +37,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./thesis_uploads:./thesis_application_uploads
     expose:
       - "8080"
     environment:
