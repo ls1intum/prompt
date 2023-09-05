@@ -16,7 +16,6 @@ import {
   Image,
   MultiSelect,
   Select,
-  SimpleGrid,
   Spoiler,
   Stack,
   Text,
@@ -46,6 +45,7 @@ import { DatePickerInput } from '@mantine/dates'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../redux/store'
 import { assessThesisApplication } from '../redux/thesisApplicationsSlice/thunks/assessThesisApplication'
+import { notifications } from '@mantine/notifications'
 
 countries.registerLocale(enLocale)
 const countriesArr = Object.entries(countries.getNames('en', { select: 'alias' })).map(
@@ -69,14 +69,30 @@ export const ThesisApplicationForm = ({
   const theme = useMantineTheme()
   const dispatch = useDispatch<AppDispatch>()
   const uploads = useForm<{
-    examinationReport: File | null
-    cv: File | null
-    bachelorReport: File | null
+    examinationReport: File | undefined
+    cv: File | undefined
+    bachelorReport: File | undefined
   }>({
     initialValues: {
-      examinationReport: null,
-      cv: null,
-      bachelorReport: null,
+      examinationReport: undefined,
+      cv: undefined,
+      bachelorReport: undefined,
+    },
+    validate: {
+      examinationReport: (value) => {
+        if (!value) {
+          return 'Please upload your examination report.'
+        } else if (value && value.size > 1 * 1024 ** 2) {
+          return 'The file should not exceed 3mb'
+        }
+      },
+      cv: (value) => {
+        if (!value) {
+          return 'Please upload your CV.'
+        } else if (value && value.size > 1 * 1024 ** 2) {
+          return 'The file should not exceed 3mb'
+        }
+      },
     },
   })
   const form = useForm<ThesisApplication>({
@@ -348,6 +364,7 @@ export const ThesisApplicationForm = ({
           {...form.getInputProps('thesisTitle')}
         />
         <DatePickerInput
+          disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
           icon={<IconCalendar />}
           label='Desired Thesis Start Date'
           {...form.getInputProps('desiredThesisStart')}
@@ -379,34 +396,48 @@ export const ThesisApplicationForm = ({
           />
         </Group>
         {accessMode === ApplicationFormAccessMode.STUDENT && (
-          <>
+          <Stack>
+            <Group position='left'>
+              <Text fw={500} fz='sm'>
+                Examination Report
+              </Text>
+              <Text color='red'>*</Text>
+            </Group>
+            {uploads.values.examinationReport && (
+              <Card shadow='sm' withBorder>
+                <Group position='apart'>
+                  <Text c='dimmed' fz='sm'>
+                    {uploads.values.examinationReport.name}
+                  </Text>
+                  <ActionIcon
+                    onClick={() => {
+                      uploads.setValues({ examinationReport: undefined })
+                    }}
+                  >
+                    <IconX />
+                  </ActionIcon>
+                </Group>
+              </Card>
+            )}
             <Dropzone
               name='Examination Report'
-              disabled={
-                !!uploads.values.examinationReport &&
-                !!uploads.values.cv &&
-                !!uploads.values.bachelorReport
-              }
+              disabled={!!uploads.values.examinationReport}
               onDrop={(files) => {
-                console.log('accepted files', files)
-                if (!uploads.values.examinationReport) {
+                if (files[0]) {
                   uploads.setValues({
                     examinationReport: files[0],
-                  })
-                } else if (!uploads.values.cv) {
-                  uploads.setValues({
-                    cv: files[0],
-                  })
-                } else if (!uploads.values.bachelorReport) {
-                  uploads.setValues({
-                    bachelorReport: files[0],
                   })
                 }
               }}
               onReject={(files) => {
-                console.log('rejected files', files)
+                notifications.show({
+                  color: 'red',
+                  autoClose: 5000,
+                  title: 'Error',
+                  message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
+                })
               }}
-              maxSize={3 * 1024 ** 2}
+              maxSize={1 * 1024 ** 2}
               accept={PDF_MIME_TYPE}
             >
               <Group
@@ -434,65 +465,164 @@ export const ThesisApplicationForm = ({
 
                 <div>
                   <Text size='xl' inline>
-                    Drag files here or click to select files
+                    Drag the file here or click to select file
                   </Text>
                   <Text size='sm' color='dimmed' inline mt={7}>
-                    Attach at most 3 files, each file should not exceed 5mb
+                    The file should not exceed 1mb
                   </Text>
                 </div>
               </Group>
             </Dropzone>
-            <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'sm', cols: 1 }]} mt={'xl'}>
-              {uploads.values.examinationReport && (
-                <Card shadow='sm' withBorder>
-                  <Group position='apart'>
-                    <Text c='dimmed' fz='sm'>
-                      {uploads.values.examinationReport.name}
-                    </Text>
-                    <ActionIcon
-                      onClick={() => {
-                        uploads.setValues({ examinationReport: null })
-                      }}
-                    >
-                      <IconX />
-                    </ActionIcon>
-                  </Group>
-                </Card>
-              )}
-              {uploads.values.cv && (
-                <Card shadow='sm' withBorder>
-                  <Group position='apart'>
-                    <Text c='dimmed' fz='sm'>
-                      {uploads.values.cv.name}
-                    </Text>
-                    <ActionIcon
-                      onClick={() => {
-                        uploads.setValues({ cv: null })
-                      }}
-                    >
-                      <IconX />
-                    </ActionIcon>
-                  </Group>
-                </Card>
-              )}
-              {uploads.values.bachelorReport && (
-                <Card shadow='sm' withBorder>
-                  <Group position='apart'>
-                    <Text c='dimmed' fz='sm'>
-                      {uploads.values.bachelorReport.name}
-                    </Text>
-                    <ActionIcon
-                      onClick={() => {
-                        uploads.setValues({ bachelorReport: null })
-                      }}
-                    >
-                      <IconX />
-                    </ActionIcon>
-                  </Group>
-                </Card>
-              )}
-            </SimpleGrid>
-          </>
+            <Group position='left'>
+              <Text fw={500} fz='sm'>
+                CV
+              </Text>
+              <Text color='red'>*</Text>
+            </Group>
+            {uploads.values.cv && (
+              <Card shadow='sm' withBorder>
+                <Group position='apart'>
+                  <Text c='dimmed' fz='sm'>
+                    {uploads.values.cv.name}
+                  </Text>
+                  <ActionIcon
+                    onClick={() => {
+                      uploads.setValues({ cv: undefined })
+                    }}
+                  >
+                    <IconX />
+                  </ActionIcon>
+                </Group>
+              </Card>
+            )}
+            <Dropzone
+              name='CV'
+              disabled={!!uploads.values.cv}
+              onDrop={(files) => {
+                if (files[0]) {
+                  uploads.setValues({
+                    cv: files[0],
+                  })
+                }
+              }}
+              onReject={(files) => {
+                notifications.show({
+                  color: 'red',
+                  autoClose: 5000,
+                  title: 'Error',
+                  message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
+                })
+              }}
+              maxSize={1 * 1024 ** 2}
+              accept={PDF_MIME_TYPE}
+            >
+              <Group
+                position='center'
+                spacing='xl'
+                style={{ minHeight: rem(220), pointerEvents: 'none' }}
+              >
+                <Dropzone.Accept>
+                  <IconUpload
+                    size='3.2rem'
+                    stroke={1.5}
+                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Accept>
+                <Dropzone.Reject>
+                  <IconX
+                    size='3.2rem'
+                    stroke={1.5}
+                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Reject>
+                <Dropzone.Idle>
+                  <IconPhoto size='3.2rem' stroke={1.5} />
+                </Dropzone.Idle>
+
+                <div>
+                  <Text size='xl' inline>
+                    Drag the file here or click to select file
+                  </Text>
+                  <Text size='sm' color='dimmed' inline mt={7}>
+                    The file should not exceed 1mb
+                  </Text>
+                </div>
+              </Group>
+            </Dropzone>
+            <Text fw={500} fz='sm'>
+              Bachelor Report
+            </Text>
+            {uploads.values.bachelorReport && (
+              <Card shadow='sm' withBorder>
+                <Group position='apart'>
+                  <Text c='dimmed' fz='sm'>
+                    {uploads.values.bachelorReport.name}
+                  </Text>
+                  <ActionIcon
+                    onClick={() => {
+                      uploads.setValues({ bachelorReport: undefined })
+                    }}
+                  >
+                    <IconX />
+                  </ActionIcon>
+                </Group>
+              </Card>
+            )}
+            <Dropzone
+              name='Bachelor Report'
+              disabled={!!uploads.values.bachelorReport}
+              onDrop={(files) => {
+                if (files[0]) {
+                  uploads.setValues({
+                    bachelorReport: files[0],
+                  })
+                }
+              }}
+              onReject={(files) => {
+                notifications.show({
+                  color: 'red',
+                  autoClose: 5000,
+                  title: 'Error',
+                  message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
+                })
+              }}
+              maxSize={1 * 1024 ** 2}
+              accept={PDF_MIME_TYPE}
+            >
+              <Group
+                position='center'
+                spacing='xl'
+                style={{ minHeight: rem(220), pointerEvents: 'none' }}
+              >
+                <Dropzone.Accept>
+                  <IconUpload
+                    size='3.2rem'
+                    stroke={1.5}
+                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Accept>
+                <Dropzone.Reject>
+                  <IconX
+                    size='3.2rem'
+                    stroke={1.5}
+                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Reject>
+                <Dropzone.Idle>
+                  <IconPhoto size='3.2rem' stroke={1.5} />
+                </Dropzone.Idle>
+
+                <div>
+                  <Text size='xl' inline>
+                    Drag the file here or click to select file
+                  </Text>
+                  <Text size='sm' color='dimmed' inline mt={7}>
+                    The file should not exceed 1mb
+                  </Text>
+                </div>
+              </Group>
+            </Dropzone>
+          </Stack>
         )}
       </form>
       {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
@@ -600,13 +730,10 @@ export const ThesisApplicationForm = ({
           </Stack>
           <Group>
             <Button
+              disabled={!form.isValid() || !consentForm.isValid() || !uploads.isValid()}
               onClick={() => {
                 void (async () => {
-                  if (
-                    uploads.values.examinationReport &&
-                    uploads.values.cv &&
-                    uploads.values.bachelorReport
-                  ) {
+                  if (uploads.values.examinationReport && uploads.values.cv) {
                     await createThesisApplication({
                       application: form.values,
                       examinationReport: uploads.values.examinationReport,

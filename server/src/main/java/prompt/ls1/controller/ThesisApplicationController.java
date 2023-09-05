@@ -47,6 +47,12 @@ public class ThesisApplicationController {
 
     @GetMapping
     @PreAuthorize("hasRole('chair-member')")
+    public ResponseEntity<List<ThesisApplication>> getAll() {
+        return ResponseEntity.ok(thesisApplicationService.getAll());
+    }
+
+    @GetMapping("/not-assessed")
+    @PreAuthorize("hasRole('chair-member')")
     public ResponseEntity<List<ThesisApplication>> getAllNotAssessed() {
         return ResponseEntity.ok(thesisApplicationService.getAllNotAssessed());
     }

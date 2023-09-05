@@ -17,11 +17,7 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
     url: keycloakUrl,
     clientId: 'prompt-client',
   })
-  const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
-
-  useEffect(() => {
-    console.log(keycloakValue)
-  }, [keycloakValue])
+  const [, setKeycloakValue] = useState<Keycloak>(keycloak)
 
   useEffect(() => {
     void keycloak

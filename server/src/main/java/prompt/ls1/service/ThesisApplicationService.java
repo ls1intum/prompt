@@ -30,6 +30,11 @@ public class ThesisApplicationService {
         this.studentRepository = studentRepository;
         this.storageService = storageService;
     }
+
+    public List<ThesisApplication> getAll() {
+        return thesisApplicationRepository.findAll();
+    }
+
     public List<ThesisApplication> getAllNotAssessed() {
         return thesisApplicationRepository.findAllNotAssessed();
     }
@@ -72,7 +77,7 @@ public class ThesisApplicationService {
         thesisApplication.setExaminationReportFilename(examinationReportFilename);
         final String cvFilename = storageService.store(cv);
         thesisApplication.setCvFilename(cvFilename);
-        if (!bachelorReport.isEmpty()) {
+        if (bachelorReport != null && !bachelorReport.isEmpty()) {
             final String bachelorReportFilename = storageService.store(bachelorReport);
             thesisApplication.setBachelorReportFilename(bachelorReportFilename);
         }
