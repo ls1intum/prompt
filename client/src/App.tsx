@@ -15,8 +15,10 @@ import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
 import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
 import { RootPage } from './utilities/NavigationBar/RootPage'
+import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
+import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
@@ -34,6 +36,10 @@ export const App = (): JSX.Element => {
           <Notifications limit={5} />
           <BrowserRouter>
             <Routes>
+              <Route
+                path='/management/thesis-applications'
+                element={<ThesisApplicationsManagementConsole />}
+              />
               <Route
                 path='/management/course-iterations'
                 element={
@@ -136,6 +142,14 @@ export const App = (): JSX.Element => {
               <Route
                 path='/kick-off/:studentPublicId'
                 element={<StudentTeamPostKickoffSubmissionPage />}
+              />
+              <Route
+                path='/applications/thesis'
+                element={
+                  <ApplicationSubmissionPage
+                    child={<ThesisApplicationForm accessMode={ApplicationFormAccessMode.STUDENT} />}
+                  />
+                }
               />
               <Route path='/' element={<RootPage />} />
             </Routes>
