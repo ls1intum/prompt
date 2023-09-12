@@ -11,6 +11,7 @@ import { type ThesisApplication } from '../../../redux/thesisApplicationsSlice/t
 import { IconEyeEdit, IconSearch } from '@tabler/icons-react'
 import { ThesisApplicationForm } from '../../../forms/ThesisApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
+import moment from 'moment'
 
 interface Filters {
   male: boolean
@@ -214,6 +215,13 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
             sortable: true,
             render: (application) =>
               `${application.student.firstName ?? ''} ${application.student.lastName ?? ''}`,
+          },
+          {
+            accessor: 'createdAt',
+            title: 'Created At',
+            sortable: true,
+            render: (application) =>
+              `${moment(application.createdAt).format('DD. MMMM YYYY HH:mm')}`,
           },
           {
             accessor: 'actions',

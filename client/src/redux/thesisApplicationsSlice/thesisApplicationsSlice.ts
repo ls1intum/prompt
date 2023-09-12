@@ -73,6 +73,7 @@ interface ThesisApplication {
   bachelorReportFilename?: string
   applicationStatus: keyof typeof ApplicationStatus
   assessmentComment?: string
+  createdAt?: Date
 }
 
 interface ThesisApplicationsSliceState {
