@@ -9,11 +9,13 @@ import {
 } from '../redux/thesisApplicationsSlice/thesisApplicationsSlice'
 import {
   ActionIcon,
+  Box,
   Button,
   Card,
   Checkbox,
   Group,
   Image,
+  LoadingOverlay,
   MultiSelect,
   Select,
   Spoiler,
@@ -46,6 +48,9 @@ import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../redux/store'
 import { assessThesisApplication } from '../redux/thesisApplicationsSlice/thunks/assessThesisApplication'
 import { notifications } from '@mantine/notifications'
+import { useDisclosure } from '@mantine/hooks'
+import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
+import { useState } from 'react'
 
 countries.registerLocale(enLocale)
 const countriesArr = Object.entries(countries.getNames('en', { select: 'alias' })).map(
@@ -68,6 +73,8 @@ export const ThesisApplicationForm = ({
 }: ThesisApplicationFormProps): JSX.Element => {
   const theme = useMantineTheme()
   const dispatch = useDispatch<AppDispatch>()
+  const [loadingOverlayVisible, loadingOverlayHandlers] = useDisclosure(false)
+  const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const uploads = useForm<{
     examinationReport: File | undefined
     cv: File | undefined
@@ -178,596 +185,626 @@ export const ThesisApplicationForm = ({
     },
   })
   return (
-    <Stack>
-      {accessMode === ApplicationFormAccessMode.STUDENT && (
-        <Group style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          <div
-            style={{
-              width: '15vw',
-              height: '15vw',
-            }}
-          >
-            <Image src={LS1Logo} alt='LS1 Logo' />
-          </div>
-          <Title align='center' order={3}>
-            Thesis Application at LS1 Chair
-          </Title>
-        </Group>
-      )}
-      <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
-        <Group grow align='center'>
-          <TextInput
-            withAsterisk={!form.values.student?.isExchangeStudent}
-            required={!form.values.student?.isExchangeStudent}
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            label='TUM ID'
-            placeholder='TUM ID'
-            {...form.getInputProps('student.tumId')}
-          />
-          <TextInput
-            withAsterisk={!form.values.student?.isExchangeStudent}
-            required={!form.values.student?.isExchangeStudent}
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            label='Matriculation Number'
-            placeholder='Matriculation number'
-            {...form.getInputProps('student.matriculationNumber')}
-          />
-        </Group>
-        <Group grow>
-          <TextInput
-            withAsterisk
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
-            label='First name'
-            placeholder='First Name'
-            {...form.getInputProps('student.firstName')}
-          />
-          <TextInput
-            withAsterisk
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
-            label='Last name'
-            placeholder='Last Name'
-            {...form.getInputProps('student.lastName')}
-          />
-        </Group>
-        <Group grow>
-          <Select
-            withAsterisk
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
-            label='Gender'
-            placeholder='Gender'
-            data={Object.keys(Gender).map((key) => {
-              return {
-                label: Gender[key as keyof typeof Gender],
-                value: key,
-              }
-            })}
-            {...form.getInputProps('student.gender')}
-          />
-          <Select
-            withAsterisk
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
-            searchable
-            label='Nationality'
-            placeholder='Nationality'
-            data={countriesArr}
-            {...form.getInputProps('student.nationality')}
-          />
-        </Group>
-        <TextInput
-          withAsterisk
-          disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-          required
-          label='Email (preferrably a TUM email address)'
-          placeholder='your@email.com'
-          {...form.getInputProps('student.email')}
+    <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80vw', gap: '2vh' }} mx='auto'>
+      <LoadingOverlay visible={loadingOverlayVisible} overlayBlur={2} />
+      {applicationSuccessfullySubmitted ? (
+        <ApplicationSuccessfulSubmission
+          title='Your application was successfully submitted!'
+          text='We will contact you as soon as we have reviewed your application.'
         />
-        <Group grow>
-          <Select
-            withAsterisk
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
-            label='Study Degree'
-            placeholder='Study Degree'
-            data={Object.keys(StudyDegree).map((key) => {
-              return {
-                label: StudyDegree[key as keyof typeof StudyDegree],
-                value: key,
-              }
-            })}
-            {...form.getInputProps('studyDegree')}
-          />
-          <Select
-            withAsterisk
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
-            label='Study Program'
-            placeholder='Study Program'
-            data={Object.keys(StudyProgram).map((key) => {
-              return {
-                label: StudyProgram[key as keyof typeof StudyProgram],
-                value: key,
-              }
-            })}
-            {...form.getInputProps('studyProgram')}
-          />
-          <TextInput
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            onWheel={(e) => {
-              e.currentTarget.blur()
-            }}
-            withAsterisk
-            required
-            type='number'
-            min={0}
-            max={99}
-            placeholder='Current semester'
-            label='Current Semester'
-            {...form.getInputProps('currentSemester')}
-          />
-        </Group>
-        <Group grow>
-          <Textarea
-            label='Special Skills'
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            autosize
-            minRows={5}
-            placeholder='Programming languages, certificates, etc.'
-            withAsterisk
-            required
-            {...form.getInputProps('specialSkills')}
-          />
-          <Textarea
-            label='Motivation'
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            autosize
-            minRows={5}
-            placeholder='What are you looking for?'
-            withAsterisk
-            required
-            {...form.getInputProps('motivation')}
-          />
-        </Group>
-        <Group grow>
-          <Textarea
-            label='Interests'
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            autosize
-            minRows={5}
-            placeholder='What are you interested in?'
-            withAsterisk
-            required
-            {...form.getInputProps('interests')}
-          />
-          <Textarea
-            label='Projects'
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            autosize
-            minRows={5}
-            placeholder='What projects have you worked on?'
-            withAsterisk
-            required
-            {...form.getInputProps('projects')}
-          />
-        </Group>
-        <Textarea
-          label='Thesis Title Suggestion'
-          disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-          autosize
-          minRows={5}
-          placeholder='Thesis title suggestion'
-          withAsterisk
-          required
-          {...form.getInputProps('thesisTitle')}
-        />
-        <DatePickerInput
-          disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-          icon={<IconCalendar />}
-          label='Desired Thesis Start Date'
-          {...form.getInputProps('desiredThesisStart')}
-        />
-        <Group grow>
-          <MultiSelect
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            data={Object.keys(ResearchArea).map((key) => {
-              return {
-                label: ResearchArea[key as keyof typeof ResearchArea],
-                value: key,
-              }
-            })}
-            label='Research Areas'
-            placeholder='Research areas'
-            {...form.getInputProps('researchAreas')}
-          />
-          <MultiSelect
-            disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            data={Object.keys(FocusTopic).map((key) => {
-              return {
-                label: FocusTopic[key as keyof typeof FocusTopic],
-                value: key,
-              }
-            })}
-            label='Focus Topics'
-            placeholder='Focus topics'
-            {...form.getInputProps('focusTopics')}
-          />
-        </Group>
-        {accessMode === ApplicationFormAccessMode.STUDENT && (
-          <Stack>
-            <Group position='left'>
-              <Text fw={500} fz='sm'>
-                Examination Report
-              </Text>
-              <Text color='red'>*</Text>
+      ) : (
+        <Stack pos='relative'>
+          {accessMode === ApplicationFormAccessMode.STUDENT && (
+            <Group style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+              <div
+                style={{
+                  width: '15vw',
+                  height: '15vw',
+                }}
+              >
+                <Image src={LS1Logo} alt='LS1 Logo' />
+              </div>
+              <Title align='center' order={3}>
+                Thesis Application at LS1 Chair
+              </Title>
             </Group>
-            {uploads.values.examinationReport && (
-              <Card shadow='sm' withBorder>
-                <Group position='apart'>
-                  <Text c='dimmed' fz='sm'>
-                    {uploads.values.examinationReport.name}
-                  </Text>
-                  <ActionIcon
-                    onClick={() => {
-                      uploads.setValues({ examinationReport: undefined })
-                    }}
-                  >
-                    <IconX />
-                  </ActionIcon>
-                </Group>
-              </Card>
-            )}
-            <Dropzone
-              name='Examination Report'
-              disabled={!!uploads.values.examinationReport}
-              onDrop={(files) => {
-                if (files[0]) {
-                  uploads.setValues({
-                    examinationReport: files[0],
-                  })
-                }
-              }}
-              onReject={(files) => {
-                notifications.show({
-                  color: 'red',
-                  autoClose: 5000,
-                  title: 'Error',
-                  message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
-                })
-              }}
-              maxSize={1 * 1024 ** 2}
-              accept={PDF_MIME_TYPE}
-            >
-              <Group
-                position='center'
-                spacing='xl'
-                style={{ minHeight: rem(220), pointerEvents: 'none' }}
-              >
-                <Dropzone.Accept>
-                  <IconUpload
-                    size='3.2rem'
-                    stroke={1.5}
-                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                  />
-                </Dropzone.Accept>
-                <Dropzone.Reject>
-                  <IconX
-                    size='3.2rem'
-                    stroke={1.5}
-                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                  />
-                </Dropzone.Reject>
-                <Dropzone.Idle>
-                  <IconPhoto size='3.2rem' stroke={1.5} />
-                </Dropzone.Idle>
-
-                <div>
-                  <Text size='xl' inline>
-                    Drag the file here or click to select file
-                  </Text>
-                  <Text size='sm' color='dimmed' inline mt={7}>
-                    The file should not exceed 1mb
-                  </Text>
-                </div>
-              </Group>
-            </Dropzone>
-            <Group position='left'>
-              <Text fw={500} fz='sm'>
-                CV
-              </Text>
-              <Text color='red'>*</Text>
+          )}
+          <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
+            <Group grow align='center'>
+              <TextInput
+                withAsterisk={!form.values.student?.isExchangeStudent}
+                required={!form.values.student?.isExchangeStudent}
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                label='TUM ID'
+                placeholder='TUM ID'
+                {...form.getInputProps('student.tumId')}
+              />
+              <TextInput
+                withAsterisk={!form.values.student?.isExchangeStudent}
+                required={!form.values.student?.isExchangeStudent}
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                label='Matriculation Number'
+                placeholder='Matriculation number'
+                {...form.getInputProps('student.matriculationNumber')}
+              />
             </Group>
-            {uploads.values.cv && (
-              <Card shadow='sm' withBorder>
-                <Group position='apart'>
-                  <Text c='dimmed' fz='sm'>
-                    {uploads.values.cv.name}
-                  </Text>
-                  <ActionIcon
-                    onClick={() => {
-                      uploads.setValues({ cv: undefined })
-                    }}
-                  >
-                    <IconX />
-                  </ActionIcon>
-                </Group>
-              </Card>
-            )}
-            <Dropzone
-              name='CV'
-              disabled={!!uploads.values.cv}
-              onDrop={(files) => {
-                if (files[0]) {
-                  uploads.setValues({
-                    cv: files[0],
-                  })
-                }
-              }}
-              onReject={(files) => {
-                notifications.show({
-                  color: 'red',
-                  autoClose: 5000,
-                  title: 'Error',
-                  message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
-                })
-              }}
-              maxSize={1 * 1024 ** 2}
-              accept={PDF_MIME_TYPE}
-            >
-              <Group
-                position='center'
-                spacing='xl'
-                style={{ minHeight: rem(220), pointerEvents: 'none' }}
-              >
-                <Dropzone.Accept>
-                  <IconUpload
-                    size='3.2rem'
-                    stroke={1.5}
-                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                  />
-                </Dropzone.Accept>
-                <Dropzone.Reject>
-                  <IconX
-                    size='3.2rem'
-                    stroke={1.5}
-                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                  />
-                </Dropzone.Reject>
-                <Dropzone.Idle>
-                  <IconPhoto size='3.2rem' stroke={1.5} />
-                </Dropzone.Idle>
-
-                <div>
-                  <Text size='xl' inline>
-                    Drag the file here or click to select file
-                  </Text>
-                  <Text size='sm' color='dimmed' inline mt={7}>
-                    The file should not exceed 1mb
-                  </Text>
-                </div>
-              </Group>
-            </Dropzone>
-            <Text fw={500} fz='sm'>
-              Bachelor Report
-            </Text>
-            {uploads.values.bachelorReport && (
-              <Card shadow='sm' withBorder>
-                <Group position='apart'>
-                  <Text c='dimmed' fz='sm'>
-                    {uploads.values.bachelorReport.name}
-                  </Text>
-                  <ActionIcon
-                    onClick={() => {
-                      uploads.setValues({ bachelorReport: undefined })
-                    }}
-                  >
-                    <IconX />
-                  </ActionIcon>
-                </Group>
-              </Card>
-            )}
-            <Dropzone
-              name='Bachelor Report'
-              disabled={!!uploads.values.bachelorReport}
-              onDrop={(files) => {
-                if (files[0]) {
-                  uploads.setValues({
-                    bachelorReport: files[0],
-                  })
-                }
-              }}
-              onReject={(files) => {
-                notifications.show({
-                  color: 'red',
-                  autoClose: 5000,
-                  title: 'Error',
-                  message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
-                })
-              }}
-              maxSize={1 * 1024 ** 2}
-              accept={PDF_MIME_TYPE}
-            >
-              <Group
-                position='center'
-                spacing='xl'
-                style={{ minHeight: rem(220), pointerEvents: 'none' }}
-              >
-                <Dropzone.Accept>
-                  <IconUpload
-                    size='3.2rem'
-                    stroke={1.5}
-                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                  />
-                </Dropzone.Accept>
-                <Dropzone.Reject>
-                  <IconX
-                    size='3.2rem'
-                    stroke={1.5}
-                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                  />
-                </Dropzone.Reject>
-                <Dropzone.Idle>
-                  <IconPhoto size='3.2rem' stroke={1.5} />
-                </Dropzone.Idle>
-
-                <div>
-                  <Text size='xl' inline>
-                    Drag the file here or click to select file
-                  </Text>
-                  <Text size='sm' color='dimmed' inline mt={7}>
-                    The file should not exceed 1mb
-                  </Text>
-                </div>
-              </Group>
-            </Dropzone>
-          </Stack>
-        )}
-      </form>
-      {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
-        <>
-          <Select
-            required
-            label='Status'
-            placeholder='Status'
-            data={Object.keys(ApplicationStatus).map((key) => {
-              return {
-                label: ApplicationStatus[key as keyof typeof ApplicationStatus],
-                value: key,
-              }
-            })}
-            {...form.getInputProps('applicationStatus')}
-          />
-          <Textarea
-            label='Comment'
-            autosize
-            minRows={5}
-            placeholder='Comment'
-            {...form.getInputProps('assessmentComment')}
-          />
-        </>
-      )}
-      {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
-        <Group grow>
-          {application?.examinationReportFilename && (
-            <Button
-              onClick={() => {
-                void (async () => {
-                  const response = await loadThesisApplicationExaminationFile(application.id)
-                  if (response) {
-                    const url = window.URL.createObjectURL(response)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.setAttribute('download', `${application.examinationReportFilename ?? ''}.pdf`)
-                    document.body.appendChild(a)
-                    a.click()
-                    window.URL.revokeObjectURL(url)
+            <Group grow>
+              <TextInput
+                withAsterisk
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                required
+                label='First name'
+                placeholder='First Name'
+                {...form.getInputProps('student.firstName')}
+              />
+              <TextInput
+                withAsterisk
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                required
+                label='Last name'
+                placeholder='Last Name'
+                {...form.getInputProps('student.lastName')}
+              />
+            </Group>
+            <Group grow>
+              <Select
+                withAsterisk
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                required
+                label='Gender'
+                placeholder='Gender'
+                data={Object.keys(Gender).map((key) => {
+                  return {
+                    label: Gender[key as keyof typeof Gender],
+                    value: key,
                   }
-                })()
-              }}
-            >
-              Download Examination Report
-            </Button>
-          )}
-          {application?.cvFilename && (
-            <Button
-              onClick={() => {
-                void (async () => {
-                  const response = await loadThesisApplicationCvFile(application.id)
-                  if (response) {
-                    const url = window.URL.createObjectURL(response)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.setAttribute('download', `${application.cvFilename ?? ''}.pdf`)
-                    document.body.appendChild(a)
-                    a.click()
-                    window.URL.revokeObjectURL(url)
-                  }
-                })()
-              }}
-            >
-              Download CV
-            </Button>
-          )}
-          {application?.bachelorReportFilename && (
-            <Button
-              onClick={() => {
-                void (async () => {
-                  const response = await loadThesisApplicationBachelorReportFile(application.id)
-                  if (response) {
-                    const url = window.URL.createObjectURL(response)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.setAttribute('download', `${application.bachelorReportFilename ?? ''}.pdf`)
-                    document.body.appendChild(a)
-                    a.click()
-                    window.URL.revokeObjectURL(url)
-                  }
-                })()
-              }}
-            >
-              Download Bachelor Report
-            </Button>
-          )}
-        </Group>
-      )}
-      {accessMode === ApplicationFormAccessMode.STUDENT && (
-        <>
-          <Stack>
-            <Checkbox
-              mt='md'
-              label='I have read the declaration of consent below and agree to the processing of my data.'
-              {...consentForm.getInputProps('declarationOfConsentAccepted', { type: 'checkbox' })}
+                })}
+                {...form.getInputProps('student.gender')}
+              />
+              <Select
+                withAsterisk
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                required
+                searchable
+                label='Nationality'
+                placeholder='Nationality'
+                data={countriesArr}
+                {...form.getInputProps('student.nationality')}
+              />
+            </Group>
+            <TextInput
+              withAsterisk
+              disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              required
+              label='Email (preferrably a TUM email address)'
+              placeholder='your@email.com'
+              {...form.getInputProps('student.email')}
             />
-            <Spoiler
-              maxHeight={0}
-              showLabel={<Text fz='sm'>Show Declaration of Consent</Text>}
-              hideLabel={<Text fz='sm'>Hide</Text>}
-            >
-              <DeclarationOfDataConsent />
-            </Spoiler>
-          </Stack>
-          <Group>
-            <Button
-              disabled={!form.isValid() || !consentForm.isValid() || !uploads.isValid()}
-              onClick={() => {
-                void (async () => {
-                  if (uploads.values.examinationReport && uploads.values.cv) {
-                    await createThesisApplication({
-                      application: form.values,
-                      examinationReport: uploads.values.examinationReport,
-                      cv: uploads.values.cv,
-                      bachelorReport: uploads.values.bachelorReport,
-                    })
+            <Group grow>
+              <Select
+                withAsterisk
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                required
+                label='Study Degree'
+                placeholder='Study Degree'
+                data={Object.keys(StudyDegree).map((key) => {
+                  return {
+                    label: StudyDegree[key as keyof typeof StudyDegree],
+                    value: key,
                   }
-                })()
+                })}
+                {...form.getInputProps('studyDegree')}
+              />
+              <Select
+                withAsterisk
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                required
+                label='Study Program'
+                placeholder='Study Program'
+                data={Object.keys(StudyProgram).map((key) => {
+                  return {
+                    label: StudyProgram[key as keyof typeof StudyProgram],
+                    value: key,
+                  }
+                })}
+                {...form.getInputProps('studyProgram')}
+              />
+              <TextInput
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                onWheel={(e) => {
+                  e.currentTarget.blur()
+                }}
+                withAsterisk
+                required
+                type='number'
+                min={0}
+                max={99}
+                placeholder='Current semester'
+                label='Current Semester'
+                {...form.getInputProps('currentSemester')}
+              />
+            </Group>
+            <Group grow>
+              <Textarea
+                label='Special Skills'
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                autosize
+                minRows={5}
+                placeholder='Programming languages, certificates, etc.'
+                withAsterisk
+                required
+                {...form.getInputProps('specialSkills')}
+              />
+              <Textarea
+                label='Motivation'
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                autosize
+                minRows={5}
+                placeholder='What are you looking for?'
+                withAsterisk
+                required
+                {...form.getInputProps('motivation')}
+              />
+            </Group>
+            <Group grow>
+              <Textarea
+                label='Interests'
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                autosize
+                minRows={5}
+                placeholder='What are you interested in?'
+                withAsterisk
+                required
+                {...form.getInputProps('interests')}
+              />
+              <Textarea
+                label='Projects'
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                autosize
+                minRows={5}
+                placeholder='What projects have you worked on?'
+                withAsterisk
+                required
+                {...form.getInputProps('projects')}
+              />
+            </Group>
+            <Textarea
+              label='Thesis Title Suggestion'
+              disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              autosize
+              minRows={5}
+              placeholder='Thesis title suggestion'
+              withAsterisk
+              required
+              {...form.getInputProps('thesisTitle')}
+            />
+            <DatePickerInput
+              disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              icon={<IconCalendar />}
+              label='Desired Thesis Start Date'
+              {...form.getInputProps('desiredThesisStart')}
+            />
+            <Group grow>
+              <MultiSelect
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                data={Object.keys(ResearchArea).map((key) => {
+                  return {
+                    label: ResearchArea[key as keyof typeof ResearchArea],
+                    value: key,
+                  }
+                })}
+                label='Research Areas'
+                placeholder='Research areas'
+                {...form.getInputProps('researchAreas')}
+              />
+              <MultiSelect
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                data={Object.keys(FocusTopic).map((key) => {
+                  return {
+                    label: FocusTopic[key as keyof typeof FocusTopic],
+                    value: key,
+                  }
+                })}
+                label='Focus Topics'
+                placeholder='Focus topics'
+                {...form.getInputProps('focusTopics')}
+              />
+            </Group>
+            {accessMode === ApplicationFormAccessMode.STUDENT && (
+              <Stack>
+                <Group position='left'>
+                  <Text fw={500} fz='sm'>
+                    Examination Report
+                  </Text>
+                  <Text color='red'>*</Text>
+                </Group>
+                {uploads.values.examinationReport && (
+                  <Card shadow='sm' withBorder>
+                    <Group position='apart'>
+                      <Text c='dimmed' fz='sm'>
+                        {uploads.values.examinationReport.name}
+                      </Text>
+                      <ActionIcon
+                        onClick={() => {
+                          uploads.setValues({ examinationReport: undefined })
+                        }}
+                      >
+                        <IconX />
+                      </ActionIcon>
+                    </Group>
+                  </Card>
+                )}
+                <Dropzone
+                  name='Examination Report'
+                  disabled={!!uploads.values.examinationReport}
+                  onDrop={(files) => {
+                    if (files[0]) {
+                      uploads.setValues({
+                        examinationReport: files[0],
+                      })
+                    }
+                  }}
+                  onReject={(files) => {
+                    notifications.show({
+                      color: 'red',
+                      autoClose: 5000,
+                      title: 'Error',
+                      message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
+                    })
+                  }}
+                  maxSize={1 * 1024 ** 2}
+                  accept={PDF_MIME_TYPE}
+                >
+                  <Group
+                    position='center'
+                    spacing='xl'
+                    style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                  >
+                    <Dropzone.Accept>
+                      <IconUpload
+                        size='3.2rem'
+                        stroke={1.5}
+                        color={
+                          theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
+                        }
+                      />
+                    </Dropzone.Accept>
+                    <Dropzone.Reject>
+                      <IconX
+                        size='3.2rem'
+                        stroke={1.5}
+                        color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                      />
+                    </Dropzone.Reject>
+                    <Dropzone.Idle>
+                      <IconPhoto size='3.2rem' stroke={1.5} />
+                    </Dropzone.Idle>
+
+                    <div>
+                      <Text size='xl' inline>
+                        Drag the file here or click to select file
+                      </Text>
+                      <Text size='sm' color='dimmed' inline mt={7}>
+                        The file should not exceed 1mb
+                      </Text>
+                    </div>
+                  </Group>
+                </Dropzone>
+                <Group position='left'>
+                  <Text fw={500} fz='sm'>
+                    CV
+                  </Text>
+                  <Text color='red'>*</Text>
+                </Group>
+                {uploads.values.cv && (
+                  <Card shadow='sm' withBorder>
+                    <Group position='apart'>
+                      <Text c='dimmed' fz='sm'>
+                        {uploads.values.cv.name}
+                      </Text>
+                      <ActionIcon
+                        onClick={() => {
+                          uploads.setValues({ cv: undefined })
+                        }}
+                      >
+                        <IconX />
+                      </ActionIcon>
+                    </Group>
+                  </Card>
+                )}
+                <Dropzone
+                  name='CV'
+                  disabled={!!uploads.values.cv}
+                  onDrop={(files) => {
+                    if (files[0]) {
+                      uploads.setValues({
+                        cv: files[0],
+                      })
+                    }
+                  }}
+                  onReject={(files) => {
+                    notifications.show({
+                      color: 'red',
+                      autoClose: 5000,
+                      title: 'Error',
+                      message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
+                    })
+                  }}
+                  maxSize={1 * 1024 ** 2}
+                  accept={PDF_MIME_TYPE}
+                >
+                  <Group
+                    position='center'
+                    spacing='xl'
+                    style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                  >
+                    <Dropzone.Accept>
+                      <IconUpload
+                        size='3.2rem'
+                        stroke={1.5}
+                        color={
+                          theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
+                        }
+                      />
+                    </Dropzone.Accept>
+                    <Dropzone.Reject>
+                      <IconX
+                        size='3.2rem'
+                        stroke={1.5}
+                        color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                      />
+                    </Dropzone.Reject>
+                    <Dropzone.Idle>
+                      <IconPhoto size='3.2rem' stroke={1.5} />
+                    </Dropzone.Idle>
+
+                    <div>
+                      <Text size='xl' inline>
+                        Drag the file here or click to select file
+                      </Text>
+                      <Text size='sm' color='dimmed' inline mt={7}>
+                        The file should not exceed 1mb
+                      </Text>
+                    </div>
+                  </Group>
+                </Dropzone>
+                <Text fw={500} fz='sm'>
+                  Bachelor Report
+                </Text>
+                {uploads.values.bachelorReport && (
+                  <Card shadow='sm' withBorder>
+                    <Group position='apart'>
+                      <Text c='dimmed' fz='sm'>
+                        {uploads.values.bachelorReport.name}
+                      </Text>
+                      <ActionIcon
+                        onClick={() => {
+                          uploads.setValues({ bachelorReport: undefined })
+                        }}
+                      >
+                        <IconX />
+                      </ActionIcon>
+                    </Group>
+                  </Card>
+                )}
+                <Dropzone
+                  name='Bachelor Report'
+                  disabled={!!uploads.values.bachelorReport}
+                  onDrop={(files) => {
+                    if (files[0]) {
+                      uploads.setValues({
+                        bachelorReport: files[0],
+                      })
+                    }
+                  }}
+                  onReject={(files) => {
+                    notifications.show({
+                      color: 'red',
+                      autoClose: 5000,
+                      title: 'Error',
+                      message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
+                    })
+                  }}
+                  maxSize={1 * 1024 ** 2}
+                  accept={PDF_MIME_TYPE}
+                >
+                  <Group
+                    position='center'
+                    spacing='xl'
+                    style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                  >
+                    <Dropzone.Accept>
+                      <IconUpload
+                        size='3.2rem'
+                        stroke={1.5}
+                        color={
+                          theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
+                        }
+                      />
+                    </Dropzone.Accept>
+                    <Dropzone.Reject>
+                      <IconX
+                        size='3.2rem'
+                        stroke={1.5}
+                        color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                      />
+                    </Dropzone.Reject>
+                    <Dropzone.Idle>
+                      <IconPhoto size='3.2rem' stroke={1.5} />
+                    </Dropzone.Idle>
+
+                    <div>
+                      <Text size='xl' inline>
+                        Drag the file here or click to select file
+                      </Text>
+                      <Text size='sm' color='dimmed' inline mt={7}>
+                        The file should not exceed 1mb
+                      </Text>
+                    </div>
+                  </Group>
+                </Dropzone>
+              </Stack>
+            )}
+          </form>
+          {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
+            <>
+              <Select
+                required
+                label='Status'
+                placeholder='Status'
+                data={Object.keys(ApplicationStatus).map((key) => {
+                  return {
+                    label: ApplicationStatus[key as keyof typeof ApplicationStatus],
+                    value: key,
+                  }
+                })}
+                {...form.getInputProps('applicationStatus')}
+              />
+              <Textarea
+                label='Comment'
+                autosize
+                minRows={5}
+                placeholder='Comment'
+                {...form.getInputProps('assessmentComment')}
+              />
+            </>
+          )}
+          {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
+            <Group grow>
+              {application?.examinationReportFilename && (
+                <Button
+                  onClick={() => {
+                    void (async () => {
+                      const response = await loadThesisApplicationExaminationFile(application.id)
+                      if (response) {
+                        const url = window.URL.createObjectURL(response)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.setAttribute(
+                          'download',
+                          `${application.examinationReportFilename ?? ''}.pdf`,
+                        )
+                        document.body.appendChild(a)
+                        a.click()
+                        window.URL.revokeObjectURL(url)
+                      }
+                    })()
+                  }}
+                >
+                  Download Examination Report
+                </Button>
+              )}
+              {application?.cvFilename && (
+                <Button
+                  onClick={() => {
+                    void (async () => {
+                      const response = await loadThesisApplicationCvFile(application.id)
+                      if (response) {
+                        const url = window.URL.createObjectURL(response)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.setAttribute('download', `${application.cvFilename ?? ''}.pdf`)
+                        document.body.appendChild(a)
+                        a.click()
+                        window.URL.revokeObjectURL(url)
+                      }
+                    })()
+                  }}
+                >
+                  Download CV
+                </Button>
+              )}
+              {application?.bachelorReportFilename && (
+                <Button
+                  onClick={() => {
+                    void (async () => {
+                      const response = await loadThesisApplicationBachelorReportFile(application.id)
+                      if (response) {
+                        const url = window.URL.createObjectURL(response)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.setAttribute(
+                          'download',
+                          `${application.bachelorReportFilename ?? ''}.pdf`,
+                        )
+                        document.body.appendChild(a)
+                        a.click()
+                        window.URL.revokeObjectURL(url)
+                      }
+                    })()
+                  }}
+                >
+                  Download Bachelor Report
+                </Button>
+              )}
+            </Group>
+          )}
+          {accessMode === ApplicationFormAccessMode.STUDENT && (
+            <>
+              <Stack>
+                <Checkbox
+                  mt='md'
+                  label='I have read the declaration of consent below and agree to the processing of my data.'
+                  {...consentForm.getInputProps('declarationOfConsentAccepted', {
+                    type: 'checkbox',
+                  })}
+                />
+                <Spoiler
+                  maxHeight={0}
+                  showLabel={<Text fz='sm'>Show Declaration of Consent</Text>}
+                  hideLabel={<Text fz='sm'>Hide</Text>}
+                >
+                  <DeclarationOfDataConsent />
+                </Spoiler>
+              </Stack>
+              <Group>
+                <Button
+                  disabled={!form.isValid() || !consentForm.isValid() || !uploads.isValid()}
+                  onClick={() => {
+                    void (async () => {
+                      loadingOverlayHandlers.open()
+                      if (uploads.values.examinationReport && uploads.values.cv) {
+                        const response = await createThesisApplication({
+                          application: form.values,
+                          examinationReport: uploads.values.examinationReport,
+                          cv: uploads.values.cv,
+                          bachelorReport: uploads.values.bachelorReport,
+                        })
+                        if (response) {
+                          setApplicationSuccessfullySubmitted(true)
+                        }
+                      }
+                    })().then(() => {
+                      loadingOverlayHandlers.close()
+                    })
+                  }}
+                >
+                  Submit
+                </Button>
+              </Group>
+            </>
+          )}
+          {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
+            <Button
+              onClick={() => {
+                if (application) {
+                  void dispatch(
+                    assessThesisApplication({
+                      thesisApplicationId: application.id,
+                      assessment: {
+                        status: form.values.applicationStatus,
+                        assessmentComment: form.values.assessmentComment ?? '',
+                      },
+                    }),
+                  )
+                }
               }}
             >
-              Submit
+              Save
             </Button>
-          </Group>
-        </>
+          )}
+        </Stack>
       )}
-      {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
-        <Button
-          onClick={() => {
-            if (application) {
-              void dispatch(
-                assessThesisApplication({
-                  thesisApplicationId: application.id,
-                  assessment: {
-                    status: form.values.applicationStatus,
-                    assessmentComment: form.values.assessmentComment ?? '',
-                  },
-                }),
-              )
-            }
-          }}
-        >
-          Save
-        </Button>
-      )}
-    </Stack>
+    </Box>
   )
 }

@@ -173,7 +173,10 @@ export const TutorApplicationForm = ({
               mx='auto'
             >
               {applicationSuccessfullySubmitted ? (
-                <ApplicationSuccessfulSubmission />
+                <ApplicationSuccessfulSubmission
+                  title='Your application was successfully submitted!'
+                  text='Please prioritize the iPraktikum course as 1st priority in the Matching tool.'
+                />
               ) : (
                 <>
                   <DefaultApplicationForm
