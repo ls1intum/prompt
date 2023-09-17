@@ -186,6 +186,7 @@ export const ThesisApplicationForm = ({
   })
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80vw', gap: '2vh' }} mx='auto'>
+      <LoadingOverlay visible={loadingOverlayVisible} overlayBlur={2} />
       {applicationSuccessfullySubmitted ? (
         <ApplicationSuccessfulSubmission
           title='Your application was successfully submitted!'
@@ -208,7 +209,6 @@ export const ThesisApplicationForm = ({
               </Title>
             </Group>
           )}
-          <LoadingOverlay visible={loadingOverlayVisible} overlayBlur={2} />
           <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
             <Group grow align='center'>
               <TextInput
@@ -775,7 +775,6 @@ export const ThesisApplicationForm = ({
                         }
                       }
                     })().then(() => {
-                      console.log('ghgh')
                       loadingOverlayHandlers.close()
                     })
                   }}
