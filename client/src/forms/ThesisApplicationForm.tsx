@@ -185,7 +185,11 @@ export const ThesisApplicationForm = ({
     },
   })
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80vw', gap: '2vh' }} mx='auto'>
+    <Box
+      sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80vw', gap: '2vh' }}
+      mx='auto'
+      pos='relative'
+    >
       <LoadingOverlay visible={loadingOverlayVisible} overlayBlur={2} />
       {applicationSuccessfullySubmitted ? (
         <ApplicationSuccessfulSubmission
@@ -193,7 +197,7 @@ export const ThesisApplicationForm = ({
           text='We will contact you as soon as we have reviewed your application.'
         />
       ) : (
-        <Stack pos='relative'>
+        <Stack>
           {accessMode === ApplicationFormAccessMode.STUDENT && (
             <Group style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <div
