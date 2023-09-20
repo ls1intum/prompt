@@ -58,6 +58,7 @@ services:
       - KEYCLOAK_ISSUER_URI
       - KEYCLOAK_JWK_SET_URI
       - IOS_SENDER_MAIL
+      - CHAIR_MEMBER_RECIPIENTS
 
   db:
     image: "postgres:15.2-alpine"

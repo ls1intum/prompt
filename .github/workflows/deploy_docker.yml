@@ -115,6 +115,7 @@ jobs:
             echo "KEYCLOAK_JWK_SET_URI=${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}/protocol/openid-connect/certs" >> .env.prod
             echo "KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }}" >> .env.prod
             echo "IOS_SENDER_MAIL=${{ vars.IOS_SENDER_MAIL }}" >> .env.prod
+            echo "CHAIR_MEMBER_RECIPIENTS=${{ vars.CHAIR_MEMBER_RECIPIENTS }}" >> .env.prod
 
             echo "SERVER_IMAGE_TAG=${{ inputs.server_image_tag }}" >> .env.prod
             echo "CLIENT_IMAGE_TAG=${{ inputs.client_image_tag }}" >> .env.prod

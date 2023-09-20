@@ -16,10 +16,13 @@ import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.ThesisApplication;
 import prompt.ls1.model.TutorApplication;
+import prompt.ls1.model.enums.FocusTopic;
+import prompt.ls1.model.enums.ResearchArea;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.TimeZone;
 
 @Service
@@ -27,12 +30,15 @@ public class MailingService {
 
     private final JavaMailSender javaMailSender;
     private final String sender;
+    private final String chairMemberRecipientsList;
 
     @Autowired
     public MailingService(final JavaMailSender javaMailSender,
-                          @Value("${prompt.mail.sender}") String sender) {
+                          @Value("${prompt.mail.sender}") String sender,
+                          @Value("${prompt.mail.chair-member-recipients}") String chairMemberRecipientsList) {
         this.javaMailSender = javaMailSender;
         this.sender = sender;
+        this.chairMemberRecipientsList = chairMemberRecipientsList;
     }
 
     public void thesisApplicationCreatedEmail(final Student student,
@@ -41,16 +47,23 @@ public class MailingService {
 
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
-        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        Arrays.asList(chairMemberRecipientsList.split(";")).forEach(recipient -> {
+            try {
+                message.addRecipients(MimeMessage.RecipientType.TO, recipient);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         message.setSubject("PROMPT | New Thesis Application");
 
-        String pattern = "yyyy-MM-dd";
+        String pattern = "dd. MMM yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
         String htmlContent = String.format("""
                         <p>Dear LS1 Chair Members,</p>
 
-                        <p>there is a new thesis application submitted by %s %s.</p>
+                        <p>there is a new thesis application submitted by <strong>%s %s</strong>.</p>
 
                         <p>We received the following thesis application details:</p>
 
@@ -92,6 +105,18 @@ public class MailingService {
                         <p><strong>Thesis Title Suggestion:&nbsp;</strong></p>
 
                         <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <p><strong>Research Areas:&nbsp;</strong></p>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <p><strong>Focus Topics:&nbsp;</strong></p>
+
+                        <p>%s</p>
 
                         <hr />
                         <p><br />
@@ -108,25 +133,37 @@ public class MailingService {
                 student.getEmail(),
                 student.getTumId(),
                 student.getMatriculationNumber(),
-                thesisApplication.getStudyProgram(),
-                thesisApplication.getStudyDegree(),
+                thesisApplication.getStudyProgram().getValue(),
+                thesisApplication.getStudyDegree().getValue(),
                 thesisApplication.getCurrentSemester(),
                 simpleDateFormat.format(thesisApplication.getDesiredThesisStart()),
                 thesisApplication.getSpecialSkills(),
                 thesisApplication.getMotivation(),
                 thesisApplication.getInterests(),
                 thesisApplication.getProjects(),
-                thesisApplication.getThesisTitle());
+                thesisApplication.getThesisTitle(),
+                String.join(",", thesisApplication.getResearchAreas().stream().map(ResearchArea::getValue).toList()),
+                String.join(",", thesisApplication.getFocusTopics().stream().map(FocusTopic::getValue).toList()));
+
+        Multipart multipart = new MimeMultipart();
 
         BodyPart messageBodyPart = new MimeBodyPart();
         messageBodyPart.setContent(htmlContent, "text/html; charset=utf-8");
-
-        MimeBodyPart attachmentPart = new MimeBodyPart();
-        attachmentPart.attachFile(new File("thesis_application_uploads/" + thesisApplication.getExaminationReportFilename()));
-
-        Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(messageBodyPart);
-        multipart.addBodyPart(attachmentPart);
+
+        MimeBodyPart examinationReportAttachment = new MimeBodyPart();
+        examinationReportAttachment.attachFile(new File("thesis_application_uploads/" + thesisApplication.getExaminationReportFilename()));
+        multipart.addBodyPart(examinationReportAttachment);
+
+        MimeBodyPart cvAttachment = new MimeBodyPart();
+        cvAttachment.attachFile(new File("thesis_application_uploads/" + thesisApplication.getCvFilename()));
+        multipart.addBodyPart(cvAttachment);
+
+        if (thesisApplication.getBachelorReportFilename() != null && !thesisApplication.getBachelorReportFilename().isBlank()) {
+            MimeBodyPart bachelorReportAttachment = new MimeBodyPart();
+            bachelorReportAttachment.attachFile(new File("thesis_application_uploads/" + thesisApplication.getBachelorReportFilename()));
+            multipart.addBodyPart(bachelorReportAttachment);
+        }
 
         message.setContent(multipart);
 

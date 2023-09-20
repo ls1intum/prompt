@@ -57,6 +57,7 @@ prompt:
     host: ${CLIENT_HOST:localhost}
   mail:
     sender: ${IOS_SENDER_MAIL:test@ios.ase.cit.tum.de}
+    chair-member-recipients: ${CHAIR_MEMBER_RECIPIENTS:}
   atlassian:
     username: ${ATLASSIAN_USERNAME:}
     password: ${ATLASSIAN_PASSWORD:}
