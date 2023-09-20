@@ -1,7 +1,11 @@
 package prompt.ls1.service;
 
+import jakarta.mail.BodyPart;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,8 +14,11 @@ import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.Student;
+import prompt.ls1.model.ThesisApplication;
 import prompt.ls1.model.TutorApplication;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -26,6 +33,104 @@ public class MailingService {
                           @Value("${prompt.mail.sender}") String sender) {
         this.javaMailSender = javaMailSender;
         this.sender = sender;
+    }
+
+    public void thesisApplicationCreatedEmail(final Student student,
+                                              final ThesisApplication thesisApplication) throws MessagingException, IOException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject("PROMPT | New Thesis Application");
+
+        String pattern = "yyyy-MM-dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+        String htmlContent = String.format("""
+                        <p>Dear LS1 Chair Members,</p>
+
+                        <p>there is a new thesis application submitted by %s %s.</p>
+
+                        <p>We received the following thesis application details:</p>
+
+                        <p>&nbsp;</p>
+
+                        <hr />
+                        <p><strong>Name:</strong>&nbsp;%s %s<br />
+                        <strong>Email:</strong>&nbsp;<a href="mailto:%s" target="_blank">%s</a><br />
+                        <strong>TUM ID:</strong>&nbsp;%s</p>
+                        <strong>Matriculation Number:</strong>&nbsp;%s</p>
+
+                        <p><strong>Study program:</strong>&nbsp;%s&nbsp;%s&nbsp;(%s. Semester)<br />
+                        <p><strong>Desired Thesis Start Date:</strong>&nbsp;%s</p>
+                        <br />
+                        <strong>Special Skills:&nbsp;</strong></p>
+
+                        <p>%s</p>
+
+                        <p>&nbsp;</p>
+
+                        <p><strong>Motivation:&nbsp;</strong></p>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <p><strong>Interests:&nbsp;</strong></p>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <p><strong>Projects:&nbsp;</strong></p>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <p><strong>Thesis Title Suggestion:&nbsp;</strong></p>
+
+                        <p>%s</p>
+
+                        <hr />
+                        <p><br />
+
+                        <p><strong>You can find the submitted files in the attachment part of this email.</strong></p>
+
+                        <p>Best regards,<br />
+                        PROMPT Mailing Service</p>""",
+                student.getFirstName(),
+                student.getLastName(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getEmail(),
+                student.getEmail(),
+                student.getTumId(),
+                student.getMatriculationNumber(),
+                thesisApplication.getStudyProgram(),
+                thesisApplication.getStudyDegree(),
+                thesisApplication.getCurrentSemester(),
+                simpleDateFormat.format(thesisApplication.getDesiredThesisStart()),
+                thesisApplication.getSpecialSkills(),
+                thesisApplication.getMotivation(),
+                thesisApplication.getInterests(),
+                thesisApplication.getProjects(),
+                thesisApplication.getThesisTitle());
+
+        BodyPart messageBodyPart = new MimeBodyPart();
+        messageBodyPart.setContent(htmlContent, "text/html; charset=utf-8");
+
+        MimeBodyPart attachmentPart = new MimeBodyPart();
+        attachmentPart.attachFile(new File("thesis_application_uploads/" + thesisApplication.getExaminationReportFilename()));
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(messageBodyPart);
+        multipart.addBodyPart(attachmentPart);
+
+        message.setContent(multipart);
+
+        javaMailSender.send(message);
     }
 
     public void sendDeveloperApplicationConfirmationEmail(final Student student,

@@ -3,6 +3,7 @@ package prompt.ls1.controller;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import prompt.ls1.controller.payload.ThesisApplicationAssessment;
 import prompt.ls1.model.ThesisApplication;
+import prompt.ls1.service.MailingService;
 import prompt.ls1.service.ThesisApplicationService;
 
 import java.io.IOException;
@@ -35,14 +37,17 @@ import java.util.UUID;
 public class ThesisApplicationController {
     private final Bucket bucket;
     private final ThesisApplicationService thesisApplicationService;
+    private final MailingService mailingService;
 
     @Autowired
-    public ThesisApplicationController(final ThesisApplicationService thesisApplicationService) {
+    public ThesisApplicationController(final ThesisApplicationService thesisApplicationService,
+                                       final MailingService mailingService) {
         Bandwidth limit = Bandwidth.classic(100, Refill.greedy(100, Duration.ofMinutes(1)));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
                 .build();
         this.thesisApplicationService = thesisApplicationService;
+        this.mailingService = mailingService;
     }
 
     @GetMapping
@@ -88,9 +93,12 @@ public class ThesisApplicationController {
     public ResponseEntity<ThesisApplication> create(@RequestPart("thesisApplication") final ThesisApplication thesisApplication,
                                                     @RequestPart(value = "examinationReport") final MultipartFile examinationReport,
                                                     @RequestPart(value = "cv") final MultipartFile cv,
-                                                    @RequestPart(value = "bachelorReport", required = false) final MultipartFile bachelorReport) {
+                                                    @RequestPart(value = "bachelorReport", required = false) final MultipartFile bachelorReport) throws MessagingException, IOException {
         if (bucket.tryConsume(1)) {
-            return ResponseEntity.ok(thesisApplicationService.create(thesisApplication, examinationReport, cv, bachelorReport));
+            final ThesisApplication application = thesisApplicationService
+                    .create(thesisApplication, examinationReport, cv, bachelorReport);
+            mailingService.thesisApplicationCreatedEmail(application.getStudent(), application);
+            return ResponseEntity.ok(application);
         }
 
         log.error("Post request on /thesis-applications was rejected due to exceeded request velocity.");
