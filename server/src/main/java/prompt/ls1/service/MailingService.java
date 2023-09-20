@@ -70,58 +70,57 @@ public class MailingService {
                         <p>&nbsp;</p>
 
                         <hr />
-                        <p><strong>Name:</strong>&nbsp;%s %s<br />
-                        <strong>Email:</strong>&nbsp;<a href="mailto:%s" target="_blank">%s</a><br />
-                        <strong>TUM ID:</strong>&nbsp;%s</p>
-                        <strong>Matriculation Number:</strong>&nbsp;%s</p>
+                        <strong>Name:</strong><p>&nbsp;%s %s</p><br />
+                        <strong>Email:</strong><p>&nbsp;<a href="mailto:%s" target="_blank">%s</a></p><br />
+                        <strong>TUM ID:</strong><p>&nbsp;%s</p>
+                        <strong>Matriculation Number:</strong><p>&nbsp;%s</p>
 
-                        <p><strong>Study program:</strong>&nbsp;%s&nbsp;%s&nbsp;(%s. Semester)<br />
-                        <p><strong>Desired Thesis Start Date:</strong>&nbsp;%s</p>
+                        <strong>Study program:</strong><p>&nbsp;%s&nbsp;%s&nbsp;(%s. Semester)</p><br />
+                        <strong>Desired Thesis Start Date:</strong><p>&nbsp;%s</p>
                         <br />
-                        <strong>Special Skills:&nbsp;</strong></p>
+                        <strong>Special Skills:&nbsp;</strong>
 
                         <p>%s</p>
 
                         <p>&nbsp;</p>
 
-                        <p><strong>Motivation:&nbsp;</strong></p>
+                        <strong>Motivation:&nbsp;</strong>
 
                         <p>%s</p>
                         
                         <p>&nbsp;</p>
 
-                        <p><strong>Interests:&nbsp;</strong></p>
+                        <strong>Interests:&nbsp;</strong>
 
                         <p>%s</p>
                         
                         <p>&nbsp;</p>
 
-                        <p><strong>Projects:&nbsp;</strong></p>
+                        <strong>Projects:&nbsp;</strong>
 
                         <p>%s</p>
                         
                         <p>&nbsp;</p>
 
-                        <p><strong>Thesis Title Suggestion:&nbsp;</strong></p>
+                        <strong>Thesis Title Suggestion:&nbsp;</strong>
 
                         <p>%s</p>
                         
                         <p>&nbsp;</p>
 
-                        <p><strong>Research Areas:&nbsp;</strong></p>
+                        <strong>Research Areas:&nbsp;</strong>
 
                         <p>%s</p>
                         
                         <p>&nbsp;</p>
 
-                        <p><strong>Focus Topics:&nbsp;</strong></p>
+                        <strong>Focus Topics:&nbsp;</strong>
 
                         <p>%s</p>
 
-                        <hr />
-                        <p><br />
+                        <br />
 
-                        <p><strong>You can find the submitted files in the attachment part of this email.</strong></p>
+                        <strong>You can find the submitted files in the attachment part of this email.</strong>
 
                         <p>Best regards,<br />
                         PROMPT Mailing Service</p>""",
