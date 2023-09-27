@@ -43,7 +43,7 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
 
   return (
     <Stack>
-      {(!selectedCourseIteration?.introCourseStart || !selectedCourseIteration.introCourseEnd) && (
+      {(!selectedCourseIteration?.introCourseStart || !selectedCourseIteration?.introCourseEnd) && (
         <Alert icon={<IconAlertCircle size='1rem' />} title='Action required!' color='red'>
           You have not specified the intro course period for the current semester. Please visit the{' '}
           <Link to='/management/course-iterations'>Course Iteration Management</Link> console and
@@ -51,8 +51,8 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
         </Alert>
       )}
       {selectedCourseIteration?.introCourseStart &&
-        selectedCourseIteration.introCourseEnd &&
-        introCourseProgress && (
+        selectedCourseIteration?.introCourseEnd &&
+        !!introCourseProgress && (
           <Progress
             label='Intro Course Progress'
             value={introCourseProgress}
