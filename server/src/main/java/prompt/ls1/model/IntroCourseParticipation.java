@@ -25,6 +25,16 @@ public class IntroCourseParticipation {
 
     private UUID tutorId;
 
+    private String appleId;
+
+    private String macBookDeviceId;
+
+    private String iPhoneDeviceId;
+
+    private String iPadDeviceId;
+
+    private String appleWatchDeviceId;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "student_id")
     private Student student;

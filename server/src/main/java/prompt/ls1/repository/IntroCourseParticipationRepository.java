@@ -14,6 +14,8 @@ public interface IntroCourseParticipationRepository extends JpaRepository<IntroC
 
     Optional<IntroCourseParticipation> findByStudentId(final UUID studentId);
 
+    Optional<IntroCourseParticipation> findByCourseIterationIdAndStudentId(final UUID courseIterationId, final UUID studentId);
+
     @Transactional
     List<IntroCourseParticipation> findAllByCourseIterationId(final UUID courseIterationId);
 }

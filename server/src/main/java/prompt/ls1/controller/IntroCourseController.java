@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
+import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.IntroCourseAbsence;
 import prompt.ls1.model.IntroCourseParticipation;
@@ -28,6 +30,7 @@ import prompt.ls1.service.IntroCourseService;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/intro-course")
 public class IntroCourseController {
@@ -89,6 +92,28 @@ public class IntroCourseController {
             @PathVariable final UUID introCourseParticipationId,
             @RequestBody @NotNull final IntroCourseAbsence introCourseAbsence) {
         return ResponseEntity.ok(introCourseService.createIntroCourseAbsence(introCourseParticipationId, introCourseAbsence));
+    }
+
+    @PostMapping("/{semesterName}/verify-student/{studentPublicId}")
+    public ResponseEntity<UUID> verifyStudentFormAccess(@PathVariable final String semesterName,
+                                                        @PathVariable final String studentPublicId,
+                                                        @RequestBody final String studentMatriculationNumber) {
+        return ResponseEntity.ok(introCourseService.verifyStudentFormAccess(semesterName, studentPublicId, studentMatriculationNumber));
+    }
+
+    @PostMapping("/{semesterName}/technical-details/{studentId}")
+    public ResponseEntity<IntroCourseParticipation> saveStudentTechnicalDetails(
+            @PathVariable final String semesterName,
+            @PathVariable final UUID studentId,
+            @RequestBody @NotNull final StudentTechnicalDetails studentTechnicalDetails) {
+        return ResponseEntity.ok(introCourseService.saveStudentTechnicalDetails(semesterName, studentId, studentTechnicalDetails));
+    }
+
+    @PostMapping("/{courseIterationId}/technical-details-invitation")
+    public ResponseEntity<String> sendInvitationForStudentTechnicalDetailsSubmission(
+            @PathVariable final UUID courseIterationId) {
+        introCourseService.sendInvitationsForStudentTechnicalDetailsSubmission(courseIterationId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{introCourseParticipationId}/absences/{introCourseAbsenceId}")

@@ -19,6 +19,7 @@ import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
 import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
+import { StudentTechnicalDetailsSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentTechnicalDetailsSubmissionPage'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
@@ -142,6 +143,10 @@ export const App = (): JSX.Element => {
               <Route
                 path='/kick-off/:studentPublicId'
                 element={<StudentTeamPostKickoffSubmissionPage />}
+              />
+              <Route
+                path='/intro-course/:semesterName/technical-details/:studentPublicId'
+                element={<StudentTechnicalDetailsSubmissionPage />}
               />
               <Route
                 path='/applications/thesis'
