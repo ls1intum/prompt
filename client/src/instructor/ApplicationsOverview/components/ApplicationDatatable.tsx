@@ -200,7 +200,9 @@ export const ApplicationDatatable = ({
           return {
             firstName: da.student.firstName,
             lastName: da.student.lastName,
+            tumId: da.student.tumId,
             matriculationNumber: da.student.matriculationNumber,
+            email: da.student.email,
             assessmentScore: da.assessment?.assessmentScore,
           }
         })}

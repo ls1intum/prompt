@@ -152,9 +152,9 @@ const SeatPlanUploadModal = ({
               <Text fz='sm' c='dimmed'>
                 Upload a .csv file with seat plan and device availability for each seat. An example
                 file structure is exemplified below. The column names can be selected arbitrary.
-                However, the seat plan needs to provide the required data. The uploaded data will be
-                sent to the server and students will be assigned to seats with regard to device
-                demand and availability.
+                However, the seat plan needs to provide the required data: seat label and, if
+                available, device id. The uploaded data will be sent to the server and students will
+                be assigned to seats with regard to device demand and availability.
               </Text>
               <Card>
                 <Text fz='sm' ta='right' c='dimmed'>
@@ -164,10 +164,10 @@ const SeatPlanUploadModal = ({
                   seat,device
                 </Text>
                 <Text fz='sm' c='dimmed'>
-                  A1,true
+                  A1,984fba9c-2e1f-4f12-9adc-4311faab845d
                 </Text>
                 <Text fz='sm' c='dimmed'>
-                  A2,false
+                  A2,
                 </Text>
               </Card>
             </Stack>
