@@ -77,7 +77,7 @@ export const StudentTechnicalDetailsSubmissionPage = (): JSX.Element => {
             onSubmit={setStudentId}
           />
           <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
-            <Title order={2}>Kickoff Submission Form</Title>
+            <Title order={2}>Technical Details Submission Form</Title>
           </Center>
           <Container size='70vw' style={{ padding: '3vh' }}>
             <Stack style={{ paddingBottom: '5vh' }}>
