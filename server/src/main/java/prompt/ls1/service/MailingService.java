@@ -663,4 +663,41 @@ public class MailingService {
 
         javaMailSender.send(message);
     }
+
+    public void sendTechnicalDetailsSubmissionInvitationEmail(final Student student,
+                                                          final CourseIteration courseIteration) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.TO, sender);
+        message.setSubject(String.format("iPraktikum %s Technical Details Submission", courseIteration.getSemesterName()));
+
+        String htmlContent = String.format("""
+                        <p>Dear&nbsp;%s %s,</p>
+
+                        <p>with this email we request you to submit some technical details required for the Intro Course and iPraktikum %s participation.</p>
+
+                        <strong>Please make sure to submit the form until Sunday, 1st of October 23:99.</strong>
+                        <br/>
+                        <p>Please, use the following link: <a href="https://prompt.ase.cit.tum.de/intro-course/%s/technical-details/%s" rel="nofollow" target="_blank">https://prompt.ase.cit.tum.de/intro-course/%s/technical-details/%s</a></p>
+                        <p>Make sure NOT TO SHARE this personal link with any third parties.</p>
+
+                        <p>&nbsp;</p>
+
+                        <p><strong>We are looking forward to a great collaboration!</strong></p>
+
+                        <p>Best regards,<br />
+                        iPraktikum Program Management Team</p>""",
+                student.getFirstName(),
+                student.getLastName(),
+                courseIteration.getSemesterName(),
+                courseIteration.getSemesterName().toUpperCase(),
+                student.getPublicId(),
+                courseIteration.getSemesterName().toUpperCase(),
+                student.getPublicId());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
 }

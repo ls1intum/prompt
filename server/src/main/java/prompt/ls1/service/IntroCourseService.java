@@ -5,17 +5,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
+import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
+import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.IntroCourseAbsence;
 import prompt.ls1.model.IntroCourseParticipation;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
+import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.model.enums.Device;
 import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.DeveloperApplicationRepository;
@@ -36,18 +40,21 @@ public class IntroCourseService {
     private final StudentRepository studentRepository;
     private final DeveloperApplicationRepository developerApplicationRepository;
     private final TutorApplicationRepository tutorApplicationRepository;
+    private final MailingService mailingService;
 
     @Autowired
     public IntroCourseService(final IntroCourseParticipationRepository introCourseParticipationRepository,
                               final CourseIterationRepository courseIterationRepository,
                               final StudentRepository studentRepository,
                               final DeveloperApplicationRepository developerApplicationRepository,
-                              final TutorApplicationRepository tutorApplicationRepository) {
+                              final TutorApplicationRepository tutorApplicationRepository,
+                              final MailingService mailingService) {
         this.introCourseParticipationRepository = introCourseParticipationRepository;
         this.courseIterationRepository = courseIterationRepository;
         this.studentRepository = studentRepository;
         this.developerApplicationRepository = developerApplicationRepository;
         this.tutorApplicationRepository = tutorApplicationRepository;
+        this.mailingService = mailingService;
     }
 
     public List<IntroCourseParticipation> findAllByCourseIterationId(final UUID courseIterationId) {
@@ -205,6 +212,70 @@ public class IntroCourseService {
         introCourseParticipation.getAbsences().add(introCourseAbsence);
 
         return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
+    public UUID verifyStudentFormAccess(final String semesterName, final String studentPublicId, final String studentMatriculationNumber) {
+        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("No course iteration with semester name %s found.", semesterName)));
+
+        final Student student = studentRepository.findByPublicId(UUID.fromString(studentPublicId))
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentPublicId)));
+
+        if (!student.getMatriculationNumber().equals(studentMatriculationNumber)) {
+            throw new ResourceInvalidParametersException("The public id provided does not match with the matriculation number.");
+        }
+
+        final DeveloperApplication developerApplication = developerApplicationRepository
+                .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
+
+        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED)) {
+            throw new ResourceInvalidParametersException("No enrolled developer application with provided parameters found.");
+        }
+
+        return student.getId();
+    }
+
+    public IntroCourseParticipation saveStudentTechnicalDetails(final String semesterName,
+                                                                    final UUID studentId,
+                                                                    final StudentTechnicalDetails studentTechnicalDetails) {
+        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("No course iteration with semester name %s found.", semesterName)));
+
+        final Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.",
+                        studentId)));
+
+        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository
+                .findByCourseIterationIdAndStudentId(courseIteration.getId(), student.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student with id %s not found.",
+                        student.getId())));
+
+        introCourseParticipation.setAppleId(studentTechnicalDetails.getAppleId());
+        introCourseParticipation.setMacBookDeviceId(studentTechnicalDetails.getMacBookDeviceId());
+        introCourseParticipation.setIPhoneDeviceId(studentTechnicalDetails.getIPhoneDeviceId());
+        introCourseParticipation.setIPadDeviceId(studentTechnicalDetails.getIPadDeviceId());
+        introCourseParticipation.setAppleWatchDeviceId(studentTechnicalDetails.getAppleWatchDeviceId());
+
+        return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
+    public void sendInvitationsForStudentTechnicalDetailsSubmission(final UUID courseIterationId) {
+        final CourseIteration courseIteration = courseIterationRepository.findById(courseIterationId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("No course iteration with id %s found.", courseIterationId)));
+
+        final List<IntroCourseParticipation> introCourseParticipations = introCourseParticipationRepository
+                .findAllByCourseIterationId(courseIterationId);
+
+        introCourseParticipations.forEach(introCourseParticipation -> {
+            try {
+                mailingService.sendTechnicalDetailsSubmissionInvitationEmail(introCourseParticipation.getStudent(), courseIteration);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private IntroCourseParticipation findById(final UUID introCourseParticipationId) {

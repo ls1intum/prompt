@@ -15,10 +15,23 @@ interface IntroCourseAbsence {
   excuse: string
 }
 
+interface TechnicalDetails {
+  appleId: string
+  macBookDeviceId?: string
+  iPhoneDeviceId?: string
+  iPadDeviceId?: string
+  appleWatchDeviceId?: string
+}
+
 interface IntroCourseParticipation {
   id: string
   tutorId?: string
   student: Student
+  appleId?: string
+  macBookDeviceId?: string
+  iPhoneDeviceId?: string
+  iPadDeviceId?: string
+  appleWatchDeviceId?: string
   seat?: string
   chairDevice?: string
   absences: IntroCourseAbsence[]
@@ -195,6 +208,7 @@ export const introCourseSlice = createSlice({
 export default introCourseSlice.reducer
 export {
   type IntroCourseParticipation,
+  type TechnicalDetails,
   type IntroCourseAbsence,
   type SeatPlanAssignment,
   type Seat,

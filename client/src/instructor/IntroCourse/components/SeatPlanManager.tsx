@@ -29,6 +29,7 @@ import {
   IconDeviceLaptop,
   IconDownload,
   IconEdit,
+  IconMail,
   IconSearch,
   IconUpload,
 } from '@tabler/icons-react'
@@ -43,6 +44,7 @@ import { createSeatPlanAssignments } from '../../../redux/introCourseSlice/thunk
 import { createSeatPlan } from '../../../redux/introCourseSlice/thunks/createSeatPlan'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type Keycloak from 'keycloak-js'
+import { sendInvitationsForStudentTechnicalDetailsSubmission } from '../../../service/introCourseService'
 
 interface SeatPlanUploadModalProps {
   opened: boolean
@@ -492,6 +494,44 @@ const SeatPlanEditModal = ({
   )
 }
 
+interface TechnicalDataEmailInvitationsSendConfirmationModalProps {
+  opened: boolean
+  onClose: () => void
+}
+
+const TechnicalDataEmailInvitationsSendConfirmationModal = ({
+  opened,
+  onClose,
+}: TechnicalDataEmailInvitationsSendConfirmationModalProps): JSX.Element => {
+  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+
+  return (
+    <Modal opened={opened} onClose={onClose} centered>
+      <Stack>
+        <Text>
+          Are You sure You would like to send email invitations to enrolled students in order to
+          request them to submit technical details?
+        </Text>
+        <Group position='right'>
+          <Button variant='outline' onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (selectedCourseIteration) {
+                void sendInvitationsForStudentTechnicalDetailsSubmission(selectedCourseIteration.id)
+              }
+              onClose()
+            }}
+          >
+            Confirm
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
+  )
+}
+
 interface SeatPlanManagerProps {
   keycloak: Keycloak
 }
@@ -511,6 +551,10 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
     useState<IntroCourseParticipation | null>()
   const [participationEditModalOpened, setParticipationEditModalOpened] = useState(false)
   const [seatPlanUploadModalOpened, setSeatPlanUploadModalOpened] = useState(false)
+  const [
+    technicalDataInvitationsRequestModalOpened,
+    setTechnicalDataInvitationsRequestModalOpened,
+  ] = useState(false)
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -556,6 +600,12 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           isTutor={!keycloak.hasResourceRole('ipraktikum-pm', 'prompt-server')}
         />
       )}
+      <TechnicalDataEmailInvitationsSendConfirmationModal
+        opened={technicalDataInvitationsRequestModalOpened}
+        onClose={() => {
+          setTechnicalDataInvitationsRequestModalOpened(false)
+        }}
+      />
       {keycloak.hasResourceRole('ipraktikum-pm', 'prompt-server') && (
         <>
           <SeatPlanUploadModal
@@ -595,6 +645,23 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
               }}
             />
             <Group position='right'>
+              <Tooltip
+                label={
+                  'Send Email Invitations to Enrolled Student to Request Technical Data such as Apple Id and Device Ids'
+                }
+                color='blue'
+                withArrow
+                multiline
+              >
+                <Button
+                  variant='outline'
+                  onClick={() => {
+                    setTechnicalDataInvitationsRequestModalOpened(true)
+                  }}
+                >
+                  <IconMail size={16} />
+                </Button>
+              </Tooltip>
               <Button
                 variant='outline'
                 leftIcon={<IconDownload size={16} />}
