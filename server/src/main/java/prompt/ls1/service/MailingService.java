@@ -678,7 +678,7 @@ public class MailingService {
 
                         <p>with this email we request you to submit some technical details required for the Intro Course and iPraktikum %s participation.</p>
 
-                        <strong>Please make sure to submit the form until Sunday, 1st of October 23:99.</strong>
+                        <strong>Please make sure to submit the form until Sunday, 1st of October 23:59.</strong>
                         <br/>
                         <p>Please, use the following link: <a href="https://prompt.ase.cit.tum.de/intro-course/%s/technical-details/%s" rel="nofollow" target="_blank">https://prompt.ase.cit.tum.de/intro-course/%s/technical-details/%s</a></p>
                         <p>Make sure NOT TO SHARE this personal link with any third parties.</p>
