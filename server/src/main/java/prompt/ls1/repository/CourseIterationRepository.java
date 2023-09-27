@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface CourseIterationRepository extends JpaRepository<CourseIteration, UUID> {
+    @Transactional
     Optional<CourseIteration> findBySemesterName(final String semesterName);
 
     @Transactional
