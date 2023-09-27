@@ -644,7 +644,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
         columns={[
           {
             accessor: 'fullName',
-            title: 'First Name',
+            title: 'Full Name',
             textAlignment: 'center',
             render: ({ student }) => `${student.firstName ?? ''} ${student.lastName ?? ''}`,
           },
