@@ -25,7 +25,7 @@ export const StudentTechnicalDetailsSubmissionCodeModal = ({
         `${serverBaseUrl}/api/intro-course/${semesterName ?? ''}/verify-student/${
           studentPublicId ?? ''
         }`,
-        matriculationNumber,
+        matriculationNumber.trim(),
         { headers: { 'Content-Type': 'text/plain' } },
       )
       if (response.data) {
