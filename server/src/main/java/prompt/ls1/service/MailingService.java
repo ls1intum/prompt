@@ -14,6 +14,7 @@ import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.Student;
+import prompt.ls1.model.ThesisAdvisor;
 import prompt.ls1.model.ThesisApplication;
 import prompt.ls1.model.TutorApplication;
 import prompt.ls1.model.enums.FocusTopic;
@@ -696,6 +697,116 @@ public class MailingService {
                 student.getPublicId(),
                 courseIteration.getSemesterName().toUpperCase(),
                 student.getPublicId());
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
+
+    public void sendThesisAcceptanceEmail(final Student student,
+                                          final ThesisAdvisor thesisAdvisor) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.CC, "krusche@tum.de");
+        message.setSubject("Thesis Application Acceptance");
+
+        String htmlContent = "";
+        if (!thesisAdvisor.getEmail().equals("krusche@tum.de")) {
+            message.addRecipients(MimeMessage.RecipientType.CC, thesisAdvisor.getEmail());
+
+            htmlContent = String.format("""
+                            <p>Dear %s,</p>
+                                                        
+                            <p>I am delighted to inform you that, after a thorough review of your application and supporting documents, I am impressed by your motivation and would be pleased to supervise your thesis.</p>
+                                                        
+                            <p>I believe your passion and dedication to your work will bring valuable insights to our research. My doctoral student, %s %s, is also looking forward to advising you throughout your thesis. Please coordinate with %s %s at your earliest convenience. You can connect with %s %s using the following Slack link: <a href="https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow">https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow</a></p>
+                                                        
+                            <p>I would like to emphasize that in undertaking this thesis, you will be assuming the role of project manager for your thesis project. This role requires proactive communication, high dedication, and a strong commitment to the successful completion of the project. I have full confidence in your ability to rise to this challenge and produce exemplary work.</p>
+                                                        
+                            <p>I am excited about the opportunity to work with you and am eager to see the contributions you will make to our field. Please feel free to reach out if you have any questions or need further clarification on any aspect of the project.</p>
+                                                        
+                            <p>Congratulations once again, and I look forward to embarking on this academic journey with you.</p>
+                                                        
+                            <p>Kind regards,</p>
+                                                        
+                            <p>___________________</p>
+                                                        
+                            <p>Prof. Dr. Stephan Krusche</p>
+                                                        
+                            <p>Applied Software Engineering<br />
+                            Technical University of Munich</p>
+                                                        
+                            <p><a href="krusche@tum.de">krusche@tum.de</a><br />
+                            <a href="http://www.skrusche.de">www.skrusche.de</a></p>
+                            """,
+                    student.getFirstName(),
+                    thesisAdvisor.getFirstName(),
+                    thesisAdvisor.getLastName(),
+                    thesisAdvisor.getFirstName(),
+                    thesisAdvisor.getLastName(),
+                    thesisAdvisor.getFirstName(),
+                    thesisAdvisor.getLastName());
+        } else {
+            htmlContent = String.format("""
+                            <p>Dear %s,</p>
+                                                        
+                            <p>I am delighted to inform you that, after a thorough review of your application and supporting documents, I am impressed by your motivation and would be pleased to supervise your thesis.</p>
+                                                        
+                            <p>I believe your passion and dedication to your work will bring valuable insights to our research. I am looking forward to advising you throughout your thesis. Please coordinate the next steps with me using the following Slack link: <a href="https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow">https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow</a></p>
+                                                        
+                            <p>I would like to emphasize that in undertaking this thesis, you will be assuming the role of project manager for your thesis project. This role requires proactive communication, high dedication, and a strong commitment to the successful completion of the project. I have full confidence in your ability to rise to this challenge and produce exemplary work.</p>
+                                                        
+                            <p>I am excited about the opportunity to work with you and am eager to see the contributions you will make to our field. Please feel free to reach out if you have any questions or need further clarification on any aspect of the project.</p>
+                                                        
+                            <p>Congratulations once again, and I look forward to embarking on this academic journey with you.</p>
+                                                        
+                            <p>Kind regards,</p>
+                                                        
+                            <p>___________________</p>
+                                                        
+                            <p>Prof. Dr. Stephan Krusche</p>
+                                                        
+                            <p>Applied Software Engineering<br />
+                            Technical University of Munich</p>
+                                                        
+                            <p><a href="krusche@tum.de">krusche@tum.de</a><br />
+                            <a href="http://www.skrusche.de">www.skrusche.de</a></p>
+                            """,
+                    student.getFirstName());
+        }
+        message.setContent(htmlContent, "text/html; charset=utf-8");
+
+        javaMailSender.send(message);
+    }
+
+    public void sendThesisRejectionEmail(final Student student) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+        message.addRecipients(MimeMessage.RecipientType.BCC, "krusche@tum.de");
+        message.setSubject("Thesis Application Rejection");
+
+        String htmlContent = String.format("""
+                        <p>Dear %s,</p>
+                                                
+                        <p>Thank you for your interest in pursuing your thesis under my supervision. I have carefully reviewed your application and supporting documents. It is with regret that I inform you that I am unable to accommodate your request to supervise your thesis. The volume of applications received this year was exceptionally high, and I have limited capacity to ensure each student receives the appropriate level of support and guidance. I recommend reaching out to other faculty members who specialize in your area of interest.</p>
+                                                
+                        <p>Kind regards,<br />
+                        Stephan</p>
+                                                
+                        <hr />
+                                                
+                        <p>Prof. Dr. Stephan Krusche</p>
+                                                
+                        <p>Applied Software Engineering<br />
+                        Technical University of Munich</p>
+                                                
+                        <p><a href="krusche@tum.de">krusche@tum.de</a><br />
+                        <a href="http://www.skrusche.de">www.skrusche.de</a></p>
+                        """,
+                student.getFirstName());
         message.setContent(htmlContent, "text/html; charset=utf-8");
 
         javaMailSender.send(message);

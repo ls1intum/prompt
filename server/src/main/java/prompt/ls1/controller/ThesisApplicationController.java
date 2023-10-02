@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import prompt.ls1.controller.payload.ThesisApplicationAssessment;
+import prompt.ls1.model.ThesisAdvisor;
 import prompt.ls1.model.ThesisApplication;
 import prompt.ls1.service.MailingService;
 import prompt.ls1.service.ThesisApplicationService;
@@ -64,7 +66,7 @@ public class ThesisApplicationController {
 
     @GetMapping("/{thesisApplicationId}/examination-report")
     @PreAuthorize("hasRole('chair-member')")
-    public ResponseEntity<Resource> getExaminationReport(@PathVariable final UUID thesisApplicationId) throws IOException {
+    public ResponseEntity<Resource> getExaminationReport(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=examination_report_%s.pdf", thesisApplicationId))
@@ -73,7 +75,7 @@ public class ThesisApplicationController {
 
     @GetMapping("/{thesisApplicationId}/cv")
     @PreAuthorize("hasRole('chair-member')")
-    public ResponseEntity<Resource> getCV(@PathVariable final UUID thesisApplicationId) throws IOException {
+    public ResponseEntity<Resource> getCV(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=cv_%s.pdf", thesisApplicationId))
@@ -82,7 +84,7 @@ public class ThesisApplicationController {
 
     @GetMapping("/{thesisApplicationId}/bachelor-report")
     @PreAuthorize("hasRole('chair-member')")
-    public ResponseEntity<Resource> getBachelorReport(@PathVariable final UUID thesisApplicationId) throws IOException {
+    public ResponseEntity<Resource> getBachelorReport(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=bachelor_report_%s.pdf", thesisApplicationId))
@@ -110,5 +112,30 @@ public class ThesisApplicationController {
     public ResponseEntity<ThesisApplication> assess(@PathVariable final UUID thesisApplicationId,
                                            @RequestBody final ThesisApplicationAssessment assessment) {
         return ResponseEntity.ok(thesisApplicationService.assess(thesisApplicationId, assessment.getStatus(), assessment.getAssessmentComment()));
+    }
+
+    @PutMapping("/thesis-advisors")
+    @PreAuthorize("hasRole('chair-member')")
+    public ResponseEntity<List<ThesisAdvisor>> updateThesisAdvisorList(@RequestBody final ThesisAdvisor thesisAdvisor) {
+        return ResponseEntity.ok(thesisApplicationService.updateThesisAdvisorList(thesisAdvisor));
+    }
+
+    @PostMapping("/{thesisApplicationId}/thesis-advisor/{thesisAdvisorId}")
+    @PreAuthorize("hasRole('chair-member')")
+    public ResponseEntity<ThesisApplication> assignThesisAdvisor(@PathVariable final UUID thesisApplicationId,
+                                                                  @PathVariable final UUID thesisAdvisorId) {
+        return ResponseEntity.ok(thesisApplicationService.assignThesisAdvisor(thesisApplicationId, thesisAdvisorId));
+    }
+
+    @PostMapping("/{thesisApplicationId}/accept")
+    @PreAuthorize("hasRole('chair-member')")
+    public ResponseEntity<ThesisApplication> acceptThesisApplication(@PathVariable final UUID thesisApplicationId) {
+        return ResponseEntity.ok(thesisApplicationService.accept(thesisApplicationId));
+    }
+
+    @PostMapping("/{thesisApplicationId}/reject")
+    @PreAuthorize("hasRole('chair-member')")
+    public ResponseEntity<ThesisApplication> rejectThesisApplication(@PathVariable final UUID thesisApplicationId) {
+        return ResponseEntity.ok(thesisApplicationService.reject(thesisApplicationId));
     }
 }

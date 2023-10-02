@@ -13,6 +13,7 @@ import {
   Button,
   Card,
   Checkbox,
+  Divider,
   Group,
   Image,
   LoadingOverlay,
@@ -27,12 +28,7 @@ import {
   rem,
   useMantineTheme,
 } from '@mantine/core'
-import {
-  ApplicationStatus,
-  Gender,
-  StudyDegree,
-  StudyProgram,
-} from '../redux/applicationsSlice/applicationsSlice'
+import { Gender, StudyDegree, StudyProgram } from '../redux/applicationsSlice/applicationsSlice'
 import { ApplicationFormAccessMode } from './DefaultApplicationForm'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { IconCalendar, IconPhoto, IconUpload, IconX } from '@tabler/icons-react'
@@ -45,12 +41,15 @@ import {
 } from '../service/thesisApplicationService'
 import { DatePickerInput } from '@mantine/dates'
 import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../redux/store'
+import { useAppSelector, type AppDispatch } from '../redux/store'
 import { assessThesisApplication } from '../redux/thesisApplicationsSlice/thunks/assessThesisApplication'
 import { notifications } from '@mantine/notifications'
 import { useDisclosure } from '@mantine/hooks'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { rejectThesisApplication } from '../redux/thesisApplicationsSlice/thunks/rejectThesisApplication'
+import { acceptThesisApplication } from '../redux/thesisApplicationsSlice/thunks/acceptThesisApplication'
+import { assignThesisAdvisor } from '../redux/thesisApplicationsSlice/thunks/assignThesisAdvisor'
 
 countries.registerLocale(enLocale)
 const countriesArr = Object.entries(countries.getNames('en', { select: 'alias' })).map(
@@ -73,6 +72,7 @@ export const ThesisApplicationForm = ({
 }: ThesisApplicationFormProps): JSX.Element => {
   const theme = useMantineTheme()
   const dispatch = useDispatch<AppDispatch>()
+  const thesisAdvisors = useAppSelector((state) => state.thesisApplications.thesisAdvisors)
   const [loadingOverlayVisible, loadingOverlayHandlers] = useDisclosure(false)
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const uploads = useForm<{
@@ -184,6 +184,14 @@ export const ThesisApplicationForm = ({
       declarationOfConsentAccepted: (value) => !value,
     },
   })
+  const [thesisAdvisorId, setThesisAdvisorId] = useState<string | null>(
+    application?.thesisAdvisor?.id ?? null,
+  )
+
+  useEffect(() => {
+    setThesisAdvisorId(application?.thesisAdvisor?.id ?? null)
+  }, [application])
+
   return (
     <Box
       sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80vw', gap: '2vh' }}
@@ -438,62 +446,64 @@ export const ThesisApplicationForm = ({
                     </Group>
                   </Card>
                 )}
-                <Dropzone
-                  name='Examination Report'
-                  disabled={!!uploads.values.examinationReport}
-                  onDrop={(files) => {
-                    if (files[0]) {
-                      uploads.setValues({
-                        examinationReport: files[0],
+                {!uploads.values.examinationReport && (
+                  <Dropzone
+                    name='Examination Report'
+                    disabled={!!uploads.values.examinationReport}
+                    onDrop={(files) => {
+                      if (files[0]) {
+                        uploads.setValues({
+                          examinationReport: files[0],
+                        })
+                      }
+                    }}
+                    onReject={(files) => {
+                      notifications.show({
+                        color: 'red',
+                        autoClose: 5000,
+                        title: 'Error',
+                        message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
                       })
-                    }
-                  }}
-                  onReject={(files) => {
-                    notifications.show({
-                      color: 'red',
-                      autoClose: 5000,
-                      title: 'Error',
-                      message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
-                    })
-                  }}
-                  maxSize={1 * 1024 ** 2}
-                  accept={PDF_MIME_TYPE}
-                >
-                  <Group
-                    position='center'
-                    spacing='xl'
-                    style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                    }}
+                    maxSize={1 * 1024 ** 2}
+                    accept={PDF_MIME_TYPE}
                   >
-                    <Dropzone.Accept>
-                      <IconUpload
-                        size='3.2rem'
-                        stroke={1.5}
-                        color={
-                          theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
-                        }
-                      />
-                    </Dropzone.Accept>
-                    <Dropzone.Reject>
-                      <IconX
-                        size='3.2rem'
-                        stroke={1.5}
-                        color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                      />
-                    </Dropzone.Reject>
-                    <Dropzone.Idle>
-                      <IconPhoto size='3.2rem' stroke={1.5} />
-                    </Dropzone.Idle>
+                    <Group
+                      position='center'
+                      spacing='xl'
+                      style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                    >
+                      <Dropzone.Accept>
+                        <IconUpload
+                          size='3.2rem'
+                          stroke={1.5}
+                          color={
+                            theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
+                          }
+                        />
+                      </Dropzone.Accept>
+                      <Dropzone.Reject>
+                        <IconX
+                          size='3.2rem'
+                          stroke={1.5}
+                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                        />
+                      </Dropzone.Reject>
+                      <Dropzone.Idle>
+                        <IconPhoto size='3.2rem' stroke={1.5} />
+                      </Dropzone.Idle>
 
-                    <div>
-                      <Text size='xl' inline>
-                        Drag the file here or click to select file
-                      </Text>
-                      <Text size='sm' color='dimmed' inline mt={7}>
-                        The file should not exceed 1mb
-                      </Text>
-                    </div>
-                  </Group>
-                </Dropzone>
+                      <div>
+                        <Text size='xl' inline>
+                          Drag the file here or click to select file
+                        </Text>
+                        <Text size='sm' color='dimmed' inline mt={7}>
+                          The file should not exceed 1mb
+                        </Text>
+                      </div>
+                    </Group>
+                  </Dropzone>
+                )}
                 <Group position='left'>
                   <Text fw={500} fz='sm'>
                     CV
@@ -516,62 +526,64 @@ export const ThesisApplicationForm = ({
                     </Group>
                   </Card>
                 )}
-                <Dropzone
-                  name='CV'
-                  disabled={!!uploads.values.cv}
-                  onDrop={(files) => {
-                    if (files[0]) {
-                      uploads.setValues({
-                        cv: files[0],
+                {!uploads.values.cv && (
+                  <Dropzone
+                    name='CV'
+                    disabled={!!uploads.values.cv}
+                    onDrop={(files) => {
+                      if (files[0]) {
+                        uploads.setValues({
+                          cv: files[0],
+                        })
+                      }
+                    }}
+                    onReject={(files) => {
+                      notifications.show({
+                        color: 'red',
+                        autoClose: 5000,
+                        title: 'Error',
+                        message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
                       })
-                    }
-                  }}
-                  onReject={(files) => {
-                    notifications.show({
-                      color: 'red',
-                      autoClose: 5000,
-                      title: 'Error',
-                      message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
-                    })
-                  }}
-                  maxSize={1 * 1024 ** 2}
-                  accept={PDF_MIME_TYPE}
-                >
-                  <Group
-                    position='center'
-                    spacing='xl'
-                    style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                    }}
+                    maxSize={1 * 1024 ** 2}
+                    accept={PDF_MIME_TYPE}
                   >
-                    <Dropzone.Accept>
-                      <IconUpload
-                        size='3.2rem'
-                        stroke={1.5}
-                        color={
-                          theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
-                        }
-                      />
-                    </Dropzone.Accept>
-                    <Dropzone.Reject>
-                      <IconX
-                        size='3.2rem'
-                        stroke={1.5}
-                        color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                      />
-                    </Dropzone.Reject>
-                    <Dropzone.Idle>
-                      <IconPhoto size='3.2rem' stroke={1.5} />
-                    </Dropzone.Idle>
+                    <Group
+                      position='center'
+                      spacing='xl'
+                      style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                    >
+                      <Dropzone.Accept>
+                        <IconUpload
+                          size='3.2rem'
+                          stroke={1.5}
+                          color={
+                            theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
+                          }
+                        />
+                      </Dropzone.Accept>
+                      <Dropzone.Reject>
+                        <IconX
+                          size='3.2rem'
+                          stroke={1.5}
+                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                        />
+                      </Dropzone.Reject>
+                      <Dropzone.Idle>
+                        <IconPhoto size='3.2rem' stroke={1.5} />
+                      </Dropzone.Idle>
 
-                    <div>
-                      <Text size='xl' inline>
-                        Drag the file here or click to select file
-                      </Text>
-                      <Text size='sm' color='dimmed' inline mt={7}>
-                        The file should not exceed 1mb
-                      </Text>
-                    </div>
-                  </Group>
-                </Dropzone>
+                      <div>
+                        <Text size='xl' inline>
+                          Drag the file here or click to select file
+                        </Text>
+                        <Text size='sm' color='dimmed' inline mt={7}>
+                          The file should not exceed 1mb
+                        </Text>
+                      </div>
+                    </Group>
+                  </Dropzone>
+                )}
                 <Text fw={500} fz='sm'>
                   Bachelor Report
                 </Text>
@@ -591,78 +603,169 @@ export const ThesisApplicationForm = ({
                     </Group>
                   </Card>
                 )}
-                <Dropzone
-                  name='Bachelor Report'
-                  disabled={!!uploads.values.bachelorReport}
-                  onDrop={(files) => {
-                    if (files[0]) {
-                      uploads.setValues({
-                        bachelorReport: files[0],
+                {!uploads.values.bachelorReport && (
+                  <Dropzone
+                    name='Bachelor Report'
+                    disabled={!!uploads.values.bachelorReport}
+                    onDrop={(files) => {
+                      if (files[0]) {
+                        uploads.setValues({
+                          bachelorReport: files[0],
+                        })
+                      }
+                    }}
+                    onReject={(files) => {
+                      notifications.show({
+                        color: 'red',
+                        autoClose: 5000,
+                        title: 'Error',
+                        message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
                       })
-                    }
-                  }}
-                  onReject={(files) => {
-                    notifications.show({
-                      color: 'red',
-                      autoClose: 5000,
-                      title: 'Error',
-                      message: `Failed upload file. Please make sure the file is a PDF and does not exceed 1mb.`,
-                    })
-                  }}
-                  maxSize={1 * 1024 ** 2}
-                  accept={PDF_MIME_TYPE}
-                >
-                  <Group
-                    position='center'
-                    spacing='xl'
-                    style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                    }}
+                    maxSize={1 * 1024 ** 2}
+                    accept={PDF_MIME_TYPE}
                   >
-                    <Dropzone.Accept>
-                      <IconUpload
-                        size='3.2rem'
-                        stroke={1.5}
-                        color={
-                          theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
-                        }
-                      />
-                    </Dropzone.Accept>
-                    <Dropzone.Reject>
-                      <IconX
-                        size='3.2rem'
-                        stroke={1.5}
-                        color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                      />
-                    </Dropzone.Reject>
-                    <Dropzone.Idle>
-                      <IconPhoto size='3.2rem' stroke={1.5} />
-                    </Dropzone.Idle>
+                    <Group
+                      position='center'
+                      spacing='xl'
+                      style={{ minHeight: rem(220), pointerEvents: 'none' }}
+                    >
+                      <Dropzone.Accept>
+                        <IconUpload
+                          size='3.2rem'
+                          stroke={1.5}
+                          color={
+                            theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
+                          }
+                        />
+                      </Dropzone.Accept>
+                      <Dropzone.Reject>
+                        <IconX
+                          size='3.2rem'
+                          stroke={1.5}
+                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                        />
+                      </Dropzone.Reject>
+                      <Dropzone.Idle>
+                        <IconPhoto size='3.2rem' stroke={1.5} />
+                      </Dropzone.Idle>
 
-                    <div>
-                      <Text size='xl' inline>
-                        Drag the file here or click to select file
-                      </Text>
-                      <Text size='sm' color='dimmed' inline mt={7}>
-                        The file should not exceed 1mb
-                      </Text>
-                    </div>
-                  </Group>
-                </Dropzone>
+                      <div>
+                        <Text size='xl' inline>
+                          Drag the file here or click to select file
+                        </Text>
+                        <Text size='sm' color='dimmed' inline mt={7}>
+                          The file should not exceed 1mb
+                        </Text>
+                      </div>
+                    </Group>
+                  </Dropzone>
+                )}
               </Stack>
             )}
           </form>
           {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
             <>
+              <Divider
+                label={
+                  <Text c='white' fw='500'>
+                    Uploaded Files
+                  </Text>
+                }
+                labelPosition='center'
+              />
+              <Group grow>
+                {application?.examinationReportFilename && (
+                  <Button
+                    onClick={() => {
+                      void (async () => {
+                        const response = await loadThesisApplicationExaminationFile(application.id)
+                        if (response) {
+                          const url = window.URL.createObjectURL(response)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.setAttribute(
+                            'download',
+                            `${application.examinationReportFilename ?? ''}.pdf`,
+                          )
+                          document.body.appendChild(a)
+                          a.click()
+                          window.URL.revokeObjectURL(url)
+                        }
+                      })()
+                    }}
+                  >
+                    Download Examination Report
+                  </Button>
+                )}
+                {application?.cvFilename && (
+                  <Button
+                    onClick={() => {
+                      void (async () => {
+                        const response = await loadThesisApplicationCvFile(application.id)
+                        if (response) {
+                          const url = window.URL.createObjectURL(response)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.setAttribute('download', `${application.cvFilename ?? ''}.pdf`)
+                          document.body.appendChild(a)
+                          a.click()
+                          window.URL.revokeObjectURL(url)
+                        }
+                      })()
+                    }}
+                  >
+                    Download CV
+                  </Button>
+                )}
+                {application?.bachelorReportFilename && (
+                  <Button
+                    onClick={() => {
+                      void (async () => {
+                        const response = await loadThesisApplicationBachelorReportFile(
+                          application.id,
+                        )
+                        if (response) {
+                          const url = window.URL.createObjectURL(response)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.setAttribute(
+                            'download',
+                            `${application.bachelorReportFilename ?? ''}.pdf`,
+                          )
+                          document.body.appendChild(a)
+                          a.click()
+                          window.URL.revokeObjectURL(url)
+                        }
+                      })()
+                    }}
+                  >
+                    Download Bachelor Report
+                  </Button>
+                )}
+              </Group>
+              <Divider />
+            </>
+          )}
+          {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
+            <>
               <Select
-                required
-                label='Status'
-                placeholder='Status'
-                data={Object.keys(ApplicationStatus).map((key) => {
-                  return {
-                    label: ApplicationStatus[key as keyof typeof ApplicationStatus],
-                    value: key,
-                  }
+                label='Thesis Advisor'
+                data={thesisAdvisors.map((ta) => {
+                  return { value: ta.id ?? '', label: `${ta.firstName} ${ta.lastName}` }
                 })}
-                {...form.getInputProps('applicationStatus')}
+                value={thesisAdvisorId}
+                onChange={(value) => {
+                  setThesisAdvisorId(value)
+                  if (application && value) {
+                    void dispatch(
+                      assignThesisAdvisor({
+                        thesisApplicationId: application?.id,
+                        thesisAdvisorId: value,
+                      }),
+                    )
+                  }
+                }}
               />
               <Textarea
                 label='Comment'
@@ -671,77 +774,52 @@ export const ThesisApplicationForm = ({
                 placeholder='Comment'
                 {...form.getInputProps('assessmentComment')}
               />
+              {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
+                <Button
+                  onClick={() => {
+                    if (application) {
+                      void dispatch(
+                        assessThesisApplication({
+                          thesisApplicationId: application.id,
+                          assessment: {
+                            status: form.values.applicationStatus,
+                            assessmentComment: form.values.assessmentComment ?? '',
+                          },
+                        }),
+                      )
+                    }
+                  }}
+                >
+                  Save
+                </Button>
+              )}
+              <Group position='right'>
+                <Button
+                  style={{ width: '20vw' }}
+                  variant='outline'
+                  color='red'
+                  onClick={() => {
+                    if (application) {
+                      void dispatch(rejectThesisApplication(application.id))
+                    }
+                  }}
+                >
+                  Reject
+                </Button>
+                <Button
+                  style={{ width: '20vw' }}
+                  color='green'
+                  disabled={!application?.thesisAdvisor}
+                  onClick={() => {
+                    if (application) {
+                      void dispatch(acceptThesisApplication(application.id))
+                    }
+                  }}
+                >
+                  Accept
+                </Button>
+              </Group>
             </>
-          )}
-          {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
-            <Group grow>
-              {application?.examinationReportFilename && (
-                <Button
-                  onClick={() => {
-                    void (async () => {
-                      const response = await loadThesisApplicationExaminationFile(application.id)
-                      if (response) {
-                        const url = window.URL.createObjectURL(response)
-                        const a = document.createElement('a')
-                        a.href = url
-                        a.setAttribute(
-                          'download',
-                          `${application.examinationReportFilename ?? ''}.pdf`,
-                        )
-                        document.body.appendChild(a)
-                        a.click()
-                        window.URL.revokeObjectURL(url)
-                      }
-                    })()
-                  }}
-                >
-                  Download Examination Report
-                </Button>
-              )}
-              {application?.cvFilename && (
-                <Button
-                  onClick={() => {
-                    void (async () => {
-                      const response = await loadThesisApplicationCvFile(application.id)
-                      if (response) {
-                        const url = window.URL.createObjectURL(response)
-                        const a = document.createElement('a')
-                        a.href = url
-                        a.setAttribute('download', `${application.cvFilename ?? ''}.pdf`)
-                        document.body.appendChild(a)
-                        a.click()
-                        window.URL.revokeObjectURL(url)
-                      }
-                    })()
-                  }}
-                >
-                  Download CV
-                </Button>
-              )}
-              {application?.bachelorReportFilename && (
-                <Button
-                  onClick={() => {
-                    void (async () => {
-                      const response = await loadThesisApplicationBachelorReportFile(application.id)
-                      if (response) {
-                        const url = window.URL.createObjectURL(response)
-                        const a = document.createElement('a')
-                        a.href = url
-                        a.setAttribute(
-                          'download',
-                          `${application.bachelorReportFilename ?? ''}.pdf`,
-                        )
-                        document.body.appendChild(a)
-                        a.click()
-                        window.URL.revokeObjectURL(url)
-                      }
-                    })()
-                  }}
-                >
-                  Download Bachelor Report
-                </Button>
-              )}
-            </Group>
           )}
           {accessMode === ApplicationFormAccessMode.STUDENT && (
             <>
@@ -787,25 +865,6 @@ export const ThesisApplicationForm = ({
                 </Button>
               </Group>
             </>
-          )}
-          {accessMode === ApplicationFormAccessMode.INSTRUCTOR && (
-            <Button
-              onClick={() => {
-                if (application) {
-                  void dispatch(
-                    assessThesisApplication({
-                      thesisApplicationId: application.id,
-                      assessment: {
-                        status: form.values.applicationStatus,
-                        assessmentComment: form.values.assessmentComment ?? '',
-                      },
-                    }),
-                  )
-                }
-              }}
-            >
-              Save
-            </Button>
           )}
         </Stack>
       )}
