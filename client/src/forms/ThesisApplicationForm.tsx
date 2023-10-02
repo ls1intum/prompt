@@ -159,19 +159,47 @@ export const ThesisApplicationForm = ({
         gender: isNotEmpty('Please state your gender.'),
         nationality: isNotEmpty('Please state your nationality.'),
       },
+      motivation: (value) => {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state your motivation for the thesis.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        }
+      },
+      specialSkills: (value) => {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state your special skills.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        }
+      },
+      interests: (value) => {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state your interests.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        }
+      },
+      projects: (value) => {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state your projects.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        }
+      },
+      thesisTitle: (value) => {
+        if (!value || !isNotEmpty(value)) {
+          return 'Please state your thesis title suggestion.'
+        } else if (value.length > 500) {
+          return 'The maximum allowed number of characters is 500.'
+        }
+      },
       studyDegree: isNotEmpty('Please state your study degree.'),
       studyProgram: isNotEmpty('Please state your study program.'),
       currentSemester: (value) => {
         return !value || value.length === 0 || !/\b([1-9]|[1-9][0-9])\b/.test(value)
           ? 'Please state your current semester.'
           : null
-      },
-      thesisTitle: (value) => {
-        if (!value || !isNotEmpty(value)) {
-          return 'Please provide a suggestion for the Theses title.'
-        } else if (value.length > 500) {
-          return 'The maximum allowed number of characters is 500.'
-        }
       },
     },
   })
@@ -337,59 +365,87 @@ export const ThesisApplicationForm = ({
               />
             </Group>
             <Group grow>
-              <Textarea
-                label='Special Skills'
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                autosize
-                minRows={5}
-                placeholder='Programming languages, certificates, etc.'
-                withAsterisk
-                required
-                {...form.getInputProps('specialSkills')}
-              />
-              <Textarea
-                label='Motivation'
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                autosize
-                minRows={5}
-                placeholder='What are you looking for?'
-                withAsterisk
-                required
-                {...form.getInputProps('motivation')}
-              />
+              <div>
+                <Textarea
+                  label='Special Skills'
+                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  autosize
+                  minRows={5}
+                  placeholder='Programming languages, certificates, etc.'
+                  withAsterisk
+                  required
+                  {...form.getInputProps('specialSkills')}
+                />
+                {!form.errors.specialSkills &&
+                  accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
+                    <Text fz='xs' ta='right'>{`${
+                      form.values.specialSkills?.length ?? 0
+                    } / 500`}</Text>
+                  )}
+              </div>
+              <div>
+                <Textarea
+                  label='Motivation'
+                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  autosize
+                  minRows={5}
+                  placeholder='What are you looking for?'
+                  withAsterisk
+                  required
+                  {...form.getInputProps('motivation')}
+                />
+                {!form.errors.motivation && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
+                  <Text fz='xs' ta='right'>{`${form.values.motivation?.length ?? 0} / 500`}</Text>
+                )}
+              </div>
             </Group>
             <Group grow>
-              <Textarea
-                label='Interests'
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                autosize
-                minRows={5}
-                placeholder='What are you interested in?'
-                withAsterisk
-                required
-                {...form.getInputProps('interests')}
-              />
-              <Textarea
-                label='Projects'
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                autosize
-                minRows={5}
-                placeholder='What projects have you worked on?'
-                withAsterisk
-                required
-                {...form.getInputProps('projects')}
-              />
+              <div>
+                <Textarea
+                  label='Interests'
+                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  autosize
+                  minRows={5}
+                  placeholder='What are you interested in?'
+                  withAsterisk
+                  required
+                  {...form.getInputProps('interests')}
+                />
+                {!form.errors.interests && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
+                  <Text fz='xs' ta='right'>{`${form.values.interests?.length ?? 0} / 500`}</Text>
+                )}
+              </div>
+              <div>
+                <Textarea
+                  label='Projects'
+                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  autosize
+                  minRows={5}
+                  placeholder='What projects have you worked on?'
+                  withAsterisk
+                  required
+                  {...form.getInputProps('projects')}
+                />
+                {!form.errors.projects && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
+                  <Text fz='xs' ta='right'>{`${form.values.projects?.length ?? 0} / 500`}</Text>
+                )}
+              </div>
             </Group>
-            <Textarea
-              label='Thesis Title Suggestion'
-              disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-              autosize
-              minRows={5}
-              placeholder='Thesis title suggestion'
-              withAsterisk
-              required
-              {...form.getInputProps('thesisTitle')}
-            />
+            <div>
+              <Textarea
+                label='Thesis Title Suggestion'
+                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                autosize
+                minRows={5}
+                placeholder='Thesis title suggestion'
+                withAsterisk
+                required
+                {...form.getInputProps('thesisTitle')}
+              />
+              {!form.errors.thesisTitle && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
+                <Text fz='xs' ta='right'>{`${form.values.thesisTitle?.length ?? 0} / 500`}</Text>
+              )}
+            </div>
             <DatePickerInput
               disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
               icon={<IconCalendar />}
@@ -752,7 +808,10 @@ export const ThesisApplicationForm = ({
               <Select
                 label='Thesis Advisor'
                 data={thesisAdvisors.map((ta) => {
-                  return { value: ta.id ?? '', label: `${ta.firstName} ${ta.lastName}` }
+                  return {
+                    value: ta.id ?? '',
+                    label: `${ta.firstName} ${ta.lastName} (${ta.tumId})`,
+                  }
                 })}
                 value={thesisAdvisorId}
                 onChange={(value) => {
