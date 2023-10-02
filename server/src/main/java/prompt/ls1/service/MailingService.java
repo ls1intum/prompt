@@ -47,7 +47,6 @@ public class MailingService {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         message.setFrom(sender);
-        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
         Arrays.asList(chairMemberRecipientsList.split(";")).forEach(recipient -> {
             try {
                 message.addRecipients(MimeMessage.RecipientType.TO, recipient);
@@ -127,6 +126,126 @@ public class MailingService {
                         PROMPT Mailing Service</p>""",
                 student.getFirstName(),
                 student.getLastName(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getEmail(),
+                student.getEmail(),
+                student.getTumId(),
+                student.getMatriculationNumber(),
+                thesisApplication.getStudyProgram().getValue(),
+                thesisApplication.getStudyDegree().getValue(),
+                thesisApplication.getCurrentSemester(),
+                simpleDateFormat.format(thesisApplication.getDesiredThesisStart()),
+                thesisApplication.getSpecialSkills(),
+                thesisApplication.getMotivation(),
+                thesisApplication.getInterests(),
+                thesisApplication.getProjects(),
+                thesisApplication.getThesisTitle(),
+                String.join(",", thesisApplication.getResearchAreas().stream().map(ResearchArea::getValue).toList()),
+                String.join(",", thesisApplication.getFocusTopics().stream().map(FocusTopic::getValue).toList()));
+
+        Multipart multipart = new MimeMultipart();
+
+        BodyPart messageBodyPart = new MimeBodyPart();
+        messageBodyPart.setContent(htmlContent, "text/html; charset=utf-8");
+        multipart.addBodyPart(messageBodyPart);
+
+        MimeBodyPart examinationReportAttachment = new MimeBodyPart();
+        examinationReportAttachment.attachFile(new File("thesis_application_uploads/" + thesisApplication.getExaminationReportFilename()));
+        multipart.addBodyPart(examinationReportAttachment);
+
+        MimeBodyPart cvAttachment = new MimeBodyPart();
+        cvAttachment.attachFile(new File("thesis_application_uploads/" + thesisApplication.getCvFilename()));
+        multipart.addBodyPart(cvAttachment);
+
+        if (thesisApplication.getBachelorReportFilename() != null && !thesisApplication.getBachelorReportFilename().isBlank()) {
+            MimeBodyPart bachelorReportAttachment = new MimeBodyPart();
+            bachelorReportAttachment.attachFile(new File("thesis_application_uploads/" + thesisApplication.getBachelorReportFilename()));
+            multipart.addBodyPart(bachelorReportAttachment);
+        }
+
+        message.setContent(multipart);
+
+        javaMailSender.send(message);
+    }
+
+    public void sendThesisApplicationConfirmationEmail(final Student student,
+                                              final ThesisApplication thesisApplication) throws MessagingException, IOException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        message.setFrom(sender);
+        message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
+
+        message.setSubject("PROMPT | Thesis Application Confirmation");
+
+        String pattern = "dd. MMM yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+        String htmlContent = String.format("""
+                        <p>Dear %s,</p>
+
+                        <p>With this email we confirm your successful thesis application submission.</p>
+
+                        <p>We received the following thesis application details:</p>
+
+                        <p>&nbsp;</p>
+
+                        <hr />
+                        <strong>Name:</strong><p>&nbsp;%s %s</p><br />
+                        <strong>Email:</strong><p>&nbsp;<a href="mailto:%s" target="_blank">%s</a></p><br />
+                        <strong>TUM ID:</strong><p>&nbsp;%s</p>
+                        <strong>Matriculation Number:</strong><p>&nbsp;%s</p>
+
+                        <strong>Study program:</strong><p>&nbsp;%s&nbsp;%s&nbsp;(%s. Semester)</p><br />
+                        <strong>Desired Thesis Start Date:</strong><p>&nbsp;%s</p>
+                        <br />
+                        <strong>Special Skills:&nbsp;</strong>
+
+                        <p>%s</p>
+
+                        <p>&nbsp;</p>
+
+                        <strong>Motivation:&nbsp;</strong>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <strong>Interests:&nbsp;</strong>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <strong>Projects:&nbsp;</strong>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <strong>Thesis Title Suggestion:&nbsp;</strong>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <strong>Research Areas:&nbsp;</strong>
+
+                        <p>%s</p>
+                        
+                        <p>&nbsp;</p>
+
+                        <strong>Focus Topics:&nbsp;</strong>
+
+                        <p>%s</p>
+
+                        <br />
+
+                        <strong>You can find the submitted files in the attachment part of this email.</strong>
+
+                        <p>Best regards,<br />
+                        PROMPT Mailing Service</p>""",
+                student.getFirstName(),
                 student.getFirstName(),
                 student.getLastName(),
                 student.getEmail(),
