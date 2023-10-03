@@ -53,19 +53,19 @@ public class ThesisApplicationController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<List<ThesisApplication>> getAll() {
         return ResponseEntity.ok(thesisApplicationService.getAll());
     }
 
     @GetMapping("/not-assessed")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<List<ThesisApplication>> getAllNotAssessed() {
         return ResponseEntity.ok(thesisApplicationService.getAllNotAssessed());
     }
 
     @GetMapping("/{thesisApplicationId}/examination-report")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<Resource> getExaminationReport(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -74,7 +74,7 @@ public class ThesisApplicationController {
     }
 
     @GetMapping("/{thesisApplicationId}/cv")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<Resource> getCV(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -83,7 +83,7 @@ public class ThesisApplicationController {
     }
 
     @GetMapping("/{thesisApplicationId}/bachelor-report")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<Resource> getBachelorReport(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
@@ -109,33 +109,33 @@ public class ThesisApplicationController {
     }
 
     @PostMapping("/{thesisApplicationId}/assessment")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<ThesisApplication> assess(@PathVariable final UUID thesisApplicationId,
                                            @RequestBody final ThesisApplicationAssessment assessment) {
         return ResponseEntity.ok(thesisApplicationService.assess(thesisApplicationId, assessment.getStatus(), assessment.getAssessmentComment()));
     }
 
     @PutMapping("/thesis-advisors")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<List<ThesisAdvisor>> updateThesisAdvisorList(@RequestBody final ThesisAdvisor thesisAdvisor) {
         return ResponseEntity.ok(thesisApplicationService.updateThesisAdvisorList(thesisAdvisor));
     }
 
     @PostMapping("/{thesisApplicationId}/thesis-advisor/{thesisAdvisorId}")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<ThesisApplication> assignThesisAdvisor(@PathVariable final UUID thesisApplicationId,
                                                                   @PathVariable final UUID thesisAdvisorId) {
         return ResponseEntity.ok(thesisApplicationService.assignThesisAdvisor(thesisApplicationId, thesisAdvisorId));
     }
 
     @PostMapping("/{thesisApplicationId}/accept")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<ThesisApplication> acceptThesisApplication(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok(thesisApplicationService.accept(thesisApplicationId));
     }
 
     @PostMapping("/{thesisApplicationId}/reject")
-    @PreAuthorize("hasRole('chair-member')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<ThesisApplication> rejectThesisApplication(@PathVariable final UUID thesisApplicationId) {
         return ResponseEntity.ok(thesisApplicationService.reject(thesisApplicationId));
     }
