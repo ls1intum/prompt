@@ -1,17 +1,20 @@
 package prompt.ls1.service;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import prompt.ls1.exception.FailedMailSend;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.model.Student;
+import prompt.ls1.model.ThesisAdvisor;
 import prompt.ls1.model.ThesisApplication;
 import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.repository.StudentRepository;
+import prompt.ls1.repository.ThesisAdvisorRepository;
 import prompt.ls1.repository.ThesisApplicationRepository;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,15 +23,21 @@ import java.util.UUID;
 public class ThesisApplicationService {
     private final ThesisApplicationRepository thesisApplicationRepository;
     private final StudentRepository studentRepository;
+    private final ThesisAdvisorRepository thesisAdvisorRepository;
     private final FileSystemStorageService storageService;
+    private final MailingService mailingService;
 
     @Autowired
     public ThesisApplicationService(final ThesisApplicationRepository thesisApplicationRepository,
                                     final StudentRepository studentRepository,
-                                    final FileSystemStorageService storageService) {
+                                    final ThesisAdvisorRepository thesisAdvisorRepository,
+                                    final FileSystemStorageService storageService,
+                                    final MailingService mailingService) {
         this.thesisApplicationRepository = thesisApplicationRepository;
         this.studentRepository = studentRepository;
+        this.thesisAdvisorRepository = thesisAdvisorRepository;
         this.storageService = storageService;
+        this.mailingService = mailingService;
     }
 
     public List<ThesisApplication> getAll() {
@@ -39,17 +48,17 @@ public class ThesisApplicationService {
         return thesisApplicationRepository.findAllNotAssessed();
     }
 
-    public Resource getExaminationReport(final UUID thesisApplicationId) throws IOException {
+    public Resource getExaminationReport(final UUID thesisApplicationId) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
         return storageService.load(thesisApplication.getExaminationReportFilename());
     }
 
-    public Resource getCV(final UUID thesisApplicationId) throws IOException {
+    public Resource getCV(final UUID thesisApplicationId) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
         return storageService.load(thesisApplication.getCvFilename());
     }
 
-    public Resource getBachelorReport(final UUID thesisApplicationId) throws IOException {
+    public Resource getBachelorReport(final UUID thesisApplicationId) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
         return storageService.load(thesisApplication.getBachelorReportFilename());
     }
@@ -93,6 +102,55 @@ public class ThesisApplicationService {
         thesisApplication.setApplicationStatus(status);
         thesisApplication.setAssessmentComment(assessmentComment);
         return thesisApplicationRepository.save(thesisApplication);
+    }
+
+    public ThesisApplication assignThesisAdvisor(final UUID thesisApplicationId, final UUID thesisAdvisorId) {
+        final ThesisApplication thesisApplication = findById(thesisApplicationId);
+        final ThesisAdvisor thesisAdvisor = thesisAdvisorRepository.findById(thesisAdvisorId)
+                .orElseThrow(() -> new ResourceInvalidParametersException(
+                        String.format("Thesis advisor with id %s not found.", thesisAdvisorId)));
+        thesisApplication.setThesisAdvisor(thesisAdvisor);
+        return thesisApplicationRepository.save(thesisApplication);
+    }
+
+    public ThesisApplication accept(final UUID thesisApplicationId) {
+        final ThesisApplication thesisApplication = findById(thesisApplicationId);
+        if (thesisApplication.getThesisAdvisor() == null) {
+            throw new ResourceInvalidParametersException("Thesis advisor must be assigned before accepting a thesis application.");
+        }
+
+        thesisApplication.setApplicationStatus(ApplicationStatus.ACCEPTED);
+
+        try {
+            mailingService.sendThesisAcceptanceEmail(thesisApplication.getStudent(), thesisApplication.getThesisAdvisor());
+        } catch (MessagingException e) {
+            throw new FailedMailSend("Failed to send thesis acceptance email.");
+        }
+
+        return thesisApplicationRepository.save(thesisApplication);
+    }
+
+    public ThesisApplication reject(final UUID thesisApplicationId) {
+        final ThesisApplication thesisApplication = findById(thesisApplicationId);
+        thesisApplication.setApplicationStatus(ApplicationStatus.REJECTED);
+
+        try {
+            mailingService.sendThesisRejectionEmail(thesisApplication.getStudent());
+        } catch (MessagingException e) {
+            throw new FailedMailSend("Failed to send thesis rejection email.");
+        }
+
+        return thesisApplicationRepository.save(thesisApplication);
+    }
+
+    public List<ThesisAdvisor> updateThesisAdvisorList(final ThesisAdvisor thesisAdvisor) {
+        if (thesisAdvisor.getTumId() != null && !thesisAdvisor.getTumId().isBlank()) {
+            if (thesisAdvisorRepository.findByTumId(thesisAdvisor.getTumId()).isEmpty()) {
+                thesisAdvisorRepository.save(thesisAdvisor);
+            }
+        }
+
+        return thesisAdvisorRepository.findAll();
     }
 
     private ThesisApplication findById(final UUID thesisApplicationId) {

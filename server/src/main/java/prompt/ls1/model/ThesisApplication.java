@@ -91,4 +91,8 @@ public class ThesisApplication implements Serializable {
     private String cvFilename;
 
     private String bachelorReportFilename;
+
+    @ManyToOne
+    @JoinColumn(name = "thesis_advisor_id")
+    private ThesisAdvisor thesisAdvisor;
 }

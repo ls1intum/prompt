@@ -34,8 +34,8 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
     ThesisApplication | undefined
   >(undefined)
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-    columnAccessor: 'fullName',
-    direction: 'asc',
+    columnAccessor: 'createdAt',
+    direction: 'desc',
   })
   const [filters, setFilters] = useState<Filters>({
     male: false,

@@ -7,6 +7,7 @@ import jwtDecode from 'jwt-decode'
 import { setAuthState } from '../../redux/authSlice/authSlice'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'
 import { Center } from '@mantine/core'
+import { updateThesisAdvisorList } from '../../redux/thesisApplicationsSlice/thunks/updateThesisAdvisorList'
 
 export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
@@ -48,6 +49,17 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
                 mgmtAccess: keycloak.hasResourceRole('chair-member', 'prompt-server'),
               }),
             )
+
+            if (keycloak.hasResourceRole('chair-member', 'prompt-server')) {
+              void dispatch(
+                updateThesisAdvisorList({
+                  firstName: decodedJwt.given_name,
+                  lastName: decodedJwt.family_name,
+                  email: decodedJwt.email,
+                  tumId: decodedJwt.preferred_username,
+                }),
+              )
+            }
           }
         } catch (error) {
           dispatch(

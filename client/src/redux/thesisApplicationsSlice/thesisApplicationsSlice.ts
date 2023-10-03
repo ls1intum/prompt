@@ -7,6 +7,10 @@ import {
 } from '../applicationsSlice/applicationsSlice'
 import { fetchThesisApplications } from './thunks/fetchThesisApplications'
 import { assessThesisApplication } from './thunks/assessThesisApplication'
+import { updateThesisAdvisorList } from './thunks/updateThesisAdvisorList'
+import { acceptThesisApplication } from './thunks/acceptThesisApplication'
+import { rejectThesisApplication } from './thunks/rejectThesisApplication'
+import { assignThesisAdvisor } from './thunks/assignThesisAdvisor'
 
 enum ResearchArea {
   EDUCATION_TECHNOLOGIES = 'Education Technologies',
@@ -53,6 +57,14 @@ enum FocusTopic {
   HW_SW_CO_DESIGN = 'HW/SW Co-Design',
 }
 
+interface ThesisAdvisor {
+  id?: string
+  firstName: string
+  lastName: string
+  email: string
+  tumId: string
+}
+
 interface ThesisApplication {
   id: string
   student: Student
@@ -74,18 +86,21 @@ interface ThesisApplication {
   applicationStatus: keyof typeof ApplicationStatus
   assessmentComment?: string
   createdAt?: Date
+  thesisAdvisor?: ThesisAdvisor
 }
 
 interface ThesisApplicationsSliceState {
   status: string
   error: string | null
   applications: ThesisApplication[]
+  thesisAdvisors: ThesisAdvisor[]
 }
 
 const initialState: ThesisApplicationsSliceState = {
   status: 'idle',
   error: null,
   applications: [],
+  thesisAdvisors: [],
 }
 
 export const thesisApplicationsSlice = createSlice({
@@ -124,8 +139,74 @@ export const thesisApplicationsSlice = createSlice({
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
+
+    builder.addCase(acceptThesisApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(acceptThesisApplication.fulfilled, (state, { payload }) => {
+      state.applications = state.applications.map((application) =>
+        application.id === payload.id ? payload : application,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(acceptThesisApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(rejectThesisApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(rejectThesisApplication.fulfilled, (state, { payload }) => {
+      state.applications = state.applications.map((application) =>
+        application.id === payload.id ? payload : application,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(rejectThesisApplication.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignThesisAdvisor.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(assignThesisAdvisor.fulfilled, (state, { payload }) => {
+      state.applications = state.applications.map((application) =>
+        application.id === payload.id ? payload : application,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(assignThesisAdvisor.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateThesisAdvisorList.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(updateThesisAdvisorList.fulfilled, (state, { payload }) => {
+      state.thesisAdvisors = payload
+      state.status = 'idle'
+    })
+
+    builder.addCase(updateThesisAdvisorList.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
   },
 })
 
 export default thesisApplicationsSlice.reducer
-export { type ThesisApplication, ResearchArea, FocusTopic }
+export { type ThesisApplication, ResearchArea, FocusTopic, type ThesisAdvisor }
