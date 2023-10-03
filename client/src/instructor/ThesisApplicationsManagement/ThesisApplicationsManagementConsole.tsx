@@ -46,7 +46,9 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
                 lastName: decodedJwt.family_name,
                 email: decodedJwt.email,
                 username: decodedJwt.preferred_username,
-                mgmtAccess: keycloak.hasResourceRole('chair-member', 'prompt-server'),
+                mgmtAccess:
+                  keycloak.hasResourceRole('chair-member', 'prompt-server') ||
+                  keycloak.hasResourceRole('prompt-admin', 'prompt-server'),
               }),
             )
 
