@@ -143,6 +143,10 @@ public class ThesisApplicationService {
         return thesisApplicationRepository.save(thesisApplication);
     }
 
+    public List<ThesisAdvisor> getAllThesisAdvisors() {
+        return thesisAdvisorRepository.findAll();
+    }
+
     public List<ThesisAdvisor> updateThesisAdvisorList(final ThesisAdvisor thesisAdvisor) {
         if (thesisAdvisor.getTumId() != null && !thesisAdvisor.getTumId().isBlank()) {
             if (thesisAdvisorRepository.findByTumId(thesisAdvisor.getTumId()).isEmpty()) {

@@ -12,6 +12,7 @@ import { IconEyeEdit, IconSearch } from '@tabler/icons-react'
 import { ThesisApplicationForm } from '../../../forms/ThesisApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import moment from 'moment'
+import { fetchThesisAdvisors } from '../../../redux/thesisApplicationsSlice/thunks/fetchThesisAdvisors'
 
 interface Filters {
   male: boolean
@@ -45,6 +46,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
 
   useEffect(() => {
     void dispatch(fetchThesisApplications(ApplicationStatus.NOT_ASSESSED))
+    void dispatch(fetchThesisAdvisors())
   }, [])
 
   useEffect(() => {
