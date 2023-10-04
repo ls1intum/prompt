@@ -830,22 +830,22 @@ public class MailingService {
         message.addRecipients(MimeMessage.RecipientType.CC, "krusche@tum.de");
         message.setSubject("Thesis Application Acceptance");
 
-        String htmlContent = "";
+        String htmlContent;
         if (!thesisAdvisor.getEmail().equals("krusche@tum.de")) {
             message.addRecipients(MimeMessage.RecipientType.CC, thesisAdvisor.getEmail());
 
             htmlContent = String.format("""
                             <p>Dear %s,</p>
                                                         
-                            <p>I am delighted to inform you that, after a thorough review of your application and supporting documents, I am impressed by your motivation and would be pleased to supervise your thesis.</p>
+                            <p>I am delighted to inform you that I would like to take the next steps in supervising your thesis. This includes writing a proposal and familiarizing yourself with the development environment independently.</p>
                                                         
-                            <p>I believe your passion and dedication to your work will bring valuable insights to our research. My doctoral student, %s %s, is also looking forward to advising you throughout your thesis. Please coordinate with %s %s at your earliest convenience. You can connect with %s %s using the following Slack link: <a href="https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow">https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow</a></p>
+                            <p>%s %s would be your advisor. Please coordinate with the next steps with %s %s using the following Slack link: <a href="https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow">https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow</a></p>
                                                         
                             <p>I would like to emphasize that in undertaking this thesis, you will be assuming the role of project manager for your thesis project. This role requires proactive communication, high dedication, and a strong commitment to the successful completion of the project. I have full confidence in your ability to rise to this challenge and produce exemplary work.</p>
                                                         
                             <p>I am excited about the opportunity to work with you and am eager to see the contributions you will make to our field. Please feel free to reach out if you have any questions or need further clarification on any aspect of the project.</p>
                                                         
-                            <p>Congratulations once again, and I look forward to embarking on this academic journey with you.</p>
+                            <p>Congratulations once again, and I look forward to this academic journey with you.</p>
                                                         
                             <p>Kind regards,</p>
                                                         
@@ -856,12 +856,10 @@ public class MailingService {
                             <p>Applied Software Engineering<br />
                             Technical University of Munich</p>
                                                         
-                            <p><a href="krusche@tum.de">krusche@tum.de</a><br />
+                            <p><a href="http://krusche@tum.de">krusche@tum.de</a><br />
                             <a href="http://www.skrusche.de">www.skrusche.de</a></p>
                             """,
                     student.getFirstName(),
-                    thesisAdvisor.getFirstName(),
-                    thesisAdvisor.getLastName(),
                     thesisAdvisor.getFirstName(),
                     thesisAdvisor.getLastName(),
                     thesisAdvisor.getFirstName(),
@@ -869,28 +867,29 @@ public class MailingService {
         } else {
             htmlContent = String.format("""
                             <p>Dear %s,</p>
-                                                        
-                            <p>I am delighted to inform you that, after a thorough review of your application and supporting documents, I am impressed by your motivation and would be pleased to supervise your thesis.</p>
-                                                        
-                            <p>I believe your passion and dedication to your work will bring valuable insights to our research. I am looking forward to advising you throughout your thesis. Please coordinate the next steps with me using the following Slack link: <a href="https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow">https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow</a></p>
-                                                        
+                                                       
+                            <p>I am delighted to inform you that I would like to take the next steps in supervising your thesis. This includes writing a proposal and familiarizing yourself with the development environment independently.</p>
+                                                       
+                            <p>Please coordinate with the next steps with me using the following Slack link: <a href="https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow">https://join.slack.com/t/ls1tum/shared_invite/zt-1we7pcetx-spme2I6gKn2rCNxX9XDGow</a></p>
+                                                       
                             <p>I would like to emphasize that in undertaking this thesis, you will be assuming the role of project manager for your thesis project. This role requires proactive communication, high dedication, and a strong commitment to the successful completion of the project. I have full confidence in your ability to rise to this challenge and produce exemplary work.</p>
-                                                        
+                                                       
                             <p>I am excited about the opportunity to work with you and am eager to see the contributions you will make to our field. Please feel free to reach out if you have any questions or need further clarification on any aspect of the project.</p>
-                                                        
-                            <p>Congratulations once again, and I look forward to embarking on this academic journey with you.</p>
-                                                        
+                                                       
+                            <p>Congratulations once again, and I look forward to this academic journey with you.</p>
+                                                       
                             <p>Kind regards,</p>
-                                                        
+                                                       
                             <p>___________________</p>
-                                                        
+                                                       
                             <p>Prof. Dr. Stephan Krusche</p>
-                                                        
+                                                       
                             <p>Applied Software Engineering<br />
                             Technical University of Munich</p>
-                                                        
-                            <p><a href="krusche@tum.de">krusche@tum.de</a><br />
+                                                       
+                            <p><a href="http://krusche@tum.de">krusche@tum.de</a><br />
                             <a href="http://www.skrusche.de">www.skrusche.de</a></p>
+                                                       
                             """,
                     student.getFirstName());
         }
