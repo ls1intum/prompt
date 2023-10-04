@@ -115,6 +115,12 @@ public class ThesisApplicationController {
         return ResponseEntity.ok(thesisApplicationService.assess(thesisApplicationId, assessment.getStatus(), assessment.getAssessmentComment()));
     }
 
+    @GetMapping("/thesis-advisors")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
+    public ResponseEntity<List<ThesisAdvisor>> getAllThesisAdvisors() {
+        return ResponseEntity.ok(thesisApplicationService.getAllThesisAdvisors());
+    }
+
     @PutMapping("/thesis-advisors")
     @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<List<ThesisAdvisor>> updateThesisAdvisorList(@RequestBody final ThesisAdvisor thesisAdvisor) {

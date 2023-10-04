@@ -11,6 +11,7 @@ import { updateThesisAdvisorList } from './thunks/updateThesisAdvisorList'
 import { acceptThesisApplication } from './thunks/acceptThesisApplication'
 import { rejectThesisApplication } from './thunks/rejectThesisApplication'
 import { assignThesisAdvisor } from './thunks/assignThesisAdvisor'
+import { fetchThesisAdvisors } from './thunks/fetchThesisAdvisors'
 
 enum ResearchArea {
   EDUCATION_TECHNOLOGIES = 'Education Technologies',
@@ -187,6 +188,21 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(assignThesisAdvisor.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchThesisAdvisors.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(fetchThesisAdvisors.fulfilled, (state, { payload }) => {
+      state.thesisAdvisors = payload
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchThesisAdvisors.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
