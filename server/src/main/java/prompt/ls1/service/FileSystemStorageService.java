@@ -1,5 +1,6 @@
 package prompt.ls1.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class FileSystemStorageService {
 
@@ -43,6 +45,7 @@ public class FileSystemStorageService {
             byte[] fileBytes = Files.readAllBytes(filePath);
             return new String(fileBytes, "UTF-8");
         } catch (IOException e) {
+            log.error(e.getMessage());
             throw new StorageException("Failed to read from file.", e);
         }
     }
