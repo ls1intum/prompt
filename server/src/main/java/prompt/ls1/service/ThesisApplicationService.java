@@ -2,6 +2,7 @@ package prompt.ls1.service;
 
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,8 @@ import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.ThesisAdvisorRepository;
 import prompt.ls1.repository.ThesisApplicationRepository;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,18 +29,21 @@ public class ThesisApplicationService {
     private final ThesisAdvisorRepository thesisAdvisorRepository;
     private final FileSystemStorageService storageService;
     private final MailingService mailingService;
+    private final Path rootLocation;
 
     @Autowired
     public ThesisApplicationService(final ThesisApplicationRepository thesisApplicationRepository,
                                     final StudentRepository studentRepository,
                                     final ThesisAdvisorRepository thesisAdvisorRepository,
                                     final FileSystemStorageService storageService,
-                                    final MailingService mailingService) {
+                                    final MailingService mailingService,
+                                    @Value("${prompt.storage.theses-application-uploads-location}") String thesesApplicationsUploadsLocation) {
         this.thesisApplicationRepository = thesisApplicationRepository;
         this.studentRepository = studentRepository;
         this.thesisAdvisorRepository = thesisAdvisorRepository;
         this.storageService = storageService;
         this.mailingService = mailingService;
+        this.rootLocation = Paths.get(thesesApplicationsUploadsLocation);
     }
 
     public List<ThesisApplication> getAll() {
@@ -50,17 +56,17 @@ public class ThesisApplicationService {
 
     public Resource getExaminationReport(final UUID thesisApplicationId) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
-        return storageService.load(thesisApplication.getExaminationReportFilename());
+        return storageService.load(rootLocation, thesisApplication.getExaminationReportFilename());
     }
 
     public Resource getCV(final UUID thesisApplicationId) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
-        return storageService.load(thesisApplication.getCvFilename());
+        return storageService.load(rootLocation, thesisApplication.getCvFilename());
     }
 
     public Resource getBachelorReport(final UUID thesisApplicationId) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
-        return storageService.load(thesisApplication.getBachelorReportFilename());
+        return storageService.load(rootLocation, thesisApplication.getBachelorReportFilename());
     }
 
     public ThesisApplication create(final ThesisApplication thesisApplication,
@@ -82,12 +88,12 @@ public class ThesisApplicationService {
             thesisApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), thesisApplication.getStudent()));
         }
 
-        final String examinationReportFilename = storageService.store(transcriptOfRecords);
+        final String examinationReportFilename = storageService.store(rootLocation, transcriptOfRecords);
         thesisApplication.setExaminationReportFilename(examinationReportFilename);
-        final String cvFilename = storageService.store(cv);
+        final String cvFilename = storageService.store(rootLocation, cv);
         thesisApplication.setCvFilename(cvFilename);
         if (bachelorReport != null && !bachelorReport.isEmpty()) {
-            final String bachelorReportFilename = storageService.store(bachelorReport);
+            final String bachelorReportFilename = storageService.store(rootLocation, bachelorReport);
             thesisApplication.setBachelorReportFilename(bachelorReportFilename);
         }
 
@@ -122,7 +128,8 @@ public class ThesisApplicationService {
         thesisApplication.setApplicationStatus(ApplicationStatus.ACCEPTED);
 
         try {
-            mailingService.sendThesisAcceptanceEmail(thesisApplication.getStudent(), thesisApplication.getThesisAdvisor());
+            mailingService.sendThesisAcceptanceEmail(
+                    thesisApplication.getStudent(), thesisApplication, thesisApplication.getThesisAdvisor());
         } catch (MessagingException e) {
             throw new FailedMailSend("Failed to send thesis acceptance email.");
         }
@@ -135,7 +142,7 @@ public class ThesisApplicationService {
         thesisApplication.setApplicationStatus(ApplicationStatus.REJECTED);
 
         try {
-            mailingService.sendThesisRejectionEmail(thesisApplication.getStudent());
+            mailingService.sendThesisRejectionEmail(thesisApplication.getStudent(), thesisApplication);
         } catch (MessagingException e) {
             throw new FailedMailSend("Failed to send thesis rejection email.");
         }

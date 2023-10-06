@@ -58,6 +58,9 @@ prompt:
   mail:
     sender: ${IOS_SENDER_MAIL:test@ios.ase.cit.tum.de}
     chair-member-recipients: ${CHAIR_MEMBER_RECIPIENTS:}
+  storage:
+    theses-application-uploads-location: thesis_application_uploads
+    mailing-templates-location: mailing_templates
   atlassian:
     username: ${ATLASSIAN_USERNAME:}
     password: ${ATLASSIAN_PASSWORD:}
