@@ -46,6 +46,7 @@ public class FileSystemStorageService {
             return new String(fileBytes, "UTF-8");
         } catch (IOException e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new StorageException("Failed to read from file.", e);
         }
     }
