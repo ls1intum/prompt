@@ -397,6 +397,7 @@ public class MailingService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
         return template.replace("{{course.semesterName}}", courseIteration.getSemesterName())
+                .replace("{{course.id}}", courseIteration.getId().toString())
                 .replace("{{course.iosTag}}", courseIteration.getIosTag())
                 .replace("{{course.developerApplicationPeriodStart}}", simpleDateFormat.format(courseIteration.getDeveloperApplicationPeriodStart()))
                 .replace("{{course.developerApplicationPeriodEnd}}", simpleDateFormat.format(courseIteration.getDeveloperApplicationPeriodEnd()))
