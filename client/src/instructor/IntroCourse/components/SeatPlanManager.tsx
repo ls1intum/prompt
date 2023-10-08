@@ -623,10 +623,16 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 tumId: participation.student?.tumId,
                 firstName: participation.student?.firstName,
                 lastName: participation.student?.lastName,
+                matriculationNumber: participation.student?.matriculationNumber,
                 tutorTumId: tutor?.tumId ?? '-',
                 tutorName: `${tutor?.firstName ?? '-'} ${tutor?.lastName ?? '-'}`,
                 seat: participation.seat,
-                chairDevice: participation.chairDevice ?? '-',
+                needsChairDevice: participation.chairDevice ?? '-',
+                appleId: participation.appleId,
+                iPhoneDeviceId: participation.iPhoneDeviceId,
+                iPadDeviceId: participation.iPadDeviceId,
+                macBookDeviceId: participation.macBookDeviceId,
+                appleWatchDeviceId: participation.appleWatchDeviceId,
               }
             })}
             filename='seat_plan.csv'
