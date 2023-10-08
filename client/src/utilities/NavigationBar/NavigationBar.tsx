@@ -25,10 +25,10 @@ import {
   IconUsers,
   IconDeviceDesktop,
   IconStairs,
-  IconCode,
   IconAppsFilled,
   IconLogout,
   IconSchool,
+  IconMail,
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -77,9 +77,9 @@ const navigationContents = [
     permission: [Permission.PM],
   },
   {
-    label: 'Artifacts',
-    icon: IconCode,
-    link: '/student-applications',
+    label: 'Mailing',
+    icon: IconMail,
+    link: '/management/mailing',
     permission: [Permission.PM],
   },
 ]

@@ -99,8 +99,8 @@ public class ThesisApplicationController {
         if (bucket.tryConsume(1)) {
             final ThesisApplication application = thesisApplicationService
                     .create(thesisApplication, examinationReport, cv, bachelorReport);
-            mailingService.thesisApplicationCreatedEmail(application.getStudent(), application);
-            mailingService.sendThesisApplicationConfirmationEmail(application.getStudent(), application);
+            //mailingService.thesisApplicationCreatedEmail(application.getStudent(), application);
+            //mailingService.sendThesisApplicationConfirmationEmail(application.getStudent(), application);
             return ResponseEntity.ok(application);
         }
 

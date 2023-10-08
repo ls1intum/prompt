@@ -20,6 +20,7 @@ import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
 import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
 import { StudentTechnicalDetailsSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentTechnicalDetailsSubmissionPage'
+import { MailingManagementConsole } from './instructor/MailingManagement/MailingManagementConsole'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
@@ -87,6 +88,16 @@ export const App = (): JSX.Element => {
                   <ManagementConsole
                     child={<InfrastructureManagement />}
                     permission={['ipraktikum-pm']}
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
+              />
+              <Route
+                path='/management/mailing'
+                element={
+                  <ManagementConsole
+                    child={<MailingManagementConsole />}
+                    permission={['ipraktikum-pm', 'chair-member']}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
