@@ -29,8 +29,8 @@ interface IntroCourseParticipation {
   student: Student
   appleId?: string
   macBookDeviceId?: string
-  iPhoneDeviceId?: string
-  iPadDeviceId?: string
+  iphoneDeviceId?: string
+  ipadDeviceId?: string
   appleWatchDeviceId?: string
   seat?: string
   chairDevice?: string

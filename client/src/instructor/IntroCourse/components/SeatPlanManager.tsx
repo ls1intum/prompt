@@ -629,8 +629,8 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 seat: participation.seat,
                 needsChairDevice: participation.chairDevice ?? '-',
                 appleId: participation.appleId,
-                iPhoneDeviceId: participation.iPhoneDeviceId,
-                iPadDeviceId: participation.iPadDeviceId,
+                iPhoneDeviceId: participation.iphoneDeviceId,
+                iPadDeviceId: participation.ipadDeviceId,
                 macBookDeviceId: participation.macBookDeviceId,
                 appleWatchDeviceId: participation.appleWatchDeviceId,
               }
