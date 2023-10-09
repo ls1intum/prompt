@@ -193,7 +193,11 @@ export const MailingManagementConsole = (): JSX.Element => {
           {(MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
             MailTemplate.THESIS_APPLICATION_ACCEPTANCE_NO_ADVISOR ||
             MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-              MailTemplate.THESIS_APPLICATION_REJECTION) && (
+              MailTemplate.THESIS_APPLICATION_REJECTION ||
+            MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
+              MailTemplate.THESIS_APPLICATION_CONFIRMATION ||
+            MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
+              MailTemplate.THESIS_APPLICATION_CREATED) && (
             <ThesisApplicationAndStudentInstructions />
           )}
           {MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
