@@ -26,7 +26,11 @@ import {
   Collapse,
 } from '@mantine/core'
 import {
+  IconBrandApple,
   IconDeviceLaptop,
+  IconDeviceMobile,
+  IconDeviceTablet,
+  IconDeviceWatch,
   IconDownload,
   IconEdit,
   IconMail,
@@ -748,6 +752,63 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
               `${tutors.filter((tutor) => tutor.id === tutorId).at(0)?.firstName ?? ''} ${
                 tutors.filter((tutor) => tutor.id === tutorId).at(0)?.lastName ?? ''
               }`,
+          },
+          {
+            accessor: 'devices',
+            title: 'Devices',
+            textAlignment: 'center',
+            render: ({
+              appleId,
+              iphoneDeviceId,
+              ipadDeviceId,
+              appleWatchDeviceId,
+              macBookDeviceId,
+            }) => (
+              <>
+                <Stack>
+                  {!!appleId && (
+                    <Group>
+                      <IconBrandApple color='#2B70BE' />
+                      <Text c='dimmed' fw='500'>
+                        {appleId}
+                      </Text>
+                    </Group>
+                  )}
+                  {!!macBookDeviceId && (
+                    <Group>
+                      <IconDeviceLaptop color='#2B70BE' />
+                      <Text c='dimmed' fw='500'>
+                        {macBookDeviceId}
+                      </Text>
+                    </Group>
+                  )}
+                  {!!iphoneDeviceId && (
+                    <Group>
+                      <IconDeviceMobile color='#2B70BE' />
+                      <Text c='dimmed' fw='500'>
+                        {iphoneDeviceId}
+                      </Text>
+                    </Group>
+                  )}
+                  {!!ipadDeviceId && (
+                    <Group>
+                      <IconDeviceTablet color='#2B70BE' />
+                      <Text c='dimmed' fw='500'>
+                        {ipadDeviceId}
+                      </Text>
+                    </Group>
+                  )}
+                  {!!appleWatchDeviceId && (
+                    <Group>
+                      <IconDeviceWatch color='#2B70BE' />
+                      <Text c='dimmed' fw='500'>
+                        {appleWatchDeviceId}
+                      </Text>
+                    </Group>
+                  )}
+                </Stack>
+              </>
+            ),
           },
           {
             accessor: 'seat',
