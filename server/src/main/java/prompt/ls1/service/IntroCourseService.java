@@ -69,6 +69,7 @@ public class IntroCourseService {
                 .getId();
         return tutorApplicationRepository.findAllByCourseIterationId(courseIterationId)
                 .stream()
+                .filter(tutorApplication -> tutorApplication.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED))
                 .map(TutorApplication::getStudent)
                 .toList();
     }
