@@ -20,7 +20,7 @@ export const assignDeveloperApplicationToProjectTeam = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/applications/${studentApplicationId}/project-team/${projectTeamId}?courseIteration=${courseIteration}`,
+          `${serverBaseUrl}/api/applications/developer/${studentApplicationId}/project-team/${projectTeamId}?courseIteration=${courseIteration}`,
           {},
           {
             headers: {
