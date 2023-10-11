@@ -73,7 +73,7 @@ const navigationContents = [
   {
     label: 'Grading',
     icon: IconStairs,
-    link: '/student-applications',
+    link: '/management/grading',
     permission: [Permission.PM],
   },
   {
