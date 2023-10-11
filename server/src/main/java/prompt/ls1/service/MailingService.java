@@ -322,7 +322,7 @@ public class MailingService {
         message.addRecipients(MimeMessage.RecipientType.TO, sender);
         message.setSubject(String.format("iPraktikum %s Kick-off Project Preferences", courseIteration.getSemesterName()));
 
-        String template = storageService.readFromFile(rootLocation, "kickoff-submission-invitation.html");
+        String template = storageService.readFromFile(rootLocation, "kick-off-submission-invitation.html");
         template = fillCourseIterationPlaceholders(template, courseIteration);
         template = fillStudentPlaceholders(template, student);
 
