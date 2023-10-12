@@ -18,7 +18,7 @@ export const removeDeveloperApplicationFromProjectTeam = createAsyncThunk(
     try {
       return (
         await axios.delete(
-          `${serverBaseUrl}/api/applications/${applicationId}/project-team?courseIteration=${courseIteration}`,
+          `${serverBaseUrl}/api/applications/developer/${applicationId}/project-team?courseIteration=${courseIteration}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,

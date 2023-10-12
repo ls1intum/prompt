@@ -254,74 +254,76 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
 
   return (
     <div
-      style={{
-        paddingTop: '10vh',
-      }}
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
     >
-      <CourseIterationCreationModal
-        opened={workspaceCreationModalOpen}
-        onClose={() => {
-          setWorkspaceCreationModalOpen(false)
-        }}
-      />
-      <Center>
-        <Title order={3}>Please select a course iteration</Title>
-      </Center>
-      {courseIterations.length > 0 ? (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: '10vh 30vw',
+      <Stack>
+        <CourseIterationCreationModal
+          opened={workspaceCreationModalOpen}
+          onClose={() => {
+            setWorkspaceCreationModalOpen(false)
           }}
-        >
-          <Paper
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2vh',
+        />
+        {courseIterations.length > 0 ? (
+          <>
+            <Center>
+              <Title order={3}>Please select a course iteration</Title>
+            </Center>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                padding: '10vh 30vw',
+              }}
+            >
+              <Paper
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2vh',
+                }}
+              >
+                <Stack>
+                  {courseIterations
+                    .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
+                    .map((courseIteration) => (
+                      <Button
+                        variant='outline'
+                        key={courseIteration.id}
+                        onClick={() => {
+                          dispatch(setCurrentState(courseIteration))
+                        }}
+                      >
+                        {courseIteration.semesterName}
+                      </Button>
+                    ))}
+                </Stack>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Pagination
+                    value={page}
+                    onChange={setPage}
+                    total={courseIterations.length > 0 ? courseIterations.length / pageSize : 1}
+                  />
+                </div>
+              </Paper>
+            </div>
+          </>
+        ) : (
+          <Center style={{ padding: '2vh' }}>
+            <Text c='dimmed'>No course iterations found.</Text>
+          </Center>
+        )}
+        <Center>
+          <Button
+            variant='filled'
+            onClick={() => {
+              setWorkspaceCreationModalOpen(true)
             }}
           >
-            <Stack>
-              {courseIterations
-                .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-                .map((courseIteration) => (
-                  <Button
-                    variant='outline'
-                    key={courseIteration.id}
-                    onClick={() => {
-                      dispatch(setCurrentState(courseIteration))
-                    }}
-                  >
-                    {courseIteration.semesterName}
-                  </Button>
-                ))}
-            </Stack>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Pagination
-                value={page}
-                onChange={setPage}
-                total={courseIterations.length > 0 ? courseIterations.length / pageSize : 1}
-              />
-            </div>
-          </Paper>
-        </div>
-      ) : (
-        <Center style={{ padding: '2vh' }}>
-          <Text c='dimmed'>No course iterations found.</Text>
+            Create course iteration
+          </Button>
         </Center>
-      )}
-      <Center>
-        <Button
-          variant='filled'
-          onClick={() => {
-            setWorkspaceCreationModalOpen(true)
-          }}
-        >
-          Create course iteration
-        </Button>
-      </Center>
+      </Stack>
     </div>
   )
 }

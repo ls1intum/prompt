@@ -217,7 +217,11 @@ export const MailingManagementConsole = (): JSX.Element => {
           <Tabs.Tab value='editor' icon={<IconHtml size='0.8rem' />}>
             Editor
           </Tabs.Tab>
-          <Tabs.Tab value='preview' icon={<IconEyeCheck size='0.8rem' />}>
+          <Tabs.Tab
+            value='preview'
+            icon={<IconEyeCheck size='0.8rem' />}
+            disabled={!activeTemplate}
+          >
             Preview
           </Tabs.Tab>
         </Tabs.List>

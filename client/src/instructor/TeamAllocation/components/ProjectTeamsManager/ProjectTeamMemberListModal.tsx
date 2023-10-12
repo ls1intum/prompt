@@ -5,6 +5,7 @@ import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTea
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
 import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
+import { type Application } from '../../../../redux/applicationsSlice/applicationsSlice'
 
 interface ProjectTeamMemberListModalProps {
   projectTeam: ProjectTeam
@@ -25,7 +26,7 @@ export const ProjectTeamMemberListModal = ({
   useEffect(() => {
     setData([
       developerApplications
-        .filter((studentApplication) => {
+        .filter((studentApplication: Application) => {
           return studentApplication.projectTeam?.id !== projectTeam.id
         })
         .map((studentApplication) => {
@@ -99,7 +100,7 @@ export const ProjectTeamMemberListModal = ({
         value={data}
         searchPlaceholder='Search...'
         nothingFound='Nothing here'
-        titles={['Student Applications', 'Team Name']}
+        titles={['Student Applications', projectTeam.customer]}
         onChange={setData}
         listHeight={600}
       />

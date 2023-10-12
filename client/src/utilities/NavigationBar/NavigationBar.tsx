@@ -53,16 +53,16 @@ const navigationContents = [
     permission: [Permission.PM],
   },
   {
-    label: 'Team Allocation',
-    icon: IconUsers,
-    link: '/management/team-allocation',
-    permission: [Permission.PM],
-  },
-  {
     label: 'Intro Course',
     icon: IconSchool,
     link: '/management/intro-course',
     permission: [Permission.PM, Permission.TUTOR],
+  },
+  {
+    label: 'Team Allocation',
+    icon: IconUsers,
+    link: '/management/team-allocation',
+    permission: [Permission.PM],
   },
   {
     label: 'Infrastructure',
@@ -73,7 +73,7 @@ const navigationContents = [
   {
     label: 'Grading',
     icon: IconStairs,
-    link: '/student-applications',
+    link: '/management/grading',
     permission: [Permission.PM],
   },
   {
