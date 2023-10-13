@@ -237,6 +237,34 @@ public class IntroCourseService {
         return student.getId();
     }
 
+    public IntroCourseParticipation markAsNotPassed(final UUID introCourseParticipationId) {
+        final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
+        final DeveloperApplication developerApplication = developerApplicationRepository
+                .findByStudentAndCourseIteration(introCourseParticipation.getStudent().getId(), introCourseParticipation.getCourseIterationId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.",
+                        introCourseParticipation.getStudent().getId())));
+
+        developerApplication.getAssessment().setStatus(ApplicationStatus.INTRO_COURSE_NOT_PASSED);
+        developerApplicationRepository.save(developerApplication);
+
+        introCourseParticipation.setPassed(false);
+        return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
+    public IntroCourseParticipation markAsPassed(final UUID introCourseParticipationId) {
+        final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
+        final DeveloperApplication developerApplication = developerApplicationRepository
+                .findByStudentAndCourseIteration(introCourseParticipation.getStudent().getId(), introCourseParticipation.getCourseIterationId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.",
+                        introCourseParticipation.getStudent().getId())));
+
+        developerApplication.getAssessment().setStatus(ApplicationStatus.INTRO_COURSE_PASSED);
+        developerApplicationRepository.save(developerApplication);
+
+        introCourseParticipation.setPassed(true);
+        return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
     public IntroCourseParticipation saveStudentTechnicalDetails(final String semesterName,
                                                                     final UUID studentId,
                                                                     final StudentTechnicalDetails studentTechnicalDetails) {

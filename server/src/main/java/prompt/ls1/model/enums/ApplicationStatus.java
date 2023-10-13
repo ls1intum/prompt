@@ -12,7 +12,9 @@ public enum ApplicationStatus {
     REJECTED("Rejected"),
     ENROLLED("Enrolled"),
     IN_PROGRESS("In progress"),
-    FINISHED("Finished");
+    FINISHED("Finished"),
+    INTRO_COURSE_PASSED("Intro course passed"),
+    INTRO_COURSE_NOT_PASSED("Intro course not passed");
 
     private String value;
 }

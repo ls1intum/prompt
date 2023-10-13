@@ -8,6 +8,8 @@ import { createIntroCourseAbsence } from './thunks/createIntroCourseAbsence'
 import { fetchAllIntroCourseTutors } from './thunks/fetchAllIntroCourseTutors'
 import { deleteIntroCourseAbsence } from './thunks/deleteIntroCourseAbsence'
 import { type SkillProficiency } from '../studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
+import { markPassed } from './thunks/markPassed'
+import { markNotPassed } from './thunks/markNotPassed'
 
 interface IntroCourseAbsence {
   id: string
@@ -39,6 +41,7 @@ interface IntroCourseParticipation {
   selfAssessment?: keyof typeof SkillProficiency
   studentComments?: string
   tutorComments?: string
+  passed?: boolean
 }
 
 interface SeatPlanAssignment {
@@ -199,6 +202,40 @@ export const introCourseSlice = createSlice({
     })
 
     builder.addCase(deleteIntroCourseAbsence.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(markPassed.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(markPassed.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(markPassed.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(markNotPassed.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(markNotPassed.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(markNotPassed.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
