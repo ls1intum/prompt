@@ -3,10 +3,12 @@ import {
   ActionIcon,
   Badge,
   Button,
+  Card,
   Center,
   Collapse,
   Group,
   Modal,
+  Select,
   Stack,
   Text,
   TextInput,
@@ -22,6 +24,7 @@ import {
   IconRocket,
   IconSearch,
   IconSend,
+  IconStarFilled,
   IconTrash,
 } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
@@ -37,6 +40,8 @@ import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmati
 import { deleteIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks/deleteIntroCourseAbsence'
 import { SkillProficiency } from '../../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { updateIntroCourseParticipation } from '../../../redux/introCourseSlice/thunks/updateIntroCourseParticipation'
+import { markPassed } from '../../../redux/introCourseSlice/thunks/markPassed'
+import { markNotPassed } from '../../../redux/introCourseSlice/thunks/markNotPassed'
 
 const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
   switch (skillProfieciency) {
@@ -112,6 +117,46 @@ const IntroCourseAbsenceCreationModal = ({
   )
 }
 
+interface IntroCourseChallengeResultModalProps {
+  introCourseParticipation: IntroCourseParticipation
+  opened: boolean
+  onClose: () => void
+}
+
+const IntroCourseChallengeResultModal = ({
+  opened,
+  onClose,
+  introCourseParticipation,
+}: IntroCourseChallengeResultModalProps): JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>()
+
+  return (
+    <Modal centered opened={opened} onClose={onClose}>
+      <Stack>
+        <Text>Did the student pass the Intro Course Challenge?</Text>
+        <Group position='right'>
+          <Button
+            onClick={() => {
+              void dispatch(markNotPassed(introCourseParticipation.id))
+              onClose()
+            }}
+          >
+            No
+          </Button>
+          <Button
+            onClick={() => {
+              void dispatch(markPassed(introCourseParticipation.id))
+              onClose()
+            }}
+          >
+            Yes
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
+  )
+}
+
 interface StudentEntryProps {
   introCourseParticipation: IntroCourseParticipation
 }
@@ -122,6 +167,8 @@ const StudentEntry = ({ introCourseParticipation }: StudentEntryProps): JSX.Elem
   const [absenceCreationModalOpened, setAbsenceCreationModalOpened] = useState(false)
   const [selectedIntroCourseAbsenceToDelete, setSelectedIntroCourseAbsenceToDelete] =
     useState<string>()
+  const [introCourseChallengeResultModalOpened, setIntroCourseChallengeResultModalOpened] =
+    useState(false)
   const [supervisorAssessmentMounted, setSupervisorAssessmentMounted] = useState(false)
   const [supervisorCommentOpened, setSupervisorCommentOpened] = useState(false)
   const form = useForm({
@@ -148,6 +195,13 @@ const StudentEntry = ({ introCourseParticipation }: StudentEntryProps): JSX.Elem
         onClose={() => {
           setAbsenceCreationModalOpened(false)
         }}
+      />
+      <IntroCourseChallengeResultModal
+        opened={introCourseChallengeResultModalOpened}
+        onClose={() => {
+          setIntroCourseChallengeResultModalOpened(false)
+        }}
+        introCourseParticipation={introCourseParticipation}
       />
       <DeletionConfirmationModal
         title='Delete Intro Course Absence'
@@ -230,6 +284,14 @@ const StudentEntry = ({ introCourseParticipation }: StudentEntryProps): JSX.Elem
         >
           Log Absence
         </Button>
+        <Button
+          leftIcon={<IconStarFilled />}
+          onClick={() => {
+            setIntroCourseChallengeResultModalOpened(true)
+          }}
+        >
+          Set Intro Course Challenge Result
+        </Button>
       </Group>
       <Collapse in={supervisorCommentOpened}>
         <Group position='right'>
@@ -262,6 +324,7 @@ const StudentEntry = ({ introCourseParticipation }: StudentEntryProps): JSX.Elem
                     ],
                   }),
                 )
+                setSupervisorCommentOpened(false)
               }
             }}
           >
@@ -269,6 +332,13 @@ const StudentEntry = ({ introCourseParticipation }: StudentEntryProps): JSX.Elem
           </Button>
         </Group>
       </Collapse>
+      {introCourseParticipation.tutorComments && (
+        <Card withBorder>
+          <Text fz='sm' c='dimmed'>
+            {introCourseParticipation.tutorComments}
+          </Text>
+        </Card>
+      )}
       {introCourseParticipation.absences.length === 0 ? (
         <Center>
           <Text c='dimmed' fw={500}>
@@ -325,28 +395,55 @@ export const StudentManager = (): JSX.Element => {
   const introCourseParticipations = useAppSelector((state) => state.introCourse.participations)
   const [searchQuery, setSearchQuery] = useState('')
   const [students, setStudents] = useState(introCourseParticipations)
+  const tutors = useAppSelector((state) => state.introCourse.tutors)
+  const [selectedTutor, setSelectedTutor] = useState<string | null>()
 
   useEffect(() => {
     setStudents(
-      introCourseParticipations.filter((participation) => {
-        return `${participation.student.firstName ?? ''} ${participation.student.lastName ?? ''}`
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      }),
+      introCourseParticipations
+        .filter((participation) => {
+          if (!selectedTutor) {
+            return true
+          }
+          return participation.tutorId === selectedTutor
+        })
+        .filter((participation) => {
+          return `${participation.student.firstName ?? ''} ${participation.student.lastName ?? ''}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        }),
     )
-  }, [introCourseParticipations, searchQuery])
+  }, [introCourseParticipations, searchQuery, selectedTutor])
 
   return (
     <>
-      <TextInput
-        sx={{ flexBasis: '60%', margin: '1vh 0' }}
-        placeholder='Search students...'
-        icon={<IconSearch size={16} />}
-        value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.currentTarget.value)
-        }}
-      />
+      <Group>
+        <TextInput
+          sx={{ flexBasis: '60%', margin: '1vh 0' }}
+          placeholder='Search students...'
+          icon={<IconSearch size={16} />}
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.currentTarget.value)
+          }}
+        />
+        <Select
+          data={tutors.map((tutor) => {
+            return {
+              label: `${tutor.firstName ?? ''} ${tutor.lastName ?? ''}`,
+              value: tutor.id,
+            }
+          })}
+          value={selectedTutor}
+          placeholder='Tutor'
+          onChange={(value) => {
+            setSelectedTutor(value)
+          }}
+          icon={<IconSearch size={16} />}
+          clearable
+          searchable
+        />
+      </Group>
       <Accordion
         onChange={(value) => {
           if (value) {
@@ -371,9 +468,21 @@ export const StudentManager = (): JSX.Element => {
             >
               <Accordion.Control>
                 <Group position='apart'>
-                  <Text>{`${participation.student.firstName ?? ''} ${
-                    participation.student.lastName ?? ''
-                  }`}</Text>
+                  <Group position='left'>
+                    <Text>{`${participation.student.firstName ?? ''} ${
+                      participation.student.lastName ?? ''
+                    }`}</Text>
+                    {participation.passed !== null &&
+                      (participation.passed ? (
+                        <Badge color='green' variant='outline'>
+                          PASSED
+                        </Badge>
+                      ) : (
+                        <Badge color='red' variant='outline'>
+                          NOT PASSED
+                        </Badge>
+                      ))}
+                  </Group>
                   {participation.supervisorAssessment && (
                     <Badge color={getBadgeColor(participation.supervisorAssessment)}>
                       {participation.supervisorAssessment}
