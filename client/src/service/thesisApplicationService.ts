@@ -78,7 +78,6 @@ export const loadThesisApplicationExaminationFile = async (
     }
     return undefined
   } catch (err) {
-    console.log(err)
     return undefined
   }
 }
@@ -101,7 +100,6 @@ export const loadThesisApplicationCvFile = async (
     }
     return undefined
   } catch (err) {
-    console.log(err)
     return undefined
   }
 }
@@ -124,7 +122,6 @@ export const loadThesisApplicationBachelorReportFile = async (
     }
     return undefined
   } catch (err) {
-    console.log(err)
     return undefined
   }
 }

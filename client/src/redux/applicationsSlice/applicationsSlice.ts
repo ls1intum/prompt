@@ -110,6 +110,8 @@ enum ApplicationStatus {
   ACCEPTED = 'Accepted',
   REJECTED = 'Rejected',
   ENROLLED = 'Enrolled',
+  INTRO_COURSE_PASSED = 'Intro course passed',
+  INTRO_COURSE_NOT_PASSED = 'Intro course not passed',
 }
 
 interface ApplicationAssessment {

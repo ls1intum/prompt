@@ -26,7 +26,7 @@ export const TeamAllocationConsole = (): JSX.Element => {
       void dispatch(
         fetchDeveloperApplications({
           courseIteration: selectedCourseIteration.semesterName,
-          status: 'ENROLLED',
+          status: 'INTRO_COURSE_PASSED',
         }),
       )
       void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
