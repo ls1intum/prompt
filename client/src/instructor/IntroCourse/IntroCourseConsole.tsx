@@ -1,11 +1,10 @@
-import { Alert, Progress, Stack, Tabs } from '@mantine/core'
-import { IconAlertCircle, IconChairDirector, IconUsers } from '@tabler/icons-react'
+import { Alert, Progress, Stack } from '@mantine/core'
+import { IconAlertCircle } from '@tabler/icons-react'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../redux/store'
 import { useEffect, useMemo } from 'react'
 import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 import { SeatPlanManager } from './components/SeatPlanManager'
-import { StudentManager } from './components/StudentManager'
 import moment from 'moment'
 import { fetchAllIntroCourseTutors } from '../../redux/introCourseSlice/thunks/fetchAllIntroCourseTutors'
 import { Link } from 'react-router-dom'
@@ -60,22 +59,7 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
             size='xl'
           />
         )}
-      <Tabs defaultValue='seat-plan-management'>
-        <Tabs.List>
-          <Tabs.Tab value='seat-plan-management' icon={<IconChairDirector />}>
-            Seat Plan Management
-          </Tabs.Tab>
-          <Tabs.Tab value='student-mgmt' icon={<IconUsers />}>
-            Student Management
-          </Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel value='seat-plan-management'>
-          <SeatPlanManager keycloak={keycloak} />
-        </Tabs.Panel>
-        <Tabs.Panel value='student-mgmt'>
-          <StudentManager />
-        </Tabs.Panel>
-      </Tabs>
+      <SeatPlanManager keycloak={keycloak} />
     </Stack>
   )
 }

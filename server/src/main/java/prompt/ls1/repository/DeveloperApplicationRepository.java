@@ -33,6 +33,12 @@ public interface DeveloperApplicationRepository extends JpaRepository<DeveloperA
     List<DeveloperApplication> findPendingInterviewApplicationsByCourseIterationId(final UUID courseIterationId);
 
     @Transactional
+    List<DeveloperApplication> findIntroCoursePassedApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
+    List<DeveloperApplication> findIntroCourseNotPassedApplicationsByCourseIterationId(final UUID courseIterationId);
+
+    @Transactional
     @Query(value="select da from DeveloperApplication da where da.student.id=?1")
     Optional<DeveloperApplication> findByStudentId(final UUID studentId);
 

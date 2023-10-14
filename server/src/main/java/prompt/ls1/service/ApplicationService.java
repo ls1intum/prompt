@@ -97,6 +97,8 @@ public class ApplicationService {
                         case REJECTED -> applications.addAll(developerApplicationRepository.findRejectedApplicationsByCourseIterationId(courseIterationId));
                         case PENDING_INTERVIEW -> applications.addAll(developerApplicationRepository.findPendingInterviewApplicationsByCourseIterationId(courseIterationId));
                         case NOT_ASSESSED -> applications.addAll(developerApplicationRepository.findNotAssessedApplicationsByCourseIterationId(courseIterationId));
+                        case INTRO_COURSE_PASSED -> applications.addAll(developerApplicationRepository.findIntroCoursePassedApplicationsByCourseIterationId(courseIterationId));
+                        case INTRO_COURSE_NOT_PASSED -> applications.addAll(developerApplicationRepository.findIntroCourseNotPassedApplicationsByCourseIterationId(courseIterationId));
                         default -> applications.addAll(developerApplicationRepository.findAllByCourseIterationId(courseIterationId));
                     }
                 } else {

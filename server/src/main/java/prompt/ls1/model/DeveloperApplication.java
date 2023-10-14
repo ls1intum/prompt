@@ -40,6 +40,16 @@ import org.hibernate.annotations.NamedQuery;
                 name = "DeveloperApplication.findNotAssessedApplicationsByCourseIterationId",
                 query = "SELECT da FROM DeveloperApplication da WHERE da.courseIterationId = :courseIterationId " +
                         "AND da.assessment.status = prompt.ls1.model.enums.ApplicationStatus.NOT_ASSESSED"
+        ),
+        @NamedQuery(
+                name = "DeveloperApplication.findIntroCoursePassedApplicationsByCourseIterationId",
+                query = "SELECT da FROM DeveloperApplication da WHERE da.courseIterationId = :courseIterationId " +
+                        "AND da.assessment.status = prompt.ls1.model.enums.ApplicationStatus.INTRO_COURSE_PASSED"
+        ),
+        @NamedQuery(
+                name = "DeveloperApplication.findIntroCourseNotPassedApplicationsByCourseIterationId",
+                query = "SELECT da FROM DeveloperApplication da WHERE da.courseIterationId = :courseIterationId " +
+                        "AND da.assessment.status = prompt.ls1.model.enums.ApplicationStatus.INTRO_COURSE_NOT_PASSED"
         )
 })
 public class DeveloperApplication extends Application {

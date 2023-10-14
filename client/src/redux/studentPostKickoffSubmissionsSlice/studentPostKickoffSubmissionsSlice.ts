@@ -12,6 +12,20 @@ enum SkillProficiency {
   EXPERT = 'Expert',
 }
 
+const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
+  switch (skillProfieciency) {
+    case 'NOVICE':
+      return 'yellow'
+    case 'INTERMEDIATE':
+      return 'orange'
+    case 'ADVANCED':
+      return 'teal'
+    case 'EXPERT':
+      return 'green'
+  }
+  return 'gray'
+}
+
 enum SkillAssessmentSource {
   STUDENT = 'STUDENT',
   TUTOR = 'TUTOR',
@@ -115,4 +129,5 @@ export {
   type StudentSkill,
   SkillProficiency,
   SkillAssessmentSource,
+  getBadgeColor,
 }
