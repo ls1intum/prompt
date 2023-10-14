@@ -237,6 +237,20 @@ public class IntroCourseService {
         return student.getId();
     }
 
+    public IntroCourseParticipation markAsDroppedOut(final UUID introCourseParticipationId) {
+        final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
+        final DeveloperApplication developerApplication = developerApplicationRepository
+                .findByStudentAndCourseIteration(introCourseParticipation.getStudent().getId(), introCourseParticipation.getCourseIterationId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.",
+                        introCourseParticipation.getStudent().getId())));
+
+        developerApplication.getAssessment().setStatus(ApplicationStatus.DROPPED_OUT);
+        developerApplicationRepository.save(developerApplication);
+
+        introCourseParticipation.setDroppedOut(true);
+        return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
     public IntroCourseParticipation markAsNotPassed(final UUID introCourseParticipationId) {
         final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
         final DeveloperApplication developerApplication = developerApplicationRepository
@@ -248,6 +262,7 @@ public class IntroCourseService {
         developerApplicationRepository.save(developerApplication);
 
         introCourseParticipation.setPassed(false);
+        introCourseParticipation.setDroppedOut(false);
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 
@@ -262,6 +277,7 @@ public class IntroCourseService {
         developerApplicationRepository.save(developerApplication);
 
         introCourseParticipation.setPassed(true);
+        introCourseParticipation.setDroppedOut(false);
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 

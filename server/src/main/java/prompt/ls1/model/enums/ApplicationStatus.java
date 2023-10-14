@@ -13,6 +13,7 @@ public enum ApplicationStatus {
     ENROLLED("Enrolled"),
     IN_PROGRESS("In progress"),
     FINISHED("Finished"),
+    DROPPED_OUT("Dropped out"),
     INTRO_COURSE_PASSED("Intro course passed"),
     INTRO_COURSE_NOT_PASSED("Intro course not passed");
 

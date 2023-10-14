@@ -136,9 +136,11 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           }
           return true
         })
-        .filter(({ passed }) => {
+        .filter(({ passed, droppedOut }) => {
           if (filters.passed.length === 0) {
             return true
+          } else if (droppedOut) {
+            return filters.passed.includes('Dropped out')
           } else if (passed) {
             return filters.passed.includes('Passed')
           } else if (passed === false) {
@@ -308,12 +310,12 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             accessor: 'fullName',
             title: 'Full Name',
             textAlignment: 'center',
-            render: ({ student, passed }) => (
+            render: ({ student, passed, droppedOut }) => (
               <Stack>
                 {`${student.firstName ?? ''} ${student.lastName ?? ''}`}
                 {passed !== null && (
-                  <Badge color={passed ? 'green' : 'red'} variant='outline'>
-                    {passed ? 'PASSED' : 'NOT PASSED'}
+                  <Badge color={droppedOut ? 'gray' : passed ? 'green' : 'red'} variant='outline'>
+                    {droppedOut ? 'DROPPED OUT' : passed ? 'PASSED' : 'NOT PASSED'}
                   </Badge>
                 )}
               </Stack>
@@ -322,7 +324,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             filter: (
               <MultiSelect
                 label='Challenge Result'
-                data={['Passed', 'Not passed', 'Not assessed']}
+                data={['Passed', 'Not passed', 'Not assessed', 'Dropped out']}
                 value={filters.passed}
                 onChange={(value) => {
                   setFilters({

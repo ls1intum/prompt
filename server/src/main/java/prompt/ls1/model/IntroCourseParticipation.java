@@ -58,6 +58,8 @@ public class IntroCourseParticipation {
 
     private Boolean passed;
 
+    private Boolean droppedOut;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinTable(name="intro_course_participation_absence",
             joinColumns = @JoinColumn(name = "intro_course_participation_id", referencedColumnName = "id"),

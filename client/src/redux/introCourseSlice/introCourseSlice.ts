@@ -10,6 +10,7 @@ import { deleteIntroCourseAbsence } from './thunks/deleteIntroCourseAbsence'
 import { type SkillProficiency } from '../studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { markPassed } from './thunks/markPassed'
 import { markNotPassed } from './thunks/markNotPassed'
+import { markDroppedOut } from './thunks/markAsDroppedOut'
 
 interface IntroCourseAbsence {
   id: string
@@ -42,6 +43,7 @@ interface IntroCourseParticipation {
   studentComments?: string
   tutorComments?: string
   passed?: boolean
+  droppedOut?: boolean
 }
 
 interface SeatPlanAssignment {
@@ -202,6 +204,23 @@ export const introCourseSlice = createSlice({
     })
 
     builder.addCase(deleteIntroCourseAbsence.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(markDroppedOut.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(markDroppedOut.fulfilled, (state, { payload }) => {
+      state.participations = state.participations.map((introCourseParticipation) =>
+        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(markDroppedOut.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

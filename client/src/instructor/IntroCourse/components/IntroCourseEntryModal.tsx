@@ -34,6 +34,7 @@ import { createIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks
 import { DatePickerInput } from '@mantine/dates'
 import { markNotPassed } from '../../../redux/introCourseSlice/thunks/markNotPassed'
 import { markPassed } from '../../../redux/introCourseSlice/thunks/markPassed'
+import { markDroppedOut } from '../../../redux/introCourseSlice/thunks/markAsDroppedOut'
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string
@@ -138,6 +139,7 @@ export const IntroCourseEntryModal = ({
   const [selectedIntroCourseAbsenceToDelete, setSelectedIntroCourseAbsenceToDelete] =
     useState<string>()
   const [absenceCreationModalOpened, setAbsenceCreationModalOpened] = useState(false)
+  const [introCourseAssessment, setIntroCourseAssessment] = useState<string | null>()
 
   useEffect(() => {
     introCourseParticipationForm.setValues({
@@ -364,26 +366,30 @@ export const IntroCourseEntryModal = ({
             ]}
           />
         )}
-        <Divider label={<Text c='dimmed'>Intro Course Challenge</Text>} labelPosition='center' />
-        <Group position='center'>
+        <Divider label={<Text c='dimmed'>Intro Course Assessment</Text>} labelPosition='center' />
+        <Select
+          label='Assessment'
+          data={['Passed', 'Not Passed', 'Dropped out']}
+          value={introCourseAssessment}
+          onChange={(value) => {
+            setIntroCourseAssessment(value)
+          }}
+          clearable
+        />
+        <Group position='right'>
           <Button
-            color='red'
-            variant='outline'
             onClick={() => {
-              void dispatch(markNotPassed(introCourseParticipation.id))
+              if (introCourseAssessment === 'Passed') {
+                void dispatch(markPassed(introCourseParticipation.id))
+              } else if (introCourseAssessment === 'Not Passed') {
+                void dispatch(markNotPassed(introCourseParticipation.id))
+              } else if (introCourseAssessment === 'Dropped out') {
+                void dispatch(markDroppedOut(introCourseParticipation.id))
+              }
               onClose()
             }}
           >
-            Not Passed
-          </Button>
-          <Button
-            color='green'
-            onClick={() => {
-              void dispatch(markPassed(introCourseParticipation.id))
-              onClose()
-            }}
-          >
-            Passed
+            Save
           </Button>
         </Group>
       </Stack>
