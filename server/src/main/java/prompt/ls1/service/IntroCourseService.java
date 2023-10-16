@@ -237,6 +237,33 @@ public class IntroCourseService {
         return student.getId();
     }
 
+    public IntroCourseParticipation markAsDroppedOut(final UUID introCourseParticipationId, final Boolean droppedOut) {
+        final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
+        final DeveloperApplication developerApplication = developerApplicationRepository
+                .findByStudentAndCourseIteration(introCourseParticipation.getStudent().getId(), introCourseParticipation.getCourseIterationId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.",
+                        introCourseParticipation.getStudent().getId())));
+
+        if (droppedOut) {
+            developerApplication.getAssessment().setStatus(ApplicationStatus.DROPPED_OUT);
+            introCourseParticipation.setDroppedOut(true);
+        } else {
+            if (introCourseParticipation.getPassed() != null) {
+                if (introCourseParticipation.getPassed()) {
+                    developerApplication.getAssessment().setStatus(ApplicationStatus.INTRO_COURSE_PASSED);
+                } else {
+                    developerApplication.getAssessment().setStatus(ApplicationStatus.INTRO_COURSE_NOT_PASSED);
+                }
+            } else {
+                developerApplication.getAssessment().setStatus(ApplicationStatus.ENROLLED);
+            }
+            introCourseParticipation.setDroppedOut(false);
+        }
+
+        developerApplicationRepository.save(developerApplication);
+        return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
     public IntroCourseParticipation markAsNotPassed(final UUID introCourseParticipationId) {
         final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
         final DeveloperApplication developerApplication = developerApplicationRepository
@@ -248,6 +275,7 @@ public class IntroCourseService {
         developerApplicationRepository.save(developerApplication);
 
         introCourseParticipation.setPassed(false);
+
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 
@@ -262,6 +290,7 @@ public class IntroCourseService {
         developerApplicationRepository.save(developerApplication);
 
         introCourseParticipation.setPassed(true);
+
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 
