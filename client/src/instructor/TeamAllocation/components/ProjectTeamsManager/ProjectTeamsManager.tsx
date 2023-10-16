@@ -310,13 +310,14 @@ export const ProjectTeamsManager = (): JSX.Element => {
                 <Tooltip label='Delete project team'>
                   <ActionIcon
                     color='red'
-                    onClick={() => {
+                    onClick={(e) => {
                       if (
                         studentApplications.filter((sa) => sa.projectTeam?.id === projectTeam.id)
                           .length > 0
                       ) {
                         setDeleteAttemptNotEmptyProjectTeamShowed(true)
                       } else {
+                        e.stopPropagation()
                         setSelectedProjectTeam(projectTeam)
                         setProjectTeamDeletionConfirmationOpen(true)
                       }
