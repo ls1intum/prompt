@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Center,
+  Checkbox,
   Divider,
   Group,
   Modal,
@@ -34,7 +35,10 @@ import { createIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks
 import { DatePickerInput } from '@mantine/dates'
 import { markNotPassed } from '../../../redux/introCourseSlice/thunks/markNotPassed'
 import { markPassed } from '../../../redux/introCourseSlice/thunks/markPassed'
-import { markDroppedOut } from '../../../redux/introCourseSlice/thunks/markAsDroppedOut'
+import {
+  markDroppedOut,
+  unmarkDroppedOut,
+} from '../../../redux/introCourseSlice/thunks/markAsDroppedOut'
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string
@@ -139,9 +143,18 @@ export const IntroCourseEntryModal = ({
   const [selectedIntroCourseAbsenceToDelete, setSelectedIntroCourseAbsenceToDelete] =
     useState<string>()
   const [absenceCreationModalOpened, setAbsenceCreationModalOpened] = useState(false)
-  const [introCourseAssessment, setIntroCourseAssessment] = useState<string | null>()
+  const introCourseAssessmentForm = useForm({
+    initialValues: {
+      passed: introCourseParticipation.passed,
+      droppedOut: introCourseParticipation.droppedOut ?? false,
+    },
+  })
 
   useEffect(() => {
+    introCourseAssessmentForm.setValues({
+      passed: introCourseParticipation.passed,
+      droppedOut: introCourseParticipation.droppedOut,
+    })
     introCourseParticipationForm.setValues({
       tutorId: introCourseParticipation.tutorId ?? '',
       seat: introCourseParticipation.seat ?? '',
@@ -369,22 +382,52 @@ export const IntroCourseEntryModal = ({
         <Divider label={<Text c='dimmed'>Intro Course Assessment</Text>} labelPosition='center' />
         <Select
           label='Assessment'
-          data={['Passed', 'Not Passed', 'Dropped out']}
-          value={introCourseAssessment}
+          data={['Passed', 'Not Passed']}
+          value={
+            introCourseAssessmentForm.values.passed
+              ? 'Passed'
+              : introCourseAssessmentForm.values.passed === false
+              ? 'Not Passed'
+              : null
+          }
           onChange={(value) => {
-            setIntroCourseAssessment(value)
+            if (value === 'Passed') {
+              introCourseAssessmentForm.setValues({
+                passed: true,
+              })
+            }
+            if (value === 'Not Passed') {
+              introCourseAssessmentForm.setValues({
+                passed: false,
+              })
+            }
+            if (value === null) {
+              introCourseAssessmentForm.setValues({
+                passed: undefined,
+              })
+            }
           }}
           clearable
+        />
+        <Checkbox
+          label='Dropped out?'
+          checked={introCourseAssessmentForm.values.droppedOut}
+          onChange={(event) => {
+            introCourseAssessmentForm.setValues({ droppedOut: event.currentTarget.checked })
+          }}
         />
         <Group position='right'>
           <Button
             onClick={() => {
-              if (introCourseAssessment === 'Passed') {
+              if (introCourseAssessmentForm.values.passed) {
                 void dispatch(markPassed(introCourseParticipation.id))
-              } else if (introCourseAssessment === 'Not Passed') {
+              } else if (introCourseAssessmentForm.values.passed === false) {
                 void dispatch(markNotPassed(introCourseParticipation.id))
-              } else if (introCourseAssessment === 'Dropped out') {
+              }
+              if (introCourseAssessmentForm.values.droppedOut) {
                 void dispatch(markDroppedOut(introCourseParticipation.id))
+              } else {
+                void dispatch(unmarkDroppedOut(introCourseParticipation.id))
               }
               onClose()
             }}

@@ -50,3 +50,40 @@ export const markDroppedOut = createAsyncThunk(
     }
   },
 )
+
+export const unmarkDroppedOut = createAsyncThunk(
+  'introCourse/unmarkNotDroppedOut',
+
+  async (introCourseParticipationId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${serverBaseUrl}/api/intro-course/${introCourseParticipationId}/dropped-out`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+          },
+        },
+      )
+
+      return response.data
+    } catch (err) {
+      if ((err as AxiosError)?.response?.status === 400) {
+        notifications.show({
+          color: 'red',
+          autoClose: 10000,
+          title: 'Error',
+          message: `${((err as AxiosError)?.response?.data as string) ?? ''}`,
+        })
+      } else {
+        notifications.show({
+          color: 'red',
+          autoClose: 10000,
+          title: 'Error',
+          message: `Failed to set a status.`,
+        })
+      }
+
+      rejectWithValue(err)
+    }
+  },
+)

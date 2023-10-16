@@ -77,6 +77,8 @@ const TechnicalDataEmailInvitationsSendConfirmationModal = ({
 
 interface Filters {
   passed: string[]
+  showOnlyDroppedOut: boolean
+  excludeDroppedOut: boolean
   tutors: string[]
   proficiency: string[]
 }
@@ -104,7 +106,13 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
     technicalDataInvitationsRequestModalOpened,
     setTechnicalDataInvitationsRequestModalOpened,
   ] = useState(false)
-  const [filters, setFilters] = useState<Filters>({ passed: [], proficiency: [], tutors: [] })
+  const [filters, setFilters] = useState<Filters>({
+    passed: [],
+    proficiency: [],
+    tutors: [],
+    showOnlyDroppedOut: false,
+    excludeDroppedOut: false,
+  })
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: 'fullName',
     direction: 'asc',
@@ -136,11 +144,9 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           }
           return true
         })
-        .filter(({ passed, droppedOut }) => {
+        .filter(({ passed }) => {
           if (filters.passed.length === 0) {
             return true
-          } else if (droppedOut) {
-            return filters.passed.includes('Dropped out')
           } else if (passed) {
             return filters.passed.includes('Passed')
           } else if (passed === false) {
@@ -149,6 +155,14 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             return filters.passed.includes('Not assessed')
           }
           return false
+        })
+        .filter(({ droppedOut }) => {
+          if (filters.showOnlyDroppedOut) {
+            return droppedOut
+          } else if (filters.excludeDroppedOut) {
+            return !droppedOut
+          }
+          return true
         })
         .filter(({ supervisorAssessment }) => {
           if (filters.proficiency.length > 0) {
@@ -314,30 +328,60 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
               <Stack>
                 {`${student.firstName ?? ''} ${student.lastName ?? ''}`}
                 {passed !== null && (
-                  <Badge color={droppedOut ? 'gray' : passed ? 'green' : 'red'} variant='outline'>
-                    {droppedOut ? 'DROPPED OUT' : passed ? 'PASSED' : 'NOT PASSED'}
+                  <Badge color={passed ? 'green' : 'red'} variant='outline'>
+                    {passed ? 'PASSED' : 'NOT PASSED'}
+                  </Badge>
+                )}
+                {droppedOut && (
+                  <Badge color='gray' variant='outline'>
+                    DROPPED OUT
                   </Badge>
                 )}
               </Stack>
             ),
             sortable: true,
             filter: (
-              <MultiSelect
-                label='Challenge Result'
-                data={['Passed', 'Not passed', 'Not assessed', 'Dropped out']}
-                value={filters.passed}
-                onChange={(value) => {
-                  setFilters({
-                    ...filters,
-                    passed: value,
-                  })
-                }}
-                icon={<IconSearch size={16} />}
-                clearable
-                searchable
-              />
+              <Stack>
+                <MultiSelect
+                  label='Challenge Result'
+                  data={['Passed', 'Not passed', 'Not assessed']}
+                  value={filters.passed}
+                  onChange={(value) => {
+                    setFilters({
+                      ...filters,
+                      passed: value,
+                    })
+                  }}
+                  icon={<IconSearch size={16} />}
+                  clearable
+                  searchable
+                />
+                <Checkbox
+                  label='Show only dropped out?'
+                  checked={filters.showOnlyDroppedOut}
+                  onChange={(event) => {
+                    setFilters({
+                      ...filters,
+                      showOnlyDroppedOut: event.currentTarget.checked,
+                      excludeDroppedOut: false,
+                    })
+                  }}
+                />
+                <Checkbox
+                  label='Exclude dropped put?'
+                  checked={filters.excludeDroppedOut}
+                  onChange={(event) => {
+                    setFilters({
+                      ...filters,
+                      excludeDroppedOut: event.currentTarget.checked,
+                      showOnlyDroppedOut: false,
+                    })
+                  }}
+                />
+              </Stack>
             ),
-            filtering: filters.passed.length > 0,
+            filtering:
+              filters.passed.length > 0 || filters.showOnlyDroppedOut || filters.excludeDroppedOut,
           },
           {
             accessor: 'tutorApplicationId',

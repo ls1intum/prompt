@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import prompt.ls1.model.enums.SkillProficiency;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +57,7 @@ public class IntroCourseParticipation {
     @Column(length = 500)
     private String tutorComments;
 
+    @Nullable
     private Boolean passed;
 
     private Boolean droppedOut;

@@ -104,7 +104,13 @@ public class IntroCourseController {
     @PostMapping("/{introCourseParticipationId}/dropped-out")
     @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
     public ResponseEntity<IntroCourseParticipation> markAsDroppedOut(@PathVariable final UUID introCourseParticipationId) {
-        return ResponseEntity.ok(introCourseService.markAsDroppedOut(introCourseParticipationId));
+        return ResponseEntity.ok(introCourseService.markAsDroppedOut(introCourseParticipationId, true));
+    }
+
+    @DeleteMapping("/{introCourseParticipationId}/dropped-out")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseParticipation> unmarkAsDroppedOut(@PathVariable final UUID introCourseParticipationId) {
+        return ResponseEntity.ok(introCourseService.markAsDroppedOut(introCourseParticipationId, false));
     }
 
     @PostMapping("/{introCourseParticipationId}/not-passed")
