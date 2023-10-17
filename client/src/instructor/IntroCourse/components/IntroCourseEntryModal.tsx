@@ -160,16 +160,28 @@ export const IntroCourseEntryModal = ({
       seat: introCourseParticipation.seat ?? '',
       chairDevice: introCourseParticipation.chairDevice ?? '',
       supervisorAssessment: introCourseParticipation.supervisorAssessment ?? null,
+      tutorComments: introCourseParticipation.tutorComments ?? '',
     })
   }, [introCourseParticipation])
 
   const close = (): void => {
+    introCourseAssessmentForm.reset()
     introCourseParticipationForm.reset()
     onClose()
   }
 
   return (
-    <Modal centered size='90%' opened={opened} onClose={close}>
+    <Modal
+      centered
+      size='90%'
+      opened={opened}
+      onClose={close}
+      title={
+        <Text c='dimmed' fw={500}>{`${introCourseParticipation.student.firstName ?? ''} ${
+          introCourseParticipation.student.lastName ?? ''
+        }`}</Text>
+      }
+    >
       <IntroCourseAbsenceCreationModal
         introCourseParticipationId={introCourseParticipation.id}
         opened={absenceCreationModalOpened}
@@ -429,7 +441,7 @@ export const IntroCourseEntryModal = ({
               } else {
                 void dispatch(unmarkDroppedOut(introCourseParticipation.id))
               }
-              onClose()
+              close()
             }}
           >
             Save

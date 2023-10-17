@@ -197,6 +197,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           opened={participationEditModalOpened}
           onClose={() => {
             setParticipationEditModalOpened(false)
+            setSelectedParticipation(null)
           }}
           tutors={tutors}
           introCourseParticipation={selectedParticipation}
