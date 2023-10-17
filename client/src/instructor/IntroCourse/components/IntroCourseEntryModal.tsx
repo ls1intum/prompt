@@ -165,11 +165,22 @@ export const IntroCourseEntryModal = ({
 
   const close = (): void => {
     introCourseParticipationForm.reset()
+    introCourseAssessmentForm.reset()
     onClose()
   }
 
   return (
-    <Modal centered size='90%' opened={opened} onClose={close}>
+    <Modal
+      centered
+      size='90%'
+      opened={opened}
+      onClose={close}
+      title={
+        <Text c='dimmed' fw={500}>{`${introCourseParticipation.student.firstName ?? ''} ${
+          introCourseParticipation.student.lastName ?? ''
+        }`}</Text>
+      }
+    >
       <IntroCourseAbsenceCreationModal
         introCourseParticipationId={introCourseParticipation.id}
         opened={absenceCreationModalOpened}
