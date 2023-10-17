@@ -190,8 +190,8 @@ export const ThesisApplicationForm = ({
       thesisTitle: (value) => {
         if (!value || !isNotEmpty(value)) {
           return 'Please state your thesis title suggestion.'
-        } else if (value.length > 500) {
-          return 'The maximum allowed number of characters is 500.'
+        } else if (value.length > 200) {
+          return 'The maximum allowed number of characters is 200.'
         }
       },
       studyDegree: isNotEmpty('Please state your study degree.'),
@@ -443,7 +443,7 @@ export const ThesisApplicationForm = ({
                 {...form.getInputProps('thesisTitle')}
               />
               {!form.errors.thesisTitle && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
-                <Text fz='xs' ta='right'>{`${form.values.thesisTitle?.length ?? 0} / 500`}</Text>
+                <Text fz='xs' ta='right'>{`${form.values.thesisTitle?.length ?? 0} / 200`}</Text>
               )}
             </div>
             <DatePickerInput
