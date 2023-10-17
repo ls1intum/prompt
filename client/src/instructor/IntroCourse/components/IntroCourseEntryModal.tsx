@@ -160,12 +160,13 @@ export const IntroCourseEntryModal = ({
       seat: introCourseParticipation.seat ?? '',
       chairDevice: introCourseParticipation.chairDevice ?? '',
       supervisorAssessment: introCourseParticipation.supervisorAssessment ?? null,
+      tutorComments: introCourseParticipation.tutorComments ?? '',
     })
   }, [introCourseParticipation])
 
   const close = (): void => {
-    introCourseParticipationForm.reset()
     introCourseAssessmentForm.reset()
+    introCourseParticipationForm.reset()
     onClose()
   }
 
@@ -440,7 +441,7 @@ export const IntroCourseEntryModal = ({
               } else {
                 void dispatch(unmarkDroppedOut(introCourseParticipation.id))
               }
-              onClose()
+              close()
             }}
           >
             Save
