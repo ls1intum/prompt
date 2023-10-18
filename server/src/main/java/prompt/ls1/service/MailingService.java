@@ -381,6 +381,7 @@ public class MailingService {
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
         message.addRecipients(MimeMessage.RecipientType.BCC, "krusche@tum.de");
+        message.addRecipients(MimeMessage.RecipientType.BCC, "valeryia.andraichuk@tum.de");
         message.setSubject("Thesis Application Rejection");
 
         String template = storageService.readFromFile(rootLocation, "thesis-application-rejection.html");
