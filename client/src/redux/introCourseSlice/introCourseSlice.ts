@@ -19,6 +19,7 @@ interface IntroCourseAbsence {
 }
 
 interface TechnicalDetails {
+  studentId?: string
   appleId: string
   macBookDeviceId?: string
   iPhoneDeviceId?: string

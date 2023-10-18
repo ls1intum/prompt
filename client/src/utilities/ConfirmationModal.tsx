@@ -1,6 +1,6 @@
 import { Button, Group, Modal, Stack, Text } from '@mantine/core'
 
-interface DeletionConfirmationModalProps {
+interface ConfirmationModalProps {
   title: string
   text: string
   opened: boolean
@@ -8,13 +8,13 @@ interface DeletionConfirmationModalProps {
   onConfirm: () => void
 }
 
-export const DeletionConfirmationModal = ({
+export const ConfirmationModal = ({
   opened,
   onClose,
   onConfirm,
   title,
   text,
-}: DeletionConfirmationModalProps): JSX.Element => {
+}: ConfirmationModalProps): JSX.Element => {
   return (
     <Modal
       centered
@@ -28,7 +28,9 @@ export const DeletionConfirmationModal = ({
       size='auto'
     >
       <Stack>
-        <Text>{text}</Text>
+        <Text fz='sm' fw={500}>
+          {text}
+        </Text>
         <Group position='center'>
           <Button variant='outline' onClick={onClose}>
             Cancel

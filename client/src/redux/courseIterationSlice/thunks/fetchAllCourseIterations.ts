@@ -14,6 +14,18 @@ export const fetchAllCourseIterations = createAsyncThunk(
   },
 )
 
+export const fetchCourseIterationsWithOpenKickOffPeriod = createAsyncThunk(
+  'courseIterations/fetchCourseIterationsWithOpenKickOffPeriod',
+
+  async (_, { rejectWithValue }) => {
+    try {
+      return (await axios.get(`${serverBaseUrl}/api/course-iterations/open/kick-off`)).data
+    } catch (err) {
+      return rejectWithValue(err)
+    }
+  },
+)
+
 export const fetchCourseIterationsWithOpenDeveloperApplicationPeriod = createAsyncThunk(
   'courseIterations/fetchCourseIterationsWithOpenDeveloperApplicationPeriod',
 

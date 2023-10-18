@@ -124,6 +124,11 @@ public class CourseIterationService {
         return courseIterationRepository.findAll();
     }
 
+    public CourseIteration findWithOpenKickOffPeriod() {
+        return courseIterationRepository.findWithKickoffSubmissionPeriodIncludes(new Date())
+                .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open kick off period not found."));
+    }
+
     public CourseIteration findWithOpenDeveloperApplicationPeriod() {
         return courseIterationRepository.findWithApplicationPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open developer application period not found."));

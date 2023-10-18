@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class StudentTechnicalDetails implements Serializable {
+    private String studentId;
     private String appleId;
     private String macBookDeviceId;
     @JsonProperty("iPhoneDeviceId")

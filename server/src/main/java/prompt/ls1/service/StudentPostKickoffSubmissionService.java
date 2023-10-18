@@ -4,17 +4,20 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
+import prompt.ls1.model.IntroCourseParticipation;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentPostKickoffSubmission;
 import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.DeveloperApplicationRepository;
+import prompt.ls1.repository.IntroCourseParticipationRepository;
 import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 
@@ -29,6 +32,7 @@ public class StudentPostKickoffSubmissionService {
     private final ProjectTeamRepository projectTeamRepository;
     private final DeveloperApplicationRepository developerApplicationRepository;
     private final CourseIterationRepository courseIterationRepository;
+    private final IntroCourseParticipationRepository introCourseParticipationRepository;
     private final MailingService mailingService;
 
     @Autowired
@@ -37,11 +41,13 @@ public class StudentPostKickoffSubmissionService {
             final ProjectTeamRepository projectTeamRepository,
             final DeveloperApplicationRepository developerApplicationRepository,
             final CourseIterationRepository courseIterationRepository,
+            final IntroCourseParticipationRepository introCourseParticipationRepository,
             final MailingService mailingService) {
         this.studentRepository = studentRepository;
         this.projectTeamRepository = projectTeamRepository;
         this.developerApplicationRepository = developerApplicationRepository;
         this.courseIterationRepository = courseIterationRepository;
+        this.introCourseParticipationRepository = introCourseParticipationRepository;
         this.mailingService = mailingService;
     }
 
@@ -64,7 +70,7 @@ public class StudentPostKickoffSubmissionService {
                 });
     }
 
-    public UUID verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
+    public StudentTechnicalDetails verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
         final CourseIteration courseIteration = courseIterationRepository.findWithKickoffSubmissionPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
 
@@ -79,22 +85,34 @@ public class StudentPostKickoffSubmissionService {
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
 
-        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED)) {
-            throw new ResourceInvalidParametersException("No enrolled developer application with provided parameters found.");
+        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.INTRO_COURSE_PASSED)) {
+            throw new ResourceInvalidParametersException("No developer application with passed intro course challenge and provided parameters found.");
         }
 
         if (developerApplication.getStudentPostKickOffSubmission() != null) {
             throw new ResourceConflictException("Developer post kickoff submission already exists.");
         }
 
-        return student.getId();
+        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository.findByCourseIterationIdAndStudentId(
+                courseIteration.getId(), student.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student with id %s not found.", student.getId())));
+
+        final StudentTechnicalDetails technicalDetails = new StudentTechnicalDetails();
+        technicalDetails.setStudentId(student.getId().toString());
+        technicalDetails.setAppleId(introCourseParticipation.getAppleId());
+        technicalDetails.setMacBookDeviceId(introCourseParticipation.getMacBookDeviceId());
+        technicalDetails.setIPhoneDeviceId(introCourseParticipation.getIPhoneDeviceId());
+        technicalDetails.setIPadDeviceId(introCourseParticipation.getIPadDeviceId());
+        technicalDetails.setAppleWatchDeviceId(introCourseParticipation.getAppleWatchDeviceId());
+
+        return technicalDetails;
     }
 
     public List<StudentPostKickoffSubmission> getByCourseIteration(final String courseIterationName) {
         final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(courseIterationName)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
 
-        final List<DeveloperApplication> applications = developerApplicationRepository.findEnrolledApplicationsByCourseIterationId(courseIteration.getId());
+        final List<DeveloperApplication> applications = developerApplicationRepository.findIntroCoursePassedApplicationsByCourseIterationId(courseIteration.getId());
 
         return applications
                 .stream()
@@ -107,7 +125,7 @@ public class StudentPostKickoffSubmissionService {
 
     public StudentPostKickoffSubmission create(final String studentId,
                                                StudentPostKickoffSubmission studentPostKickOffSubmission) {
-        final CourseIteration courseIteration = courseIterationRepository.findWithApplicationPeriodIncludes(new Date())
+        final CourseIteration courseIteration = courseIterationRepository.findWithKickoffSubmissionPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
 
         final Student student = studentRepository.findById(UUID.fromString(studentId))
@@ -117,8 +135,8 @@ public class StudentPostKickoffSubmissionService {
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
 
-        if (!application.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED)) {
-            throw new ResourceInvalidParametersException("No developer application with provided parameters found.");
+        if (!application.getAssessment().getStatus().equals(ApplicationStatus.INTRO_COURSE_PASSED)) {
+            throw new ResourceInvalidParametersException("No developer application with provided parameters and passed intro course challenge found.");
         }
 
        if (application.getStudentPostKickOffSubmission() != null) {

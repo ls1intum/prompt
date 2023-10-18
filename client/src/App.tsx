@@ -19,7 +19,7 @@ import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
 import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
-import { StudentTechnicalDetailsSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentTechnicalDetailsSubmissionPage'
+import { StudentTechnicalDetailsSubmissionPage } from './student/StudentTechnicalDetailsSubmissionPage/StudentTechnicalDetailsSubmissionPage'
 import { MailingManagementConsole } from './instructor/MailingManagement/MailingManagementConsole'
 import { GradingManagementConsole } from './instructor/Grading/GradingManagementConsole'
 

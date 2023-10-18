@@ -1,16 +1,8 @@
-import { useDispatch } from 'react-redux'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
+import { useAppSelector } from '../../../../redux/store'
 import { useRef, useState } from 'react'
-import { Button, Group, Switch, Text, Tooltip, Transition, createStyles, px } from '@mantine/core'
-import {
-  IconBuilding,
-  IconChevronRight,
-  IconDownload,
-  IconTrash,
-  IconUser,
-} from '@tabler/icons-react'
+import { Button, Group, Switch, Text, Transition, createStyles, px } from '@mantine/core'
+import { IconBuilding, IconChevronRight, IconDownload, IconUser } from '@tabler/icons-react'
 import { CSVLink } from 'react-csv'
-import { deleteStudentProjectTeamPreferences } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/deleteStudentProjectTeamPreferences'
 import { DataTable } from 'mantine-datatable'
 
 const useStyles = createStyles((theme) => ({
@@ -26,13 +18,11 @@ const useStyles = createStyles((theme) => ({
 }))
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
   const enrolledDeveloperApplications = useAppSelector(
     (state) => state.applications.developerApplications,
   ).filter((application) => application.assessment.status === 'ENROLLED')
   const { cx, classes } = useStyles()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const studentPostKickoffSubmissions = useAppSelector(
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
   )
@@ -60,22 +50,6 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             setInverseTableView(event.currentTarget.checked)
           }}
         />
-        <Tooltip label='Out of database space reasons it is recommended to clear student project team preferences after the team allocation process is completed.'>
-          <Button
-            leftIcon={<IconTrash />}
-            variant='outline'
-            disabled={studentPostKickoffSubmissions.length === 0}
-            onClick={() => {
-              if (selectedCourseIteration) {
-                void dispatch(
-                  deleteStudentProjectTeamPreferences(selectedCourseIteration.semesterName),
-                )
-              }
-            }}
-          >
-            Delete All
-          </Button>
-        </Tooltip>
         <Button
           leftIcon={<IconDownload />}
           variant='filled'
@@ -186,12 +160,18 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                         </Group>
                       ),
                     },
-                    { accessor: 'priorityScore', textAlignment: 'right', width: 200 },
+                    {
+                      accessor: 'priorityScore',
+                      textAlignment: 'right',
+                      width: 200,
+                      render: ({ priorityScore }) => priorityScore + 1,
+                    },
                   ]}
-                  records={
-                    studentPostKickoffSubmissions.filter((spp) => spp.id === record.record.id).at(0)
-                      ?.studentProjectTeamPreferences
-                  }
+                  records={[
+                    ...(studentPostKickoffSubmissions
+                      .filter((spp) => spp.id === record.record.id)
+                      .at(0)?.studentProjectTeamPreferences ?? []),
+                  ].sort((a, b) => a.priorityScore - b.priorityScore)}
                 />
               ),
             }}

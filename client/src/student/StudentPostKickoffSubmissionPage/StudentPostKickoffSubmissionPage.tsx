@@ -18,20 +18,21 @@ import {
   Button,
   Card,
   Center,
+  Checkbox,
   Container,
+  Divider,
   Group,
   Select,
+  Spoiler,
   Stack,
   Text,
   TextInput,
   Textarea,
   Title,
-  createStyles,
-  rem,
 } from '@mantine/core'
 import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
-import { fetchCourseIterationsWithOpenDeveloperApplicationPeriod } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { fetchCourseIterationsWithOpenKickOffPeriod } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { isNotEmpty, useForm } from '@mantine/form'
 import {
   SkillAssessmentSource,
@@ -40,25 +41,17 @@ import {
 } from '../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { fetchSkills } from '../../redux/skillsSlice/thunks/fetchSkills'
 import { createPostKickoffSubmission } from '../../service/postKickoffSubmissionService'
+import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
+import { notifications } from '@mantine/notifications'
 
-const useStyles = createStyles((theme) => ({
-  item: {
-    ...theme.fn.focusStyles(),
-    display: 'flex',
-    alignItems: 'center',
-    borderRadius: theme.radius.md,
-    border: `${rem(1)} solid ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]
-    }`,
-    padding: `${theme.spacing.sm} ${theme.spacing.xl}`,
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.white,
-    marginBottom: theme.spacing.sm,
-  },
-
-  itemDragging: {
-    boxShadow: theme.shadows.sm,
-  },
-}))
+const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
+  const shuffledArray = [...array]
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]
+  }
+  return shuffledArray
+}
 
 interface SuccessfulSubmissionProps {
   title: string
@@ -79,15 +72,15 @@ const SuccessfulSubmission = ({ title, text }: SuccessfulSubmissionProps): JSX.E
 }
 
 export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
-  const { classes, cx } = useStyles()
   const [studentId, setStudentId] = useState('')
-  const courseIterationWithOpenApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenDeveloperApplicationPeriod,
+  const courseIterationWithOpenKickOffPeriod = useAppSelector(
+    (state) => state.courseIterations.courseIterationWithOpenKickOffPeriod,
   )
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const skills = useAppSelector((state) => state.skills.skills)
   const dispatch = useDispatch<AppDispatch>()
-  const [state, handlers] = useListState<ProjectTeam>([])
+  const [leftSideState, leftSideStateHandlers] = useListState<ProjectTeam>([])
+  const [rightSideState, rightSideStateHandlers] = useListState<ProjectTeam>([])
   const [studentVerificationDialogOpened, setStudentVerificationDialogOpened] = useState(false)
   const form = useForm<StudentPostKickoffSubmission>({
     initialValues: {
@@ -108,12 +101,21 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       reasonForFirstChoice: isNotEmpty('Please state the reason behind your first choice.'),
       reasonForLastChoice: isNotEmpty('Please state the reason behind your last choice.'),
     },
+    validateInputOnBlur: true,
+  })
+  const consentForm = useForm({
+    initialValues: {
+      courseAgreement: false,
+    },
     validateInputOnChange: true,
+    validate: {
+      courseAgreement: (value) => !value,
+    },
   })
   const [formSubmitted, setFormSubmitted] = useState(false)
 
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
+    void dispatch(fetchCourseIterationsWithOpenKickOffPeriod())
     void dispatch(fetchSkills())
   }, [])
 
@@ -131,13 +133,14 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   }, [skills])
 
   useEffect(() => {
-    if (courseIterationWithOpenApplicationPeriod) {
-      void dispatch(fetchProjectTeams(courseIterationWithOpenApplicationPeriod.semesterName))
+    if (courseIterationWithOpenKickOffPeriod) {
+      void dispatch(fetchProjectTeams(courseIterationWithOpenKickOffPeriod.semesterName))
     }
-  }, [courseIterationWithOpenApplicationPeriod])
+  }, [courseIterationWithOpenKickOffPeriod])
 
   useEffect(() => {
-    handlers.setState(projectTeams)
+    rightSideStateHandlers.setState(shuffleProjectTeams(projectTeams))
+    leftSideStateHandlers.setState([])
   }, [projectTeams])
 
   useEffect(() => {
@@ -145,37 +148,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       setStudentVerificationDialogOpened(true)
     }
   }, [studentId])
-
-  const items = state.map((item, index) => (
-    <Draggable key={item.id.toString()} index={index} draggableId={item.id.toString()}>
-      {(
-        provided: {
-          draggableProps: JSX.IntrinsicAttributes &
-            ClassAttributes<HTMLDivElement> &
-            HTMLAttributes<HTMLDivElement>
-          dragHandleProps: JSX.IntrinsicAttributes &
-            ClassAttributes<HTMLDivElement> &
-            HTMLAttributes<HTMLDivElement>
-          innerRef: LegacyRef<HTMLDivElement> | undefined
-        },
-        snapshot: any,
-      ) => (
-        <div
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          className={cx(classes.item, { [classes.itemDragging]: snapshot.isDragging })}
-        >
-          <Group>
-            <Text>{index + 1}</Text>
-            <Text color='dimmed' size='sm'>
-              {item.customer}
-            </Text>
-          </Group>
-        </div>
-      )}
-    </Draggable>
-  ))
 
   return (
     <div style={{ margin: '5vh' }}>
@@ -192,7 +164,23 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
             onClose={() => {
               setStudentVerificationDialogOpened(false)
             }}
-            onSubmit={setStudentId}
+            onSubmit={(technicalDetails) => {
+              if (technicalDetails.studentId) {
+                setStudentId(technicalDetails.studentId)
+              } else {
+                notifications.show({
+                  title: 'Error',
+                  message:
+                    'The response from the server does not contain the student id. Please contact the administrator.',
+                  color: 'red',
+                })
+              }
+
+              form.setValues({
+                ...form.values,
+                ...technicalDetails,
+              })
+            }}
           />
           <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
             <Title order={2}>Kickoff Submission Form</Title>
@@ -260,39 +248,159 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                   {...form.getInputProps('studentSkills.' + idx.toString() + '.skillProficiency')}
                 />
               ))}
-            </Stack>
-            <Stack>
+              <Divider
+                label={
+                  <Text c='dimmed' fz='sm' fw={500}>
+                    Team Allocation Preferences
+                  </Text>
+                }
+                labelPosition='center'
+              />
               <Text c='dimmed' ta='center' fz='sm'>
-                Please order the projects according to your preferences by dragging the boxes below
-                up and down.
+                Please order the projects according to your preferences by dragging the boxes from
+                right to left. A lower position number corresponding to a higher priority (1 =
+                highest priority). Make sure to order all projects, i.e. the right side should be
+                empy and the left side filled with all projects.
               </Text>
               <DragDropContext
+                style={{ width: '100%', height: '50vh' }}
                 onDragEnd={({ destination, source }: any) => {
-                  handlers.reorder({ from: source.index, to: destination?.index || 0 })
+                  if (!destination) {
+                    return
+                  }
+
+                  const sourceList = source.droppableId
+                  const destinationList = destination.droppableId
+
+                  if (sourceList === destinationList) {
+                    // Reorder within the same list
+                    const items = [...(sourceList === 'left-side' ? leftSideState : rightSideState)]
+                    const [removedItem] = items.splice(source.index, 1)
+                    items.splice(destination.index, 0, removedItem)
+
+                    if (sourceList === 'left-side') {
+                      leftSideStateHandlers.setState(items)
+                    } else {
+                      rightSideStateHandlers.setState(items)
+                    }
+                  } else {
+                    // Move item from one list to another
+                    const sourceItems = [
+                      ...(sourceList === 'left-side' ? leftSideState : rightSideState),
+                    ]
+                    const destinationItems = [
+                      ...(destinationList === 'left-side' ? leftSideState : rightSideState),
+                    ]
+
+                    const [draggedItem] = sourceItems.splice(source.index, 1)
+                    destinationItems.splice(destination.index, 0, draggedItem)
+
+                    leftSideStateHandlers.setState(
+                      sourceList === 'left-side' ? sourceItems : destinationItems,
+                    )
+                    rightSideStateHandlers.setState(
+                      destinationList === 'left-side' ? sourceItems : destinationItems,
+                    )
+                  }
                 }}
               >
-                <Droppable droppableId='dnd-list' direction='vertical'>
-                  {(provided: {
-                    droppableProps: JSX.IntrinsicAttributes &
-                      ClassAttributes<HTMLDivElement> &
-                      HTMLAttributes<HTMLDivElement>
-                    innerRef: LegacyRef<HTMLDivElement> | undefined
-                    placeholder:
-                      | string
-                      | number
-                      | boolean
-                      | ReactElement<any, string | JSXElementConstructor<any>>
-                      | ReactFragment
-                      | ReactPortal
-                      | null
-                      | undefined
-                  }) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef}>
-                      {items}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
+                <Group grow style={{ alignItems: 'flex-start' }}>
+                  <Droppable droppableId='left-side' direction='vertical'>
+                    {(provided: {
+                      droppableProps: JSX.IntrinsicAttributes &
+                        ClassAttributes<HTMLDivElement> &
+                        HTMLAttributes<HTMLDivElement>
+                      innerRef: LegacyRef<HTMLDivElement> | undefined
+                      placeholder:
+                        | string
+                        | number
+                        | boolean
+                        | ReactElement<any, string | JSXElementConstructor<any>>
+                        | ReactFragment
+                        | ReactPortal
+                        | null
+                        | undefined
+                    }) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        style={{
+                          width: '100%',
+                          minHeight: '50vh',
+                          border: '1px solid #373A40',
+                          padding: '3vw 3vh',
+                        }}
+                      >
+                        <Stack>
+                          {leftSideState.map((projectTeam, index) => (
+                            <Draggable
+                              key={projectTeam.id}
+                              draggableId={projectTeam.id}
+                              index={index}
+                            >
+                              {(provided: any) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <Card withBorder>
+                                    <Group>
+                                      <Text>{index + 1}</Text>
+                                      <Text color='dimmed' size='sm'>
+                                        {projectTeam.customer}
+                                      </Text>
+                                    </Group>
+                                  </Card>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </Stack>
+                      </div>
+                    )}
+                  </Droppable>
+                  <Droppable droppableId='right-side' direction='vertical'>
+                    {(provided: any) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        style={{
+                          width: '100%',
+                          minHeight: '50vh',
+                          border: '1px solid #373A40',
+                          padding: '3vw 3vh',
+                        }}
+                      >
+                        <Stack>
+                          {rightSideState.map((projectTeam, index) => (
+                            <Draggable
+                              key={projectTeam.id}
+                              draggableId={projectTeam.id}
+                              index={index}
+                            >
+                              {(provided: any) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <Card withBorder>
+                                    <Text color='dimmed' size='sm'>
+                                      {projectTeam.customer}
+                                    </Text>
+                                  </Card>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </Stack>
+                      </div>
+                    )}
+                  </Droppable>
+                </Group>
               </DragDropContext>
             </Stack>
             <Stack>
@@ -315,30 +423,49 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                 {...form.getInputProps('reasonForLastChoice')}
               />
             </Stack>
+            <Checkbox
+              mt='md'
+              label='I have read the course agreement below and agree to it'
+              {...consentForm.getInputProps('courseAgreement', { type: 'checkbox' })}
+            />
+            <Spoiler
+              maxHeight={0}
+              showLabel={<Text fz='sm'>Show Course Agreement</Text>}
+              hideLabel={<Text fz='sm'>Hide</Text>}
+            >
+              <KickOffCourseAgreement />
+            </Spoiler>
           </Container>
-          <Center>
+          <Group position='right'>
             <Button
               variant='filled'
-              disabled={!courseIterationWithOpenApplicationPeriod || !form.isValid()}
+              disabled={
+                !courseIterationWithOpenKickOffPeriod ||
+                !form.isValid() ||
+                !consentForm.isValid() ||
+                leftSideState.length !== projectTeams.length
+              }
               onClick={() => {
                 void (async () => {
                   if (studentId) {
                     const preferencesMap = new Map()
-                    state.forEach((preference, index) => {
+                    leftSideState.forEach((preference, index) => {
                       preferencesMap.set(preference.id, index)
                     })
 
-                    if (courseIterationWithOpenApplicationPeriod) {
+                    if (courseIterationWithOpenKickOffPeriod) {
                       const response = await createPostKickoffSubmission({
                         studentId,
                         studentPostKickoffSubmission: {
                           ...form.values,
-                          studentProjectTeamPreferences: state.map((projectTeam, priorityScore) => {
-                            return {
-                              projectTeamId: projectTeam.id,
-                              priorityScore,
-                            }
-                          }),
+                          studentProjectTeamPreferences: leftSideState.map(
+                            (projectTeam, priorityScore) => {
+                              return {
+                                projectTeamId: projectTeam.id,
+                                priorityScore,
+                              }
+                            },
+                          ),
                         },
                       })
                       if (response) {
@@ -351,7 +478,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
             >
               Submit
             </Button>
-          </Center>
+          </Group>
         </>
       )}
     </div>

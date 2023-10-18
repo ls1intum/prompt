@@ -3,11 +3,12 @@ import { useState } from 'react'
 import { serverBaseUrl } from '../../../service/configService'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
+import { type TechnicalDetails } from '../../../redux/introCourseSlice/introCourseSlice'
 
 interface ProjectTeamPreferencesSubmissionCodeModalProps {
   open: boolean
   onClose: () => void
-  onSubmit: (studentId: string) => void
+  onSubmit: (technicalDetails: TechnicalDetails) => void
 }
 
 export const ProjectTeamPreferencesSubmissionCodeModal = ({

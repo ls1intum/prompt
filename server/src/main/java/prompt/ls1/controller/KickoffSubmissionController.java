@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.model.StudentPostKickoffSubmission;
 import prompt.ls1.service.StudentPostKickoffSubmissionService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/post-kickoff-submissions")
-public class StudentPostKickoffSubmissionController {
+public class KickoffSubmissionController {
     private final StudentPostKickoffSubmissionService studentPostKickoffSubmissionService;
 
     @Autowired
-    public StudentPostKickoffSubmissionController(StudentPostKickoffSubmissionService studentPostKickoffSubmissionService) {
+    public KickoffSubmissionController(StudentPostKickoffSubmissionService studentPostKickoffSubmissionService) {
         this.studentPostKickoffSubmissionService = studentPostKickoffSubmissionService;
     }
 
@@ -45,8 +45,8 @@ public class StudentPostKickoffSubmissionController {
     }
 
     @PostMapping("/verify-student/{studentPublicId}")
-    public ResponseEntity<UUID> verifyStudentFormAccess(@PathVariable final String studentPublicId,
-                                                        @RequestBody final String studentMatriculationNumber) {
+    public ResponseEntity<StudentTechnicalDetails> verifyStudentFormAccess(@PathVariable final String studentPublicId,
+                                                                           @RequestBody final String studentMatriculationNumber) {
         return ResponseEntity.ok(studentPostKickoffSubmissionService.verifyStudentFormAccess(studentPublicId, studentMatriculationNumber));
     }
 

@@ -12,7 +12,7 @@ import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-
 import { useEffect, useRef, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
-import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
+import { ConfirmationModal } from '../../../utilities/ConfirmationModal'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
@@ -165,7 +165,7 @@ export const ApplicationDatatable = ({
         </Modal>
       )}
       {selectedApplicationToDelete && (
-        <DeletionConfirmationModal
+        <ConfirmationModal
           title={`Delete Developer Application`}
           text={`Are You sure You want to delete the developer application submitted by student ${
             selectedApplicationToDelete.student.firstName ?? ''
@@ -180,7 +180,7 @@ export const ApplicationDatatable = ({
           }}
         />
       )}
-      <DeletionConfirmationModal
+      <ConfirmationModal
         title='Delete Selected Developer Applications'
         text={`Are You sure You want to delete the ${selectedTableRecords.length} selected developer applications?`}
         opened={bulkDeleteConfirmationOpened}
