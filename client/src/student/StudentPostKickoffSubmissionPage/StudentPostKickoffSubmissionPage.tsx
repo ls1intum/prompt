@@ -89,6 +89,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       iPhoneDeviceId: '',
       iPadDeviceId: '',
       appleWatchDeviceId: '',
+      gitlabUsername: '',
       selfReportedExperienceLevel: SkillProficiency.NOVICE,
       studentProjectTeamPreferences: [],
       reasonForFirstChoice: '',
@@ -97,6 +98,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     },
     validate: {
       appleId: isNotEmpty('Please provide a valid Apple ID.'),
+      gitlabUsername: isNotEmpty('Please provide a GitLab username.'),
       selfReportedExperienceLevel: isNotEmpty('Please state your experience level.'),
       reasonForFirstChoice: isNotEmpty('Please state the reason behind your first choice.'),
       reasonForLastChoice: isNotEmpty('Please state the reason behind your last choice.'),
@@ -218,6 +220,13 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                   {...form.getInputProps('appleWatchDeviceId')}
                 />
               </Group>
+              <TextInput
+                label='GitLab Username'
+                placeholder='GitLab username'
+                required
+                withAsterisk
+                {...form.getInputProps('gitlabUsername')}
+              />
               <Select
                 withAsterisk
                 required
