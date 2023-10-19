@@ -58,7 +58,7 @@ public class StudentPostKickoffSubmissionService {
         developerApplicationRepository
                 .findAllByCourseIterationId(courseIteration.getId())
                 .stream()
-                .filter(da -> da.getAssessment() != null && da.getAssessment().getStatus() == ApplicationStatus.ENROLLED)
+                .filter(da -> da.getAssessment() != null && da.getAssessment().getStatus() == ApplicationStatus.INTRO_COURSE_PASSED)
                 .forEach(developerApplication -> {
                     try {
                         mailingService.sendKickoffSubmissionLinkEmail(developerApplication.getStudent(), courseIteration);

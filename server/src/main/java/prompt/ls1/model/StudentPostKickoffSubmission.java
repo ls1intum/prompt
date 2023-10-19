@@ -32,6 +32,8 @@ public class StudentPostKickoffSubmission implements Serializable {
 
     private String appleWatchDeviceId;
 
+    private String gitlabUsername;
+
     private SkillProficiency selfReportedExperienceLevel;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

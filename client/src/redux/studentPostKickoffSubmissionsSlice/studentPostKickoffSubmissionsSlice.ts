@@ -52,6 +52,7 @@ interface StudentPostKickoffSubmission {
   iPhoneDeviceId?: string
   iPadDeviceId?: string
   appleWatchDeviceId?: string
+  gitlabUsername?: string
   studentProjectTeamPreferences: StudentProjectTeamPreference[]
   reasonForFirstChoice: string
   reasonForLastChoice: string

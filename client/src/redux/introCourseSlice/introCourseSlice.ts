@@ -216,7 +216,9 @@ export const introCourseSlice = createSlice({
 
     builder.addCase(markDroppedOut.fulfilled, (state, { payload }) => {
       state.participations = state.participations.map((introCourseParticipation) =>
-        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+        introCourseParticipation.id === payload.id
+          ? { ...introCourseParticipation, droppedOut: payload.droppedOut }
+          : introCourseParticipation,
       )
       state.status = 'idle'
     })
@@ -233,7 +235,9 @@ export const introCourseSlice = createSlice({
 
     builder.addCase(unmarkDroppedOut.fulfilled, (state, { payload }) => {
       state.participations = state.participations.map((introCourseParticipation) =>
-        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+        introCourseParticipation.id === payload.id
+          ? { ...introCourseParticipation, droppedOut: payload.droppedOut }
+          : introCourseParticipation,
       )
       state.status = 'idle'
     })
@@ -250,7 +254,9 @@ export const introCourseSlice = createSlice({
 
     builder.addCase(markPassed.fulfilled, (state, { payload }) => {
       state.participations = state.participations.map((introCourseParticipation) =>
-        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+        introCourseParticipation.id === payload.id
+          ? { ...introCourseParticipation, passed: payload.passed }
+          : introCourseParticipation,
       )
       state.status = 'idle'
     })
@@ -267,7 +273,9 @@ export const introCourseSlice = createSlice({
 
     builder.addCase(markNotPassed.fulfilled, (state, { payload }) => {
       state.participations = state.participations.map((introCourseParticipation) =>
-        introCourseParticipation.id === payload.id ? payload : introCourseParticipation,
+        introCourseParticipation.id === payload.id
+          ? { ...introCourseParticipation, passed: payload.passed }
+          : introCourseParticipation,
       )
       state.status = 'idle'
     })

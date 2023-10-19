@@ -79,7 +79,7 @@ export const skillsState = createSlice({
     })
 
     builder.addCase(deleteSkill.fulfilled, (state, { payload }) => {
-      state.skills = state.skills.filter((s) => s.id !== payload.id)
+      state.skills = state.skills.filter((s) => s.id !== payload)
       state.status = 'idle'
     })
 
