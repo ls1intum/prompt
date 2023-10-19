@@ -4,6 +4,7 @@ import {
   fetchAllCourseIterations,
   fetchCourseIterationsWithOpenCoachApplicationPeriod,
   fetchCourseIterationsWithOpenDeveloperApplicationPeriod,
+  fetchCourseIterationsWithOpenKickOffPeriod,
   fetchCourseIterationsWithOpenTutorApplicationPeriod,
 } from './thunks/fetchAllCourseIterations'
 import { deleteCourseIteration } from './thunks/deleteCourseIteration'
@@ -74,6 +75,7 @@ interface CourseIterationSliceState {
   error: string | null
   currentState: CourseIteration | undefined
   courseIterations: CourseIteration[]
+  courseIterationWithOpenKickOffPeriod: CourseIteration | undefined
   courseIterationWithOpenDeveloperApplicationPeriod: CourseIteration | undefined
   courseIterationWithOpenCoachApplicationPeriod: CourseIteration | undefined
   courseIterationWithOpenTutorApplicationPeriod: CourseIteration | undefined
@@ -84,6 +86,7 @@ const initialState: CourseIterationSliceState = {
   error: null,
   currentState: undefined,
   courseIterations: [],
+  courseIterationWithOpenKickOffPeriod: undefined,
   courseIterationWithOpenDeveloperApplicationPeriod: undefined,
   courseIterationWithOpenCoachApplicationPeriod: undefined,
   courseIterationWithOpenTutorApplicationPeriod: undefined,
@@ -110,6 +113,21 @@ export const courseIterationState = createSlice({
     })
 
     builder.addCase(fetchAllCourseIterations.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchCourseIterationsWithOpenKickOffPeriod.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(fetchCourseIterationsWithOpenKickOffPeriod.fulfilled, (state, { payload }) => {
+      state.courseIterationWithOpenKickOffPeriod = payload
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchCourseIterationsWithOpenKickOffPeriod.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

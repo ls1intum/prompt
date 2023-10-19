@@ -31,9 +31,10 @@ import { deleteProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/de
 import { updateProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/updateProjectTeam'
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
-import { DeletionConfirmationModal } from '../../../../utilities/DeletionConfirmationModal'
+import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { sendKickoffSubmissionInvitations } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/sendKickoffSubmissionInvitations'
+import { notifications } from '@mantine/notifications'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -121,6 +122,8 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const studentApplications = useAppSelector((state) => state.applications.developerApplications)
+  const [invitationSendOutConfirmationModalOpened, setInvitationSendOutConfirmationModalOpened] =
+    useState(false)
   const [projectTeamCreationModalOpen, setProjectTeamCreationModalOpen] = useState(false)
   const [projectTeamEditModalOpen, setProjectTeamEditOpen] = useState(false)
   const [projectTeamMemberListModalOpen, setProjectTeamMemberListModalOpen] = useState(false)
@@ -151,6 +154,26 @@ export const ProjectTeamsManager = (): JSX.Element => {
 
   return (
     <Stack>
+      <ConfirmationModal
+        title='Kick-Off Submission Invitations Send Out'
+        text="Are You sure You would like to invite students to submit their team allocation preferences? A student will receive a personal link to a form. Make sure the kick off submission period dates are specified, otherwise the students won't be able to access the form."
+        opened={invitationSendOutConfirmationModalOpened}
+        onClose={() => {
+          setInvitationSendOutConfirmationModalOpened(false)
+        }}
+        onConfirm={() => {
+          if (selectedCourseIteration) {
+            void dispatch(sendKickoffSubmissionInvitations(selectedCourseIteration.semesterName))
+            setInvitationSendOutConfirmationModalOpened(false)
+          } else {
+            notifications.show({
+              title: 'No course iteration selected',
+              message: 'Please select a course iteration first.',
+              color: 'red',
+            })
+          }
+        }}
+      />
       <ProjectTeamCreationModal
         opened={projectTeamCreationModalOpen}
         onClose={() => {
@@ -182,10 +205,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
           <Button
             leftIcon={<IconMailFilled />}
             onClick={() => {
-              if (selectedCourseIteration)
-                void dispatch(
-                  sendKickoffSubmissionInvitations(selectedCourseIteration.semesterName),
-                )
+              setInvitationSendOutConfirmationModalOpened(true)
             }}
           >
             Send Kick-Off Invitations
@@ -203,7 +223,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         </Group>
       </Group>
       {selectedProjectTeam && (
-        <DeletionConfirmationModal
+        <ConfirmationModal
           opened={projectTeamDeletionConfirmationOpen}
           onClose={() => {
             setProjectTeamDeletionConfirmationOpen(false)

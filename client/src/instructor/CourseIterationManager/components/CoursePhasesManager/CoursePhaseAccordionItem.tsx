@@ -30,7 +30,7 @@ import { type AppDispatch } from '../../../../redux/store'
 import { deleteCoursePhaseCheck } from '../../../../redux/coursePhasesSlice/thunks/deleteCoursePhaseCheck'
 import { useListState } from '@mantine/hooks'
 import { updateCoursePhaseCheckOrdering } from '../../../../redux/coursePhasesSlice/thunks/updateCoursePhaseCheckOrdering'
-import { DeletionConfirmationModal } from '../../../../utilities/DeletionConfirmationModal'
+import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { deleteCoursePhase } from '../../../../redux/coursePhasesSlice/thunks/deleteCoursePhase'
 
 const useStyles = createStyles((theme) => ({
@@ -119,7 +119,7 @@ export const CoursePhaseAccordionItem = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {coursePhaseCheckToDelete && (
-        <DeletionConfirmationModal
+        <ConfirmationModal
           title='Confirm Course Phase Check Deletion'
           text={`Are You sure You want to delete the course phase check '${coursePhaseCheckToDelete.title}'?`}
           opened={coursePhaseCheckDeletionConfirmationModalOpened}
@@ -137,7 +137,7 @@ export const CoursePhaseAccordionItem = ({
           }}
         />
       )}
-      <DeletionConfirmationModal
+      <ConfirmationModal
         title='Confirm Course Phase Deletion'
         text={`Are You sure You want to delete the course phase '${coursePhase.name}'?`}
         opened={coursePhaseDeletionConfirmationModalOpened}

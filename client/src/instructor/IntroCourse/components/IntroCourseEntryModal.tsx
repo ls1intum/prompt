@@ -29,7 +29,7 @@ import { IconCalendar, IconPlus, IconTrash } from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import moment from 'moment'
-import { DeletionConfirmationModal } from '../../../utilities/DeletionConfirmationModal'
+import { ConfirmationModal } from '../../../utilities/ConfirmationModal'
 import { deleteIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks/deleteIntroCourseAbsence'
 import { createIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks/createIntroCourseAbsence'
 import { DatePickerInput } from '@mantine/dates'
@@ -189,7 +189,7 @@ export const IntroCourseEntryModal = ({
           setAbsenceCreationModalOpened(false)
         }}
       />
-      <DeletionConfirmationModal
+      <ConfirmationModal
         title='Delete Intro Course Absence'
         text={`Are you sure you want to delete this absence for student ${
           introCourseParticipation.student.firstName ?? ''

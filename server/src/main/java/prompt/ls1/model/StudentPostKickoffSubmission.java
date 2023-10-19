@@ -1,5 +1,6 @@
 package prompt.ls1.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,8 +24,10 @@ public class StudentPostKickoffSubmission implements Serializable {
 
     private String macBookDeviceId;
 
+    @JsonProperty("iPhoneDeviceId")
     private String iPhoneDeviceId;
 
+    @JsonProperty("iPadDeviceId")
     private String iPadDeviceId;
 
     private String appleWatchDeviceId;

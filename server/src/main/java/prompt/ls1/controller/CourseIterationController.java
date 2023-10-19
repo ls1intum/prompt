@@ -50,6 +50,11 @@ public class CourseIterationController {
         return ResponseEntity.ok(courseIterationService.findWithOpenTutorApplicationPeriod());
     }
 
+    @GetMapping ("/open/kick-off")
+    public ResponseEntity<CourseIteration> getCourseIterationWithOpenKickOffPhase() {
+        return ResponseEntity.ok(courseIterationService.findWithOpenKickOffPeriod());
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<CourseIteration> createCourseIteration(@RequestBody CourseIteration courseIteration) {
