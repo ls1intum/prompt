@@ -8,12 +8,12 @@ import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text, TextInput } 
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { type ThesisApplication } from '../../../redux/thesisApplicationsSlice/thesisApplicationsSlice'
-import { IconEyeEdit, IconSearch } from '@tabler/icons-react'
+import { IconExternalLink, IconEyeEdit, IconSearch } from '@tabler/icons-react'
 import { ThesisApplicationForm } from '../../../forms/ThesisApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import moment from 'moment'
 import { fetchThesisAdvisors } from '../../../redux/thesisApplicationsSlice/thunks/fetchThesisAdvisors'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 interface Filters {
   male: boolean
@@ -250,6 +250,20 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
                 >
                   <IconEyeEdit size={16} />
                 </ActionIcon>
+                <Link
+                  to={`/management/thesis-applications/${application.id}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <ActionIcon
+                    color='blue'
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    <IconExternalLink size={16} />
+                  </ActionIcon>
+                </Link>
               </Group>
             ),
           },
