@@ -97,14 +97,11 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
               result = { ...result, ...Object.fromEntries(preferences) }
 
               const skills = new Map()
-
-              console.log(stp.studentSkills)
               stp.studentSkills.forEach((skill) => {
                 skills.set(`Skills[${skill.skill.title}]`, skill.skillProficiency)
               })
               result = { ...result, ...Object.fromEntries(skills) }
             })
-          console.log(result)
           return result
         })}
         filename='data.csv'
