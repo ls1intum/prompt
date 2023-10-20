@@ -78,9 +78,9 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             supervisorAssessment: introCourseParticipations
               .filter((participation) => participation.student.id === student.student.id)
               .at(0)?.supervisorAssessment,
-            selfAssessment: introCourseParticipations
-              .filter((participation) => participation.student.id === student.student.id)
-              .at(0)?.selfAssessment,
+            selfAssessment: studentPostKickoffSubmissions
+              .filter((stp) => stp.student?.id === student.student.id)
+              .at(0)?.selfReportedExperienceLevel,
             devices: student.devices,
           }
           studentPostKickoffSubmissions
