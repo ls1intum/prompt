@@ -55,6 +55,8 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
   useEffect(() => {
     if (applicationId) {
       setSelectedApplicationToView(applications.find((a) => a.id === applicationId))
+    } else {
+      setSelectedApplicationToView(undefined)
     }
   }, [applications, applicationId])
 
