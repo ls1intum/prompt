@@ -20,7 +20,7 @@ const useStyles = createStyles((theme) => ({
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const enrolledDeveloperApplications = useAppSelector(
     (state) => state.applications.developerApplications,
-  ).filter((application) => application.assessment.status === 'ENROLLED')
+  ).filter((application) => application.assessment.status === 'INTRO_COURSE_PASSED')
   const { cx, classes } = useStyles()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const studentPostKickoffSubmissions = useAppSelector(
@@ -97,11 +97,14 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
               result = { ...result, ...Object.fromEntries(preferences) }
 
               const skills = new Map()
+
+              console.log(stp.studentSkills)
               stp.studentSkills.forEach((skill) => {
                 skills.set(`Skills[${skill.skill.title}]`, skill.skillProficiency)
               })
               result = { ...result, ...Object.fromEntries(skills) }
             })
+          console.log(result)
           return result
         })}
         filename='data.csv'
