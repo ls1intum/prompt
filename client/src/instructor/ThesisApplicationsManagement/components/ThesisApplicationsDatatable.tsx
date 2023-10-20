@@ -13,6 +13,7 @@ import { ThesisApplicationForm } from '../../../forms/ThesisApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import moment from 'moment'
 import { fetchThesisAdvisors } from '../../../redux/thesisApplicationsSlice/thunks/fetchThesisAdvisors'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface Filters {
   male: boolean
@@ -21,8 +22,10 @@ interface Filters {
 }
 
 export const ThesisApplicationsDatatable = (): JSX.Element => {
+  const { applicationId } = useParams()
+  const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
-  const isLoading = useAppSelector((state) => state.thesisApplications.status === 'loading')
+  const isLoading = useAppSelector((state) => state.thesisApplications.status === 'pending')
   const applications = useAppSelector((state) => state.thesisApplications.applications)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [searchQuery, setSearchQuery] = useState('')
@@ -48,6 +51,12 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
     void dispatch(fetchThesisApplications(ApplicationStatus.NOT_ASSESSED))
     void dispatch(fetchThesisAdvisors())
   }, [])
+
+  useEffect(() => {
+    if (applicationId) {
+      setSelectedApplicationToView(applications.find((a) => a.id === applicationId))
+    }
+  }, [applications, applicationId])
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -105,6 +114,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
           size='90%'
           opened={!!selectedApplicationToView}
           onClose={() => {
+            navigate('/management/thesis-applications')
             setSelectedApplicationToView(undefined)
           }}
         >
@@ -235,7 +245,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
                   color='blue'
                   onClick={(e: React.MouseEvent) => {
                     e.stopPropagation()
-                    setSelectedApplicationToView(application)
+                    navigate(`/management/thesis-applications/${application.id}`)
                   }}
                 >
                   <IconEyeEdit size={16} />
@@ -245,7 +255,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
           },
         ]}
         onRowClick={(application) => {
-          setSelectedApplicationToView(application)
+          navigate(`/management/thesis-applications/${application.id}`)
         }}
       />
     </Stack>

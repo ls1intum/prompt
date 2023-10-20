@@ -40,7 +40,7 @@ export const App = (): JSX.Element => {
           <BrowserRouter>
             <Routes>
               <Route
-                path='/management/thesis-applications'
+                path='/management/thesis-applications/:applicationId?'
                 element={<ThesisApplicationsManagementConsole />}
               />
               <Route
