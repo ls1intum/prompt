@@ -91,7 +91,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                 preferences.set(
                   `Priorities[${p.priorityScore + 1}]`,
                   projectTeams.filter((projectTeam) => projectTeam.id === p.projectTeamId).at(0)
-                    ?.name,
+                    ?.customer,
                 )
               })
               result = { ...result, ...Object.fromEntries(preferences) }
