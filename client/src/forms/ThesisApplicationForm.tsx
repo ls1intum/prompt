@@ -16,6 +16,7 @@ import {
   Divider,
   Group,
   Image,
+  Loader,
   LoadingOverlay,
   MultiSelect,
   Select,
@@ -72,7 +73,9 @@ export const ThesisApplicationForm = ({
 }: ThesisApplicationFormProps): JSX.Element => {
   const theme = useMantineTheme()
   const dispatch = useDispatch<AppDispatch>()
-  const thesisAdvisors = useAppSelector((state) => state.thesisApplications.thesisAdvisors)
+  const { thesisAdvisors, status: thesisAppliccationsSliceState } = useAppSelector(
+    (state) => state.thesisApplications,
+  )
   const [loadingOverlayVisible, loadingOverlayHandlers] = useDisclosure(false)
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const uploads = useForm<{
@@ -857,25 +860,28 @@ export const ThesisApplicationForm = ({
                   style={{ width: '20vw' }}
                   variant='outline'
                   color='red'
+                  disabled={thesisAppliccationsSliceState === 'pending'}
                   onClick={() => {
                     if (application) {
                       void dispatch(rejectThesisApplication(application.id))
                     }
                   }}
                 >
-                  Reject
+                  {thesisAppliccationsSliceState === 'pending' ? <Loader /> : 'Reject'}
                 </Button>
                 <Button
                   style={{ width: '20vw' }}
                   color='green'
-                  disabled={!application?.thesisAdvisor}
+                  disabled={
+                    !application?.thesisAdvisor || thesisAppliccationsSliceState === 'pending'
+                  }
                   onClick={() => {
                     if (application) {
                       void dispatch(acceptThesisApplication(application.id))
                     }
                   }}
                 >
-                  Accept
+                  {thesisAppliccationsSliceState === 'pending' ? <Loader /> : 'Accept'}
                 </Button>
               </Group>
             </>

@@ -91,7 +91,7 @@ interface ThesisApplication {
 }
 
 interface ThesisApplicationsSliceState {
-  status: string
+  status: 'idle' | 'pending' | 'succeeded' | 'failed'
   error: string | null
   applications: ThesisApplication[]
   thesisAdvisors: ThesisAdvisor[]
@@ -110,7 +110,7 @@ export const thesisApplicationsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchThesisApplications.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
@@ -125,7 +125,7 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(assessThesisApplication.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
@@ -142,7 +142,7 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(acceptThesisApplication.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
@@ -159,7 +159,7 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(rejectThesisApplication.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
@@ -176,7 +176,7 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(assignThesisAdvisor.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
@@ -193,7 +193,7 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(fetchThesisAdvisors.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
@@ -208,7 +208,7 @@ export const thesisApplicationsSlice = createSlice({
     })
 
     builder.addCase(updateThesisAdvisorList.pending, (state) => {
-      state.status = 'loading'
+      state.status = 'pending'
       state.error = null
     })
 
