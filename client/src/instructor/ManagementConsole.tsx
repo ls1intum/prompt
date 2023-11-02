@@ -1,5 +1,5 @@
 import { Card, Center, Loader, Title, Text, Group, Transition } from '@mantine/core'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
 import { useDispatch } from 'react-redux'
@@ -76,13 +76,12 @@ export const ManagementConsole = ({
   const dispatch = useDispatch<AppDispatch>()
   const { currentState, courseIterations } = useAppSelector((state) => state.courseIterations)
 
-  const keycloak = useMemo(() => {
-    return new Keycloak({
-      realm: keycloakRealmName,
-      url: keycloakUrl,
-      clientId: 'prompt-client',
-    })
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const keycloak = new Keycloak({
+    realm: keycloakRealmName,
+    url: keycloakUrl,
+    clientId: 'prompt-client',
+  })
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
 
   useEffect(() => {
@@ -133,7 +132,8 @@ export const ManagementConsole = ({
       .catch((err) => {
         alert(err)
       })
-  }, [dispatch, keycloak, onKeycloakValueChange, permission])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch])
 
   useEffect(() => {
     if (authenticated && !currentState && localStorage.getItem('course-iteration')) {

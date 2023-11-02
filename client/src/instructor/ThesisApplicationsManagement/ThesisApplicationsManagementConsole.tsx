@@ -2,7 +2,7 @@ import Keycloak from 'keycloak-js'
 import { keycloakRealmName, keycloakUrl } from '../../service/configService'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../redux/store'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../../redux/authSlice/authSlice'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'
@@ -14,13 +14,12 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   const [authenticated, setAuthenticated] = useState(false)
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
 
-  const keycloak = useMemo(() => {
-    return new Keycloak({
-      realm: keycloakRealmName,
-      url: keycloakUrl,
-      clientId: 'prompt-client',
-    })
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const keycloak = new Keycloak({
+    realm: keycloakRealmName,
+    url: keycloakUrl,
+    clientId: 'prompt-client',
+  })
   const [, setKeycloakValue] = useState<Keycloak>(keycloak)
 
   useEffect(() => {
@@ -83,7 +82,8 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
       .catch((err) => {
         alert(err)
       })
-  }, [dispatch, keycloak])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch])
 
   return (
     <>
