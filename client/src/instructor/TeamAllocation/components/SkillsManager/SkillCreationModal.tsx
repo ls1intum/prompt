@@ -50,7 +50,7 @@ export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps)
             {...form.getInputProps('active', { type: 'checkbox' })}
           />
           <Button
-            leftIcon={<IconPlus />}
+            leftSection={<IconPlus />}
             onClick={() => {
               void dispatch(createSkill(form.values))
               close()

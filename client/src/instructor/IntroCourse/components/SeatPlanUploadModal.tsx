@@ -167,7 +167,7 @@ export const SeatPlanUploadModal = ({
                   : 'Upload seat plan with device availability'
               }
               accept='.csv'
-              icon={<IconUpload />}
+              leftSection={<IconUpload />}
               onChange={(file) => {
                 if (file) {
                   Daddy.parse(file, {
@@ -217,7 +217,9 @@ export const SeatPlanUploadModal = ({
                 </Group>
                 <Checkbox
                   label='Does the upload contain student to tutor assignments?'
-                  {...joinColumns.getInputProps('withTutorAssignment', { type: 'checkbox' })}
+                  {...joinColumns.getInputProps('withTutorAssignment', {
+                    type: 'checkbox',
+                  })}
                 />
                 <Collapse in={joinColumns.values.withTutorAssignment}>
                   <Group grow>
@@ -251,7 +253,9 @@ export const SeatPlanUploadModal = ({
                 </Group>
                 <Checkbox
                   label='Does the upload contain student to tutor assignments?'
-                  {...joinColumns.getInputProps('withTutorAssignment', { type: 'checkbox' })}
+                  {...joinColumns.getInputProps('withTutorAssignment', {
+                    type: 'checkbox',
+                  })}
                 />
                 <Collapse in={joinColumns.values.withTutorAssignment}>
                   <Group grow>
@@ -291,13 +295,13 @@ export const SeatPlanUploadModal = ({
                     const tutor = joinColumns.values.withTutorAssignment
                       ? joinColumns.values.tutorJoinColumnFromTable === 'tumId'
                         ? tutors.find(
-                            (tutor) =>
-                              tutor.tumId ===
+                            (t) =>
+                              t.tumId ===
                               (element as any)[joinColumns.values.tutorJoinColumnFromUpload],
                           )
                         : tutors.find(
-                            (tutor) =>
-                              tutor.matriculationNumber ===
+                            (t) =>
+                              t.matriculationNumber ===
                               (element as any)[joinColumns.values.tutorJoinColumnFromUpload],
                           )
                       : undefined
@@ -319,13 +323,13 @@ export const SeatPlanUploadModal = ({
                       const tutor = joinColumns.values.withTutorAssignment
                         ? joinColumns.values.tutorJoinColumnFromTable === 'tumId'
                           ? tutors.find(
-                              (tutor) =>
-                                tutor.tumId ===
+                              (t) =>
+                                t.tumId ===
                                 (element as any)[joinColumns.values.tutorJoinColumnFromUpload],
                             )
                           : tutors.find(
-                              (tutor) =>
-                                tutor.matriculationNumber ===
+                              (t) =>
+                                t.matriculationNumber ===
                                 (element as any)[joinColumns.values.tutorJoinColumnFromUpload],
                             )
                         : undefined
@@ -352,7 +356,7 @@ export const SeatPlanUploadModal = ({
               Upload
             </Button>
             {upload && (
-              <Table striped withBorder withColumnBorders>
+              <Table striped withTableBorder withColumnBorders>
                 <thead>
                   <tr>
                     {columnNames.map((columnName) => (

@@ -44,7 +44,7 @@ export const CourseIterationManager = (): JSX.Element => {
       )}
       <div style={{ display: 'flex', justifyContent: 'right', margin: '2vh 0' }}>
         <Button
-          leftIcon={<IconPlus />}
+          leftSection={<IconPlus />}
           variant='filled'
           onClick={() => {
             setCreationModalOpen(true)
@@ -54,7 +54,7 @@ export const CourseIterationManager = (): JSX.Element => {
         </Button>
       </div>
       <DataTable
-        withBorder
+        withTableBorder
         minHeight={150}
         noRecordsText='No records to show'
         borderRadius='sm'
@@ -73,7 +73,7 @@ export const CourseIterationManager = (): JSX.Element => {
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
-        onRowClick={(courseIteration) => {
+        onRowClick={({ record: courseIteration }) => {
           setSelectedCourseIteration(courseIteration)
           setEditModalOpen(true)
         }}
@@ -131,13 +131,13 @@ export const CourseIterationManager = (): JSX.Element => {
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,
-            textAlignment: 'right',
+            textAlign: 'right',
             render: (courseIteration) => (
-              <Group spacing={4} position='right' noWrap>
+              <Group gap={4} align='right' wrap='nowrap'>
                 <Tooltip label='Edit course iteration'>
                   <ActionIcon
                     color='blue'
-                    onClick={(e: React.MouseEvent) => {
+                    onClick={() => {
                       setSelectedCourseIteration(courseIteration)
                       setEditModalOpen(true)
                     }}

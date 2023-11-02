@@ -19,6 +19,7 @@ import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thu
 import { type Filters } from '../ApplicationOverview'
 import { CoachApplicationForm } from '../../../forms/CoachApplicationForm'
 import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
+import { useContextMenu } from 'mantine-contextmenu'
 
 interface ApplicationDatatableProps {
   applications: Application[]
@@ -35,6 +36,7 @@ export const ApplicationDatatable = ({
 }: ApplicationDatatableProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const loadingStatus = useAppSelector((state) => state.applications.status)
+  const { showContextMenu } = useContextMenu()
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [tablePage, setTablePage] = useState(1)
@@ -42,7 +44,7 @@ export const ApplicationDatatable = ({
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<Application[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<Application[]>([])
-  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Application>>({
     columnAccessor: 'fullName',
     direction: 'asc',
   })
@@ -100,7 +102,15 @@ export const ApplicationDatatable = ({
         applications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [applications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
+  }, [
+    applications,
+    tablePageSize,
+    tablePage,
+    searchQuery,
+    filters,
+    sortStatus,
+    selectedApplicationToView,
+  ])
 
   return (
     <Stack>
@@ -213,11 +223,10 @@ export const ApplicationDatatable = ({
       />
       <DataTable
         fetching={loadingStatus === 'loading'}
-        withBorder
+        withTableBorder
         minHeight={200}
         noRecordsText='No records to show'
         borderRadius='sm'
-        withColumnBorders
         verticalSpacing='md'
         striped
         highlightOnHover
@@ -234,48 +243,11 @@ export const ApplicationDatatable = ({
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
         bodyRef={bodyRef}
-        /* rowExpansion={{
-          allowMultiple: true,
-          collapseProps: {
-            transitionDuration: 500,
-            animateOpacity: false,
-            transitionTimingFunction: 'ease-out',
-          },
-          content: ({ record }) => (
-            <Stack p='xs' spacing={6}>
-              <Group spacing={6}>
-                <Text fw={700}>
-                  {record.student.firstName} {record.student.lastName}: {record.student.tumId}
-                </Text>
-              </Group>
-              <Group>
-                <Text fw={700}>Assessment Score:</Text>
-                <Text c='dimmed'>
-                  {record.assessment?.assessmentScore ?? 'No assessment score assigned yet.'}
-                </Text>
-              </Group>
-              <Group style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <Text fw={700}>Comments:</Text>
-                <Stack>
-                  {record.assessment?.instructorComments.map((comment, idx) => (
-                    <Group
-                      key={`${comment.id ?? ''}-${idx}`}
-                      style={{ display: 'flex', alignItems: 'flex-start' }}
-                    >
-                      <Text fw={700}>{comment.author}</Text>
-                      <Text c='dimmed'>{`${comment.text}`}</Text>
-                    </Group>
-                  ))}
-                </Stack>
-              </Group>
-            </Stack>
-          ),
-        }} */
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
-        rowContextMenu={{
-          items: () => [
+        onRowContextMenu={() =>
+          showContextMenu([
             {
               key: 'download',
               title: 'Download selected items',
@@ -294,12 +266,12 @@ export const ApplicationDatatable = ({
                 setBulkDeleteConfirmationOpened(true)
               },
             },
-          ],
-        }}
+          ])
+        }
         columns={[
           {
             accessor: 'type',
-            textAlignment: 'center',
+            textAlign: 'center',
             filter: (
               <MultiSelect
                 label='Type'
@@ -320,7 +292,7 @@ export const ApplicationDatatable = ({
                     applicationType: value,
                   })
                 }}
-                icon={<IconSearch size={16} />}
+                leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
               />
@@ -333,7 +305,7 @@ export const ApplicationDatatable = ({
           {
             accessor: 'assessment.status',
             title: 'Status',
-            textAlignment: 'center',
+            textAlign: 'center',
             filter: (
               <MultiSelect
                 label='Status'
@@ -352,7 +324,7 @@ export const ApplicationDatatable = ({
                     status: value,
                   })
                 }}
-                icon={<IconSearch size={16} />}
+                leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
               />
@@ -397,7 +369,7 @@ export const ApplicationDatatable = ({
           {
             accessor: 'assessment.assessmentScore',
             title: 'Score',
-            textAlignment: 'center',
+            textAlign: 'center',
             sortable: true,
           },
           {
@@ -427,9 +399,9 @@ export const ApplicationDatatable = ({
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,
-            textAlignment: 'right',
+            textAlign: 'right',
             render: (application) => (
-              <Group spacing={4} position='right' noWrap>
+              <Group gap={4} align='right' wrap='nowrap'>
                 <ActionIcon
                   color='blue'
                   onClick={(e: React.MouseEvent) => {
@@ -452,8 +424,8 @@ export const ApplicationDatatable = ({
             ),
           },
         ]}
-        onRowClick={(application) => {
-          setSelectedApplicationToView(application)
+        onRowClick={({ record }) => {
+          setSelectedApplicationToView(record)
         }}
       />
     </Stack>

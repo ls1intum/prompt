@@ -1,16 +1,16 @@
-import { AppShell, Card, Center, Loader, Title, Text, Group, Transition } from '@mantine/core'
-import React, { useEffect, useState } from 'react'
+import { Card, Center, Loader, Title, Text, Group, Transition } from '@mantine/core'
+import React, { useEffect, useMemo, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
-import { NavigationBar } from '../utilities/NavigationBar/NavigationBar'
 import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
 import { useDispatch } from 'react-redux'
 import { fetchAllCourseIterations } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import Keycloak from 'keycloak-js'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../redux/authSlice/authSlice'
 import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
 import { IconArrowBadgeRightFilled } from '@tabler/icons-react'
+import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -31,7 +31,7 @@ export const ManagementRoot = (): JSX.Element => {
       {(styles) => (
         <Center style={{ ...styles, height: '90vh' }}>
           <Group>
-            <Title order={3} color='dimmed'>
+            <Title order={3} c='dimmed'>
               Welcome back to PROMPT
             </Title>
             <IconArrowBadgeRightFilled style={{ color: '#2B70BE' }} />
@@ -45,7 +45,12 @@ export const ManagementRoot = (): JSX.Element => {
 const AccessRestricted = (): JSX.Element => {
   return (
     <div
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
     >
       <Card withBorder p='xl'>
         <Title order={5}>Restricted acccess!</Title>
@@ -67,21 +72,24 @@ export const ManagementConsole = ({
   onKeycloakValueChange,
 }: ManagmentConsoleProps): JSX.Element => {
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
-  const keycloak = new Keycloak({
-    realm: keycloakRealmName,
-    url: keycloakUrl,
-    clientId: 'prompt-client',
-  })
-  const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
   const [authenticated, setAuthenticated] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const { currentState, courseIterations } = useAppSelector((state) => state.courseIterations)
 
+  const keycloak = useMemo(() => {
+    return new Keycloak({
+      realm: keycloakRealmName,
+      url: keycloakUrl,
+      clientId: 'prompt-client',
+    })
+  }, [])
+  const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
+
   useEffect(() => {
     void keycloak
       .init({ onLoad: 'login-required' })
-      .then((authenticated) => {
-        if (authenticated) {
+      .then((isAuthenticated) => {
+        if (isAuthenticated) {
           setAuthenticated(true)
         } else {
           setAuthenticated(false)
@@ -125,13 +133,13 @@ export const ManagementConsole = ({
       .catch((err) => {
         alert(err)
       })
-  }, [])
+  }, [dispatch, keycloak, onKeycloakValueChange, permission])
 
   useEffect(() => {
     if (authenticated && !currentState && localStorage.getItem('course-iteration')) {
       void dispatch(fetchAllCourseIterations())
     }
-  }, [authenticated, currentState])
+  }, [authenticated, currentState, dispatch])
 
   useEffect(() => {
     if (!currentState && courseIterations.length > 0 && localStorage.getItem('course-iteration')) {
@@ -142,22 +150,22 @@ export const ManagementConsole = ({
         void dispatch(setCurrentState(savedCourseIteration))
       }
     }
-  }, [currentState, courseIterations])
+  }, [currentState, courseIterations, dispatch])
 
   useEffect(() => {
     if (authenticated && !mgmtAccess) {
       void keycloakValue.logout()
     }
-  }, [authenticated, mgmtAccess])
+  }, [authenticated, keycloakValue, mgmtAccess])
 
   return (
     <>
       {authenticated && mgmtAccess ? (
         <div>
           {currentState ? (
-            <AppShell navbar={<NavigationBar keycloak={keycloakValue} />}>
+            <NavigationLayout keycloak={keycloakValue}>
               {authenticated && <div style={{ margin: '2vh 2vw' }}>{child}</div>}
-            </AppShell>
+            </NavigationLayout>
           ) : (
             <WorkspaceSelectionDialog />
           )}

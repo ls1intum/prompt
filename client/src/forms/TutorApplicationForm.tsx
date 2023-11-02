@@ -146,7 +146,7 @@ export const TutorApplicationForm = ({
     if (accessMode === ApplicationFormAccessMode.STUDENT) {
       void dispatch(fetchCourseIterationsWithOpenTutorApplicationPeriod())
     }
-  }, [accessMode])
+  }, [accessMode, dispatch])
 
   return (
     <>
@@ -169,7 +169,12 @@ export const TutorApplicationForm = ({
           {courseIterationWithOpenTutorApplicationPeriod ??
           accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
-              sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '60vw',
+                gap: '2vh',
+              }}
               mx='auto'
             >
               {applicationSuccessfullySubmitted ? (
@@ -206,7 +211,9 @@ export const TutorApplicationForm = ({
                       <Checkbox
                         mt='md'
                         label='I have read the declaration of consent below and agree to the processing of my data.'
-                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                        {...consentForm.getInputProps('dataConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Spoiler
                         maxHeight={0}
@@ -231,11 +238,13 @@ export const TutorApplicationForm = ({
                             .
                           </Text>
                         }
-                        {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
+                        {...consentForm.getInputProps('introCourseConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                     </Stack>
                   )}
-                  <Group position='right' mt='md'>
+                  <Group align='right' mt='md'>
                     <Button
                       disabled={
                         !defaultForm.isValid() ||

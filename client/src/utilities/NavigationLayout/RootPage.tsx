@@ -7,7 +7,12 @@ export const RootPage = (): JSX.Element => {
 
   return (
     <div
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
     >
       <Card withBorder p='xl'>
         <Stack>
@@ -18,7 +23,7 @@ export const RootPage = (): JSX.Element => {
             onClick={() => {
               navigate('/applications/developer')
             }}
-            leftIcon={<IconBrandSwift />}
+            leftSection={<IconBrandSwift />}
           >
             iPraktikum
           </Button>
@@ -26,7 +31,7 @@ export const RootPage = (): JSX.Element => {
             onClick={() => {
               navigate('/applications/coach')
             }}
-            leftIcon={<IconUsersGroup />}
+            leftSection={<IconUsersGroup />}
           >
             Agile Project Management
           </Button>
@@ -34,7 +39,7 @@ export const RootPage = (): JSX.Element => {
             onClick={() => {
               navigate('/applications/tutor')
             }}
-            leftIcon={<IconSchool />}
+            leftSection={<IconSchool />}
           >
             Teaching iOS
           </Button>

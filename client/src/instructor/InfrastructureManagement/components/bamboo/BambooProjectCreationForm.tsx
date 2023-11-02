@@ -1,6 +1,7 @@
-import { Button, MultiSelect, Stack } from '@mantine/core'
+import { Button, Stack } from '@mantine/core'
 import { createBambooProjects } from '../../../../service/bambooService'
 import { useState } from 'react'
+import { MultiSelectCreatable, MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface BambooProjectCreationFormProps {
   projectNames: string[]
@@ -9,20 +10,20 @@ interface BambooProjectCreationFormProps {
 export const BambooProjectCreationForm = ({
   projectNames,
 }: BambooProjectCreationFormProps): JSX.Element => {
-  const [projectNameSuggestions, setProjectNameSuggestions] = useState(projectNames)
-  const [projectNamesToCreate, setProjectNamesToCreate] = useState(projectNameSuggestions)
+  const [projectNameSuggestions, setProjectNameSuggestions] = useState<MultiSelectItem[]>(
+    projectNames.map((p) => ({ label: p, value: p })),
+  )
+  const [projectNamesToCreate, setProjectNamesToCreate] = useState<MultiSelectItem[]>(
+    projectNameSuggestions.map((p) => ({ label: p.label, value: p.value })),
+  )
 
   return (
     <Stack>
-      <MultiSelect
+      <MultiSelectCreatable
         label='Project Names'
         data={projectNameSuggestions}
-        placeholder='Select or type project names to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
         onCreate={(query) => {
-          setProjectNameSuggestions((current) => [...current, query])
+          setProjectNameSuggestions((current) => [...current, { label: query, value: query }])
           return query
         }}
         value={projectNamesToCreate}
@@ -33,8 +34,8 @@ export const BambooProjectCreationForm = ({
           void createBambooProjects(
             projectNamesToCreate.map((pn) => {
               return {
-                name: pn,
-                key: pn,
+                name: pn.value,
+                key: pn.value,
               }
             }),
           )

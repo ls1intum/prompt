@@ -61,7 +61,7 @@ export const CoursePhaseCheckCreationModal = ({
           placeholder='Description'
           {...form.getInputProps('description')}
         />
-        <Group position='center'>
+        <Group align='center'>
           <Button
             onClick={() => {
               if (selectedCoursePhaseId) {

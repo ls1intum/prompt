@@ -1,4 +1,4 @@
-import { Button, Card, SimpleGrid, Stack, Title } from '@mantine/core'
+import { Button, Card, Center, SimpleGrid, Stack, Title } from '@mantine/core'
 import { useState } from 'react'
 import { useAppSelector } from '../../redux/store'
 import { ManagementSetupModal } from './components/ManagementSetupModal'
@@ -20,7 +20,7 @@ export const InfrastructureManagement = (): JSX.Element => {
       component: (
         <>
           <Button
-            leftIcon={<IconSettings />}
+            leftSection={<IconSettings />}
             variant='filled'
             onClick={() => {
               setMgmtSetupStepperOpened(true)
@@ -43,7 +43,7 @@ export const InfrastructureManagement = (): JSX.Element => {
       component: (
         <>
           <Button
-            leftIcon={<IconSettings />}
+            leftSection={<IconSettings />}
             variant='filled'
             onClick={() => {
               setIntroCourseSetupStepperOpened(true)
@@ -66,7 +66,7 @@ export const InfrastructureManagement = (): JSX.Element => {
       component: (
         <>
           <Button
-            leftIcon={<IconSettings />}
+            leftSection={<IconSettings />}
             variant='filled'
             onClick={() => {
               setTeamsSetupStepperOpened(true)
@@ -89,7 +89,7 @@ export const InfrastructureManagement = (): JSX.Element => {
       component: (
         <>
           <Button
-            leftIcon={<IconSettings />}
+            leftSection={<IconSettings />}
             variant='filled'
             onClick={() => {
               setTeamAssignmentModalOpened(true)
@@ -118,9 +118,9 @@ export const InfrastructureManagement = (): JSX.Element => {
               return (
                 <Card key={option.title} shadow='md' padding='lg' radius='md' withBorder>
                   <Stack>
-                    <Title align='center' order={4}>
-                      {option.title}
-                    </Title>
+                    <Center>
+                      <Title order={4}>{option.title}</Title>
+                    </Center>
                     {option.component}
                   </Stack>
                 </Card>

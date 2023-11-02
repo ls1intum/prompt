@@ -5,7 +5,6 @@ import {
   FileInput,
   Group,
   Modal,
-  MultiSelect,
   Stack,
   Stepper,
   Text,
@@ -21,6 +20,7 @@ import { BitbucketProjectsCreationForm } from './bitbucket/BitbucketProjectsCrea
 import { BambooProjectCreationForm } from './bamboo/BambooProjectCreationForm'
 import { JiraPermissionManager } from './jira/JiraPermissionManager'
 import { BitbucketPermissionsManager } from './bitbucket/BitbucketPermissionsManager'
+import { MultiSelectCreatable, MultiSelectItem } from '../../../utilities/CustomMultiSelect'
 
 interface TeamsSetupStepperProps {
   opened: boolean
@@ -45,12 +45,12 @@ export const TeamsSetupStepper = ({
     })
   }
 
-  const [projects, setProjects] = useState<string[]>([])
+  const [projects, setProjects] = useState<MultiSelectItem[]>([])
   const [prependProjectNamesWithIosTag, setPrependProjectNamesWithIosTag] = useState(false)
 
   return (
     <Modal centered size='100%' opened={opened} onClose={onClose}>
-      <Stepper active={activeSetupStep} onStepClick={setActiveSetupStep} breakpoint='lg'>
+      <Stepper active={activeSetupStep} onStepClick={setActiveSetupStep}>
         <Stepper.Step description='Upload Projects File'>
           <Stack>
             <Text fz='sm' c='dimmed'>
@@ -84,7 +84,7 @@ export const TeamsSetupStepper = ({
               label='Projects'
               placeholder='Upload .csv file with projects'
               accept='.csv'
-              icon={<IconUpload />}
+              leftSection={<IconUpload />}
               onChange={(file) => {
                 if (file) {
                   Papa.parse(file, {
@@ -113,24 +113,23 @@ export const TeamsSetupStepper = ({
                         )
                       })
 
-                      setProjects(projectsFromCsv)
+                      setProjects(projectsFromCsv.map((p) => ({ label: p, value: p })))
                     },
                   })
                 }
               }}
             />
-            <MultiSelect
+            <MultiSelectCreatable
               label='Projects'
               data={projects}
-              placeholder='Select or type a project name to create'
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create ${query}`}
               onCreate={(query) => {
                 const newProjectName = `${
                   prependProjectNamesWithIosTag ? iosTag.toUpperCase() : ''
                 }${query}`
-                setProjects((current) => [...current, newProjectName])
+                setProjects((current) => [
+                  ...current,
+                  { label: newProjectName, value: newProjectName },
+                ])
                 return newProjectName
               }}
               value={projects}
@@ -145,7 +144,7 @@ export const TeamsSetupStepper = ({
           </Text>
           <JiraProjectCategoriesCreationForm
             mode='teams'
-            initialProjectCategoriesToCreate={projects}
+            initialProjectCategoriesToCreate={projects.map((p) => p.value)}
           />
         </Stepper.Step>
         <Stepper.Step description='Create Jira Projects'>
@@ -154,33 +153,37 @@ export const TeamsSetupStepper = ({
             mode='teams'
             initialProjectsToCreate={projects.map((p) => {
               return {
-                name: p,
-                key: p,
+                name: p.value,
+                key: p.value,
                 lead: '',
               }
             })}
           />
         </Stepper.Step>
         <Stepper.Step description='Create Jira User Groups'>
-          <JiraGroupsCreationForm iosTag={iosTag} projectNames={projects} mode='teams' />
+          <JiraGroupsCreationForm
+            iosTag={iosTag}
+            projectNames={projects.map((p) => p.value)}
+            mode='teams'
+          />
         </Stepper.Step>
         <Stepper.Step description='Setup Jira Permissions'>
-          <JiraPermissionManager iosTag={iosTag} projectNames={projects} />
+          <JiraPermissionManager iosTag={iosTag} projectNames={projects.map((p) => p.value)} />
         </Stepper.Step>
         <Stepper.Step description='Create Bitbucket Projects'>
-          <BitbucketProjectsCreationForm projectNames={projects} />
+          <BitbucketProjectsCreationForm projectNames={projects.map((p) => p.value)} />
         </Stepper.Step>
         <Stepper.Step description='Setup Bitbucket Permissions'>
-          <BitbucketPermissionsManager iosTag={iosTag} projectNames={projects} />
+          <BitbucketPermissionsManager
+            iosTag={iosTag}
+            projectNames={projects.map((p) => p.value)}
+          />
         </Stepper.Step>
         <Stepper.Step description='Create Bamboo Projects'>
-          <BambooProjectCreationForm projectNames={projects} />
+          <BambooProjectCreationForm projectNames={projects.map((p) => p.value)} />
         </Stepper.Step>
-        {/* <Stepper.Step description='Create Confluence Spaces'>
-          <ConfluenceSpaceCreationForm iosTag={iosTag} projectNames={projects} />
-          </Stepper.Step> */}
       </Stepper>
-      <Group position='center' style={{ padding: '2vh 0' }}>
+      <Group align='center' style={{ padding: '2vh 0' }}>
         <Button variant='outline' onClick={prevSetupStep}>
           Back
         </Button>

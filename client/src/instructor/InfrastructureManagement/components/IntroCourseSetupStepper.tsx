@@ -34,7 +34,7 @@ export const IntroCourseSetupStepper = ({
 
   return (
     <Modal opened={opened} onClose={onClose} centered size='100%'>
-      <Stepper active={activeSetupStep} onStepClick={setActiveSetupStep} breakpoint='lg'>
+      <Stepper active={activeSetupStep} onStepClick={setActiveSetupStep}>
         <Stepper.Step description='Create Bitbucket Projects'>
           <Stack>
             <Text fz='sm' c='dimmed'>
@@ -75,7 +75,7 @@ export const IntroCourseSetupStepper = ({
               label='Student usernames'
               placeholder='Upload .csv file with student usernames'
               accept='.csv'
-              icon={<IconUpload />}
+              leftSection={<IconUpload />}
               onChange={(file) => {
                 if (file) {
                   Papa.parse(file, {
@@ -123,7 +123,7 @@ export const IntroCourseSetupStepper = ({
           <BitbucketStudentRepositoryPermissionManager iosTag={iosTag} students={students} />
         </Stepper.Step>
       </Stepper>
-      <Group position='center' style={{ padding: '2vh 0' }}>
+      <Group align='center' style={{ padding: '2vh 0' }}>
         <Button variant='outline' onClick={prevSetupStep}>
           Back
         </Button>

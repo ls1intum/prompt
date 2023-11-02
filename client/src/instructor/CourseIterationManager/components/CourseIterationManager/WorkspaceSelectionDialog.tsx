@@ -104,12 +104,12 @@ export const CourseIterationCreationModal = ({
           />
           <Group grow>
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Developer Application Period Start'
               {...form.getInputProps('developerApplicationPeriodStart')}
             />
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Developer Application Period End'
               {...form.getInputProps('developerApplicationPeriodEnd')}
             />
@@ -117,18 +117,18 @@ export const CourseIterationCreationModal = ({
           <Divider />
           <Group grow>
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Coach Application Period Start'
               {...form.getInputProps('coachApplicationPeriodStart')}
             />
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Coach Application Period End'
               {...form.getInputProps('coachApplicationPeriodEnd')}
             />
           </Group>
           <DateTimePicker
-            icon={<IconCalendar />}
+            leftSection={<IconCalendar />}
             withAsterisk
             label='Coach Interview Date'
             {...form.getInputProps('coachInterviewDate')}
@@ -146,18 +146,18 @@ export const CourseIterationCreationModal = ({
           <Divider />
           <Group grow>
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Tutor Application Period Start'
               {...form.getInputProps('tutorApplicationPeriodStart')}
             />
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Tutor Application Period End'
               {...form.getInputProps('tutorApplicationPeriodEnd')}
             />
           </Group>
           <DateTimePicker
-            icon={<IconCalendar />}
+            leftSection={<IconCalendar />}
             withAsterisk
             label='Tutor Interview Date'
             {...form.getInputProps('tutorInterviewDate')}
@@ -175,12 +175,12 @@ export const CourseIterationCreationModal = ({
           <Divider />
           <Group grow>
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Intro Course Start'
               {...form.getInputProps('introCourseStart')}
             />
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Intro Course End'
               {...form.getInputProps('introCourseEnd')}
             />
@@ -188,12 +188,12 @@ export const CourseIterationCreationModal = ({
           <Divider />
           <Group grow>
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Kickoff Submission Start'
               {...form.getInputProps('kickoffSubmissionPeriodStart')}
             />
             <DatePickerInput
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Kickoff Submission End'
               {...form.getInputProps('kickoffSubmissionPeriodEnd')}
             />
@@ -244,7 +244,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
 
   useEffect(() => {
     void dispatch(fetchAllCourseIterations())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (fetchAllCourseIterations.length > 0) {
@@ -254,7 +254,12 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
 
   return (
     <div
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
     >
       <Stack>
         <CourseIterationCreationModal

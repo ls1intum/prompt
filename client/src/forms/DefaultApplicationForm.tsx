@@ -1,4 +1,5 @@
 import {
+  Center,
   Checkbox,
   Group,
   Image,
@@ -55,7 +56,13 @@ export const DefaultApplicationForm = ({
   return (
     <>
       {accessMode === ApplicationFormAccessMode.STUDENT && (
-        <Group style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <Group
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
           <div
             style={{
               width: '15vw',
@@ -64,9 +71,9 @@ export const DefaultApplicationForm = ({
           >
             <Image src={LS1Logo} alt='LS1 Logo' />
           </div>
-          <Title align='center' order={3}>
-            {title}
-          </Title>
+          <Center>
+            <Title order={3}>{title}</Title>
+          </Center>
         </Group>
       )}
       <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
@@ -74,7 +81,9 @@ export const DefaultApplicationForm = ({
           mt='md'
           disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
           label='Are you an exchange student?'
-          {...form.getInputProps('student.isExchangeStudent', { type: 'checkbox' })}
+          {...form.getInputProps('student.isExchangeStudent', {
+            type: 'checkbox',
+          })}
         />
         <Group grow align='center'>
           <TextInput

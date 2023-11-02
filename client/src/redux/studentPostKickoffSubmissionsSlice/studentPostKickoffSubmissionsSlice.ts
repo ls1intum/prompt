@@ -112,7 +112,7 @@ export const studentPostKickoffSubmissionsSlice = createSlice({
       state.error = null
     })
 
-    builder.addCase(sendKickoffSubmissionInvitations.fulfilled, (state, { payload }) => {
+    builder.addCase(sendKickoffSubmissionInvitations.fulfilled, (state) => {
       state.status = 'idle'
     })
 

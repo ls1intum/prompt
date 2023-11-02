@@ -1,4 +1,4 @@
-import { Button, Modal, TransferList, type TransferListData } from '@mantine/core'
+import { Button, Modal } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
@@ -6,6 +6,7 @@ import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
 import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
 import { type Application } from '../../../../redux/applicationsSlice/applicationsSlice'
+import { TransferList, TransferListItem } from '../../../../utilities/TransferList/TransferList'
 
 interface ProjectTeamMemberListModalProps {
   projectTeam: ProjectTeam
@@ -21,7 +22,7 @@ export const ProjectTeamMemberListModal = ({
   const dispatch = useDispatch<AppDispatch>()
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const developerApplications = useAppSelector((state) => state.applications.developerApplications)
-  const [data, setData] = useState<TransferListData>([[], []])
+  const [data, setData] = useState<TransferListItem[][]>([[], []])
 
   useEffect(() => {
     setData([
@@ -97,12 +98,11 @@ export const ProjectTeamMemberListModal = ({
   return (
     <Modal opened={opened} onClose={onClose} centered size='xl'>
       <TransferList
-        value={data}
-        searchPlaceholder='Search...'
-        nothingFound='Nothing here'
-        titles={['Student Applications', projectTeam.customer]}
+        leftSectionData={data[0]}
+        rightSectionData={data[1]}
+        leftSectionTitle='Student Applications'
+        rightSectionTitle={projectTeam.customer}
         onChange={setData}
-        listHeight={600}
       />
       <Button variant='filled' onClick={save} style={{ marginTop: '2vh' }}>
         Save

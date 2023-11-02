@@ -2,8 +2,8 @@ import Keycloak from 'keycloak-js'
 import { keycloakRealmName, keycloakUrl } from '../../service/configService'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../redux/store'
-import { useEffect, useState } from 'react'
-import jwtDecode from 'jwt-decode'
+import { useEffect, useMemo, useState } from 'react'
+import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../../redux/authSlice/authSlice'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'
 import { Center } from '@mantine/core'
@@ -13,18 +13,21 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const [authenticated, setAuthenticated] = useState(false)
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
-  const keycloak = new Keycloak({
-    realm: keycloakRealmName,
-    url: keycloakUrl,
-    clientId: 'prompt-client',
-  })
+
+  const keycloak = useMemo(() => {
+    return new Keycloak({
+      realm: keycloakRealmName,
+      url: keycloakUrl,
+      clientId: 'prompt-client',
+    })
+  }, [])
   const [, setKeycloakValue] = useState<Keycloak>(keycloak)
 
   useEffect(() => {
     void keycloak
       .init({ onLoad: 'login-required' })
-      .then((authenticated) => {
-        if (authenticated) {
+      .then((isAuthenticated) => {
+        if (isAuthenticated) {
           setAuthenticated(true)
         } else {
           setAuthenticated(false)
@@ -80,7 +83,7 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
       .catch((err) => {
         alert(err)
       })
-  }, [])
+  }, [dispatch, keycloak])
 
   return (
     <>

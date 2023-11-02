@@ -29,7 +29,7 @@ export const BitbucketPermissionsManager = ({
       }
     }
     void loadJiraGroups()
-  }, [])
+  }, [iosTag])
 
   useEffect(() => {
     const generatedBitbucketProjectPermissionGrants: BitbucketProjectPermissionGrant[] = []
@@ -62,7 +62,7 @@ export const BitbucketPermissionsManager = ({
       })
     })
     setBitbucketProjectPermissionGrants(generatedBitbucketProjectPermissionGrants)
-  }, [projectNames, fetchedJiraGroups])
+  }, [projectNames, fetchedJiraGroups, iosTag])
 
   return (
     <Stack>

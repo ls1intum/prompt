@@ -22,8 +22,13 @@ export const CoursePhaseTab = ({
           .sort((a, b) => a.coursePhaseCheck.sequentialOrder - b.coursePhaseCheck.sequentialOrder)
           .map((checkEntry) => (
             <Paper shadow='md' p='md' style={{ width: '50vw' }} key={checkEntry.id}>
-              <Stack spacing='xs'>
-                <Group style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <Stack gap='xs'>
+                <Group
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
                   <Stack>
                     <Text>
                       {checkEntry.coursePhaseCheck.sequentialOrder + 1}.{' '}
@@ -50,7 +55,7 @@ export const CoursePhaseTab = ({
             </Paper>
           ))
       ) : (
-        <Group position='center'>
+        <Group align='center'>
           <Text c='dimmed'>No course phase checks found.</Text>
         </Group>
       )}

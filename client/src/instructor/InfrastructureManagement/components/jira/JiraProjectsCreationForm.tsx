@@ -97,7 +97,7 @@ export const JiraProjectsCreationForm = ({
         }),
       )
     }
-  }, [fetchedProjectCategories, mode])
+  }, [fetchedProjectCategories, iosTag, mode, projectLeadUsername, projectsToCreate])
 
   return (
     <Stack>
@@ -122,7 +122,7 @@ export const JiraProjectsCreationForm = ({
         <tbody>{projects}</tbody>
       </Table>
       <Stack>
-        <Group position='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
+        <Group align='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
           <TextInput
             placeholder='Project name'
             label='Project Name'
@@ -132,10 +132,13 @@ export const JiraProjectsCreationForm = ({
             label='Project Category'
             placeholder='Project category'
             searchable
-            nothingFound='No project categories found.'
+            nothingFoundMessage='No project categories found.'
             data={[
               ...fetchedProjectCategories.map((jiraProjectCategory) => {
-                return { value: jiraProjectCategory.id ?? '', label: jiraProjectCategory.name }
+                return {
+                  value: jiraProjectCategory.id ?? '',
+                  label: jiraProjectCategory.name,
+                }
               }),
             ]}
             {...newProjectForm.getInputProps('categoryId')}

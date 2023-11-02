@@ -1,3 +1,4 @@
+declare module '*.scss'
 declare module '*.png'
 declare module 'react-native-web'
 declare module 'react-beautiful-dnd'

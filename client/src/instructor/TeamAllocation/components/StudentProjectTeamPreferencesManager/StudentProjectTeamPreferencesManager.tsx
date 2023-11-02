@@ -1,27 +1,16 @@
 import { useAppSelector } from '../../../../redux/store'
 import { useRef, useState } from 'react'
-import { Button, Group, Switch, Text, Transition, createStyles, px } from '@mantine/core'
+import { Button, Group, Switch, Text, Transition } from '@mantine/core'
 import { IconBuilding, IconChevronRight, IconDownload, IconUser } from '@tabler/icons-react'
 import { CSVLink } from 'react-csv'
 import { DataTable } from 'mantine-datatable'
-
-const useStyles = createStyles((theme) => ({
-  expandIcon: {
-    transition: 'transform 0.2s ease',
-  },
-  expandIconRotated: {
-    transform: 'rotate(90deg)',
-  },
-  employeeName: {
-    marginLeft: px(theme.spacing.xl) * 2,
-  },
-}))
+import './StudentProjectTeamPreferencesManager.scss'
+import classNames from 'classnames'
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const enrolledDeveloperApplications = useAppSelector(
     (state) => state.applications.developerApplications,
   ).filter((application) => application.assessment.status === 'INTRO_COURSE_PASSED')
-  const { cx, classes } = useStyles()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const studentPostKickoffSubmissions = useAppSelector(
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
@@ -51,7 +40,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           }}
         />
         <Button
-          leftIcon={<IconDownload />}
+          leftSection={<IconDownload />}
           variant='filled'
           disabled={studentPostKickoffSubmissions.length === 0}
           onClick={() => {
@@ -87,7 +76,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             .filter((stp) => stp.student?.id === student.student.id)
             .forEach((stp) => {
               const preferences = new Map()
-              stp.studentProjectTeamPreferences.forEach((p, idx) => {
+              stp.studentProjectTeamPreferences.forEach((p) => {
                 preferences.set(
                   `Priorities[${p.priorityScore + 1}]`,
                   projectTeams.filter((projectTeam) => projectTeam.id === p.projectTeamId).at(0)
@@ -113,7 +102,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         {(styles) => (
           <DataTable
             style={styles}
-            withBorder
+            withTableBorder
             minHeight={200}
             withColumnBorders
             highlightOnHover
@@ -123,11 +112,11 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                 accessor: 'student',
                 title: 'Student',
                 render: ({ student, id }) => (
-                  <Group spacing='xs'>
+                  <Group gap='xs'>
                     <IconChevronRight
                       size='0.9em'
-                      className={cx(classes.expandIcon, {
-                        [classes.expandIconRotated]: expandedStudentIds.includes(id ?? ''),
+                      className={classNames('expandIcon', {
+                        ['expandIconRotated']: expandedStudentIds.includes(id ?? ''),
                       })}
                     />
                     <IconUser size='0.9em' />
@@ -152,7 +141,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                     {
                       accessor: 'projectTeamId',
                       render: ({ projectTeamId }) => (
-                        <Group ml='lg' spacing='xs' noWrap>
+                        <Group ml='lg' gap='xs' wrap='nowrap'>
                           <IconBuilding size='0.9em' />
                           <Text>
                             {projectTeams.filter((p) => p.id === projectTeamId).at(0)?.customer}
@@ -162,7 +151,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                     },
                     {
                       accessor: 'priorityScore',
-                      textAlignment: 'right',
+                      textAlign: 'right',
                       width: 200,
                       render: ({ priorityScore }) => priorityScore + 1,
                     },
@@ -183,7 +172,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
           <DataTable
             style={styles}
             minHeight={200}
-            withBorder
+            withTableBorder
             withColumnBorders
             highlightOnHover
             noRecordsText='No records to show'
@@ -192,11 +181,11 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                 accessor: 'id',
                 title: 'Customer',
                 render: ({ id, customer }) => (
-                  <Group spacing='xs'>
+                  <Group gap='xs'>
                     <IconChevronRight
                       size='0.9em'
-                      className={cx(classes.expandIcon, {
-                        [classes.expandIconRotated]: expandedStudentPreferences.includes(id ?? ''),
+                      className={classNames('expandIcon', {
+                        ['expandIconRotated']: expandedStudentPreferences.includes(id ?? ''),
                       })}
                     />
                     <IconBuilding size='0.9em' />
@@ -221,7 +210,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                     {
                       accessor: 'student',
                       render: ({ student }) => (
-                        <Group ml='lg' spacing='xs' noWrap>
+                        <Group ml='lg' gap='xs' wrap='nowrap'>
                           <IconBuilding size='0.9em' />
                           <Text>
                             {`${student?.firstName ?? ''} ${student?.lastName ?? ''} - ${
@@ -234,7 +223,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                     {
                       accessor: 'priorityScore',
                       render: ({ studentProjectTeamPreferences }) => (
-                        <Group ml='lg' spacing='xs' noWrap>
+                        <Group ml='lg' gap='xs' wrap='nowrap'>
                           <IconBuilding size='0.9em' />
                           <Text>
                             {`${

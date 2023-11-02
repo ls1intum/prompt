@@ -14,7 +14,7 @@ export const SkillsManager = (): JSX.Element => {
 
   useEffect(() => {
     void dispatch(fetchSkills())
-  }, [])
+  }, [dispatch])
 
   return (
     <>
@@ -26,7 +26,7 @@ export const SkillsManager = (): JSX.Element => {
           }}
         />
         <Button
-          leftIcon={<IconPlus />}
+          leftSection={<IconPlus />}
           variant='filled'
           onClick={() => {
             setSkillCreationModalOpened(true)

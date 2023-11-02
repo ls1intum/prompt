@@ -49,8 +49,8 @@ export const SkillCard = ({ skill }: SkillCardProps): JSX.Element => {
 
   return (
     <Card shadow='sm' padding='lg' radius='md' withBorder style={{ width: '50vw' }}>
-      <Group position='apart' mt='md' mb='xs'>
-        <Text weight={500}>{skill.title}</Text>
+      <Group align='apart' mt='md' mb='xs'>
+        <Text fw={500}>{skill.title}</Text>
         <Badge
           color={skill.active ? 'green' : 'red'}
           variant='light'
@@ -66,7 +66,7 @@ export const SkillCard = ({ skill }: SkillCardProps): JSX.Element => {
       <Text size='sm' color='dimmed'>
         {skill.description}
       </Text>
-      <Group position='right'>
+      <Group align='right'>
         <SkillDeletionConfirmationModal
           opened={deletionConfirmationModalOpened}
           onClose={() => {
@@ -81,7 +81,7 @@ export const SkillCard = ({ skill }: SkillCardProps): JSX.Element => {
         />
         <Button
           variant='outline'
-          leftIcon={<IconTrash />}
+          leftSection={<IconTrash />}
           onClick={() => {
             setDeletionConfirmationModalOpened(true)
           }}

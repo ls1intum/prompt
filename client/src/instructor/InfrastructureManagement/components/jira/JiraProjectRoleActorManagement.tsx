@@ -89,7 +89,7 @@ export const JiraProjectRoleActorManager = ({
     setUsersRoleActorsToAdd([...newRoleActors])
     setDevelopersRoleActorsToAdd([...newRoleActors])
     setAdministratorsRoleActorsToAdd([...newRoleActors])
-  }, [fetchedJiraGroups, fetchedJiraProjects])
+  }, [fetchedJiraGroups, fetchedJiraProjects, iosTag.length])
 
   return (
     <Stack>
@@ -223,7 +223,7 @@ export const JiraProjectRoleActorManagement = ({
           ))}
         </tbody>
       </Table>
-      <Group position='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
+      <Group align='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
         <TextInput
           placeholder='Project key'
           label='Project Key'

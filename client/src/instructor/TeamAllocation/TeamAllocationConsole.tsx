@@ -33,7 +33,7 @@ export const TeamAllocationConsole = (): JSX.Element => {
       void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
       void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
     }
-  }, [selectedCourseIteration])
+  }, [dispatch, selectedCourseIteration])
 
   return (
     <Stack>
@@ -47,13 +47,13 @@ export const TeamAllocationConsole = (): JSX.Element => {
       )}
       <Tabs defaultValue='teams' variant='outline'>
         <Tabs.List>
-          <Tabs.Tab value='teams' icon={<IconUsers />}>
+          <Tabs.Tab value='teams' leftSection={<IconUsers />}>
             Project Teams Management
           </Tabs.Tab>
-          <Tabs.Tab value='preferences' icon={<IconListNumbers />}>
+          <Tabs.Tab value='preferences' leftSection={<IconListNumbers />}>
             Student Project Team Preferences
           </Tabs.Tab>
-          <Tabs.Tab value='skills' icon={<IconChartArrowsVertical />}>
+          <Tabs.Tab value='skills' leftSection={<IconChartArrowsVertical />}>
             Skills Manager
           </Tabs.Tab>
         </Tabs.List>

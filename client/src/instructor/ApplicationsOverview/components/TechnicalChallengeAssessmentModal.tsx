@@ -81,7 +81,7 @@ export const TechnicalChallengeAssessmentModal = ({
         <FileInput
           placeholder='Upload .csv technical challenge export file from Artemis'
           accept='.csv'
-          icon={<IconUpload />}
+          leftSection={<IconUpload />}
           onChange={(file) => {
             if (file) {
               Papa.parse(file, {
@@ -208,7 +208,7 @@ export const TechnicalChallengeAssessmentModal = ({
           </Button>
         )}
         {upload && (
-          <Table striped withBorder withColumnBorders>
+          <Table striped withTableBorder withColumnBorders>
             <thead>
               <tr>
                 {columnNames.map((columnName) => (

@@ -135,7 +135,7 @@ export const DeveloperApplicationForm = ({
     if (accessMode === ApplicationFormAccessMode.STUDENT) {
       void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
     }
-  }, [accessMode])
+  }, [accessMode, dispatch])
 
   return (
     <>
@@ -158,7 +158,12 @@ export const DeveloperApplicationForm = ({
           {courseIterationWithOpenApplicationPeriod ??
           accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
-              sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '60vw',
+                gap: '2vh',
+              }}
               mx='auto'
             >
               {applicationSuccessfullySubmitted ? (
@@ -178,7 +183,9 @@ export const DeveloperApplicationForm = ({
                       <Checkbox
                         mt='md'
                         label='I have read the declaration of consent below and agree to the processing of my data.'
-                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                        {...consentForm.getInputProps('dataConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Spoiler
                         maxHeight={0}
@@ -204,12 +211,17 @@ export const DeveloperApplicationForm = ({
                             .
                           </Text>
                         }
-                        {...consentForm.getInputProps('introCourseConsent', { type: 'checkbox' })}
+                        {...consentForm.getInputProps('introCourseConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Checkbox
                         mt='md'
-                        label={`I am aware that the iPraktikum is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
-                        {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
+                        label={`I am aware that the iPraktikum is a very demanding 10 ECTS 
+                        practical course and I agree to put in the required amount of work, time and effort.`}
+                        {...consentForm.getInputProps('workloadConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Checkbox
                         label={
@@ -231,7 +243,7 @@ export const DeveloperApplicationForm = ({
                       />
                     </Stack>
                   )}
-                  <Group position='right' mt='md'>
+                  <Group align='right' mt='md'>
                     <Button
                       type='submit'
                       disabled={

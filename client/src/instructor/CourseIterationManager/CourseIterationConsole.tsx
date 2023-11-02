@@ -8,13 +8,13 @@ export const CourseIterationConsole = (): JSX.Element => {
   return (
     <Tabs defaultValue='active-course-iteration' variant='outline'>
       <Tabs.List>
-        <Tabs.Tab value='active-course-iteration' icon={<IconTargetArrow />}>
+        <Tabs.Tab value='active-course-iteration' leftSection={<IconTargetArrow />}>
           Active Course Iteration
         </Tabs.Tab>
-        <Tabs.Tab value='course-iterations-overview' icon={<IconListDetails />}>
+        <Tabs.Tab value='course-iterations-overview' leftSection={<IconListDetails />}>
           Course Iterations Overview
         </Tabs.Tab>
-        <Tabs.Tab value='course-phases-manager' icon={<IconListCheck />}>
+        <Tabs.Tab value='course-phases-manager' leftSection={<IconListCheck />}>
           Course Phases Manager
         </Tabs.Tab>
       </Tabs.List>

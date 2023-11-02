@@ -51,7 +51,7 @@ export const TeamAssignmentModal = ({ opened, onClose }: TeamAssignmentModalProp
           label='Team assignments'
           placeholder='Upload .csv file with team assignments'
           accept='.csv'
-          icon={<IconUpload />}
+          leftSection={<IconUpload />}
           onChange={(file) => {
             if (file) {
               Papa.parse(file, {

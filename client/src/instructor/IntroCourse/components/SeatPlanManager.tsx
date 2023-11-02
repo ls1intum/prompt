@@ -55,7 +55,7 @@ const TechnicalDataEmailInvitationsSendConfirmationModal = ({
           Are You sure You would like to send email invitations to enrolled students in order to
           request them to submit technical details?
         </Text>
-        <Group position='right'>
+        <Group align='right'>
           <Button variant='outline' onClick={onClose}>
             Cancel
           </Button>
@@ -113,7 +113,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
     showOnlyDroppedOut: false,
     excludeDroppedOut: false,
   })
-  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus<IntroCourseParticipation>>({
     columnAccessor: 'fullName',
     direction: 'asc',
   })
@@ -188,6 +188,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
     filters,
     chairDeviceRequiredFilter,
     sortStatus,
+    selectedParticipation,
   ])
 
   return (
@@ -222,7 +223,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           />
           <CSVLink
             data={participations?.flatMap((participation) => {
-              const tutor = tutors.find((tutor) => tutor.id === participation.tutorId)
+              const tutor = tutors.find((t) => t.id === participation.tutorId)
               return {
                 tumId: participation.student?.tumId,
                 firstName: participation.student?.firstName,
@@ -244,17 +245,17 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             ref={downloadLinkRef}
             target='_blank'
           />
-          <Group position='apart'>
+          <Group align='apart'>
             <TextInput
-              sx={{ flexBasis: '70%', margin: '1vh 0' }}
+              style={{ flexBasis: '70%', margin: '1vh 0' }}
               placeholder='Search students...'
-              icon={<IconSearch size={16} />}
+              leftSection={<IconSearch size={16} />}
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.currentTarget.value)
               }}
             />
-            <Group position='right'>
+            <Group align='right'>
               <Tooltip
                 label={
                   'Send Email Invitations to Enrolled Student to Request Technical Data such as Apple Id and Device Ids'
@@ -274,7 +275,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
               </Tooltip>
               <Button
                 variant='outline'
-                leftIcon={<IconDownload size={16} />}
+                leftSection={<IconDownload size={16} />}
                 onClick={() => {
                   downloadLinkRef.current?.link?.click()
                 }}
@@ -282,7 +283,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 Export
               </Button>
               <Button
-                leftIcon={<IconUpload size={16} />}
+                leftSection={<IconUpload size={16} />}
                 onClick={() => {
                   setSeatPlanUploadModalOpened(true)
                 }}
@@ -294,7 +295,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
         </>
       )}
       <DataTable
-        withBorder
+        withTableBorder
         minHeight={200}
         noRecordsText='No records to show'
         borderRadius='sm'
@@ -313,7 +314,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
         onRecordsPerPageChange={(pageSize) => {
           setTablePageSize(pageSize)
         }}
-        onRowClick={(introCourseParticipation) => {
+        onRowClick={({ record: introCourseParticipation }) => {
           setSelectedParticipation(introCourseParticipation)
           setParticipationEditModalOpened(true)
         }}
@@ -324,7 +325,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           {
             accessor: 'fullName',
             title: 'Full Name',
-            textAlignment: 'center',
+            textAlign: 'center',
             render: ({ student, passed, droppedOut }) => (
               <Stack>
                 {`${student.firstName ?? ''} ${student.lastName ?? ''}`}
@@ -353,7 +354,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                       passed: value,
                     })
                   }}
-                  icon={<IconSearch size={16} />}
+                  leftSection={<IconSearch size={16} />}
                   clearable
                   searchable
                 />
@@ -387,7 +388,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           {
             accessor: 'tutorApplicationId',
             title: 'Tutor',
-            textAlignment: 'center',
+            textAlign: 'center',
             filter: (
               <MultiSelect
                 label='Tutor'
@@ -403,7 +404,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 onChange={(value) => {
                   setFilters({ ...filters, tutors: value })
                 }}
-                icon={<IconSearch size={16} />}
+                leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
               />
@@ -417,7 +418,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           {
             accessor: 'devices',
             title: 'Devices',
-            textAlignment: 'center',
+            textAlign: 'center',
             render: ({
               appleId,
               iphoneDeviceId,
@@ -474,12 +475,12 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           {
             accessor: 'seat',
             title: 'Seat',
-            textAlignment: 'center',
+            textAlign: 'center',
           },
           {
             accessor: 'chairDeviceRequired',
             title: 'Chair Device',
-            textAlignment: 'center',
+            textAlign: 'center',
             filter: (
               <Checkbox
                 label='Chair Device'
@@ -494,7 +495,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             render: ({ chairDevice }) => (
               <>
                 {chairDevice && (
-                  <Group position='center'>
+                  <Group align='center'>
                     <IconDeviceLaptop color='#2B70BE' />
                     <Text>{chairDevice}</Text>
                   </Group>
@@ -505,7 +506,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
           {
             accessor: 'proficiency',
             title: 'Proficiency',
-            textAlignment: 'right',
+            textAlign: 'right',
             filter: (
               <MultiSelect
                 label='Proficiency'
@@ -523,7 +524,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                     proficiency: value,
                   })
                 }}
-                icon={<IconSearch size={16} />}
+                leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
               />

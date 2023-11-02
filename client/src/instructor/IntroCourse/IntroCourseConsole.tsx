@@ -38,7 +38,7 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
       void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
       void dispatch(fetchAllIntroCourseTutors(selectedCourseIteration.semesterName))
     }
-  }, [selectedCourseIteration])
+  }, [dispatch, selectedCourseIteration])
 
   return (
     <Stack>
@@ -52,12 +52,11 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
       {selectedCourseIteration?.introCourseStart &&
         selectedCourseIteration?.introCourseEnd &&
         !!introCourseProgress && (
-          <Progress
-            label='Intro Course Progress'
-            value={introCourseProgress}
-            color='blue'
-            size='xl'
-          />
+          <Progress.Root size='xl'>
+            <Progress.Section value={introCourseProgress} color='blue'>
+              <Progress.Label>Intro Course Progress</Progress.Label>
+            </Progress.Section>
+          </Progress.Root>
         )}
       <SeatPlanManager keycloak={keycloak} />
     </Stack>

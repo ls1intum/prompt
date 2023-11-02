@@ -37,7 +37,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
   const [selectedApplicationToView, setSelectedApplicationToView] = useState<
     ThesisApplication | undefined
   >(undefined)
-  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus<ThesisApplication>>({
     columnAccessor: 'createdAt',
     direction: 'desc',
   })
@@ -50,7 +50,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
   useEffect(() => {
     void dispatch(fetchThesisApplications(ApplicationStatus.NOT_ASSESSED))
     void dispatch(fetchThesisAdvisors())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (applicationId) {
@@ -106,7 +106,15 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
         applications.filter((ca) => ca.id === selectedApplicationToView.id).at(0),
       )
     }
-  }, [applications, tablePageSize, tablePage, searchQuery, filters, sortStatus])
+  }, [
+    applications,
+    tablePageSize,
+    tablePage,
+    searchQuery,
+    filters,
+    sortStatus,
+    selectedApplicationToView,
+  ])
 
   return (
     <Stack>
@@ -127,9 +135,9 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
         </Modal>
       )}
       <TextInput
-        sx={{ margin: '1vh 0', width: '30vw' }}
+        style={{ margin: '1vh 0', width: '30vw' }}
         placeholder='Search applications...'
-        icon={<IconSearch size={16} />}
+        leftSection={<IconSearch size={16} />}
         value={searchQuery}
         onChange={(e) => {
           setSearchQuery(e.currentTarget.value)
@@ -137,7 +145,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
       />
       <DataTable
         fetching={isLoading}
-        withBorder
+        withTableBorder
         minHeight={200}
         noRecordsText='No records to show'
         borderRadius='sm'
@@ -165,7 +173,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
           {
             accessor: 'application_status',
             title: 'Status',
-            textAlignment: 'center',
+            textAlign: 'center',
             filter: (
               <MultiSelect
                 label='Status'
@@ -184,7 +192,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
                     status: value,
                   })
                 }}
-                icon={<IconSearch size={16} />}
+                leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
               />
@@ -240,9 +248,9 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,
-            textAlignment: 'right',
+            textAlign: 'right',
             render: (application) => (
-              <Group position='right' noWrap>
+              <Group align='right' wrap='nowrap'>
                 <ActionIcon
                   color='blue'
                   onClick={(e: React.MouseEvent) => {
@@ -270,7 +278,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
             ),
           },
         ]}
-        onRowClick={(application) => {
+        onRowClick={({ record: application }) => {
           navigate(`/management/thesis-applications/${application.id}`)
         }}
       />

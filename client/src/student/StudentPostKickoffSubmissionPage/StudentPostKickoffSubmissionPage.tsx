@@ -61,7 +61,12 @@ interface SuccessfulSubmissionProps {
 const SuccessfulSubmission = ({ title, text }: SuccessfulSubmissionProps): JSX.Element => {
   return (
     <div
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
     >
       <Card withBorder p='xl'>
         <Title order={5}>{title}</Title>
@@ -119,7 +124,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   useEffect(() => {
     void dispatch(fetchCourseIterationsWithOpenKickOffPeriod())
     void dispatch(fetchSkills())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     form.setValues({
@@ -132,18 +137,18 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
         }
       }),
     })
-  }, [skills])
+  }, [form, skills])
 
   useEffect(() => {
     if (courseIterationWithOpenKickOffPeriod) {
       void dispatch(fetchProjectTeams(courseIterationWithOpenKickOffPeriod.semesterName))
     }
-  }, [courseIterationWithOpenKickOffPeriod])
+  }, [dispatch, courseIterationWithOpenKickOffPeriod])
 
   useEffect(() => {
     rightSideStateHandlers.setState(shuffleProjectTeams(projectTeams))
     leftSideStateHandlers.setState([])
-  }, [projectTeams])
+  }, [leftSideStateHandlers, projectTeams, rightSideStateHandlers])
 
   useEffect(() => {
     if (!studentId) {
@@ -347,11 +352,11 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                               draggableId={projectTeam.id}
                               index={index}
                             >
-                              {(provided: any) => (
+                              {(prov: any) => (
                                 <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
+                                  ref={prov.innerRef}
+                                  {...prov.draggableProps}
+                                  {...prov.dragHandleProps}
                                 >
                                   <Card withBorder>
                                     <Group>
@@ -389,11 +394,11 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                               draggableId={projectTeam.id}
                               index={index}
                             >
-                              {(provided: any) => (
+                              {(prov: any) => (
                                 <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
+                                  ref={prov.innerRef}
+                                  {...prov.draggableProps}
+                                  {...prov.dragHandleProps}
                                 >
                                   <Card withBorder>
                                     <Text color='dimmed' size='sm'>
@@ -435,7 +440,9 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
             <Checkbox
               mt='md'
               label='I have read the course agreement below and agree to it'
-              {...consentForm.getInputProps('courseAgreement', { type: 'checkbox' })}
+              {...consentForm.getInputProps('courseAgreement', {
+                type: 'checkbox',
+              })}
             />
             <Spoiler
               maxHeight={0}
@@ -445,7 +452,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
               <KickOffCourseAgreement />
             </Spoiler>
           </Container>
-          <Group position='right'>
+          <Group align='right'>
             <Button
               variant='filled'
               disabled={

@@ -31,7 +31,7 @@ export const ConfluenceSpaceCreationForm = ({
         }
       }),
     ])
-  }, [spaces])
+  }, [iosTag, spaces, spacesToCreate])
 
   return (
     <Stack>
@@ -61,7 +61,7 @@ export const ConfluenceSpaceCreationForm = ({
           ))}
         </tbody>
       </Table>
-      <Group position='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
+      <Group align='center' grow style={{ display: 'flex', alignItems: 'flex-end' }}>
         <TextInput
           placeholder='Space name'
           label='Space Name'

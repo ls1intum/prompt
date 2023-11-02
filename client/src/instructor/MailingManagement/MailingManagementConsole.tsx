@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import { RichTextEditor, Link } from '@mantine/tiptap'
 import { useEditor, BubbleMenu } from '@tiptap/react'
 import Highlight from '@tiptap/extension-highlight'
@@ -122,7 +123,7 @@ export const MailingManagementConsole = (): JSX.Element => {
       }
       setPreviewContent(preview)
     }
-  }, [activeTab])
+  }, [activeTab, activeTemplate, editor])
 
   return (
     <Stack>
@@ -209,17 +210,17 @@ export const MailingManagementConsole = (): JSX.Element => {
       <Tabs
         defaultValue='editor'
         value={activeTab}
-        onTabChange={(value) => {
+        onChange={(value) => {
           setActiveTab(value)
         }}
       >
         <Tabs.List>
-          <Tabs.Tab value='editor' icon={<IconHtml size='0.8rem' />}>
+          <Tabs.Tab value='editor' leftSection={<IconHtml size='0.8rem' />}>
             Editor
           </Tabs.Tab>
           <Tabs.Tab
             value='preview'
-            icon={<IconEyeCheck size='0.8rem' />}
+            leftSection={<IconEyeCheck size='0.8rem' />}
             disabled={!activeTemplate}
           >
             Preview
@@ -308,7 +309,7 @@ export const MailingManagementConsole = (): JSX.Element => {
         </Tabs.Panel>
       </Tabs>
       <Group
-        position='right'
+        align='right'
         onClick={() => {
           void (async () => {
             if (activeTemplate) {

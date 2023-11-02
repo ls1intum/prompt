@@ -1,6 +1,5 @@
-import { type ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core'
+import { MantineProvider } from '@mantine/core'
 import { useState } from 'react'
-import { Appearance } from 'react-native-web'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ManagementConsole, ManagementRoot } from './instructor/ManagementConsole'
 import { StudentApplicationOverview } from './instructor/ApplicationsOverview/ApplicationOverview'
@@ -14,7 +13,7 @@ import { DeveloperApplicationForm } from './forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
 import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
-import { RootPage } from './utilities/NavigationBar/RootPage'
+import { RootPage } from './utilities/NavigationLayout/RootPage'
 import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
@@ -22,20 +21,19 @@ import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicat
 import { StudentTechnicalDetailsSubmissionPage } from './student/StudentTechnicalDetailsSubmissionPage/StudentTechnicalDetailsSubmissionPage'
 import { MailingManagementConsole } from './instructor/MailingManagement/MailingManagementConsole'
 import { GradingManagementConsole } from './instructor/Grading/GradingManagementConsole'
+import { ContextMenuProvider } from 'mantine-contextmenu'
+import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
+import '../public/prompt_logo.svg'
+import { Fallback } from './utilities/Fallback/Fallback'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    Appearance.getColorScheme() ?? 'light',
-  )
-  const toggleColorScheme = (value?: ColorScheme): void => {
-    setColorScheme(value ?? (colorScheme === 'dark' ? 'light' : 'dark'))
-  }
 
   return (
     <div>
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+      <MantineProvider defaultColorScheme='auto'>
+        <ContextMenuProvider>
           <Notifications limit={5} />
           <BrowserRouter>
             <Routes>
@@ -179,10 +177,11 @@ export const App = (): JSX.Element => {
                 }
               />
               <Route path='/' element={<RootPage />} />
+              <Route path='*' element={<Fallback />} />
             </Routes>
           </BrowserRouter>
-        </MantineProvider>
-      </ColorSchemeProvider>
+        </ContextMenuProvider>
+      </MantineProvider>
     </div>
   )
 }

@@ -33,7 +33,7 @@ export const CoursePhaseCreationModal = ({
 
   useEffect(() => {
     form.setValues({ ...form.values, sequentialOrder: nextSeqOrderNumber })
-  }, [nextSeqOrderNumber])
+  }, [form, nextSeqOrderNumber])
 
   return (
     <Modal centered opened={opened} onClose={onClose}>
@@ -45,7 +45,7 @@ export const CoursePhaseCreationModal = ({
           placeholder='Name'
           {...form.getInputProps('name')}
         />
-        <Group position='right'>
+        <Group align='right'>
           <Button
             onClick={() => {
               void dispatch(createCoursePhase(form.values))

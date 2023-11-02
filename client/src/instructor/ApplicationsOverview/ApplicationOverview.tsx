@@ -39,16 +39,22 @@ export const StudentApplicationOverview = (): JSX.Element => {
   useEffect(() => {
     if (selectedCourseIteration) {
       void dispatch(
-        fetchDeveloperApplications({ courseIteration: selectedCourseIteration.semesterName }),
+        fetchDeveloperApplications({
+          courseIteration: selectedCourseIteration.semesterName,
+        }),
       )
       void dispatch(
-        fetchCoachApplications({ courseIteration: selectedCourseIteration.semesterName }),
+        fetchCoachApplications({
+          courseIteration: selectedCourseIteration.semesterName,
+        }),
       )
       void dispatch(
-        fetchTutorApplications({ courseIteration: selectedCourseIteration.semesterName }),
+        fetchTutorApplications({
+          courseIteration: selectedCourseIteration.semesterName,
+        }),
       )
     }
-  }, [selectedCourseIteration])
+  }, [dispatch, selectedCourseIteration])
 
   const tumIdToApplicationMap = useMemo(() => {
     const map = new Map<string, string>()
@@ -100,12 +106,12 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   return (
     <Stack>
-      <Group position='apart'>
-        <Group position='left'>
+      <Group align='apart'>
+        <Group align='left'>
           <TextInput
-            sx={{ margin: '1vh 0', width: '30vw' }}
+            style={{ margin: '1vh 0', width: '30vw' }}
             placeholder='Search applications...'
-            icon={<IconSearch size={16} />}
+            leftSection={<IconSearch size={16} />}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.currentTarget.value)
@@ -150,7 +156,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
           <Tooltip
             withArrow
             color='blue'
-            label="To start automatic assessment of developer applications based on the technical challenge score, please select solely 'Developer' sorting filter"
+            label="To start automatic assessment of developer applications based on the 
+            technical challenge score, please select solely 'Developer' sorting filter"
           >
             <div>
               <Button

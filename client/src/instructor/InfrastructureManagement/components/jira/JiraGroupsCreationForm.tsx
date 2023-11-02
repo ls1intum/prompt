@@ -4,7 +4,9 @@ import {
   JIRA_USER_GROUPS_TEAMS,
   createJiraGroups,
 } from '../../../../service/jiraService'
-import { Button, MultiSelect, Stack, TextInput } from '@mantine/core'
+import { Button, Stack, TextInput } from '@mantine/core'
+import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
+import { MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface JiraGroupsCreationFormProps {
   iosTag: string
@@ -17,19 +19,28 @@ export const JiraGroupsCreationForm = ({
   mode,
   projectNames,
 }: JiraGroupsCreationFormProps): JSX.Element => {
-  const [groupNameSuggestions, setGroupNameSuggestions] = useState(
+  const [groupNameSuggestions, setGroupNameSuggestions] = useState<MultiSelectItem[]>(
     mode === 'mgmt'
-      ? JIRA_USER_GROUPS_MGMT.map((groupName) => iosTag.toLowerCase() + groupName)
+      ? JIRA_USER_GROUPS_MGMT.map((groupName) => {
+          return {
+            label: iosTag.toLowerCase() + groupName,
+            value: iosTag.toLowerCase() + groupName,
+          }
+        })
       : [],
   )
-  const [groupNamesToCreate, setGroupNamesToCreate] = useState<string[]>(groupNameSuggestions)
+  const [groupNamesToCreate, setGroupNamesToCreate] =
+    useState<MultiSelectItem[]>(groupNameSuggestions)
 
   useEffect(() => {
     if (projectNames) {
-      const generatedGroupNameSuggestions: string[] = []
+      const generatedGroupNameSuggestions: MultiSelectItem[] = []
       projectNames.forEach((pn) => {
         JIRA_USER_GROUPS_TEAMS.forEach((ug) => {
-          generatedGroupNameSuggestions.push(pn.toLowerCase() + ug.toLowerCase())
+          generatedGroupNameSuggestions.push({
+            label: pn.toLowerCase() + ug.toLowerCase(),
+            value: pn.toLowerCase() + ug.toLowerCase(),
+          })
         })
       })
       setGroupNameSuggestions(generatedGroupNameSuggestions)
@@ -40,15 +51,11 @@ export const JiraGroupsCreationForm = ({
   return (
     <Stack>
       <TextInput required withAsterisk label='iOS Tag' value={iosTag} disabled />
-      <MultiSelect
+      <MultiSelectCreatable
         label='Group Names'
         data={groupNameSuggestions}
-        placeholder='Select or type group names to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
         onCreate={(query) => {
-          setGroupNameSuggestions((current) => [...current, query])
+          setGroupNameSuggestions((current) => [...current, { label: query, value: query }])
           return query
         }}
         value={groupNamesToCreate}
@@ -57,7 +64,7 @@ export const JiraGroupsCreationForm = ({
       <Button
         disabled={groupNamesToCreate.length === 0}
         onClick={() => {
-          void createJiraGroups(groupNamesToCreate)
+          void createJiraGroups(groupNamesToCreate.map((g) => g.value))
         }}
       >
         Create

@@ -48,7 +48,7 @@ export const MatchingResultsUploadModal = ({
         <FileInput
           placeholder='Upload .csv export file from Matching Tool'
           accept='.csv'
-          icon={<IconUpload />}
+          leftSection={<IconUpload />}
           onChange={(file) => {
             if (file) {
               Daddy.parse(file, {
@@ -139,7 +139,7 @@ export const MatchingResultsUploadModal = ({
           Update Applications
         </Button>
         {upload && (
-          <Table striped withBorder withColumnBorders>
+          <Table striped withTableBorder withColumnBorders>
             <thead>
               <tr>
                 {columnNames.map((columnName) => (

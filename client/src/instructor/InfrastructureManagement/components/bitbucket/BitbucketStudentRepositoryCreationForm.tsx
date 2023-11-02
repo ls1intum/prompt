@@ -1,10 +1,11 @@
-import { Button, MultiSelect, Select, Stack } from '@mantine/core'
+import { Button, Select, Stack } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import {
   type BitbucketProject,
   fetchBitbucketProjects,
   createBitbucketProjectRepositories,
 } from '../../../../service/bitbucketService'
+import { MultiSelectCreatable, MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface BitbucketStudentRepositoryCreationFormProps {
   iosTag: string
@@ -17,7 +18,7 @@ export const BitbucketStudentRepositoryCreationForm = ({
 }: BitbucketStudentRepositoryCreationFormProps): JSX.Element => {
   const [fetchedBitbucketProjects, setFetchedBitbucketProjects] = useState<BitbucketProject[]>([])
   const [selectedBitbucketProject, setSelectedBitbucketProject] = useState<string | null>()
-  const [studentUsernames, setStudentUsernames] = useState<string[]>([])
+  const [studentUsernames, setStudentUsernames] = useState<MultiSelectItem[]>([])
 
   useEffect(() => {
     const loadBitbucketProjects = async (): Promise<void> => {
@@ -34,10 +35,14 @@ export const BitbucketStudentRepositoryCreationForm = ({
       }
     }
     void loadBitbucketProjects()
-  }, [])
+  }, [iosTag])
 
   useEffect(() => {
-    setStudentUsernames(students)
+    setStudentUsernames(
+      students.map((s) => {
+        return { label: s, value: s }
+      }),
+    )
   }, [students])
 
   return (
@@ -50,15 +55,13 @@ export const BitbucketStudentRepositoryCreationForm = ({
         value={selectedBitbucketProject}
         onChange={setSelectedBitbucketProject}
       />
-      <MultiSelect
+      <MultiSelectCreatable
         label='Student Repositories'
-        data={students}
-        placeholder='Select or type a username to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
+        data={students.map((s) => {
+          return { label: s, value: s }
+        })}
         onCreate={(query) => {
-          setStudentUsernames((current) => [...current, query])
+          setStudentUsernames((current) => [...current, { label: query, value: query }])
           return query
         }}
         value={studentUsernames}
@@ -69,7 +72,10 @@ export const BitbucketStudentRepositoryCreationForm = ({
         disabled={!selectedBitbucketProject || students.length === 0}
         onClick={() => {
           if (selectedBitbucketProject) {
-            void createBitbucketProjectRepositories(selectedBitbucketProject, studentUsernames)
+            void createBitbucketProjectRepositories(
+              selectedBitbucketProject,
+              studentUsernames.map((s) => s.value),
+            )
           }
         }}
       >

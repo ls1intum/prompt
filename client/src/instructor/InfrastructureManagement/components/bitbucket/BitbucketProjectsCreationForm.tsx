@@ -1,6 +1,7 @@
-import { Button, Checkbox, MultiSelect, Stack, Tooltip } from '@mantine/core'
+import { Button, Checkbox, Stack, Tooltip } from '@mantine/core'
 import { useState } from 'react'
 import { createBitbucketProjects } from '../../../../service/bitbucketService'
+import { MultiSelectCreatable, MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface BitbucketProjectsCreationFormProps {
   projectNames: string[]
@@ -11,7 +12,9 @@ export const BitbucketProjectsCreationForm = ({
   projectNames,
   defaultWithRepository,
 }: BitbucketProjectsCreationFormProps): JSX.Element => {
-  const [projectNameSuggestions, setProjectNameSuggestions] = useState(projectNames)
+  const [projectNameSuggestions, setProjectNameSuggestions] = useState<MultiSelectItem[]>(
+    projectNames.map((p) => ({ label: p, value: p })),
+  )
   const [projectNamesToCreate, setProjectNamesToCreate] = useState(projectNameSuggestions)
   const [createProjectsWithRepositories, setCreateProjectsWithRepositories] = useState(
     !!defaultWithRepository,
@@ -19,15 +22,11 @@ export const BitbucketProjectsCreationForm = ({
 
   return (
     <Stack>
-      <MultiSelect
+      <MultiSelectCreatable
         label='Project Names'
         data={projectNameSuggestions}
-        placeholder='Select or type project names to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
         onCreate={(query) => {
-          setProjectNameSuggestions((current) => [...current, query])
+          setProjectNameSuggestions((current) => [...current, { label: query, value: query }])
           return query
         }}
         value={projectNamesToCreate}
@@ -44,7 +43,10 @@ export const BitbucketProjectsCreationForm = ({
       </Tooltip>
       <Button
         onClick={() => {
-          void createBitbucketProjects(projectNamesToCreate, createProjectsWithRepositories)
+          void createBitbucketProjects(
+            projectNamesToCreate.map((p) => p.value),
+            createProjectsWithRepositories,
+          )
         }}
       >
         Create

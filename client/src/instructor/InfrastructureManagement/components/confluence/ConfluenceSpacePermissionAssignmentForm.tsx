@@ -28,7 +28,7 @@ export const ConfluenceSpacePermissionAssignmentForm = ({
       suggestions.set(spaceKey, groupNameSuggestions)
     })
     setUserGroups(suggestions)
-  }, [groupNameSuggestions])
+  }, [groupNameSuggestions, spaceKeys])
 
   useEffect(() => {
     const newUserGroups = new Map<string, string[]>()
@@ -60,7 +60,7 @@ export const ConfluenceSpacePermissionAssignmentForm = ({
 
     void loadJiraGroups()
     void loadConfluenceSpaces()
-  }, [iosTag])
+  }, [iosTag, spaceKeys])
 
   return (
     <Stack>

@@ -4,6 +4,7 @@ import {
   Button,
   Center,
   Checkbox,
+  type ComboboxItem,
   Divider,
   Group,
   Modal,
@@ -86,7 +87,7 @@ const IntroCourseAbsenceCreationModal = ({
     <Modal centered size='90%' opened={opened} onClose={close}>
       <Stack style={{ padding: '20vh 0' }}>
         <DatePickerInput
-          icon={<IconCalendar />}
+          leftSection={<IconCalendar />}
           label='Date'
           {...introCourseAbsenceForm.getInputProps('date')}
         />
@@ -162,7 +163,7 @@ export const IntroCourseEntryModal = ({
       supervisorAssessment: introCourseParticipation.supervisorAssessment ?? null,
       tutorComments: introCourseParticipation.tutorComments ?? '',
     })
-  }, [introCourseParticipation])
+  }, [introCourseAssessmentForm, introCourseParticipation, introCourseParticipationForm])
 
   const close = (): void => {
     introCourseAssessmentForm.reset()
@@ -219,7 +220,7 @@ export const IntroCourseEntryModal = ({
           label='Assigned Tutor'
           placeholder='Assigned tutor'
           disabled={isTutor}
-          withinPortal
+          comboboxProps={{ withinPortal: true }}
           data={tutors.map((tutor) => {
             return {
               label: `${tutor.firstName ?? ''} ${tutor.lastName ?? ''}`,
@@ -238,7 +239,7 @@ export const IntroCourseEntryModal = ({
           placeholder='Chair device ID'
           {...introCourseParticipationForm.getInputProps('chairDevice')}
         />
-        <Group position='right'>
+        <Group align='right'>
           <Button
             onClick={() => {
               const introCourseParticipationPatchObjectArray: Patch[] = []
@@ -272,7 +273,6 @@ export const IntroCourseEntryModal = ({
         <Divider label={<Text c='dimmed'>Proficiency</Text>} labelPosition='center' />
         <Select
           label='Proficiency Level'
-          itemComponent={SelectItemProficiencyLevel}
           searchable
           data={Object.keys(SkillProficiency).map((key) => {
             return {
@@ -281,11 +281,15 @@ export const IntroCourseEntryModal = ({
             }
           })}
           {...introCourseParticipationForm.getInputProps('supervisorAssessment')}
-          nothingFound='Nothing found'
-          filter={(value, item) =>
-            item.label?.toLowerCase().includes(value.toLowerCase().trim()) ??
-            item.value?.toLowerCase().includes(value.toLowerCase().trim())
-          }
+          nothingFoundMessage='Nothing found'
+          filter={({ options, search }) => {
+            const filtered = (options as ComboboxItem[]).filter((option) =>
+              option.label.toLowerCase().trim().includes(search.toLowerCase().trim()),
+            )
+
+            filtered.sort((a, b) => a.label.localeCompare(b.label))
+            return filtered
+          }}
         />
         <Textarea
           label='Comment'
@@ -299,7 +303,7 @@ export const IntroCourseEntryModal = ({
             introCourseParticipationForm.values.tutorComments?.length ?? 0
           } / 500`}</Text>
         )}
-        <Group position='right'>
+        <Group align='right'>
           <Button
             onClick={() => {
               let patchObject: Patch[] = [
@@ -331,9 +335,9 @@ export const IntroCourseEntryModal = ({
           </Button>
         </Group>
         <Divider label={<Text c='dimmed'>Intro Course Absences</Text>} labelPosition='center' />
-        <Group position='right'>
+        <Group align='right'>
           <Button
-            leftIcon={<IconPlus />}
+            leftSection={<IconPlus />}
             onClick={() => {
               setAbsenceCreationModalOpened(true)
             }}
@@ -349,7 +353,7 @@ export const IntroCourseEntryModal = ({
           </Center>
         ) : (
           <DataTable
-            withBorder
+            withTableBorder
             noRecordsText='No records to show'
             borderRadius='sm'
             withColumnBorders
@@ -361,7 +365,7 @@ export const IntroCourseEntryModal = ({
               {
                 accessor: 'date',
                 title: 'Date',
-                textAlignment: 'center',
+                textAlign: 'center',
                 render: ({ date }) => (
                   <Text>{`${moment(date).format('dddd, DD. MMMM YYYY')}`}</Text>
                 ),
@@ -369,13 +373,13 @@ export const IntroCourseEntryModal = ({
               {
                 accessor: 'excuse',
                 title: 'Excuse',
-                textAlignment: 'center',
+                textAlign: 'center',
               },
               {
                 accessor: 'actions',
                 title: 'Actions',
                 render: (absence) => (
-                  <Group spacing={4} position='right' noWrap>
+                  <Group gap={4} align='right' wrap='nowrap'>
                     <ActionIcon
                       color='red'
                       onClick={(e: React.MouseEvent) => {
@@ -425,10 +429,12 @@ export const IntroCourseEntryModal = ({
           label='Dropped out?'
           checked={introCourseAssessmentForm.values.droppedOut}
           onChange={(event) => {
-            introCourseAssessmentForm.setValues({ droppedOut: event.currentTarget.checked })
+            introCourseAssessmentForm.setValues({
+              droppedOut: event.currentTarget.checked,
+            })
           }}
         />
-        <Group position='right'>
+        <Group align='right'>
           <Button
             onClick={() => {
               if (introCourseAssessmentForm.values.passed) {

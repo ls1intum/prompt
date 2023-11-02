@@ -279,11 +279,26 @@ const courseIterationElements = [
     accessor: 'course.semesterName',
     description: 'Semester name of the current course iteration',
   },
-  { accessor: 'course.iosTag', description: 'iOS tag used for the current semester' },
-  { accessor: 'course.coachInterviewDate', description: 'Interview date for coaches' },
-  { accessor: 'course.tutorInterviewDate', description: 'Interview date for tutors' },
-  { accessor: 'course.coachInterviewLocation', description: 'Interview location for coaches' },
-  { accessor: 'course.tutorInterviewLocation', description: 'Interview location for tutors' },
+  {
+    accessor: 'course.iosTag',
+    description: 'iOS tag used for the current semester',
+  },
+  {
+    accessor: 'course.coachInterviewDate',
+    description: 'Interview date for coaches',
+  },
+  {
+    accessor: 'course.tutorInterviewDate',
+    description: 'Interview date for tutors',
+  },
+  {
+    accessor: 'course.coachInterviewLocation',
+    description: 'Interview location for coaches',
+  },
+  {
+    accessor: 'course.tutorInterviewLocation',
+    description: 'Interview location for tutors',
+  },
   {
     accessor: 'course.coachInterviewPlannerLink',
     description: 'Interview planner link for coaches',
@@ -300,7 +315,10 @@ const studentElements = [
   { accessor: 'student.lastName', description: "Student's last name" },
   { accessor: 'student.email', description: "Student's email" },
   { accessor: 'student.tumId', description: "Student's TUM ID" },
-  { accessor: 'student.matriculationNumber', description: "Student's matriculation number" },
+  {
+    accessor: 'student.matriculationNumber',
+    description: "Student's matriculation number",
+  },
   { accessor: 'student.gender', description: "Student's gender" },
   { accessor: 'student.nationality', description: "Student's nationality" },
   {
@@ -321,17 +339,38 @@ const thesisApplicationElements = [
     accessor: 'application.currentSemester',
     description: 'Current semester in which the referred student submitted the application',
   },
-  { accessor: 'application.studyDegree', description: "Student's study degree" },
-  { accessor: 'application.studyProgram', description: "Student's study program" },
-  { accessor: 'application.thesisTitle', description: 'Thesis title suggestion' },
-  { accessor: 'application.desiredThesisStart', description: 'Desired start date of the thesis' },
-  { accessor: 'application.interests', description: 'Interests stated by the referred student' },
+  {
+    accessor: 'application.studyDegree',
+    description: "Student's study degree",
+  },
+  {
+    accessor: 'application.studyProgram',
+    description: "Student's study program",
+  },
+  {
+    accessor: 'application.thesisTitle',
+    description: 'Thesis title suggestion',
+  },
+  {
+    accessor: 'application.desiredThesisStart',
+    description: 'Desired start date of the thesis',
+  },
+  {
+    accessor: 'application.interests',
+    description: 'Interests stated by the referred student',
+  },
   {
     accessor: 'application.projects',
     description: 'Projects the referred student states to have been working on',
   },
-  { accessor: 'application.specialSkills', description: "Student's special skills" },
-  { accessor: 'application.motivation', description: 'Motivation for the thesis application' },
+  {
+    accessor: 'application.specialSkills',
+    description: "Student's special skills",
+  },
+  {
+    accessor: 'application.motivation',
+    description: 'Motivation for the thesis application',
+  },
   {
     accessor: 'application.researchAreas',
     description: 'Research areas stated by the referred student',
@@ -347,9 +386,18 @@ const developerApplicationElements = [
     accessor: 'application.currentSemester',
     description: 'Current semester in which the referred student submitted the application',
   },
-  { accessor: 'application.studyDegree', description: "Student's study degree" },
-  { accessor: 'application.studyProgram', description: "Student's study program" },
-  { accessor: 'application.germanLanguageProficiency', description: 'German language proficiency' },
+  {
+    accessor: 'application.studyDegree',
+    description: "Student's study degree",
+  },
+  {
+    accessor: 'application.studyProgram',
+    description: "Student's study program",
+  },
+  {
+    accessor: 'application.germanLanguageProficiency',
+    description: 'German language proficiency',
+  },
   {
     accessor: 'application.englishLanguageProficiency',
     description: 'English language proficiency',
@@ -371,9 +419,18 @@ const coachApplicationElements = [
     accessor: 'application.currentSemester',
     description: 'Current semester in which the referred student submitted the application',
   },
-  { accessor: 'application.studyDegree', description: "Student's study degree" },
-  { accessor: 'application.studyProgram', description: "Student's study program" },
-  { accessor: 'application.germanLanguageProficiency', description: 'German language proficiency' },
+  {
+    accessor: 'application.studyDegree',
+    description: "Student's study degree",
+  },
+  {
+    accessor: 'application.studyProgram',
+    description: "Student's study program",
+  },
+  {
+    accessor: 'application.germanLanguageProficiency',
+    description: 'German language proficiency',
+  },
   {
     accessor: 'application.englishLanguageProficiency',
     description: 'English language proficiency',
@@ -400,9 +457,18 @@ const tutorApplicationElements = [
     accessor: 'application.currentSemester',
     description: 'Current semester in which the referred student submitted the application',
   },
-  { accessor: 'application.studyDegree', description: "Student's study degree" },
-  { accessor: 'application.studyProgram', description: "Student's study program" },
-  { accessor: 'application.germanLanguageProficiency', description: 'German language proficiency' },
+  {
+    accessor: 'application.studyDegree',
+    description: "Student's study degree",
+  },
+  {
+    accessor: 'application.studyProgram',
+    description: "Student's study program",
+  },
+  {
+    accessor: 'application.germanLanguageProficiency',
+    description: 'German language proficiency',
+  },
   {
     accessor: 'application.englishLanguageProficiency',
     description: 'English language proficiency',
@@ -432,7 +498,7 @@ export const ThesisApplicationAndStudentInstructions = (): JSX.Element => {
   ))
 
   return (
-    <Table verticalSpacing='xs' fontSize='xs'>
+    <Table verticalSpacing='xs' fz='xs'>
       <thead>
         <tr>
           <th>Accessor</th>
@@ -455,7 +521,7 @@ export const ThesisApplicationAndStudentAndThesisAdvisorInstructions = (): JSX.E
   )
 
   return (
-    <Table verticalSpacing='xs' fontSize='xs'>
+    <Table verticalSpacing='xs' fz='xs'>
       <thead>
         <tr>
           <th>Accessor</th>
@@ -476,7 +542,7 @@ export const StudentAndCourseIterationInstructions = (): JSX.Element => {
   ))
 
   return (
-    <Table verticalSpacing='xs' fontSize='xs'>
+    <Table verticalSpacing='xs' fz='xs'>
       <thead>
         <tr>
           <th>Accessor</th>
@@ -501,7 +567,7 @@ export const StudentAndCourseIterationAndDeveloperApplicationInstructions = (): 
   ))
 
   return (
-    <Table verticalSpacing='xs' fontSize='xs'>
+    <Table verticalSpacing='xs' fz='xs'>
       <thead>
         <tr>
           <th>Accessor</th>
@@ -524,7 +590,7 @@ export const StudentAndCourseIterationAndCoachApplicationInstructions = (): JSX.
   )
 
   return (
-    <Table verticalSpacing='xs' fontSize='xs'>
+    <Table verticalSpacing='xs' fz='xs'>
       <thead>
         <tr>
           <th>Accessor</th>
@@ -547,7 +613,7 @@ export const StudentAndCourseIterationAndTutorApplicationInstructions = (): JSX.
   )
 
   return (
-    <Table verticalSpacing='xs' fontSize='xs'>
+    <Table verticalSpacing='xs' fz='xs'>
       <thead>
         <tr>
           <th>Accessor</th>

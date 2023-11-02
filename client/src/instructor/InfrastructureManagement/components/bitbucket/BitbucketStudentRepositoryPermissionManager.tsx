@@ -8,8 +8,10 @@ import {
   type BitbucketRepositoryPermissionGrant,
   grantBitbucketProjectRepositoryPermissions,
 } from '../../../../service/bitbucketService'
-import { Accordion, Button, Group, MultiSelect, Select, Stack, Title } from '@mantine/core'
+import { Accordion, Button, Group, Select, Stack, Title } from '@mantine/core'
 import { fetchJiraGroups } from '../../../../service/jiraService'
+import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
+import { MultiSelectItem, MultiSelectSearchable } from '../../../../utilities/CustomMultiSelect'
 
 interface BitbucketStudentRepositoryPermissionManagerProps {
   iosTag: string
@@ -28,9 +30,9 @@ export const BitbucketStudentRepositoryPermissionManager = ({
   const [bitbucketRepositoryPermissionGrants, setBitbucketRepositoryPermissionGrants] = useState<
     BitbucketRepositoryPermissionGrant[]
   >([])
-  const [userSuggestions, setUserSuggestions] = useState<string[]>([])
-  const [groupSuggestions, setGroupSuggestions] = useState<string[]>([])
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
+  const [userSuggestions, setUserSuggestions] = useState<MultiSelectItem[]>([])
+  const [groupSuggestions, setGroupSuggestions] = useState<MultiSelectItem[]>([])
+  const [selectedGroups, setSelectedGroups] = useState<MultiSelectItem[]>([])
 
   useEffect(() => {
     const loadBitbucketProjects = async (): Promise<void> => {
@@ -51,18 +53,25 @@ export const BitbucketStudentRepositoryPermissionManager = ({
     const loadJiraGroups = async (): Promise<void> => {
       const response = await fetchJiraGroups(iosTag.toLowerCase())
       if (response) {
-        setGroupSuggestions(response.map((jiraGroup) => jiraGroup.name))
+        setGroupSuggestions(
+          response.map((jiraGroup) => {
+            return { label: jiraGroup.name, value: jiraGroup.name }
+          }),
+        )
 
         const tutorsGroup = response
           .filter((g) => g.name.toLowerCase() === `${iosTag.toLowerCase()}tutors`)
           .at(0)
         if (tutorsGroup) {
-          setSelectedGroups([...selectedGroups, tutorsGroup.name])
+          setSelectedGroups([
+            ...selectedGroups,
+            { label: tutorsGroup.name, value: tutorsGroup.name },
+          ])
         }
       }
     }
     void loadJiraGroups()
-  }, [])
+  }, [iosTag, selectedGroups])
 
   useEffect(() => {
     const loadBitbucketProjectRepositories = async (): Promise<void> => {
@@ -95,17 +104,21 @@ export const BitbucketStudentRepositoryPermissionManager = ({
               repositorySlug: r.slug,
               permission: 'REPO_ADMIN',
               users: [],
-              groupNames: selectedGroups,
+              groupNames: selectedGroups.map((g) => g.value),
             })
           }
         })
       }
     })
     setBitbucketRepositoryPermissionGrants(generatedBitbucketRepositoryPermissionGrants)
-  }, [selectedBitbucketProject, fetchedBitbucketProjectRepositories])
+  }, [selectedBitbucketProject, fetchedBitbucketProjectRepositories, students, selectedGroups])
 
   useEffect(() => {
-    setUserSuggestions(students)
+    setUserSuggestions(
+      students.map((s) => {
+        return { label: s, value: s }
+      }),
+    )
   }, [students])
 
   return (
@@ -130,20 +143,19 @@ export const BitbucketStudentRepositoryPermissionManager = ({
                   <Group key={p} grow>
                     <Title order={6}>{p}</Title>
                     {p === 'REPO_WRITE' ? (
-                      <MultiSelect
+                      <MultiSelectCreatable
                         label={'Users'}
                         data={userSuggestions}
-                        placeholder={'Select users'}
-                        searchable
                         value={
                           bitbucketRepositoryPermissionGrants
                             .filter((g) => g.permission === p && g.repositorySlug === s)
-                            .at(0)?.users
+                            .at(0)
+                            ?.users.map((u) => {
+                              return { label: u, value: u }
+                            }) ?? []
                         }
-                        creatable
-                        getCreateLabel={(query) => `+ Create ${query}`}
                         onCreate={(query) => {
-                          setUserSuggestions([...userSuggestions, query])
+                          setUserSuggestions([...userSuggestions, { label: query, value: query }])
                           return query
                         }}
                         onChange={(value) => {
@@ -152,7 +164,7 @@ export const BitbucketStudentRepositoryPermissionManager = ({
                               if (grant.repositorySlug === s && grant.permission === p) {
                                 return {
                                   ...grant,
-                                  users: value,
+                                  users: value.map((v) => v.value),
                                 }
                               }
                               return grant
@@ -161,15 +173,16 @@ export const BitbucketStudentRepositoryPermissionManager = ({
                         }}
                       />
                     ) : (
-                      <MultiSelect
-                        label={'Groups'}
+                      <MultiSelectSearchable
+                        label='Groups'
                         data={groupSuggestions}
-                        placeholder={'Select groups'}
-                        searchable
                         value={
                           bitbucketRepositoryPermissionGrants
                             .filter((g) => g.permission === p && g.repositorySlug === s)
-                            .at(0)?.groupNames
+                            .at(0)
+                            ?.groupNames.map((g) => {
+                              return { label: g, value: g }
+                            }) ?? []
                         }
                         onChange={(value) => {
                           setBitbucketRepositoryPermissionGrants(
@@ -177,7 +190,7 @@ export const BitbucketStudentRepositoryPermissionManager = ({
                               if (grant.repositorySlug === s && grant.permission === p) {
                                 return {
                                   ...grant,
-                                  groupNames: value,
+                                  groupNames: value.map((v) => v.value),
                                 }
                               }
                               return grant

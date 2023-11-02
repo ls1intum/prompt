@@ -1,10 +1,12 @@
-import { Button, MultiSelect, Stack } from '@mantine/core'
+import { Button, Stack } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import {
   addUsersToJiraGroup,
   createJiraGroups,
   fetchJiraGroups,
 } from '../../../../service/jiraService'
+import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
+import { MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface JiraAddUsersToGroupFormProps {
   iosTag: string
@@ -15,59 +17,62 @@ export const JiraAddUsersToGroupForm = ({
   iosTag,
   students,
 }: JiraAddUsersToGroupFormProps): JSX.Element => {
-  const [studentUsernames, setStudentUsernames] = useState<string[]>(students)
-  const [groupNameSuggestions, setGroupNameSuggestions] = useState<string[]>([])
-  const [groupNamesToCreate, setGroupNamesToCreate] = useState<string[]>([])
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
+  const [studentUsernames, setStudentUsernames] = useState<MultiSelectItem[]>(
+    students.map((s) => {
+      return { label: s, value: s }
+    }),
+  )
+  const [groupNameSuggestions, setGroupNameSuggestions] = useState<MultiSelectItem[]>([])
+  const [groupNamesToCreate, setGroupNamesToCreate] = useState<MultiSelectItem[]>([])
+  const [selectedGroups, setSelectedGroups] = useState<MultiSelectItem[]>([])
 
   useEffect(() => {
     const loadJiraGroups = async (): Promise<void> => {
       const response = await fetchJiraGroups(iosTag.toLowerCase())
       if (response) {
-        setGroupNameSuggestions(response.map((jiraGroup) => jiraGroup.name))
+        setGroupNameSuggestions(
+          response.map((jiraGroup) => {
+            return { label: jiraGroup.name, value: jiraGroup.name }
+          }),
+        )
 
         const iosTagGroup = response
           .filter((g) => g.name.toLowerCase() === iosTag.toLowerCase())
           .at(0)
         if (iosTagGroup) {
-          setSelectedGroups([...selectedGroups, iosTagGroup.name])
+          setSelectedGroups([
+            ...selectedGroups,
+            { label: iosTagGroup.name, value: iosTagGroup.name },
+          ])
         }
       }
     }
     void loadJiraGroups()
-  }, [])
+  }, [iosTag, selectedGroups])
 
   useEffect(() => {
-    setStudentUsernames(students)
+    setStudentUsernames(students.map((s) => ({ label: s, value: s })))
   }, [students])
 
   return (
     <Stack>
-      <MultiSelect
+      <MultiSelectCreatable
         label='Student Usernames'
         data={studentUsernames}
-        placeholder='Select or type a username to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
         onCreate={(query) => {
-          setStudentUsernames((current) => [...current, query])
+          setStudentUsernames((current) => [...current, { label: query, value: query }])
           return query
         }}
         value={studentUsernames}
         onChange={setStudentUsernames}
       />
-      <MultiSelect
+      <MultiSelectCreatable
         label='Group Names'
         data={groupNameSuggestions}
-        placeholder='Select or type group names to create'
-        searchable
-        creatable
-        getCreateLabel={(query) => `+ Create ${query}`}
         onCreate={(query) => {
-          setGroupNameSuggestions(() => [...groupNameSuggestions, query])
-          setGroupNamesToCreate([...groupNamesToCreate, query])
-          setSelectedGroups([...selectedGroups, query])
+          setGroupNameSuggestions(() => [...groupNameSuggestions, { label: query, value: query }])
+          setGroupNamesToCreate([...groupNamesToCreate, { label: query, value: query }])
+          setSelectedGroups([...selectedGroups, { label: query, value: query }])
           return query
         }}
         value={selectedGroups}
@@ -79,16 +84,24 @@ export const JiraAddUsersToGroupForm = ({
           if (groupNamesToCreate.length > 0) {
             const createNewJiraGroups = async (): Promise<void> => {
               await createJiraGroups(
-                groupNamesToCreate.filter((gtc) => selectedGroups.includes(gtc)),
+                groupNamesToCreate
+                  .filter((gtc) => selectedGroups.includes(gtc))
+                  .map((gtc) => gtc.value),
               )
               selectedGroups.forEach((selectedGroup) => {
-                void addUsersToJiraGroup(selectedGroup, studentUsernames)
+                void addUsersToJiraGroup(
+                  selectedGroup.value,
+                  studentUsernames.map((s) => s.value),
+                )
               })
             }
             void createNewJiraGroups()
           } else {
             selectedGroups.forEach((selectedGroup) => {
-              void addUsersToJiraGroup(selectedGroup, studentUsernames)
+              void addUsersToJiraGroup(
+                selectedGroup.value,
+                studentUsernames.map((s) => s.value),
+              )
             })
           }
         }}

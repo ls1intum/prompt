@@ -156,7 +156,9 @@ export const ProjectTeamsManager = (): JSX.Element => {
     <Stack>
       <ConfirmationModal
         title='Kick-Off Submission Invitations Send Out'
-        text="Are You sure You would like to invite students to submit their team allocation preferences? A student will receive a personal link to a form. Make sure the kick off submission period dates are specified, otherwise the students won't be able to access the form."
+        text="Are You sure You would like to invite students to submit 
+        their team allocation preferences? A student will receive a personal 
+        link to a form. Make sure the kick off submission period dates are specified, otherwise the students won't be able to access the form."
         opened={invitationSendOutConfirmationModalOpened}
         onClose={() => {
           setInvitationSendOutConfirmationModalOpened(false)
@@ -191,11 +193,11 @@ export const ProjectTeamsManager = (): JSX.Element => {
           projectTeam={selectedProjectTeam}
         />
       )}
-      <Group position='apart'>
+      <Group align='apart'>
         <TextInput
-          sx={{ flexBasis: '60%', margin: '1vh 0' }}
+          style={{ flexBasis: '60%', margin: '1vh 0' }}
           placeholder='Search project teams...'
-          icon={<IconSearch size={16} />}
+          leftSection={<IconSearch size={16} />}
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.currentTarget.value)
@@ -203,7 +205,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         />
         <Group>
           <Button
-            leftIcon={<IconMailFilled />}
+            leftSection={<IconMailFilled />}
             onClick={() => {
               setInvitationSendOutConfirmationModalOpened(true)
             }}
@@ -211,7 +213,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
             Send Kick-Off Invitations
           </Button>
           <Button
-            leftIcon={<IconPlus />}
+            leftSection={<IconPlus />}
             variant='filled'
             onClick={() => {
               setProjectTeamCreationModalOpen(true)
@@ -263,7 +265,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         </Notification>
       )}
       <DataTable
-        withBorder
+        withTableBorder
         minHeight={200}
         noRecordsText='No records to show'
         borderRadius='sm'
@@ -279,8 +281,8 @@ export const ProjectTeamsManager = (): JSX.Element => {
         onPageChange={(page) => {
           setTablePage(page)
         }}
-        onRowClick={(projectTeam) => {
-          setSelectedProjectTeam(projectTeam)
+        onRowClick={({ record }) => {
+          setSelectedProjectTeam(record)
           setProjectTeamEditOpen(true)
         }}
         recordsPerPageOptions={[5, 10, 15, 20, 25, 30, 35, 40]}
@@ -302,9 +304,9 @@ export const ProjectTeamsManager = (): JSX.Element => {
           {
             accessor: 'actions',
             title: <Text mr='xs'>Actions</Text>,
-            textAlignment: 'right',
+            textAlign: 'right',
             render: (projectTeam) => (
-              <Group spacing={4} position='right' noWrap>
+              <Group gap={4} align='right' wrap='nowrap'>
                 <Tooltip label='Edit project team members list'>
                   <ActionIcon
                     color='blue'
@@ -319,7 +321,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
                 <Tooltip label='Edit project team'>
                   <ActionIcon
                     color='blue'
-                    onClick={(e: React.MouseEvent) => {
+                    onClick={() => {
                       setSelectedProjectTeam(projectTeam)
                       setProjectTeamEditOpen(true)
                     }}

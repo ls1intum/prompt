@@ -31,7 +31,7 @@ export const ConfirmationModal = ({
         <Text fz='sm' fw={500}>
           {text}
         </Text>
-        <Group position='center'>
+        <Group align='center'>
           <Button variant='outline' onClick={onClose}>
             Cancel
           </Button>

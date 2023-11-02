@@ -1,13 +1,4 @@
-import {
-  ActionIcon,
-  Button,
-  Collapse,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  createStyles,
-} from '@mantine/core'
+import { ActionIcon, Button, Collapse, Group, Paper, Stack, Text } from '@mantine/core'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { IconArrowDown, IconArrowUp, IconDeviceFloppy, IconTrash, IconX } from '@tabler/icons-react'
 import {
@@ -33,12 +24,6 @@ import { updateCoursePhaseCheckOrdering } from '../../../../redux/coursePhasesSl
 import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { deleteCoursePhase } from '../../../../redux/coursePhasesSlice/thunks/deleteCoursePhase'
 
-const useStyles = createStyles((theme) => ({
-  itemDragging: {
-    boxShadow: theme.shadows.sm,
-  },
-}))
-
 interface CoursePhaseAccordionItemProps {
   coursePhase: CoursePhase
 }
@@ -46,7 +31,6 @@ interface CoursePhaseAccordionItemProps {
 export const CoursePhaseAccordionItem = ({
   coursePhase,
 }: CoursePhaseAccordionItemProps): JSX.Element => {
-  const { classes, cx } = useStyles()
   const dispatch = useDispatch<AppDispatch>()
   const [expanded, setExpanded] = useState(false)
   const [state, handlers] = useListState<CoursePhaseCheck>(coursePhase.checks)
@@ -65,7 +49,7 @@ export const CoursePhaseAccordionItem = ({
 
   useEffect(() => {
     handlers.setState([...coursePhase.checks].sort((a, b) => a.sequentialOrder - b.sequentialOrder))
-  }, [coursePhase])
+  }, [coursePhase, handlers])
 
   const coursePhaseChecks = state.map((coursePhaseCheck, index) => (
     <Draggable
@@ -73,27 +57,19 @@ export const CoursePhaseAccordionItem = ({
       index={index}
       draggableId={coursePhaseCheck.id.toString()}
     >
-      {(
-        provided: {
-          draggableProps: JSX.IntrinsicAttributes &
-            ClassAttributes<HTMLDivElement> &
-            HTMLAttributes<HTMLDivElement>
-          dragHandleProps: JSX.IntrinsicAttributes &
-            ClassAttributes<HTMLDivElement> &
-            HTMLAttributes<HTMLDivElement>
-          innerRef: LegacyRef<HTMLDivElement> | undefined
-        },
-        snapshot: any,
-      ) => (
-        <div
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          className={cx({ [classes.itemDragging]: snapshot.isDragging })}
-        >
+      {(provided: {
+        draggableProps: JSX.IntrinsicAttributes &
+          ClassAttributes<HTMLDivElement> &
+          HTMLAttributes<HTMLDivElement>
+        dragHandleProps: JSX.IntrinsicAttributes &
+          ClassAttributes<HTMLDivElement> &
+          HTMLAttributes<HTMLDivElement>
+        innerRef: LegacyRef<HTMLDivElement> | undefined
+      }) => (
+        <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
           <Paper shadow='md' key={coursePhaseCheck.id} p='md'>
             <Group style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-              <Stack spacing='xs'>
+              <Stack gap='xs'>
                 <Text>
                   {index + 1}. {coursePhaseCheck.title}
                 </Text>
@@ -167,7 +143,10 @@ export const CoursePhaseAccordionItem = ({
           {coursePhase.checks.length > 0 ? (
             <DragDropContext
               onDragEnd={({ destination, source }: any) => {
-                handlers.reorder({ from: source.index, to: destination?.index || 0 })
+                handlers.reorder({
+                  from: source.index,
+                  to: destination?.index || 0,
+                })
                 setCoursePhaseChecksReordered(true)
               }}
             >
@@ -197,10 +176,10 @@ export const CoursePhaseAccordionItem = ({
           ) : (
             <Text c='dimmed'>No course phase checks found.</Text>
           )}
-          <Group position='left'>
+          <Group align='left'>
             <Button
               variant='outline'
-              leftIcon={<IconTrash />}
+              leftSection={<IconTrash />}
               onClick={() => {
                 setCoursePhaseDeletionConfirmationModalOpened(true)
               }}
@@ -209,7 +188,7 @@ export const CoursePhaseAccordionItem = ({
             </Button>
             <Button
               disabled={!coursePhaseChecksReordered}
-              leftIcon={<IconDeviceFloppy />}
+              leftSection={<IconDeviceFloppy />}
               onClick={() => {
                 void dispatch(
                   updateCoursePhaseCheckOrdering({
