@@ -5,16 +5,16 @@ import { useState } from 'react'
 
 interface RenderListProps {
   options: TransferListItem[]
-  onTransfer(options: string[]): void
+  onTransfer(options: TransferListItem[]): void
   type: 'forward' | 'backward'
 }
 
 const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element => {
   const combobox = useCombobox()
-  const [value, setValue] = useState<string[]>([])
+  const [value, setValue] = useState<TransferListItem[]>([])
   const [search, setSearch] = useState('')
 
-  const handleValueSelect = (val: string): void =>
+  const handleValueSelect = (val: TransferListItem): void =>
     setValue((current) =>
       current.includes(val) ? current.filter((v) => v !== val) : [...current, val],
     )
@@ -25,12 +25,12 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
       <Combobox.Option
         value={item.value}
         key={item.value}
-        active={value.includes(item.value)}
+        active={value.some((v) => v.value === item.value)}
         onMouseOver={() => combobox.resetSelectedOption()}
       >
         <Group gap='sm'>
           <Checkbox
-            checked={value.includes(item.value)}
+            checked={value.some((v) => v.value === item.value)}
             onChange={() => {}}
             aria-hidden
             tabIndex={-1}
@@ -43,7 +43,12 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
 
   return (
     <div className='renderList' data-type={type}>
-      <Combobox store={combobox} onOptionSubmit={handleValueSelect}>
+      <Combobox
+        store={combobox}
+        onOptionSubmit={(values) => {
+          handleValueSelect({ label: values, value: values })
+        }}
+      >
         <Combobox.EventsTarget>
           <Group wrap='nowrap' gap={0} className='controls'>
             <TextInput
@@ -100,13 +105,15 @@ export const TransferList = ({
 }: TransferListProps): JSX.Element => {
   const [data, setData] = useState<TransferListItem[][]>([leftSectionData, rightSectionData])
 
-  const handleTransfer = (transferFrom: number, options: string[]): void =>
+  const handleTransfer = (transferFrom: number, options: TransferListItem[]): void =>
     setData((current) => {
       const transferTo = transferFrom === 0 ? 1 : 0
-      const transferFromData = current[transferFrom].filter((item) => !options.includes(item.value))
+      const transferFromData = current[transferFrom].filter(
+        (item) => !options.some((o) => o.value === item.value),
+      )
       const transferToData = [...current[transferTo], ...options]
 
-      const result = []
+      const result: TransferListItem[][] = []
       result[transferFrom] = transferFromData
       result[transferTo] = transferToData
       onChange(result as TransferListItem[][])

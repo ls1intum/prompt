@@ -31,7 +31,8 @@ export const CoursePhasesManager = (): JSX.Element => {
 
   useEffect(() => {
     handlers.setState([...coursePhases].sort((a, b) => a.sequentialOrder - b.sequentialOrder))
-  }, [coursePhases, handlers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coursePhases])
 
   useEffect(() => {
     void dispatch(fetchAllCoursePhases())

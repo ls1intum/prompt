@@ -243,10 +243,6 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
   const [pageSize] = useState(5)
 
   useEffect(() => {
-    void dispatch(fetchAllCourseIterations())
-  }, [dispatch])
-
-  useEffect(() => {
     if (fetchAllCourseIterations.length > 0) {
       setCourseIterations(fetchedCourseIterations)
     }

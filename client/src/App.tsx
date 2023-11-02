@@ -1,6 +1,3 @@
-import '@mantine/core/styles.css'
-import '@mantine/dates/styles.css'
-import 'mantine-datatable/styles.layer.css'
 import { MantineProvider } from '@mantine/core'
 import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -27,6 +24,14 @@ import { GradingManagementConsole } from './instructor/Grading/GradingManagement
 import { ContextMenuProvider } from 'mantine-contextmenu'
 import '../public/prompt_logo.svg'
 import { Fallback } from './utilities/Fallback/Fallback'
+
+import '@mantine/core/styles.layer.css'
+import '@mantine/dates/styles.layer.css'
+import '@mantine/notifications/styles.css'
+import '@mantine/tiptap/styles.css'
+import '@mantine/dropzone/styles.css'
+import 'mantine-contextmenu/styles.layer.css'
+import 'mantine-datatable/styles.layer.css'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()

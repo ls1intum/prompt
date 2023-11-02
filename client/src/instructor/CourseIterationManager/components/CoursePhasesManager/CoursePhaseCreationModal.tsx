@@ -33,7 +33,8 @@ export const CoursePhaseCreationModal = ({
 
   useEffect(() => {
     form.setValues({ ...form.values, sequentialOrder: nextSeqOrderNumber })
-  }, [form, nextSeqOrderNumber])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextSeqOrderNumber])
 
   return (
     <Modal centered opened={opened} onClose={onClose}>

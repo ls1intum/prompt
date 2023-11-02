@@ -140,7 +140,8 @@ export const ApplicationAssessmentForm = ({
     })
     assessmentForm.resetDirty()
     assessmentForm.resetTouched()
-  }, [assessment, assessmentForm])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assessment])
 
   useEffect(() => {
     studentForm.setValues({
@@ -150,7 +151,8 @@ export const ApplicationAssessmentForm = ({
       blockedByPm: student?.blockedByPm ?? false,
       reasonForBlockedByPm: student?.reasonForBlockedByPm ?? '',
     })
-  }, [student, studentForm])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [student])
 
   useEffect(() => {
     if (

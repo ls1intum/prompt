@@ -49,7 +49,8 @@ export const CoursePhaseAccordionItem = ({
 
   useEffect(() => {
     handlers.setState([...coursePhase.checks].sort((a, b) => a.sequentialOrder - b.sequentialOrder))
-  }, [coursePhase, handlers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coursePhase])
 
   const coursePhaseChecks = state.map((coursePhaseCheck, index) => (
     <Draggable
@@ -78,6 +79,7 @@ export const CoursePhaseAccordionItem = ({
                 </Text>
               </Stack>
               <ActionIcon
+                variant='transparent'
                 onClick={() => {
                   setCoursePhaseCheckToDelete(coursePhaseCheck)
                   setCoursePhaseCheckDeletionConfirmationModalOpened(true)
@@ -135,7 +137,9 @@ export const CoursePhaseAccordionItem = ({
       >
         <Group style={{ justifyContent: 'space-between' }}>
           <Text fw={500}>{coursePhase.name}</Text>
-          <ActionIcon>{expanded ? <IconArrowUp /> : <IconArrowDown />}</ActionIcon>
+          <ActionIcon variant='transparent'>
+            {expanded ? <IconArrowUp /> : <IconArrowDown />}
+          </ActionIcon>
         </Group>
       </Paper>
       <Collapse in={expanded}>

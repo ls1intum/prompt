@@ -6,7 +6,7 @@ export const ActiveCourseIterationManager = (): JSX.Element => {
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   return (
     <Tabs orientation='vertical' style={{ padding: '5vh 0', height: '80vh' }}>
-      <Tabs.List grow>
+      <Tabs.List>
         {selectedCourseIteration &&
           [...selectedCourseIteration?.phases]
             .sort((a, b) => a.coursePhase.sequentialOrder - b.coursePhase.sequentialOrder)

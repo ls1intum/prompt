@@ -149,7 +149,6 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
         minHeight={200}
         noRecordsText='No records to show'
         borderRadius='sm'
-        withColumnBorders
         verticalSpacing='md'
         striped
         highlightOnHover
@@ -252,6 +251,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
             render: (application) => (
               <Group align='right' wrap='nowrap'>
                 <ActionIcon
+                  variant='transparent'
                   color='blue'
                   onClick={(e: React.MouseEvent) => {
                     e.stopPropagation()
@@ -266,6 +266,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
                   rel='noopener noreferrer'
                 >
                   <ActionIcon
+                    variant='transparent'
                     color='blue'
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation()

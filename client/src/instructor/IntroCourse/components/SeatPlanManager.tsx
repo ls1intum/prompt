@@ -246,7 +246,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             ref={downloadLinkRef}
             target='_blank'
           />
-          <Group align='apart'>
+          <Group align='apart' style={{ alignItems: 'center' }}>
             <TextInput
               style={{ flexBasis: '70%', margin: '1vh 0' }}
               placeholder='Search students...'
@@ -330,16 +330,22 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
               <Stack>
                 {`${student.firstName ?? ''} ${student.lastName ?? ''}`}
                 <Center>
-                  {passed !== null && (
-                    <Badge color={passed ? 'green' : 'red'} variant='outline'>
-                      {passed ? 'PASSED' : 'NOT PASSED'}
-                    </Badge>
-                  )}
-                  {droppedOut && (
-                    <Badge color='gray' variant='outline'>
-                      DROPPED OUT
-                    </Badge>
-                  )}
+                  <Stack>
+                    <Center>
+                      {passed !== null && (
+                        <Badge color={passed ? 'green' : 'red'} variant='outline'>
+                          {passed ? 'PASSED' : 'NOT PASSED'}
+                        </Badge>
+                      )}
+                    </Center>
+                    <Center>
+                      {droppedOut && (
+                        <Badge color='gray' variant='outline'>
+                          DROPPED OUT
+                        </Badge>
+                      )}
+                    </Center>
+                  </Stack>
                 </Center>
               </Stack>
             ),
@@ -433,7 +439,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                   {!!appleId && (
                     <Group>
                       <IconBrandApple color='#2B70BE' />
-                      <Text c='dimmed' fw='500'>
+                      <Text c='dimmed' fw='500' fz='sm'>
                         {appleId}
                       </Text>
                     </Group>
@@ -441,7 +447,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                   {!!macBookDeviceId && (
                     <Group>
                       <IconDeviceLaptop color='#2B70BE' />
-                      <Text c='dimmed' fw='500'>
+                      <Text c='dimmed' fw='500' fz='sm'>
                         {macBookDeviceId}
                       </Text>
                     </Group>
@@ -449,7 +455,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                   {!!iphoneDeviceId && (
                     <Group>
                       <IconDeviceMobile color='#2B70BE' />
-                      <Text c='dimmed' fw='500'>
+                      <Text c='dimmed' fw='500' fz='sm'>
                         {iphoneDeviceId}
                       </Text>
                     </Group>
@@ -457,7 +463,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                   {!!ipadDeviceId && (
                     <Group>
                       <IconDeviceTablet color='#2B70BE' />
-                      <Text c='dimmed' fw='500'>
+                      <Text c='dimmed' fw='500' fz='sm'>
                         {ipadDeviceId}
                       </Text>
                     </Group>
@@ -465,7 +471,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                   {!!appleWatchDeviceId && (
                     <Group>
                       <IconDeviceWatch color='#2B70BE' />
-                      <Text c='dimmed' fw='500'>
+                      <Text c='dimmed' fw='500' fz='sm'>
                         {appleWatchDeviceId}
                       </Text>
                     </Group>

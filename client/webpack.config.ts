@@ -1,5 +1,5 @@
 import path from 'path'
-import { Configuration, EnvironmentPlugin, SourceMapDevToolPlugin } from 'webpack'
+import { Configuration, EnvironmentPlugin } from 'webpack'
 import CopyPlugin from 'copy-webpack-plugin'
 import 'webpack-dev-server'
 
@@ -19,6 +19,7 @@ const config: Configuration = {
     },
     open: false,
   },
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -53,27 +54,22 @@ const config: Configuration = {
       },
     ],
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
-  },
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build'),
     publicPath: '/',
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
     new CopyPlugin({
       patterns: [{ from: 'public' }],
     }),
     new EnvironmentPlugin({
-      NODE_ENV: 'development',
       REACT_APP_SERVER_HOST: 'http://localhost:8080',
       REACT_APP_KEYCLOAK_HOST: 'http://localhost:8081',
       REACT_APP_KEYCLOAK_REALM_NAME: 'prompt',
-    }),
-    new SourceMapDevToolPlugin({
-      append: '\n//# sourceMappingURL=https://prompt.ase.cit.tum.de/sourcemap/[url]',
-      filename: '[file].map[query]',
     }),
   ],
 }

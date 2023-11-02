@@ -136,6 +136,7 @@ export const CourseIterationManager = (): JSX.Element => {
               <Group gap={4} align='right' wrap='nowrap'>
                 <Tooltip label='Edit course iteration'>
                   <ActionIcon
+                    variant='"transparent"'
                     color='blue'
                     onClick={() => {
                       setSelectedCourseIteration(courseIteration)
@@ -147,6 +148,7 @@ export const CourseIterationManager = (): JSX.Element => {
                 </Tooltip>
                 <Tooltip label='Delete course iteration'>
                   <ActionIcon
+                    variant='"transparent"'
                     color='red'
                     onClick={() => {
                       void dispatch(deleteCourseIteration(courseIteration.id.toString()))
