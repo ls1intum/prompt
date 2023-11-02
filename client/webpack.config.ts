@@ -1,6 +1,6 @@
 import path from 'path'
 import { Configuration, EnvironmentPlugin, SourceMapDevToolPlugin } from 'webpack'
-import CopyWebpackPlugin from 'copy-webpack-plugin'
+import CopyPlugin from 'copy-webpack-plugin'
 import 'webpack-dev-server'
 
 const config: Configuration = {
@@ -14,6 +14,10 @@ const config: Configuration = {
     hot: true,
     historyApiFallback: true,
     port: 3000,
+    client: {
+      progress: true,
+    },
+    open: false,
   },
   module: {
     rules: [
@@ -58,7 +62,7 @@ const config: Configuration = {
     publicPath: '/',
   },
   plugins: [
-    new CopyWebpackPlugin({
+    new CopyPlugin({
       patterns: [{ from: 'public' }],
     }),
     new EnvironmentPlugin({

@@ -5,6 +5,7 @@ import { CSVLink } from 'react-csv'
 import { useEffect, useRef, useState } from 'react'
 import { type IntroCourseParticipation } from '../../../redux/introCourseSlice/introCourseSlice'
 import {
+  Center,
   Group,
   Tooltip,
   Text,
@@ -299,7 +300,6 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
         minHeight={200}
         noRecordsText='No records to show'
         borderRadius='sm'
-        withColumnBorders
         verticalSpacing='sm'
         striped
         highlightOnHover
@@ -329,16 +329,18 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             render: ({ student, passed, droppedOut }) => (
               <Stack>
                 {`${student.firstName ?? ''} ${student.lastName ?? ''}`}
-                {passed !== null && (
-                  <Badge color={passed ? 'green' : 'red'} variant='outline'>
-                    {passed ? 'PASSED' : 'NOT PASSED'}
-                  </Badge>
-                )}
-                {droppedOut && (
-                  <Badge color='gray' variant='outline'>
-                    DROPPED OUT
-                  </Badge>
-                )}
+                <Center>
+                  {passed !== null && (
+                    <Badge color={passed ? 'green' : 'red'} variant='outline'>
+                      {passed ? 'PASSED' : 'NOT PASSED'}
+                    </Badge>
+                  )}
+                  {droppedOut && (
+                    <Badge color='gray' variant='outline'>
+                      DROPPED OUT
+                    </Badge>
+                  )}
+                </Center>
               </Stack>
             ),
             sortable: true,
@@ -493,20 +495,20 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             ),
             filtering: chairDeviceRequiredFilter,
             render: ({ chairDevice }) => (
-              <>
+              <Center>
                 {chairDevice && (
                   <Group align='center'>
                     <IconDeviceLaptop color='#2B70BE' />
                     <Text>{chairDevice}</Text>
                   </Group>
                 )}
-              </>
+              </Center>
             ),
           },
           {
             accessor: 'proficiency',
             title: 'Proficiency',
-            textAlign: 'right',
+            textAlign: 'center',
             filter: (
               <MultiSelect
                 label='Proficiency'
