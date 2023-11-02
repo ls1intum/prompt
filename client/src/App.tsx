@@ -1,3 +1,6 @@
+import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
+import 'mantine-datatable/styles.layer.css'
 import { MantineProvider } from '@mantine/core'
 import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -22,8 +25,6 @@ import { StudentTechnicalDetailsSubmissionPage } from './student/StudentTechnica
 import { MailingManagementConsole } from './instructor/MailingManagement/MailingManagementConsole'
 import { GradingManagementConsole } from './instructor/Grading/GradingManagementConsole'
 import { ContextMenuProvider } from 'mantine-contextmenu'
-import '@mantine/core/styles.css'
-import '@mantine/dates/styles.css'
 import '../public/prompt_logo.svg'
 import { Fallback } from './utilities/Fallback/Fallback'
 

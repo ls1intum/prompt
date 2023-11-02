@@ -107,7 +107,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
   return (
     <Stack>
       <Group align='apart'>
-        <Group align='left'>
+        <Group align='left' style={{ alignItems: 'center' }}>
           <TextInput
             style={{ margin: '1vh 0', width: '30vw' }}
             placeholder='Search applications...'

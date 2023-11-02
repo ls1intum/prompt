@@ -403,6 +403,7 @@ export const ApplicationDatatable = ({
             render: (application) => (
               <Group gap={4} align='right' wrap='nowrap'>
                 <ActionIcon
+                  variant='transparent'
                   color='blue'
                   onClick={(e: React.MouseEvent) => {
                     e.stopPropagation()
@@ -412,6 +413,7 @@ export const ApplicationDatatable = ({
                   <IconEyeEdit size={16} />
                 </ActionIcon>
                 <ActionIcon
+                  variant='transparent'
                   color='red'
                   onClick={(e: React.MouseEvent) => {
                     e.stopPropagation()

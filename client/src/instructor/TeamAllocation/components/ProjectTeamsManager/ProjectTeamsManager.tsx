@@ -266,13 +266,11 @@ export const ProjectTeamsManager = (): JSX.Element => {
       )}
       <DataTable
         withTableBorder
-        minHeight={200}
-        noRecordsText='No records to show'
+        highlightOnHover
         borderRadius='sm'
         withColumnBorders
-        verticalSpacing='md'
         striped
-        highlightOnHover
+        verticalAlign='top'
         bodyRef={bodyRef}
         records={tableRecords}
         totalRecords={projectTeams.length}
@@ -309,6 +307,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
               <Group gap={4} align='right' wrap='nowrap'>
                 <Tooltip label='Edit project team members list'>
                   <ActionIcon
+                    variant='transparent'
                     color='blue'
                     onClick={() => {
                       setSelectedProjectTeam(projectTeam)
@@ -320,6 +319,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
                 </Tooltip>
                 <Tooltip label='Edit project team'>
                   <ActionIcon
+                    variant='transparent'
                     color='blue'
                     onClick={() => {
                       setSelectedProjectTeam(projectTeam)
@@ -331,6 +331,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
                 </Tooltip>
                 <Tooltip label='Delete project team'>
                   <ActionIcon
+                    variant='transparent'
                     color='red'
                     onClick={(e) => {
                       if (
