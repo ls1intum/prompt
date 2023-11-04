@@ -1,5 +1,5 @@
 import Keycloak from 'keycloak-js'
-import { keycloakRealmName, keycloakUrl } from '../../service/configService'
+import { axiosInstance, keycloakRealmName, keycloakUrl } from '../../service/configService'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../../redux/store'
 import { useEffect, useState } from 'react'
@@ -20,7 +20,24 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
     url: keycloakUrl,
     clientId: 'prompt-client',
   })
-  const [, setKeycloakValue] = useState<Keycloak>(keycloak)
+  const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
+
+  useEffect(() => {
+    if (keycloakValue) {
+      console.log(keycloakValue)
+      axiosInstance.interceptors.request.use(
+        async (config) => {
+          if (keycloakValue.isTokenExpired(43200)) {
+            await keycloakValue?.updateToken(60)
+          }
+          return config
+        },
+        (error) => {
+          Promise.reject(error)
+        },
+      )
+    }
+  }, [keycloakValue])
 
   useEffect(() => {
     void keycloak

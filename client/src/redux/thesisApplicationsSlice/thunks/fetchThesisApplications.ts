@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { serverBaseUrl } from '../../../service/configService'
+import { axiosInstance } from '../../../service/configService'
 import { type ApplicationStatus } from '../../applicationsSlice/applicationsSlice'
 
 export const fetchThesisApplications = createAsyncThunk(
@@ -8,13 +7,7 @@ export const fetchThesisApplications = createAsyncThunk(
 
   async (status: ApplicationStatus, { rejectWithValue }) => {
     try {
-      return (
-        await axios.get(`${serverBaseUrl}/api/thesis-applications`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-          },
-        })
-      ).data
+      return (await axiosInstance.get(`/api/thesis-applications`)).data
     } catch (err) {
       return rejectWithValue(err)
     }

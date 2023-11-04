@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from 'axios'
-import { serverBaseUrl } from './configService'
+import { axiosInstance, serverBaseUrl } from './configService'
 import { notifications } from '@mantine/notifications'
 import { type ThesisApplication } from '../redux/thesisApplicationsSlice/thesisApplicationsSlice'
 
@@ -64,12 +64,9 @@ export const loadThesisApplicationExaminationFile = async (
   thesisApplicationId: string,
 ): Promise<Blob | undefined> => {
   try {
-    const response = await axios.get(
-      `${serverBaseUrl}/api/thesis-applications/${thesisApplicationId}/examination-report`,
+    const response = await axiosInstance.get(
+      `/api/thesis-applications/${thesisApplicationId}/examination-report`,
       {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-        },
         responseType: 'blob',
       },
     )
@@ -86,15 +83,9 @@ export const loadThesisApplicationCvFile = async (
   thesisApplicationId: string,
 ): Promise<Blob | undefined> => {
   try {
-    const response = await axios.get(
-      `${serverBaseUrl}/api/thesis-applications/${thesisApplicationId}/cv`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-        },
-        responseType: 'blob',
-      },
-    )
+    const response = await axiosInstance.get(`/api/thesis-applications/${thesisApplicationId}/cv`, {
+      responseType: 'blob',
+    })
     if (response) {
       return new Blob([response.data], { type: 'application/pdf' })
     }
@@ -108,12 +99,9 @@ export const loadThesisApplicationBachelorReportFile = async (
   thesisApplicationId: string,
 ): Promise<Blob | undefined> => {
   try {
-    const response = await axios.get(
-      `${serverBaseUrl}/api/thesis-applications/${thesisApplicationId}/bachelor-report`,
+    const response = await axiosInstance.get(
+      `/api/thesis-applications/${thesisApplicationId}/bachelor-report`,
       {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-        },
         responseType: 'blob',
       },
     )
