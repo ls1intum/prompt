@@ -100,6 +100,9 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
         to,
       ),
     )
+    if (from > filteredSortedData.length) {
+      setTablePage(1)
+    }
 
     if (selectedApplicationToView) {
       setSelectedApplicationToView(
