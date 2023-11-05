@@ -268,7 +268,6 @@ export const ProjectTeamsManager = (): JSX.Element => {
         withTableBorder
         highlightOnHover
         borderRadius='sm'
-        withColumnBorders
         striped
         verticalAlign='top'
         bodyRef={bodyRef}
@@ -304,7 +303,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
             title: <Text mr='xs'>Actions</Text>,
             textAlign: 'right',
             render: (projectTeam) => (
-              <Group gap={4} align='right' wrap='nowrap'>
+              <Group gap={4} justify='flex-end' wrap='nowrap'>
                 <Tooltip label='Edit project team members list'>
                   <ActionIcon
                     variant='transparent'

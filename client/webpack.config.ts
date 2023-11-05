@@ -1,5 +1,6 @@
 import path from 'path'
 import { Configuration, EnvironmentPlugin } from 'webpack'
+// eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin'
 import 'webpack-dev-server'
 

@@ -1,4 +1,15 @@
-import { Card, Center, Loader, Title, Text, Group, Transition } from '@mantine/core'
+import {
+  Card,
+  Center,
+  Loader,
+  Title,
+  Text,
+  Group,
+  Transition,
+  Affix,
+  Button,
+  rem,
+} from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
@@ -9,8 +20,10 @@ import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../redux/authSlice/authSlice'
 import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
-import { IconArrowBadgeRightFilled } from '@tabler/icons-react'
+import { IconArrowBadgeRightFilled, IconArrowUp } from '@tabler/icons-react'
 import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout'
+import { useWindowScroll } from '@mantine/hooks'
+import styles from './ManagementConsole.module.scss'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -28,8 +41,8 @@ export const ManagementRoot = (): JSX.Element => {
       duration={600}
       timingFunction='ease'
     >
-      {(styles) => (
-        <Center style={{ ...styles, height: '90vh' }}>
+      {(transitionStyles) => (
+        <Center style={{ ...transitionStyles, height: '90vh' }}>
           <Group>
             <Title order={3} c='dimmed'>
               Welcome back to PROMPT
@@ -71,6 +84,7 @@ export const ManagementConsole = ({
   permission,
   onKeycloakValueChange,
 }: ManagmentConsoleProps): JSX.Element => {
+  const [scroll, scrollTo] = useWindowScroll()
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
   const [authenticated, setAuthenticated] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
@@ -136,7 +150,7 @@ export const ManagementConsole = ({
   }, [dispatch])
 
   useEffect(() => {
-    if (authenticated && !currentState && localStorage.getItem('course-iteration')) {
+    if (authenticated && !currentState) {
       void dispatch(fetchAllCourseIterations())
     }
   }, [authenticated, currentState, dispatch])
@@ -159,7 +173,7 @@ export const ManagementConsole = ({
   }, [authenticated, keycloakValue, mgmtAccess])
 
   return (
-    <>
+    <div className={styles.root}>
       {authenticated && mgmtAccess ? (
         <div>
           {currentState ? (
@@ -182,6 +196,19 @@ export const ManagementConsole = ({
           <Center>{authenticated && !mgmtAccess ? <AccessRestricted /> : <Loader />}</Center>
         </div>
       )}
-    </>
+      <Affix position={{ bottom: 20, right: 20 }}>
+        <Transition transition='slide-up' mounted={scroll.y > 0}>
+          {(transitionStyles) => (
+            <Button
+              leftSection={<IconArrowUp style={{ width: rem(16), height: rem(16) }} />}
+              style={transitionStyles}
+              onClick={() => scrollTo({ y: 0 })}
+            >
+              Scroll to top
+            </Button>
+          )}
+        </Transition>
+      </Affix>
+    </div>
   )
 }

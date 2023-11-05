@@ -70,8 +70,10 @@ export const ApplicationDatatable = ({
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         })
-        .filter((application) =>
-          filters.status.includes(application.assessment?.status ?? 'NOT_ASSESSED'),
+        .filter(
+          (application) =>
+            filters.status.length === 0 ||
+            filters.status.includes(application.assessment?.status ?? 'NOT_ASSESSED'),
         )
         .filter((application) =>
           filters.female && application.student.gender
@@ -96,6 +98,9 @@ export const ApplicationDatatable = ({
         to,
       ),
     )
+    if (from > filteredSortedData.length) {
+      setTablePage(1)
+    }
 
     if (selectedApplicationToView) {
       setSelectedApplicationToView(
@@ -401,7 +406,7 @@ export const ApplicationDatatable = ({
             title: <Text mr='xs'>Actions</Text>,
             textAlign: 'right',
             render: (application) => (
-              <Group gap={4} align='right' wrap='nowrap'>
+              <Group gap={4} justify='flex-end' wrap='nowrap'>
                 <ActionIcon
                   variant='transparent'
                   color='blue'

@@ -177,6 +177,9 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
     )
 
     setTotalDisplayedRecords(filteredData.length)
+    if (from > filteredData.length) {
+      setTablePage(1)
+    }
 
     setTableRecords(
       (sortStatus.direction === 'desc' ? filteredData.reverse() : filteredData).slice(from, to),

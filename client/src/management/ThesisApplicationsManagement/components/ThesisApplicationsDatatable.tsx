@@ -4,7 +4,7 @@ import sortBy from 'lodash/sortBy'
 import { useAppSelector, type AppDispatch } from '../../../redux/store'
 import { fetchThesisApplications } from '../../../redux/thesisApplicationsSlice/thunks/fetchThesisApplications'
 import { ApplicationStatus, Gender } from '../../../redux/applicationsSlice/applicationsSlice'
-import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text, TextInput } from '@mantine/core'
+import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, TextInput } from '@mantine/core'
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { type ThesisApplication } from '../../../redux/thesisApplicationsSlice/thesisApplicationsSlice'
@@ -246,10 +246,10 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
           },
           {
             accessor: 'actions',
-            title: <Text mr='xs'>Actions</Text>,
+            title: 'Actions',
             textAlign: 'right',
             render: (application) => (
-              <Group align='right' wrap='nowrap'>
+              <Group justify='flex-end' wrap='nowrap'>
                 <ActionIcon
                   variant='transparent'
                   color='blue'

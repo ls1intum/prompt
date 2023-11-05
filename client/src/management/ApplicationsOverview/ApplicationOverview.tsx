@@ -32,7 +32,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const [filters, setFilters] = useState<Filters>({
     male: false,
     female: false,
-    status: ['ACCEPTED', 'REJECTED', 'NOT_ASSESSED', 'PENDING_INTERVIEW', 'ENROLLED'],
+    status: [],
     applicationType: ['DEVELOPER'],
   })
 

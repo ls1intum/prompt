@@ -6,11 +6,15 @@ import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../../redux/authSlice/authSlice'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'
-import { Center } from '@mantine/core'
+import { Affix, Button, Center, Transition, rem } from '@mantine/core'
 import { updateThesisAdvisorList } from '../../redux/thesisApplicationsSlice/thunks/updateThesisAdvisorList'
+import { IconArrowUp } from '@tabler/icons-react'
+import { useWindowScroll } from '@mantine/hooks'
+import styles from './ThesisApplicationsManagementConsole.module.scss'
 
 export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const [scroll, scrollTo] = useWindowScroll()
   const [authenticated, setAuthenticated] = useState(false)
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
 
@@ -24,7 +28,6 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
 
   useEffect(() => {
     if (keycloakValue) {
-      console.log(keycloakValue)
       axiosInstance.interceptors.request.use(
         async (config) => {
           if (keycloakValue.isTokenExpired(43200)) {
@@ -103,12 +106,25 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   }, [dispatch])
 
   return (
-    <>
+    <div className={styles.root}>
       {authenticated && mgmtAccess && (
         <Center>
           <ThesisApplicationsDatatable />
+          <Affix position={{ bottom: 20, right: 20 }}>
+            <Transition transition='slide-up' mounted={scroll.y > 0}>
+              {(transitionStyles) => (
+                <Button
+                  leftSection={<IconArrowUp style={{ width: rem(16), height: rem(16) }} />}
+                  style={transitionStyles}
+                  onClick={() => scrollTo({ y: 0 })}
+                >
+                  Scroll to top
+                </Button>
+              )}
+            </Transition>
+          </Affix>
         </Center>
       )}
-    </>
+    </div>
   )
 }
