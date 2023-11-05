@@ -53,6 +53,7 @@ jwt:
       principal-attribute: preferred_username
 
 prompt:
+  environment: ${ENVIRONMENT:dev}
   client:
     host: ${CLIENT_HOST:localhost}
   mail:

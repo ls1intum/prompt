@@ -33,6 +33,7 @@ public class MailingService {
 
     private final JavaMailSender javaMailSender;
     private final FileSystemStorageService storageService;
+    private final String environment;
     private final String sender;
     private final String chairMemberRecipientsList;
     private final Path rootLocation;
@@ -40,11 +41,13 @@ public class MailingService {
     @Autowired
     public MailingService(final JavaMailSender javaMailSender,
                           final FileSystemStorageService storageService,
+                          @Value("${prompt.environment}") String environment,
                           @Value("${prompt.mail.sender}") String sender,
                           @Value("${prompt.mail.chair-member-recipients}") String chairMemberRecipientsList,
                           @Value("${prompt.storage.mailing-templates-location}") String mailingTemplatesLocation) {
         this.javaMailSender = javaMailSender;
         this.storageService = storageService;
+        this.environment = environment;
         this.sender = sender;
         this.chairMemberRecipientsList = chairMemberRecipientsList;
         this.rootLocation = Paths.get(mailingTemplatesLocation);
@@ -356,7 +359,9 @@ public class MailingService {
 
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
-        message.addRecipients(MimeMessage.RecipientType.CC, "krusche@tum.de");
+        if (environment.equals("prod")) {
+            message.addRecipients(MimeMessage.RecipientType.CC, "krusche@tum.de");
+        }
         message.setSubject("Thesis Application Acceptance");
 
         String template;
@@ -380,7 +385,9 @@ public class MailingService {
 
         message.setFrom(sender);
         message.setRecipients(MimeMessage.RecipientType.TO, student.getEmail());
-        message.addRecipients(MimeMessage.RecipientType.BCC, "krusche@tum.de");
+        if (environment.equals("prod")) {
+            message.addRecipients(MimeMessage.RecipientType.BCC, "krusche@tum.de");
+        }
         message.addRecipients(MimeMessage.RecipientType.BCC, "valeryia.andraichuk@tum.de");
         message.setSubject("Thesis Application Rejection");
 
