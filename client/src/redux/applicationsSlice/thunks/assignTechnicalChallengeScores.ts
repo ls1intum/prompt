@@ -24,7 +24,8 @@ export const assignTechnicalChallengeScores = createAsyncThunk(
     try {
       return (
         await axios.post(
-          `${serverBaseUrl}/api/applications/developer/technical-challenge-scores?programmingScoreThreshold=${programmingScoreThreshold}&quizScoreThreshold=${quizScoreThreshold}`,
+          `${serverBaseUrl}/api/applications/developer/technical-challenge-scores?
+          programmingScoreThreshold=${programmingScoreThreshold}&quizScoreThreshold=${quizScoreThreshold}`,
           scores,
           {
             headers: {

@@ -1,7 +1,7 @@
 import { Button, Group, Modal, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { serverBaseUrl } from '../../../service/configService'
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { useParams } from 'react-router-dom'
 
 interface StudentTechnicalDetailsSubmissionCodeModalProps {
@@ -34,7 +34,7 @@ export const StudentTechnicalDetailsSubmissionCodeModal = ({
         onClose()
       }
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 409) {
+      if (isAxiosError(err) && err.response?.status === 409) {
         setError('Submission already exists.')
       }
     }
@@ -57,7 +57,7 @@ export const StudentTechnicalDetailsSubmissionCodeModal = ({
           setMatriculationNumber(e.target.value)
         }}
       />
-      <Group position='center'>
+      <Group align='center'>
         <Button
           variant='filled'
           onClick={() => {

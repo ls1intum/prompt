@@ -140,6 +140,7 @@ export const ApplicationAssessmentForm = ({
     })
     assessmentForm.resetDirty()
     assessmentForm.resetTouched()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessment])
 
   useEffect(() => {
@@ -150,6 +151,7 @@ export const ApplicationAssessmentForm = ({
       blockedByPm: student?.blockedByPm ?? false,
       reasonForBlockedByPm: student?.reasonForBlockedByPm ?? '',
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [student])
 
   useEffect(() => {
@@ -163,7 +165,7 @@ export const ApplicationAssessmentForm = ({
     } else {
       setActiveTimelineStatus(1)
     }
-  }, [assessment])
+  }, [assessment, assessmentForm.values.assessmentScore, assessmentForm.values.status])
 
   const updateAssessmentStatus = (status: string): void => {
     const assessmentPatchObjectArray: Patch[] = []
@@ -317,7 +319,7 @@ export const ApplicationAssessmentForm = ({
                 placeholder='Assessment Score'
                 {...assessmentForm.getInputProps('assessmentScore')}
               />
-              <Group position='right'>
+              <Group align='right'>
                 <Button
                   disabled={!assessmentForm.isDirty() && !studentForm.isDirty()}
                   onClick={() => {
@@ -399,9 +401,9 @@ export const ApplicationAssessmentForm = ({
             >
               <Stack>
                 <Tooltip
-                  label={
-                    'Please keep in mind that the interview invitation might have already been sent out. Make sure to check the outbox. An interview invitation email will be immediately sent out to the student. You can review the interview details in the Course Iteration Management console.'
-                  }
+                  label={`Please keep in mind that the interview invitation might have already been sent out. Make sure to check the outbox. 
+                    An interview invitation email will be immediately sent out to the student. You can review the interview details 
+                    in the Course Iteration Management console.`}
                   color='blue'
                   withArrow
                   multiline
@@ -440,7 +442,7 @@ export const ApplicationAssessmentForm = ({
               )
             }
           >
-            <Group position='left'>
+            <Group align='left'>
               <Button
                 color='red'
                 variant='outline'
@@ -479,16 +481,16 @@ export const ApplicationAssessmentForm = ({
         </Timeline>
         <Divider />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
-          <Text fz='sm' weight={500}>
+          <Text fz='sm' fw={500}>
             Additional Notes
           </Text>
-          {assessmentForm.values.instructorComments.map((comment, idx) => (
-            <div key={`${comment.id ?? idx} ${comment.timestamp ?? ''}`}>
-              <StudentApplicationComment instructorComment={comment} />
+          {assessmentForm.values.instructorComments.map((cmt, idx) => (
+            <div key={`${cmt.id ?? idx} ${cmt.timestamp ?? ''}`}>
+              <StudentApplicationComment instructorComment={cmt} />
             </div>
           ))}
         </div>
-        <Group position='right' style={{ alignContent: 'center' }}>
+        <Group align='right' style={{ alignContent: 'center' }}>
           <Textarea
             style={{ width: '100%' }}
             placeholder='Comment'
@@ -498,7 +500,7 @@ export const ApplicationAssessmentForm = ({
             }}
           />
           <Button
-            leftIcon={<IconSend />}
+            leftSection={<IconSend />}
             onClick={() => {
               if (comment && comment.length !== 0 && assessmentForm.values) {
                 assessmentForm.setValues({

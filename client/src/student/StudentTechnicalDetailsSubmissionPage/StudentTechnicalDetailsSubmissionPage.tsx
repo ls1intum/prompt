@@ -24,7 +24,12 @@ interface SuccessfulSubmissionProps {
 const SuccessfulSubmission = ({ title, text }: SuccessfulSubmissionProps): JSX.Element => {
   return (
     <div
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
     >
       <Card withBorder p='xl'>
         <Title order={5}>{title}</Title>

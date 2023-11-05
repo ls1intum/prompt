@@ -326,7 +326,7 @@ export const applicationsState = createSlice({
     builder.addCase(enrollDeveloperApplicationsToCourse.fulfilled, (state, { payload }) => {
       state.developerApplications = state.developerApplications.map((application) => {
         const updatedApplication = payload
-          .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+          .filter((updated: Application) => updated.id === application.id)
           .at(0)
         return updatedApplication
           ? {
@@ -351,7 +351,7 @@ export const applicationsState = createSlice({
     builder.addCase(enrollCoachApplicationsToCourse.fulfilled, (state, { payload }) => {
       state.coachApplications = state.coachApplications.map((application) => {
         const updatedApplication = payload
-          .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+          .filter((updated: Application) => updated.id === application.id)
           .at(0)
         return updatedApplication
           ? {
@@ -376,7 +376,7 @@ export const applicationsState = createSlice({
     builder.addCase(enrollTutorApplicationsToCourse.fulfilled, (state, { payload }) => {
       state.tutorApplications = state.tutorApplications.map((application) => {
         const updatedApplication = payload
-          .filter((updatedApplication: Application) => updatedApplication.id === application.id)
+          .filter((updated: Application) => updated.id === application.id)
           .at(0)
         return updatedApplication
           ? {

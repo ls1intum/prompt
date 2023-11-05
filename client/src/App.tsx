@@ -1,41 +1,45 @@
-import { type ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core'
+import { MantineProvider } from '@mantine/core'
 import { useState } from 'react'
-import { Appearance } from 'react-native-web'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { ManagementConsole, ManagementRoot } from './instructor/ManagementConsole'
-import { StudentApplicationOverview } from './instructor/ApplicationsOverview/ApplicationOverview'
+import { ManagementConsole, ManagementRoot } from './management/ManagementConsole'
+import { StudentApplicationOverview } from './management/ApplicationsOverview/ApplicationOverview'
 import { ApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/ApplicationSubmissionPage'
 import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
-import { TeamAllocationConsole } from './instructor/TeamAllocation/TeamAllocationConsole'
-import { InfrastructureManagement } from './instructor/InfrastructureManagement/InstrastructureManagement'
+import { TeamAllocationConsole } from './management/TeamAllocation/TeamAllocationConsole'
+import { InfrastructureManagement } from './management/InfrastructureManagement/InstrastructureManagement'
 import { Notifications } from '@mantine/notifications'
-import { CourseIterationConsole } from './instructor/CourseIterationManager/CourseIterationConsole'
+import { CourseIterationConsole } from './management/CourseIterationManager/CourseIterationConsole'
 import { DeveloperApplicationForm } from './forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
 import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
-import { RootPage } from './utilities/NavigationBar/RootPage'
+import { LandingPage } from './utilities/LandingPage/LandingPage'
 import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
-import { IntroCourseConsole } from './instructor/IntroCourse/IntroCourseConsole'
+import { IntroCourseConsole } from './management/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
-import { ThesisApplicationsManagementConsole } from './instructor/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
+import { ThesisApplicationsManagementConsole } from './management/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
 import { StudentTechnicalDetailsSubmissionPage } from './student/StudentTechnicalDetailsSubmissionPage/StudentTechnicalDetailsSubmissionPage'
-import { MailingManagementConsole } from './instructor/MailingManagement/MailingManagementConsole'
-import { GradingManagementConsole } from './instructor/Grading/GradingManagementConsole'
+import { MailingManagementConsole } from './management/MailingManagement/MailingManagementConsole'
+import { GradingManagementConsole } from './management/Grading/GradingManagementConsole'
+import { ContextMenuProvider } from 'mantine-contextmenu'
+import '../public/prompt_logo.svg'
+import { Fallback } from './utilities/Fallback/Fallback'
+
+import '@mantine/core/styles.layer.css'
+import '@mantine/dates/styles.layer.css'
+import '@mantine/notifications/styles.css'
+import '@mantine/tiptap/styles.css'
+import '@mantine/dropzone/styles.css'
+import 'mantine-contextmenu/styles.layer.css'
+import 'mantine-datatable/styles.layer.css'
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    Appearance.getColorScheme() ?? 'light',
-  )
-  const toggleColorScheme = (value?: ColorScheme): void => {
-    setColorScheme(value ?? (colorScheme === 'dark' ? 'light' : 'dark'))
-  }
 
   return (
     <div>
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+      <MantineProvider defaultColorScheme='auto'>
+        <ContextMenuProvider>
           <Notifications limit={5} />
           <BrowserRouter>
             <Routes>
@@ -178,11 +182,12 @@ export const App = (): JSX.Element => {
                   />
                 }
               />
-              <Route path='/' element={<RootPage />} />
+              <Route path='/' element={<LandingPage />} />
+              <Route path='*' element={<Fallback />} />
             </Routes>
           </BrowserRouter>
-        </MantineProvider>
-      </ColorSchemeProvider>
+        </ContextMenuProvider>
+      </MantineProvider>
     </div>
   )
 }

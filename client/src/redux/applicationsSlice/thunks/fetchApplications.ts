@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { serverBaseUrl } from '../../../service/configService'
+import { axiosInstance } from '../../../service/configService'
 import { type ApplicationStatus } from '../applicationsSlice'
 
 export const fetchDeveloperApplications = createAsyncThunk(
@@ -15,15 +14,10 @@ export const fetchDeveloperApplications = createAsyncThunk(
   ) => {
     try {
       return (
-        await axios.get(
-          `${serverBaseUrl}/api/applications/developer?courseIteration=${courseIteration}${
+        await axiosInstance.get(
+          `/api/applications/developer?courseIteration=${courseIteration}${
             status ? `&applicationStatus=${status}` : ''
           }`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-            },
-          },
         )
       ).data
     } catch (err) {
@@ -44,15 +38,10 @@ export const fetchCoachApplications = createAsyncThunk(
   ) => {
     try {
       return (
-        await axios.get(
-          `${serverBaseUrl}/api/applications/coach?courseIteration=${courseIteration}${
+        await axiosInstance.get(
+          `/api/applications/coach?courseIteration=${courseIteration}${
             status ? `&applicationStatus=${status}` : ''
           }`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-            },
-          },
         )
       ).data
     } catch (err) {
@@ -73,15 +62,10 @@ export const fetchTutorApplications = createAsyncThunk(
   ) => {
     try {
       return (
-        await axios.get(
-          `${serverBaseUrl}/api/applications/tutor?courseIteration=${courseIteration}${
+        await axiosInstance.get(
+          `/api/applications/tutor?courseIteration=${courseIteration}${
             status ? `&applicationStatus=${status}` : ''
           }`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-            },
-          },
         )
       ).data
     } catch (err) {

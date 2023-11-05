@@ -12,6 +12,7 @@ import {
   Box,
   Button,
   Card,
+  Center,
   Checkbox,
   Divider,
   Group,
@@ -225,11 +226,16 @@ export const ThesisApplicationForm = ({
 
   return (
     <Box
-      sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80vw', gap: '2vh' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: '80vw',
+        gap: '2vh',
+      }}
       mx='auto'
       pos='relative'
     >
-      <LoadingOverlay visible={loadingOverlayVisible} overlayBlur={2} />
+      <LoadingOverlay visible={loadingOverlayVisible} overlayProps={{ blur: 2 }} />
       {applicationSuccessfullySubmitted ? (
         <ApplicationSuccessfulSubmission
           title='Your application was successfully submitted!'
@@ -238,7 +244,13 @@ export const ThesisApplicationForm = ({
       ) : (
         <Stack>
           {accessMode === ApplicationFormAccessMode.STUDENT && (
-            <Group style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <Group
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}
+            >
               <div
                 style={{
                   width: '15vw',
@@ -247,9 +259,9 @@ export const ThesisApplicationForm = ({
               >
                 <Image src={LS1Logo} alt='LS1 Logo' />
               </div>
-              <Title align='center' order={3}>
-                Thesis Application at LS1 Chair
-              </Title>
+              <Center>
+                <Title order={3}>Thesis Application at LS1 Chair</Title>
+              </Center>
             </Group>
           )}
           <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
@@ -451,7 +463,7 @@ export const ThesisApplicationForm = ({
             </div>
             <DatePickerInput
               disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-              icon={<IconCalendar />}
+              leftSection={<IconCalendar />}
               label='Desired Thesis Start Date'
               {...form.getInputProps('desiredThesisStart')}
             />
@@ -483,7 +495,7 @@ export const ThesisApplicationForm = ({
             </Group>
             {accessMode === ApplicationFormAccessMode.STUDENT && (
               <Stack>
-                <Group position='left'>
+                <Group align='left'>
                   <Text fw={500} fz='sm'>
                     Examination Report
                   </Text>
@@ -491,7 +503,7 @@ export const ThesisApplicationForm = ({
                 </Group>
                 {uploads.values.examinationReport && (
                   <Card shadow='sm' withBorder>
-                    <Group position='apart'>
+                    <Group align='apart'>
                       <Text c='dimmed' fz='sm'>
                         {uploads.values.examinationReport.name}
                       </Text>
@@ -516,7 +528,7 @@ export const ThesisApplicationForm = ({
                         })
                       }
                     }}
-                    onReject={(files) => {
+                    onReject={() => {
                       notifications.show({
                         color: 'red',
                         autoClose: 5000,
@@ -528,25 +540,19 @@ export const ThesisApplicationForm = ({
                     accept={PDF_MIME_TYPE}
                   >
                     <Group
-                      position='center'
-                      spacing='xl'
+                      align='center'
+                      gap='xl'
                       style={{ minHeight: rem(220), pointerEvents: 'none' }}
                     >
                       <Dropzone.Accept>
                         <IconUpload
                           size='3.2rem'
                           stroke={1.5}
-                          color={
-                            theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
-                          }
+                          color={theme.colors[theme.primaryColor][4]}
                         />
                       </Dropzone.Accept>
                       <Dropzone.Reject>
-                        <IconX
-                          size='3.2rem'
-                          stroke={1.5}
-                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                        />
+                        <IconX size='3.2rem' stroke={1.5} color={theme.colors.red[4]} />
                       </Dropzone.Reject>
                       <Dropzone.Idle>
                         <IconPhoto size='3.2rem' stroke={1.5} />
@@ -563,7 +569,7 @@ export const ThesisApplicationForm = ({
                     </Group>
                   </Dropzone>
                 )}
-                <Group position='left'>
+                <Group align='left'>
                   <Text fw={500} fz='sm'>
                     CV
                   </Text>
@@ -571,7 +577,7 @@ export const ThesisApplicationForm = ({
                 </Group>
                 {uploads.values.cv && (
                   <Card shadow='sm' withBorder>
-                    <Group position='apart'>
+                    <Group align='apart'>
                       <Text c='dimmed' fz='sm'>
                         {uploads.values.cv.name}
                       </Text>
@@ -596,7 +602,7 @@ export const ThesisApplicationForm = ({
                         })
                       }
                     }}
-                    onReject={(files) => {
+                    onReject={() => {
                       notifications.show({
                         color: 'red',
                         autoClose: 5000,
@@ -608,25 +614,19 @@ export const ThesisApplicationForm = ({
                     accept={PDF_MIME_TYPE}
                   >
                     <Group
-                      position='center'
-                      spacing='xl'
+                      align='center'
+                      gap='xl'
                       style={{ minHeight: rem(220), pointerEvents: 'none' }}
                     >
                       <Dropzone.Accept>
                         <IconUpload
                           size='3.2rem'
                           stroke={1.5}
-                          color={
-                            theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
-                          }
+                          color={theme.colors[theme.primaryColor][4]}
                         />
                       </Dropzone.Accept>
                       <Dropzone.Reject>
-                        <IconX
-                          size='3.2rem'
-                          stroke={1.5}
-                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                        />
+                        <IconX size='3.2rem' stroke={1.5} color={theme.colors.red[4]} />
                       </Dropzone.Reject>
                       <Dropzone.Idle>
                         <IconPhoto size='3.2rem' stroke={1.5} />
@@ -648,7 +648,7 @@ export const ThesisApplicationForm = ({
                 </Text>
                 {uploads.values.bachelorReport && (
                   <Card shadow='sm' withBorder>
-                    <Group position='apart'>
+                    <Group align='apart'>
                       <Text c='dimmed' fz='sm'>
                         {uploads.values.bachelorReport.name}
                       </Text>
@@ -673,7 +673,7 @@ export const ThesisApplicationForm = ({
                         })
                       }
                     }}
-                    onReject={(files) => {
+                    onReject={() => {
                       notifications.show({
                         color: 'red',
                         autoClose: 5000,
@@ -685,25 +685,19 @@ export const ThesisApplicationForm = ({
                     accept={PDF_MIME_TYPE}
                   >
                     <Group
-                      position='center'
-                      spacing='xl'
+                      align='center'
+                      gap='xl'
                       style={{ minHeight: rem(220), pointerEvents: 'none' }}
                     >
                       <Dropzone.Accept>
                         <IconUpload
                           size='3.2rem'
                           stroke={1.5}
-                          color={
-                            theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]
-                          }
+                          color={theme.colors[theme.primaryColor][4]}
                         />
                       </Dropzone.Accept>
                       <Dropzone.Reject>
-                        <IconX
-                          size='3.2rem'
-                          stroke={1.5}
-                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                        />
+                        <IconX size='3.2rem' stroke={1.5} color={theme.colors.red[4]} />
                       </Dropzone.Reject>
                       <Dropzone.Idle>
                         <IconPhoto size='3.2rem' stroke={1.5} />
@@ -855,7 +849,7 @@ export const ThesisApplicationForm = ({
                   Save
                 </Button>
               )}
-              <Group position='right'>
+              <Group align='right'>
                 <Button
                   style={{ width: '20vw' }}
                   variant='outline'

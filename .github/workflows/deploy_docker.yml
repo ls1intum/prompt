@@ -95,7 +95,8 @@ jobs:
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.PROXY_PORT }}
           script: |
-            touch .env.prod            
+            touch .env.prod 
+            echo "ENVIRONMENT=${{ vars.ENVIRONMENT }}" > .env.prod
             echo "ATLASSIAN_USERNAME=${{ vars.ATLASSIAN_USERNAME }}" > .env.prod
             echo "ATLASSIAN_PASSWORD=${{ secrets.ATLASSIAN_PASSWORD }}" >> .env.prod
             echo "JIRA_URL=${{ vars.JIRA_URL }}" >> .env.prod

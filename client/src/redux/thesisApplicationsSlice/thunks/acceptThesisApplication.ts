@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { serverBaseUrl } from '../../../service/configService'
+import { axiosInstance } from '../../../service/configService'
 import { notifications } from '@mantine/notifications'
 
 export const acceptThesisApplication = createAsyncThunk(
@@ -8,14 +7,9 @@ export const acceptThesisApplication = createAsyncThunk(
 
   async (thesisApplicationId: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${serverBaseUrl}/api/thesis-applications/${thesisApplicationId}/accept`,
+      const response = await axiosInstance.post(
+        `/api/thesis-applications/${thesisApplicationId}/accept`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-          },
-        },
       )
 
       if (response) {

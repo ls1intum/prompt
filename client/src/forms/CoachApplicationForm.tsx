@@ -145,7 +145,7 @@ export const CoachApplicationForm = ({
     if (accessMode === ApplicationFormAccessMode.STUDENT) {
       void dispatch(fetchCourseIterationsWithOpenCoachApplicationPeriod())
     }
-  }, [accessMode])
+  }, [accessMode, dispatch])
 
   return (
     <>
@@ -168,7 +168,12 @@ export const CoachApplicationForm = ({
           {courseIterationWithOpenCoachApplicationPeriod ??
           accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
-              sx={{ display: 'flex', flexDirection: 'column', maxWidth: '60vw', gap: '2vh' }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '60vw',
+                gap: '2vh',
+              }}
               mx='auto'
             >
               {applicationSuccessfullySubmitted ? (
@@ -205,7 +210,9 @@ export const CoachApplicationForm = ({
                       <Checkbox
                         mt='md'
                         label='I have read the declaration of consent below and agree to the processing of my data.'
-                        {...consentForm.getInputProps('dataConsent', { type: 'checkbox' })}
+                        {...consentForm.getInputProps('dataConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                       <Spoiler
                         maxHeight={0}
@@ -216,12 +223,15 @@ export const CoachApplicationForm = ({
                       </Spoiler>
                       <Checkbox
                         mt='md'
-                        label={`I am aware that the Agile Project Mamagement is a very demanding 10 ECTS practical course and I agree to put in the required amount of work, time and effort.`}
-                        {...consentForm.getInputProps('workloadConsent', { type: 'checkbox' })}
+                        label={`I am aware that the Agile Project Mamagement is a very demanding 10 ECTS 
+                        practical course and I agree to put in the required amount of work, time and effort.`}
+                        {...consentForm.getInputProps('workloadConsent', {
+                          type: 'checkbox',
+                        })}
                       />
                     </Stack>
                   )}
-                  <Group position='right' mt='md'>
+                  <Group align='right' mt='md'>
                     <Button
                       disabled={
                         !defaultForm.isValid() ||
