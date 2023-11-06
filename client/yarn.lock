@@ -2255,7 +2255,7 @@ __metadata:
     i18n-iso-countries: "npm:^7.7.0"
     jwt-decode: "npm:^4.0.0"
     keycloak-js: "npm:^22.0.5"
-    mantine-contextmenu: "npm:^7.1.5"
+    mantine-contextmenu: "npm:^7.1.8"
     mantine-datatable: "npm:^7.1.0"
     moment: "npm:^2.29.4"
     papaparse: "npm:^5.4.1"
@@ -4990,14 +4990,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mantine-contextmenu@npm:^7.1.5":
-  version: 7.1.5
-  resolution: "mantine-contextmenu@npm:7.1.5"
+"mantine-contextmenu@npm:^7.1.8":
+  version: 7.1.8
+  resolution: "mantine-contextmenu@npm:7.1.8"
   peerDependencies:
     "@mantine/core": ">=7.1"
     "@mantine/hooks": ">=7.1"
     clsx: ">=2"
-  checksum: 4518083812ba5bdc19848ba9ff4966ba75dbd9439523e0c7bd01ed9d95fdc7b56f226cc33eba3325e48c1cfd8ea77a46166081aff6383716615279786d858c15
+  checksum: 368177d41f13d9ae8713c674a375d011a9faf644672f0aaa65079492b58c1f0d18d92b5d71e310c0e512a0cb7bfe8dbcf8966c375963c0f55223e735466fec20
   languageName: node
   linkType: hard
 
