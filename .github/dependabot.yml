@@ -9,3 +9,7 @@ updates:
     directory: "/client"
     schedule:
       interval: "daily"
+    assignees:
+      - "airelawaleria"
+    reviewers:
+      - "airelawaleria"
