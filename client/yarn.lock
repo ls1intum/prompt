@@ -2256,7 +2256,7 @@ __metadata:
     jwt-decode: "npm:^4.0.0"
     keycloak-js: "npm:^22.0.5"
     mantine-contextmenu: "npm:^7.1.5"
-    mantine-datatable: "npm:^7.1.0"
+    mantine-datatable: "npm:^7.1.2"
     moment: "npm:^2.29.4"
     papaparse: "npm:^5.4.1"
     prettier: "npm:^3.0.3"
@@ -5001,15 +5001,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mantine-datatable@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "mantine-datatable@npm:7.1.0"
+"mantine-datatable@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "mantine-datatable@npm:7.1.2"
   peerDependencies:
     "@mantine/core": ">=7"
     "@mantine/hooks": ">=7"
     clsx: ">=2"
-    mantine-contextmenu: ">=7"
-  checksum: d91a6f11942cf5fc86667ae051145b159168174cd7e0854002ed1cbb0378a0b81b0bb9793c5dda1b9266ca7ba91998604c1be14d706f5a1e46c1082d45fb129c
+    react: ">=18"
+  checksum: b4729d58d0572810b19167387ba834335add5a4a2f710a25d0f1cd2f6a8b5beff0937a685d1bab2c36a8779429b0073ab95542910006ffe467ec9e23d2700f17
   languageName: node
   linkType: hard
 
