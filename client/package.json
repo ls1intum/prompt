@@ -39,7 +39,7 @@
     "i18n-iso-countries": "^7.7.0",
     "jwt-decode": "^4.0.0",
     "keycloak-js": "^22.0.5",
-    "mantine-contextmenu": "^7.1.5",
+    "mantine-contextmenu": "^7.1.9",
     "mantine-datatable": "^7.1.0",
     "moment": "^2.29.4",
     "papaparse": "^5.4.1",
