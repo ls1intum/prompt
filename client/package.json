@@ -40,7 +40,7 @@
     "jwt-decode": "^4.0.0",
     "keycloak-js": "^22.0.5",
     "mantine-contextmenu": "^7.1.5",
-    "mantine-datatable": "^7.1.0",
+    "mantine-datatable": "^7.1.4",
     "moment": "^2.29.4",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
