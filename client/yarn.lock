@@ -913,14 +913,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dotenv-webpack@npm:^7.0.6":
-  version: 7.0.6
-  resolution: "@types/dotenv-webpack@npm:7.0.6"
+"@types/dotenv-webpack@npm:^7.0.7":
+  version: 7.0.7
+  resolution: "@types/dotenv-webpack@npm:7.0.7"
   dependencies:
     "@types/node": "npm:*"
     tapable: "npm:^2.2.0"
     webpack: "npm:^5"
-  checksum: c61bf5c1243170695ae20c5f8b5cf10d15b38da15f4e449b0b19cbe8f7d658a1321a18fe0b356fec5a04685f37e46162f8e15cec15a84ceae14158046fe77164
+  checksum: 09e6057caf28e8bcefe61b27278bd932358b3773012086c442757d43cab5e0daddfbc5fb5e8203ecd051591a4c1d295db55a7cc84900a158cca44ab9cf171974
   languageName: node
   linkType: hard
 
@@ -2272,7 +2272,7 @@ __metadata:
     "@tiptap/react": "npm:^2.1.12"
     "@tiptap/starter-kit": "npm:^2.1.12"
     "@types/copy-webpack-plugin": "npm:^10.1.0"
-    "@types/dotenv-webpack": "npm:^7.0.6"
+    "@types/dotenv-webpack": "npm:^7.0.7"
     "@types/eslint": "npm:^8"
     "@types/node": "npm:^20.8.10"
     "@types/papaparse": "npm:^5"
