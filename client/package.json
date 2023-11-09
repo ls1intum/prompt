@@ -16,7 +16,7 @@
     "@mantine/dropzone": "^7.1.7",
     "@mantine/form": "^7.1.7",
     "@mantine/hooks": "^7.1.7",
-    "@mantine/notifications": "^7.1.7",
+    "@mantine/notifications": "^7.2.1",
     "@mantine/tiptap": "^7.1.7",
     "@reduxjs/toolkit": "^1.9.7",
     "@tabler/icons-react": "^2.40.0",
