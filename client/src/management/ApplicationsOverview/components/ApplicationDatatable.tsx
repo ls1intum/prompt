@@ -251,7 +251,7 @@ export const ApplicationDatatable = ({
         records={tableRecords}
         selectedRecords={selectedTableRecords}
         onSelectedRecordsChange={setSelectedTableRecords}
-        onRowContextMenu={() =>
+        onRowContextMenu={({ event }) => {
           showContextMenu([
             {
               key: 'download',
@@ -271,8 +271,8 @@ export const ApplicationDatatable = ({
                 setBulkDeleteConfirmationOpened(true)
               },
             },
-          ])
-        }
+          ])(event)
+        }}
         columns={[
           {
             accessor: 'type',
