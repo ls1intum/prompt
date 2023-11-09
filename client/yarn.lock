@@ -1069,11 +1069,11 @@ __metadata:
   linkType: hard
 
 "@types/papaparse@npm:^5":
-  version: 5.3.10
-  resolution: "@types/papaparse@npm:5.3.10"
+  version: 5.3.11
+  resolution: "@types/papaparse@npm:5.3.11"
   dependencies:
     "@types/node": "npm:*"
-  checksum: d927e04ee0631e9be2ee5149ccfdeaae0a30ef32d810e8a605288f6521062c6fc7f03adf3897ce384dd39e43d57f1225d638423db94e5727af27cc5489ffeccb
+  checksum: 1b967274ca6e14d3a82944efad409e93e90cc605145fc94dd003706e2765b03433f26b9deaf515ba9e4c00cb903cc1a70eb19bc1f3063f81073ab4592830fb9e
   languageName: node
   linkType: hard
 
