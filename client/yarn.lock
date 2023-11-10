@@ -305,12 +305,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:^7.1.7":
-  version: 7.1.7
-  resolution: "@mantine/hooks@npm:7.1.7"
+"@mantine/hooks@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "@mantine/hooks@npm:7.2.1"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10203ed4fd85459a25a169707a1b10a5362ff28f916eca27445de1cf2604241189d3b31a2772b795d33286ce547d4a0ea1729273c468915c9b039629bf840e7a
+  checksum: 1939447455df444d8d77c71d01a848ce5db1c5b7868c44f4ae88e0336f1cc07cb13cc036faa932bbca4b819d69e9ef693b7ad572dc109f3b5b60de28cea4171d
   languageName: node
   linkType: hard
 
@@ -2256,7 +2256,7 @@ __metadata:
     "@mantine/dates": "npm:^7.1.7"
     "@mantine/dropzone": "npm:^7.1.7"
     "@mantine/form": "npm:^7.1.7"
-    "@mantine/hooks": "npm:^7.1.7"
+    "@mantine/hooks": "npm:^7.2.1"
     "@mantine/notifications": "npm:^7.2.1"
     "@mantine/tiptap": "npm:^7.1.7"
     "@reduxjs/toolkit": "npm:^1.9.7"
