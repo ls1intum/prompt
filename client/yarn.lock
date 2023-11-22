@@ -1099,11 +1099,11 @@ __metadata:
   linkType: hard
 
 "@types/react-beautiful-dnd@npm:^13":
-  version: 13.1.6
-  resolution: "@types/react-beautiful-dnd@npm:13.1.6"
+  version: 13.1.7
+  resolution: "@types/react-beautiful-dnd@npm:13.1.7"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 6aee3a70a2d1dd6380b475e55b9b4d8c6487283b42382e683c16661cab532dcec71238113c9ab5ab721b500340b1c8b98ec7d8ae054ffafd5939de6936f7c3db
+  checksum: e6e06a8a179dfe852dbef7d5d5ab24a0cf486de4d5c5b7e601ddf4eacbe43885bebc81c69f942ce91a573bb86413cd5965b540c32f6152b86bad7d5b228de37a
   languageName: node
   linkType: hard
 
