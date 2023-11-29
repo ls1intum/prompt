@@ -246,9 +246,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:^7.1.7":
-  version: 7.1.7
-  resolution: "@mantine/core@npm:7.1.7"
+"@mantine/core@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "@mantine/core@npm:7.2.2"
   dependencies:
     "@floating-ui/react": "npm:^0.24.8"
     clsx: "npm:2.0.0"
@@ -257,10 +257,10 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^3.13.1"
   peerDependencies:
-    "@mantine/hooks": 7.1.7
+    "@mantine/hooks": 7.2.2
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 8b04e5934500543005687103cc81689a254868f01be5a09243b43e1e7c89d1d68ee5530b43f7d7f139539bb0fb6ccd528d6fa09146446e11adfd83781d65adef
+  checksum: dc71d65dca0b4517eb75c053a51570bf5f6511b68e0c65631379878b575839719a7b5610c61d5bf5f268796c43123b4b627cce075f814ffc26f97153b43fd53e
   languageName: node
   linkType: hard
 
@@ -2252,7 +2252,7 @@ __metadata:
   resolution: "client@workspace:."
   dependencies:
     "@formkit/auto-animate": "npm:^0.8.1"
-    "@mantine/core": "npm:^7.1.7"
+    "@mantine/core": "npm:^7.2.2"
     "@mantine/dates": "npm:^7.1.7"
     "@mantine/dropzone": "npm:^7.1.7"
     "@mantine/form": "npm:^7.1.7"
