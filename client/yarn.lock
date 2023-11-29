@@ -131,10 +131,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formkit/auto-animate@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "@formkit/auto-animate@npm:0.8.0"
-  checksum: b5bfb2b131b90955cd2b895ce55ee31cfbe6bc99da2d6dd87b75f923927063eda5d813799ace474c6fd87d48bac7d8f95dc0bec2d8d879a00a967de00a05edc0
+"@formkit/auto-animate@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@formkit/auto-animate@npm:0.8.1"
+  checksum: 78dea83222f974e57028136ec4e894f74f729f7dd343504aa85c8562647952d1576a031fa5d16a603371206f23386997952345707f4242f3891f0cbf87509e19
   languageName: node
   linkType: hard
 
@@ -2251,7 +2251,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "client@workspace:."
   dependencies:
-    "@formkit/auto-animate": "npm:^0.8.0"
+    "@formkit/auto-animate": "npm:^0.8.1"
     "@mantine/core": "npm:^7.1.7"
     "@mantine/dates": "npm:^7.1.7"
     "@mantine/dropzone": "npm:^7.1.7"
