@@ -15,7 +15,7 @@
     "@mantine/dates": "^7.2.2",
     "@mantine/dropzone": "^7.2.2",
     "@mantine/form": "^7.2.2",
-    "@mantine/hooks": "^7.2.2",
+    "@mantine/hooks": "^7.3.0",
     "@mantine/notifications": "^7.2.2",
     "@mantine/tiptap": "^7.2.2",
     "@reduxjs/toolkit": "^1.9.7",
