@@ -5,10 +5,13 @@ import { notifications } from '@mantine/notifications'
 export const rejectThesisApplication = createAsyncThunk(
   'thesisApplications/rejectThesisApplication',
 
-  async (thesisApplicationId: string, { rejectWithValue }) => {
+  async (
+    { thesisApplicationId, notifyStudent }: { thesisApplicationId: string; notifyStudent: boolean },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.post(
-        `/api/thesis-applications/${thesisApplicationId}/reject`,
+        `/api/thesis-applications/${thesisApplicationId}/reject?notifyStudent=${notifyStudent}`,
         {},
       )
 

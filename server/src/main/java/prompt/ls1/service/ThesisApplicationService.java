@@ -119,7 +119,7 @@ public class ThesisApplicationService {
         return thesisApplicationRepository.save(thesisApplication);
     }
 
-    public ThesisApplication accept(final UUID thesisApplicationId) {
+    public ThesisApplication accept(final UUID thesisApplicationId, final boolean notifyStudent) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
         if (thesisApplication.getThesisAdvisor() == null) {
             throw new ResourceInvalidParametersException("Thesis advisor must be assigned before accepting a thesis application.");
@@ -127,24 +127,28 @@ public class ThesisApplicationService {
 
         thesisApplication.setApplicationStatus(ApplicationStatus.ACCEPTED);
 
-        try {
-            mailingService.sendThesisAcceptanceEmail(
-                    thesisApplication.getStudent(), thesisApplication, thesisApplication.getThesisAdvisor());
-        } catch (MessagingException e) {
-            throw new FailedMailSend("Failed to send thesis acceptance email.");
+        if (notifyStudent) {
+            try {
+                mailingService.sendThesisAcceptanceEmail(
+                        thesisApplication.getStudent(), thesisApplication, thesisApplication.getThesisAdvisor());
+            } catch (MessagingException e) {
+                throw new FailedMailSend("Failed to send thesis acceptance email.");
+            }
         }
 
         return thesisApplicationRepository.save(thesisApplication);
     }
 
-    public ThesisApplication reject(final UUID thesisApplicationId) {
+    public ThesisApplication reject(final UUID thesisApplicationId, final boolean notifyStudent) {
         final ThesisApplication thesisApplication = findById(thesisApplicationId);
         thesisApplication.setApplicationStatus(ApplicationStatus.REJECTED);
 
-        try {
-            mailingService.sendThesisRejectionEmail(thesisApplication.getStudent(), thesisApplication);
-        } catch (MessagingException e) {
-            throw new FailedMailSend("Failed to send thesis rejection email.");
+        if (notifyStudent) {
+            try {
+                mailingService.sendThesisRejectionEmail(thesisApplication.getStudent(), thesisApplication);
+            } catch (MessagingException e) {
+                throw new FailedMailSend("Failed to send thesis rejection email.");
+            }
         }
 
         return thesisApplicationRepository.save(thesisApplication);
