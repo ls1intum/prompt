@@ -19,7 +19,7 @@
     "@mantine/notifications": "^7.2.2",
     "@mantine/tiptap": "^7.2.2",
     "@reduxjs/toolkit": "^1.9.7",
-    "@tabler/icons-react": "^2.40.0",
+    "@tabler/icons-react": "^2.42.0",
     "@tiptap/core": "^2.1.12",
     "@tiptap/extension-highlight": "^2.1.12",
     "@tiptap/extension-link": "^2.1.12",
