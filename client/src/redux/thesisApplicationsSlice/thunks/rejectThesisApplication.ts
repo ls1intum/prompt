@@ -5,11 +5,19 @@ import { notifications } from '@mantine/notifications'
 export const rejectThesisApplication = createAsyncThunk(
   'thesisApplications/rejectThesisApplication',
 
-  async (thesisApplicationId: string, { rejectWithValue }) => {
+  async (
+    { thesisApplicationId, notifyStudent }: { thesisApplicationId: string; notifyStudent: boolean },
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axiosInstance.post(
         `/api/thesis-applications/${thesisApplicationId}/reject`,
         {},
+        {
+          params: {
+            notifyStudent,
+          },
+        },
       )
 
       if (response) {
@@ -17,7 +25,9 @@ export const rejectThesisApplication = createAsyncThunk(
           color: 'green',
           autoClose: 5000,
           title: 'Success',
-          message: `Sent a rejection mail successfully.`,
+          message: notifyStudent
+            ? `Sent a rejection mail successfully.`
+            : 'Application status updated successfully',
         })
       }
 
@@ -27,7 +37,9 @@ export const rejectThesisApplication = createAsyncThunk(
         color: 'red',
         autoClose: 5000,
         title: 'Error',
-        message: `Failed to send a rejection mail.`,
+        message: notifyStudent
+          ? `Failed to send a rejection mail.`
+          : 'Failed to update application status',
       })
       return rejectWithValue(err)
     }
