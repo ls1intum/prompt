@@ -1,5 +1,6 @@
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
 import { Dropzone, PDF_MIME_TYPE } from '@mantine/dropzone'
+import moment from 'moment'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import {
@@ -19,12 +20,10 @@ import {
   Image,
   Loader,
   LoadingOverlay,
-  MultiSelect,
   Select,
   Spoiler,
   Stack,
   Text,
-  TextInput,
   Textarea,
   Title,
   rem,
@@ -52,6 +51,8 @@ import { useEffect, useState } from 'react'
 import { rejectThesisApplication } from '../redux/thesisApplicationsSlice/thunks/rejectThesisApplication'
 import { acceptThesisApplication } from '../redux/thesisApplicationsSlice/thunks/acceptThesisApplication'
 import { assignThesisAdvisor } from '../redux/thesisApplicationsSlice/thunks/assignThesisAdvisor'
+import { FormTextField } from './components/FormTextField'
+import { FormSelectField } from './components/FormSelectField'
 
 countries.registerLocale(enLocale)
 const countriesArr = Object.entries(countries.getNames('en', { select: 'alias' })).map(
@@ -222,6 +223,10 @@ export const ThesisApplicationForm = ({
   )
 
   useEffect(() => {
+    console.log(form.values.student.nationality)
+  }, [form.values])
+
+  useEffect(() => {
     setThesisAdvisorId(application?.thesisAdvisor?.id ?? null)
   }, [application])
 
@@ -266,131 +271,130 @@ export const ThesisApplicationForm = ({
             </Group>
           )}
           <form style={{ display: 'flex', flexDirection: 'column', gap: '2vh' }}>
-            <Group grow align='center'>
-              <TextInput
-                withAsterisk={!form.values.student?.isExchangeStudent}
+            <Group grow align='flex-start'>
+              <FormTextField
                 required={!form.values.student?.isExchangeStudent}
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='TUM ID'
                 placeholder='TUM ID'
-                {...form.getInputProps('student.tumId')}
+                value={form.values.student?.tumId ?? ''}
+                textInputProps={form.getInputProps('student.tumId')}
               />
-              <TextInput
-                withAsterisk={!form.values.student?.isExchangeStudent}
+              <FormTextField
                 required={!form.values.student?.isExchangeStudent}
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='Matriculation Number'
                 placeholder='Matriculation number'
-                {...form.getInputProps('student.matriculationNumber')}
+                value={form.values.student?.matriculationNumber ?? ''}
+                textInputProps={form.getInputProps('student.matriculationNumber')}
               />
             </Group>
-            <Group grow>
-              <TextInput
-                withAsterisk
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+            <Group grow align='flex-start'>
+              <FormTextField
                 required
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='First name'
                 placeholder='First Name'
-                {...form.getInputProps('student.firstName')}
+                value={form.values.student?.firstName ?? ''}
+                textInputProps={form.getInputProps('student.firstName')}
               />
-              <TextInput
-                withAsterisk
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              <FormTextField
                 required
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='Last name'
                 placeholder='Last Name'
-                {...form.getInputProps('student.lastName')}
+                value={form.values.student?.lastName ?? ''}
+                textInputProps={form.getInputProps('student.lastName')}
               />
             </Group>
-            <Group grow>
-              <Select
-                withAsterisk
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+            <Group grow align='flex-start'>
+              <FormSelectField
                 required
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='Gender'
                 placeholder='Gender'
+                readValue={Gender[form.values.student.gender as unknown as keyof typeof Gender]}
                 data={Object.keys(Gender).map((key) => {
                   return {
                     label: Gender[key as keyof typeof Gender],
                     value: key,
                   }
                 })}
-                {...form.getInputProps('student.gender')}
+                selectProps={form.getInputProps('student.gender')}
               />
-              <Select
-                withAsterisk
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              <FormSelectField
                 required
-                searchable
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='Nationality'
                 placeholder='Nationality'
+                readValue={
+                  countriesArr.find((c) => c.value == form.values.student.nationality)?.label ?? ''
+                }
                 data={countriesArr}
-                {...form.getInputProps('student.nationality')}
+                selectProps={form.getInputProps('student.nationality')}
               />
             </Group>
-            <TextInput
-              withAsterisk
-              disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+            <FormTextField
               required
+              readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
               label='Email (preferrably a TUM email address)'
               placeholder='your@email.com'
-              {...form.getInputProps('student.email')}
+              value={form.values.student?.email ?? ''}
+              textInputProps={form.getInputProps('student.email')}
             />
-            <Group grow>
-              <Select
-                withAsterisk
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+            <Group grow align='flex-start'>
+              <FormSelectField
                 required
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='Study Degree'
                 placeholder='Study Degree'
+                readValue={
+                  StudyDegree[form.values.studyDegree as unknown as keyof typeof StudyDegree]
+                }
                 data={Object.keys(StudyDegree).map((key) => {
                   return {
                     label: StudyDegree[key as keyof typeof StudyDegree],
                     value: key,
                   }
                 })}
-                {...form.getInputProps('studyDegree')}
+                selectProps={form.getInputProps('studyDegree')}
               />
-              <Select
-                withAsterisk
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              <FormSelectField
                 required
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 label='Study Program'
                 placeholder='Study Program'
+                readValue={
+                  StudyProgram[form.values.studyProgram as unknown as keyof typeof StudyProgram]
+                }
                 data={Object.keys(StudyProgram).map((key) => {
                   return {
                     label: StudyProgram[key as keyof typeof StudyProgram],
                     value: key,
                   }
                 })}
-                {...form.getInputProps('studyProgram')}
+                selectProps={form.getInputProps('studyProgram')}
               />
-              <TextInput
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                onWheel={(e) => {
-                  e.currentTarget.blur()
-                }}
-                withAsterisk
+              <FormTextField
                 required
-                type='number'
-                min={0}
-                max={99}
+                numeric
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 placeholder='Current semester'
                 label='Current Semester'
-                {...form.getInputProps('currentSemester')}
+                value={form.values.currentSemester ?? ''}
+                textInputProps={form.getInputProps('currentSemester')}
               />
             </Group>
-            <Group grow>
+            <Group grow align='flex-start'>
               <div>
-                <Textarea
-                  label='Special Skills'
-                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                  autosize
-                  minRows={5}
-                  placeholder='Programming languages, certificates, etc.'
-                  withAsterisk
+                <FormTextField
                   required
-                  {...form.getInputProps('specialSkills')}
+                  textArea
+                  readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  label='Special Skills'
+                  placeholder='Programming languages, certificates, etc.'
+                  value={form.values.specialSkills ?? ''}
+                  textAreaProps={form.getInputProps('specialSkills')}
                 />
                 {!form.errors.specialSkills &&
                   accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
@@ -400,47 +404,44 @@ export const ThesisApplicationForm = ({
                   )}
               </div>
               <div>
-                <Textarea
-                  label='Motivation'
-                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                  autosize
-                  minRows={5}
-                  placeholder='What are you looking for?'
-                  withAsterisk
+                <FormTextField
                   required
-                  {...form.getInputProps('motivation')}
+                  textArea
+                  readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  label='Motivation'
+                  placeholder='What are you looking for?'
+                  value={form.values.motivation ?? ''}
+                  textAreaProps={form.getInputProps('motivation')}
                 />
                 {!form.errors.motivation && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
                   <Text fz='xs' ta='right'>{`${form.values.motivation?.length ?? 0} / 500`}</Text>
                 )}
               </div>
             </Group>
-            <Group grow>
+            <Group grow align='flex-start'>
               <div>
-                <Textarea
-                  label='Interests'
-                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                  autosize
-                  minRows={5}
-                  placeholder='What are you interested in?'
-                  withAsterisk
+                <FormTextField
                   required
-                  {...form.getInputProps('interests')}
+                  textArea
+                  readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  label='Interests'
+                  placeholder='What are you interested in?'
+                  value={form.values.interests ?? ''}
+                  textAreaProps={form.getInputProps('interests')}
                 />
                 {!form.errors.interests && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
                   <Text fz='xs' ta='right'>{`${form.values.interests?.length ?? 0} / 500`}</Text>
                 )}
               </div>
               <div>
-                <Textarea
-                  label='Projects'
-                  disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                  autosize
-                  minRows={5}
-                  placeholder='What projects have you worked on?'
-                  withAsterisk
+                <FormTextField
                   required
-                  {...form.getInputProps('projects')}
+                  textArea
+                  readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                  label='Projects'
+                  placeholder='What projects have you worked on?'
+                  value={form.values.projects ?? ''}
+                  textAreaProps={form.getInputProps('projects')}
                 />
                 {!form.errors.projects && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
                   <Text fz='xs' ta='right'>{`${form.values.projects?.length ?? 0} / 500`}</Text>
@@ -448,29 +449,40 @@ export const ThesisApplicationForm = ({
               </div>
             </Group>
             <div>
-              <Textarea
-                label='Thesis Title Suggestion'
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-                autosize
-                minRows={5}
-                placeholder='Thesis title suggestion'
-                withAsterisk
+              <FormTextField
                 required
-                {...form.getInputProps('thesisTitle')}
+                textArea
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+                label='Thesis Title Suggestion'
+                placeholder='Thesis title suggestion'
+                value={form.values.thesisTitle ?? ''}
+                textAreaProps={form.getInputProps('thesisTitle')}
               />
               {!form.errors.thesisTitle && accessMode !== ApplicationFormAccessMode.INSTRUCTOR && (
                 <Text fz='xs' ta='right'>{`${form.values.thesisTitle?.length ?? 0} / 200`}</Text>
               )}
             </div>
-            <DatePickerInput
-              disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-              leftSection={<IconCalendar />}
-              label='Desired Thesis Start Date'
-              {...form.getInputProps('desiredThesisStart')}
-            />
+            {accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
+              <Stack style={{ gap: '0' }}>
+                <Text c='dimmed' fz='xs' fw={700}>
+                  Desired Thesis Start Date
+                </Text>
+                <Text fz='sm' lineClamp={20}>
+                  {moment(form.values.desiredThesisStart).format('DD. MMMM YYYY')}
+                </Text>
+              </Stack>
+            ) : (
+              <DatePickerInput
+                leftSection={<IconCalendar />}
+                label='Desired Thesis Start Date'
+                {...form.getInputProps('desiredThesisStart')}
+              />
+            )}
             <Group grow>
-              <MultiSelect
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              <FormSelectField
+                required
+                multiselect
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 data={Object.keys(ResearchArea).map((key) => {
                   return {
                     label: ResearchArea[key as keyof typeof ResearchArea],
@@ -479,10 +491,15 @@ export const ThesisApplicationForm = ({
                 })}
                 label='Research Areas'
                 placeholder='Research areas'
-                {...form.getInputProps('researchAreas')}
+                readValue={form.values.researchAreas
+                  .map((ra) => ResearchArea[ra as unknown as keyof typeof ResearchArea])
+                  .join(', ')}
+                multiselectProps={form.getInputProps('researchAreas')}
               />
-              <MultiSelect
-                disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
+              <FormSelectField
+                required
+                multiselect
+                readOnly={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
                 data={Object.keys(FocusTopic).map((key) => {
                   return {
                     label: FocusTopic[key as keyof typeof FocusTopic],
@@ -491,7 +508,10 @@ export const ThesisApplicationForm = ({
                 })}
                 label='Focus Topics'
                 placeholder='Focus topics'
-                {...form.getInputProps('focusTopics')}
+                readValue={form.values.focusTopics
+                  .map((ft) => FocusTopic[ft as unknown as keyof typeof FocusTopic])
+                  .join(', ')}
+                multiselectProps={form.getInputProps('focusTopics')}
               />
             </Group>
             {accessMode === ApplicationFormAccessMode.STUDENT && (
@@ -722,7 +742,7 @@ export const ThesisApplicationForm = ({
             <>
               <Divider
                 label={
-                  <Text c='white' fw='500'>
+                  <Text c='dimmed' fz='xs' fw='700'>
                     Uploaded Files
                   </Text>
                 }
@@ -923,6 +943,7 @@ export const ThesisApplicationForm = ({
                     void (async () => {
                       loadingOverlayHandlers.open()
                       if (uploads.values.examinationReport && uploads.values.cv) {
+                        console.log(form.values)
                         const response = await createThesisApplication({
                           application: form.values,
                           examinationReport: uploads.values.examinationReport,
