@@ -223,10 +223,6 @@ export const ThesisApplicationForm = ({
   )
 
   useEffect(() => {
-    console.log(form.values.student.nationality)
-  }, [form.values])
-
-  useEffect(() => {
     setThesisAdvisorId(application?.thesisAdvisor?.id ?? null)
   }, [application])
 
