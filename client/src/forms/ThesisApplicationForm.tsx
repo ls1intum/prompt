@@ -79,6 +79,7 @@ export const ThesisApplicationForm = ({
   )
   const [loadingOverlayVisible, loadingOverlayHandlers] = useDisclosure(false)
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
+  const [notifyStudent, setNotifyStudent] = useState(false)
   const uploads = useForm<{
     examinationReport: File | undefined
     cv: File | undefined
@@ -857,7 +858,12 @@ export const ThesisApplicationForm = ({
                   disabled={thesisAppliccationsSliceState === 'pending'}
                   onClick={() => {
                     if (application) {
-                      void dispatch(rejectThesisApplication(application.id))
+                      void dispatch(
+                        rejectThesisApplication({
+                          thesisApplicationId: application.id,
+                          notifyStudent,
+                        }),
+                      )
                     }
                   }}
                 >
@@ -871,12 +877,24 @@ export const ThesisApplicationForm = ({
                   }
                   onClick={() => {
                     if (application) {
-                      void dispatch(acceptThesisApplication(application.id))
+                      void dispatch(
+                        acceptThesisApplication({
+                          thesisApplicationId: application.id,
+                          notifyStudent,
+                        }),
+                      )
                     }
                   }}
                 >
                   {thesisAppliccationsSliceState === 'pending' ? <Loader /> : 'Accept'}
                 </Button>
+              </Group>
+              <Group align='right'>
+                <Checkbox
+                  label='Notify student'
+                  checked={notifyStudent}
+                  onChange={(event) => setNotifyStudent(event.currentTarget.checked)}
+                />
               </Group>
             </>
           )}

@@ -49,21 +49,21 @@ jobs:
             return "latest";
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Get changed files in the client folder
         id: changed-files-client-folder
         uses: tj-actions/changed-files@v40
         with:
-          files: client/*
+          files: client/**
 
       - name: Get changed files in the server folder
         id: changed-files-server-folder
         uses: tj-actions/changed-files@v40
         with:
-          files: server/*
+          files: server/**
 
       - name: Log in to the Container registry
         if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
