@@ -494,22 +494,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tabler/icons-react@npm:^2.40.0":
-  version: 2.40.0
-  resolution: "@tabler/icons-react@npm:2.40.0"
+"@tabler/icons-react@npm:^2.44.0":
+  version: 2.44.0
+  resolution: "@tabler/icons-react@npm:2.44.0"
   dependencies:
-    "@tabler/icons": "npm:2.40.0"
+    "@tabler/icons": "npm:2.44.0"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 3deb43e6d474ff2d09ff941d3d8b66c8898b08c25b5cd7c3b3cb693fc88ede9404e06950647083db3287f7ae361495bbb99b828466f458d57ef4f16cbbb89d27
+  checksum: 92c755b6e57c46b8b7832fc5557057b3f84985d1069f028a8fa0e92c2e99d7b9adb682f0bf5d07b2d49e97ad3677439c109a254025527b83d5fc96d9a05dba1f
   languageName: node
   linkType: hard
 
-"@tabler/icons@npm:2.40.0":
-  version: 2.40.0
-  resolution: "@tabler/icons@npm:2.40.0"
-  checksum: a59adf9b071fb3b54f507c3a7c8adaeb74ccb5af5834c92d312829f7564f1e4255086091fe43dbfeae256510d073bce8476f2171655b337050b08b7521786400
+"@tabler/icons@npm:2.44.0":
+  version: 2.44.0
+  resolution: "@tabler/icons@npm:2.44.0"
+  checksum: 42d069a355b66af5a749aa68db149297778f582511b95b3d2bf70902e9e1c3f7e0977791378359bcbb04e39af582d2b7a270932531eb832accfd2f8fda0e7d72
   languageName: node
   linkType: hard
 
@@ -2267,7 +2267,7 @@ __metadata:
     "@mantine/notifications": "npm:^7.2.2"
     "@mantine/tiptap": "npm:^7.2.2"
     "@reduxjs/toolkit": "npm:^1.9.7"
-    "@tabler/icons-react": "npm:^2.40.0"
+    "@tabler/icons-react": "npm:^2.44.0"
     "@tiptap/core": "npm:^2.1.12"
     "@tiptap/extension-highlight": "npm:^2.1.12"
     "@tiptap/extension-link": "npm:^2.1.12"
