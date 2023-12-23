@@ -389,6 +389,7 @@ public class MailingService {
         if (environment.equals("prod")) {
             message.addRecipients(MimeMessage.RecipientType.BCC, "krusche@tum.de");
         }
+        System.out.println(environment);
         message.addRecipients(MimeMessage.RecipientType.BCC, "valeryia.andraichuk@tum.de");
         message.setSubject("Thesis Application Rejection");
 
