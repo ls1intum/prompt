@@ -130,7 +130,7 @@ public class ThesisApplicationController {
     @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<ThesisApplication> acceptThesisApplication(
             @PathVariable final UUID thesisApplicationId,
-            @RequestParam(required = false, defaultValue = "false") final boolean notifyStudent) {
+            @RequestParam(required = false, defaultValue = "true") final boolean notifyStudent) {
         return ResponseEntity.ok(thesisApplicationService.accept(thesisApplicationId, notifyStudent));
     }
 
@@ -138,7 +138,7 @@ public class ThesisApplicationController {
     @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
     public ResponseEntity<ThesisApplication> rejectThesisApplication(
             @PathVariable final UUID thesisApplicationId,
-            @RequestParam(required = false, defaultValue = "false") final boolean notifyStudent) {
+            @RequestParam(required = false, defaultValue = "true") final boolean notifyStudent) {
         return ResponseEntity.ok(thesisApplicationService.reject(thesisApplicationId, notifyStudent));
     }
 }
