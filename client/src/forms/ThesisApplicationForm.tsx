@@ -80,7 +80,7 @@ export const ThesisApplicationForm = ({
   )
   const [loadingOverlayVisible, loadingOverlayHandlers] = useDisclosure(false)
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
-  const [notifyStudent, setNotifyStudent] = useState(false)
+  const [notifyStudent, setNotifyStudent] = useState(true)
   const uploads = useForm<{
     examinationReport: File | undefined
     cv: File | undefined
