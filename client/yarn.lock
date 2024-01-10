@@ -314,27 +314,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/notifications@npm:^7.2.2":
-  version: 7.2.2
-  resolution: "@mantine/notifications@npm:7.2.2"
+"@mantine/notifications@npm:^7.4.1":
+  version: 7.4.1
+  resolution: "@mantine/notifications@npm:7.4.1"
   dependencies:
-    "@mantine/store": "npm:7.2.2"
+    "@mantine/store": "npm:7.4.1"
     react-transition-group: "npm:4.4.5"
   peerDependencies:
-    "@mantine/core": 7.2.2
-    "@mantine/hooks": 7.2.2
+    "@mantine/core": 7.4.1
+    "@mantine/hooks": 7.4.1
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 6b9c771b9b5d3faf7726b290c98f79c602ac9f1a6b31e82b9c365af0a381eac6013a16b41a0d348d41107b1ff97ec0b354089e1e5fd1105e9f12652332775d69
+  checksum: c24cee68e4a200a8f92e21f78ed3208f7a4fdbb0084c1cd712e5204cd37750b52d295852498704414bc220fdd8187b0f142aafddd25b1e29bec146124371fd7b
   languageName: node
   linkType: hard
 
-"@mantine/store@npm:7.2.2":
-  version: 7.2.2
-  resolution: "@mantine/store@npm:7.2.2"
+"@mantine/store@npm:7.4.1":
+  version: 7.4.1
+  resolution: "@mantine/store@npm:7.4.1"
   peerDependencies:
     react: ^18.2.0
-  checksum: 71ec7eaf6cbede9b32bfeda5a389f7629ca8221ce53d080953ab0306e31fe80fb37965ae0eb9a0e46dccfe89ba24473c9fea3e8c27336273ffaab3c5590ae33f
+  checksum: f5e8304209dbba20d9a8a3745ef64504a717770b1771e8ee24e4b00a866264eada5a4cf5c5da438a81afabf979149ea5d97e8591c1007cc0e91fcdcd10cfdc88
   languageName: node
   linkType: hard
 
@@ -2265,7 +2265,7 @@ __metadata:
     "@mantine/dropzone": "npm:^7.2.2"
     "@mantine/form": "npm:^7.2.2"
     "@mantine/hooks": "npm:^7.2.2"
-    "@mantine/notifications": "npm:^7.2.2"
+    "@mantine/notifications": "npm:^7.4.1"
     "@mantine/tiptap": "npm:^7.2.2"
     "@reduxjs/toolkit": "npm:^1.9.7"
     "@tabler/icons-react": "npm:^2.44.0"
