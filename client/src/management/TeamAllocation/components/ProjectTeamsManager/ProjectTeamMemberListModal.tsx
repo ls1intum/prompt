@@ -96,7 +96,7 @@ export const ProjectTeamMemberListModal = ({
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} centered size='xl'>
+    <Modal title={projectTeam.customer} opened={opened} onClose={onClose} centered size='90%'>
       <TransferList
         leftSectionData={data[0]}
         rightSectionData={data[1]}
