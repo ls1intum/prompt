@@ -1,7 +1,7 @@
-import { IconChevronRight } from '@tabler/icons-react'
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { Combobox, TextInput, useCombobox, Checkbox, ActionIcon, Group } from '@mantine/core'
 import './TransferList.scss'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface RenderListProps {
   options: TransferListItem[]
@@ -19,30 +19,32 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
       current.includes(val) ? current.filter((v) => v !== val) : [...current, val],
     )
 
-  const items = options
-    .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
-    .map((item) => (
-      <Combobox.Option
-        value={item.value}
-        key={item.value}
-        active={value.some((v) => v.value === item.value)}
-        onMouseOver={() => combobox.resetSelectedOption()}
-      >
-        <Group gap='sm'>
-          <Checkbox
-            checked={value.some((v) => v.value === item.value)}
-            onChange={() => {}}
-            aria-hidden
-            tabIndex={-1}
-            style={{ pointerEvents: 'none' }}
-          />
-          <span>{item.label}</span>
-        </Group>
-      </Combobox.Option>
-    ))
+  const items = useMemo(() => {
+    return options
+      .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
+      .map((item) => (
+        <Combobox.Option
+          value={item.value}
+          key={item.value}
+          active={value.some((v) => v.value === item.value)}
+          onMouseOver={() => combobox.resetSelectedOption()}
+        >
+          <Group gap='sm'>
+            <Checkbox
+              checked={value.some((v) => v.value === item.value)}
+              onChange={() => {}}
+              aria-hidden
+              tabIndex={-1}
+              style={{ pointerEvents: 'none' }}
+            />
+            <span>{item.label}</span>
+          </Group>
+        </Combobox.Option>
+      ))
+  }, [combobox, options, search, value])
 
   return (
-    <div className='renderList' data-type={type}>
+    <div data-type={type}>
       <Combobox
         store={combobox}
         onOptionSubmit={(values) => {
@@ -52,7 +54,8 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
         <Combobox.EventsTarget>
           <Group wrap='nowrap' gap={0} className='controls'>
             <TextInput
-              placeholder='Search groceries'
+              placeholder='Search...'
+              style={{ width: '20vw' }}
               classNames={{ input: 'input' }}
               value={search}
               onChange={(event) => {
@@ -64,13 +67,12 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
               radius={0}
               variant='default'
               size={36}
-              className='control'
               onClick={() => {
                 onTransfer(value)
                 setValue([])
               }}
             >
-              <IconChevronRight className='icon' />
+              {type === 'forward' ? <IconChevronRight /> : <IconChevronLeft />}
             </ActionIcon>
           </Group>
         </Combobox.EventsTarget>
@@ -120,8 +122,12 @@ export const TransferList = ({
       return result as TransferListItem[][]
     })
 
+  useEffect(() => {
+    setData([leftSectionData, rightSectionData])
+  }, [leftSectionData, rightSectionData])
+
   return (
-    <div className='root'>
+    <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
       <RenderList
         type='forward'
         options={data[0]}

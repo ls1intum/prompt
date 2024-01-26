@@ -5,7 +5,6 @@ import {
   Modal,
   Notification,
   Stack,
-  Text,
   TextInput,
   Tooltip,
 } from '@mantine/core'
@@ -300,7 +299,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
           },
           {
             accessor: 'actions',
-            title: <Text mr='xs'>Actions</Text>,
+            title: 'Actions',
             textAlign: 'right',
             render: (projectTeam) => (
               <Group gap={4} justify='flex-end' wrap='nowrap'>

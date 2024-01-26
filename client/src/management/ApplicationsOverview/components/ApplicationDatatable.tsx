@@ -7,7 +7,7 @@ import {
   type Application,
   ApplicationStatus,
 } from '../../../redux/applicationsSlice/applicationsSlice'
-import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
+import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack } from '@mantine/core'
 import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
@@ -403,7 +403,7 @@ export const ApplicationDatatable = ({
           },
           {
             accessor: 'actions',
-            title: <Text mr='xs'>Actions</Text>,
+            title: 'Actions',
             textAlign: 'right',
             render: (application) => (
               <Group gap={4} justify='flex-end' wrap='nowrap'>
