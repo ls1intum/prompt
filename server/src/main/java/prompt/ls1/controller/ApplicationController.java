@@ -27,6 +27,7 @@ import prompt.ls1.model.Application;
 import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
+import prompt.ls1.model.Grade;
 import prompt.ls1.model.InstructorComment;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
@@ -65,7 +66,7 @@ public class ApplicationController {
 
     @GetMapping("/{applicationType}")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<Application>> getAllDeveloperApplications(
+    public ResponseEntity<List<Application>> getApplications(
             @PathVariable final String applicationType,
             @RequestParam(name = "courseIteration") @NotNull final String courseIterationName,
             @RequestParam(required = false) final Optional<ApplicationStatus> applicationStatus
@@ -272,9 +273,16 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.createInstructorCommentForTutorApplication(applicationId, instructorComment));
     }
 
+    @PostMapping("/developer/{applicationId}/grading")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<Application> gradeDeveloperApplication(@PathVariable UUID applicationId,
+                                                                                  @RequestBody Grade grade) {
+        return ResponseEntity.ok(applicationService.gradeDeveloperApplication(applicationId, grade));
+    }
+
     @PostMapping(path = "/developer/{developerApplicationId}/project-team/{projectTeamId}")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> assignStudentApplicationToProjectTeam(
+    public ResponseEntity<Application> assignDeveloperApplicationToProjectTeam(
             @RequestParam(name="courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId,
             @PathVariable UUID projectTeamId
@@ -286,7 +294,7 @@ public class ApplicationController {
 
     @DeleteMapping(path = "/developer/{developerApplicationId}/project-team")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> removeStudentApplicationFromProjectTeam(
+    public ResponseEntity<Application> removeDeveloperApplicationFromProjectTeam(
             @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId
     ) {

@@ -141,6 +141,10 @@ public class ApplicationService {
         return applications;
     }
 
+    public List<DeveloperApplication> findDeveloperApplicationsByProjectTeamId(final UUID projectTeamId) {
+        return developerApplicationRepository.findByProjectTeamId(projectTeamId);
+    }
+
     public DeveloperApplication createDeveloperApplication(final DeveloperApplication developerApplication) {
         Optional<Student> existingStudent = findStudent(developerApplication.getStudent().getTumId(),
                 developerApplication.getStudent().getMatriculationNumber(), developerApplication.getStudent().getEmail());
@@ -507,6 +511,12 @@ public class ApplicationService {
 
         application.setProjectTeam(projectTeam);
         developerApplicationRepository.save(application);
+    }
+
+    public DeveloperApplication gradeDeveloperApplication(final UUID applicationId, final Grade grade) {
+        final DeveloperApplication application = findDeveloperApplicationById(applicationId);
+        application.setFinalGrade(grade);
+        return developerApplicationRepository.save(application);
     }
 
     public UUID deleteDeveloperApplication(final UUID developerApplicationId) {

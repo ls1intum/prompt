@@ -59,4 +59,8 @@ public abstract class Application {
     @JoinColumn(name = "application_assessment_id")
     private ApplicationAssessment assessment;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "grade_id")
+    private Grade finalGrade;
+
 }
