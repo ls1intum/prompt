@@ -3,11 +3,15 @@ import { createProjectTeam } from './thunks/createProjectTeam'
 import { deleteProjectTeam } from './thunks/deleteProjectTeam'
 import { fetchProjectTeams } from './thunks/fetchProjectTeams'
 import { updateProjectTeam } from './thunks/updateProjectTeam'
+import { fetchProjectTeamDevelopers } from './thunks/fetchProjectTeamDevelopers'
+import { type Application } from '../applicationsSlice/applicationsSlice'
+import { gradeDeveloperApplication } from './thunks/gradeDeveloperApplication'
 
 interface ProjectTeam {
   id: string
   name: string
   customer: string
+  developers?: Application[]
 }
 
 interface ProjectTeamPatch {
@@ -44,6 +48,49 @@ export const projectTeamsSlice = createSlice({
     })
 
     builder.addCase(fetchProjectTeams.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchProjectTeamDevelopers.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(fetchProjectTeamDevelopers.fulfilled, (state, { payload }) => {
+      state.projectTeams = state.projectTeams.map((projectTeam) =>
+        projectTeam.id === payload[0]?.projectTeam?.id
+          ? { ...projectTeam, developers: payload }
+          : projectTeam,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(fetchProjectTeamDevelopers.rejected, (state, { payload }) => {
+      if (payload) state.error = 'error'
+      state.status = 'idle'
+    })
+
+    builder.addCase(gradeDeveloperApplication.pending, (state) => {
+      state.status = 'loading'
+      state.error = null
+    })
+
+    builder.addCase(gradeDeveloperApplication.fulfilled, (state, { payload }) => {
+      state.projectTeams = state.projectTeams.map((projectTeam) =>
+        projectTeam.id === payload.projectTeam?.id
+          ? {
+              ...projectTeam,
+              developers: projectTeam.developers?.map((developer) =>
+                developer.id === payload.id ? payload : developer,
+              ),
+            }
+          : projectTeam,
+      )
+      state.status = 'idle'
+    })
+
+    builder.addCase(gradeDeveloperApplication.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })

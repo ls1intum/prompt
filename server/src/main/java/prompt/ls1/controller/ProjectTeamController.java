@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prompt.ls1.model.CourseIteration;
+import prompt.ls1.model.DeveloperApplication;
 import prompt.ls1.model.ProjectTeam;
+import prompt.ls1.service.ApplicationService;
 import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.ProjectTeamService;
 
@@ -29,12 +31,15 @@ import java.util.UUID;
 public class ProjectTeamController {
     private final CourseIterationService courseIterationService;
     private final ProjectTeamService projectTeamService;
+    private final ApplicationService applicationService;
 
     @Autowired
-    public ProjectTeamController(CourseIterationService courseIterationService,
-                                 ProjectTeamService projectTeamService) {
+    public ProjectTeamController(final CourseIterationService courseIterationService,
+                                 final ProjectTeamService projectTeamService,
+                                 final ApplicationService applicationService) {
         this.courseIterationService = courseIterationService;
         this.projectTeamService = projectTeamService;
+        this.applicationService = applicationService;
     }
 
     @GetMapping
@@ -69,4 +74,9 @@ public class ProjectTeamController {
         return ResponseEntity.ok(projectTeamService.delete(projectTeamId));
     }
 
+    @GetMapping("/{projectTeamId}/developers")
+    @PreAuthorize("hasRole('ipraktikum-pm')")
+    public ResponseEntity<List<DeveloperApplication>> getProjectTeamDevelopers(@PathVariable UUID projectTeamId) {
+        return ResponseEntity.ok(applicationService.findDeveloperApplicationsByProjectTeamId(projectTeamId));
+    }
 }
