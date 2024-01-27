@@ -55,11 +55,13 @@ const ProjectTeamCreationModal = ({
           id: '',
           name: '',
           customer: '',
+          projectLeadTumId: '',
+          coachTumId: '',
         },
   })
 
   return (
-    <Modal opened={opened} onClose={onClose} centered>
+    <Modal title={projectTeam?.customer} opened={opened} onClose={onClose} centered>
       <Stack>
         <TextInput
           withAsterisk
@@ -75,6 +77,18 @@ const ProjectTeamCreationModal = ({
           placeholder='Customer'
           {...form.getInputProps('customer')}
         />
+        <Group grow>
+          <TextInput
+            label='Project Lead TUM ID'
+            placeholder='Project lead TUM ID'
+            {...form.getInputProps('projectLeadTumId')}
+          />
+          <TextInput
+            label='Coach TUM ID'
+            placeholder='Coach TUM ID'
+            {...form.getInputProps('coachTumId')}
+          />
+        </Group>
         <Button
           type='submit'
           onClick={() => {

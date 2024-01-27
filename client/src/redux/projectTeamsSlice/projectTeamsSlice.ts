@@ -12,6 +12,8 @@ interface ProjectTeam {
   name: string
   customer: string
   developers?: Application[]
+  projectLeadTumId?: string
+  coachTumId?: string
 }
 
 interface ProjectTeamPatch {

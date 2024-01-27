@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { axiosInstance, serverBaseUrl } from '../../../service/configService'
 import { type Grade } from '../../applicationsSlice/applicationsSlice'
+import { notifications } from '@mantine/notifications'
 
 export const gradeDeveloperApplication = createAsyncThunk(
   'projectTeams/gradeDeveloperApplication',
@@ -16,19 +17,30 @@ export const gradeDeveloperApplication = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      return (
-        await axiosInstance.post(
-          `${serverBaseUrl}/api/applications/developer/${applicationId}/grading`,
-          grade,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-              'Content-Type': 'application/json-path+json',
-            },
+      const response = await axiosInstance.post(
+        `${serverBaseUrl}/api/applications/developer/${applicationId}/grading`,
+        grade,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+            'Content-Type': 'application/json-path+json',
           },
-        )
-      ).data
+        },
+      )
+      notifications.show({
+        color: 'green',
+        autoClose: 10000,
+        title: 'Success',
+        message: `Grade has been assigned successfully.`,
+      })
+      return response.data
     } catch (err) {
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `Could not assign a grade.`,
+      })
       return rejectWithValue(err)
     }
   },

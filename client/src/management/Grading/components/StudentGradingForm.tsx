@@ -59,6 +59,7 @@ export const StudentGradingForm = ({ application }: StudentGradingFormProps): JS
         )}
       </div>
       <Button
+        disabled={!form.isTouched() || !form.isDirty() || !form.isValid()}
         onClick={() => {
           void dispatch(
             gradeDeveloperApplication({
@@ -66,6 +67,8 @@ export const StudentGradingForm = ({ application }: StudentGradingFormProps): JS
               grade: form.values,
             }),
           )
+          form.resetDirty()
+          form.resetTouched()
         }}
       >
         Save
