@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -30,6 +31,14 @@ public class ProjectTeam implements Serializable {
 
     @Column
     private String customer;
+
+    @Column(length = 20)
+    @Length(max = 20)
+    private String projectLeadTumId;
+
+    @Column(length = 20)
+    @Length(max = 20)
+    private String coachTumId;
 
     @ManyToOne
     @JoinColumn(name ="course_iteration_id", referencedColumnName = "id")
