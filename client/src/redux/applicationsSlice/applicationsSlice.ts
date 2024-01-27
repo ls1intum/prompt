@@ -123,6 +123,12 @@ interface ApplicationAssessment {
   status: keyof typeof ApplicationStatus
 }
 
+interface Grade {
+  id: string
+  grade: number
+  comment: string
+}
+
 type ApplicationType = 'DEVELOPER' | 'COACH' | 'TUTOR'
 
 interface Application {
@@ -143,6 +149,7 @@ interface Application {
   coursesTaken: Course[]
   assessment: ApplicationAssessment
   projectTeam?: ProjectTeam
+  finalGrade?: Grade
 }
 
 interface InstructorComment {
@@ -676,6 +683,7 @@ export {
   StudyDegree,
   StudyProgram,
   Gender,
+  Grade,
   ApplicationStatus,
   Device,
   Course,
