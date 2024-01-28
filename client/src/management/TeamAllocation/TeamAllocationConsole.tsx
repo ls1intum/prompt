@@ -11,18 +11,34 @@ import { SkillsManager } from './components/SkillsManager/SkillsManager'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { useEffect } from 'react'
 import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
 import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
+import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
+import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
+import { useQuery } from 'react-query'
+import { Query } from '../../state/query'
+import { getProjectTeams } from '../../request/projectTeam'
 
 export const TeamAllocationConsole = (): JSX.Element => {
+  const { setProjectTeams } = useProjectTeamStore()
   const dispatch = useDispatch<AppDispatch>()
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
 
+  const { data: projectTeams } = useQuery<ProjectTeam[]>({
+    queryKey: [Query.PROJECT_TEAM, selectedCourseIteration?.semesterName],
+    queryFn: () => getProjectTeams(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
+
+  useEffect(() => {
+    if (projectTeams) {
+      setProjectTeams(projectTeams)
+    }
+  }, [projectTeams, setProjectTeams])
+
   useEffect(() => {
     if (selectedCourseIteration) {
-      void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
       void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
       void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
     }

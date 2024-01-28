@@ -180,7 +180,7 @@ export const ManagementConsole = ({
     }
   }, [authenticated, keycloakValue, mgmtAccess])
 
-  const { data: fetchedDeveloperApplications } = useQuery<Application[]>({
+  const { data: developerApplications } = useQuery<Application[]>({
     queryKey: [Query.DEVELOPER_APPLICATION, currentState?.semesterName],
     queryFn: () => getApplications(ApplicationType.DEVELOPER, currentState?.semesterName ?? ''),
     enabled: !!currentState,
@@ -189,7 +189,7 @@ export const ManagementConsole = ({
         return { ...application, type: ApplicationType.DEVELOPER }
       }),
   })
-  const { data: fetchedCoachApplications } = useQuery<Application[]>({
+  const { data: coachApplications } = useQuery<Application[]>({
     queryKey: [Query.COACH_APPLICATION, currentState?.semesterName],
     queryFn: () => getApplications(ApplicationType.COACH, currentState?.semesterName ?? ''),
     enabled: !!currentState,
@@ -198,7 +198,7 @@ export const ManagementConsole = ({
         return { ...application, type: ApplicationType.COACH }
       }),
   })
-  const { data: fetchedTutorApplications } = useQuery<Application[]>({
+  const { data: tutorApplications } = useQuery<Application[]>({
     queryKey: [Query.TUTOR_APPLICATION, currentState?.semesterName],
     queryFn: () => getApplications(ApplicationType.TUTOR, currentState?.semesterName ?? ''),
     enabled: !!currentState,
@@ -209,20 +209,20 @@ export const ManagementConsole = ({
   })
 
   useEffect(() => {
-    if (fetchedDeveloperApplications) {
-      setDeveloperApplications(fetchedDeveloperApplications)
+    if (developerApplications) {
+      setDeveloperApplications(developerApplications)
     }
-  }, [fetchedDeveloperApplications, setDeveloperApplications])
+  }, [developerApplications, setDeveloperApplications])
   useEffect(() => {
-    if (fetchedCoachApplications) {
-      setCoachApplications(fetchedCoachApplications)
+    if (coachApplications) {
+      setCoachApplications(coachApplications)
     }
-  }, [fetchedCoachApplications, setCoachApplications])
+  }, [coachApplications, setCoachApplications])
   useEffect(() => {
-    if (fetchedTutorApplications) {
-      setTutorApplications(fetchedTutorApplications)
+    if (tutorApplications) {
+      setTutorApplications(tutorApplications)
     }
-  }, [fetchedTutorApplications, setTutorApplications])
+  }, [tutorApplications, setTutorApplications])
 
   return (
     <div className={styles.root}>

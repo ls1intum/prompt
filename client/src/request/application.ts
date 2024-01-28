@@ -40,6 +40,11 @@ export const patchApplicationAssessment = async (
       await axiosInstance.patch(
         `/api/applications/${applicationType}/${applicationId}/assessment`,
         assessmentPatch,
+        {
+          headers: {
+            'Content-Type': 'application/json-path+json',
+          },
+        },
       )
     ).data
   } catch (err) {

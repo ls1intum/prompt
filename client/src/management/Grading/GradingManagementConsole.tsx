@@ -3,21 +3,31 @@ import { IconUsersGroup } from '@tabler/icons-react'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { fetchProjectTeamDevelopers } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeamDevelopers'
 import { ProjectTeamGrading } from './components/ProjectTeamGrading'
+import { useQuery } from 'react-query'
+import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
+import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
+import { getProjectTeams } from '../../request/projectTeam'
+import { Query } from '../../state/query'
 
 export const GradingManagementConsole = (): JSX.Element => {
+  const { projectTeams, setProjectTeams } = useProjectTeamStore()
   const dispatch = useDispatch<AppDispatch>()
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
   const [activeProjectTeam, setActiveProjectTeam] = useState<string | null>()
 
+  const { data: fetchedProjectTeams } = useQuery<ProjectTeam[]>({
+    queryKey: [Query.PROJECT_TEAM, selectedCourseIteration?.semesterName],
+    queryFn: () => getProjectTeams(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
+
   useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(fetchProjectTeams(selectedCourseIteration?.semesterName))
+    if (fetchedProjectTeams) {
+      setProjectTeams(fetchedProjectTeams)
     }
-  }, [dispatch, selectedCourseIteration])
+  }, [fetchedProjectTeams, setProjectTeams])
 
   useEffect(() => {
     if (activeProjectTeam) {

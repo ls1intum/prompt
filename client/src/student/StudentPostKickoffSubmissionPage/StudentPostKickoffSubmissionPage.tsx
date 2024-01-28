@@ -13,7 +13,6 @@ import {
 } from 'react'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
-import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import {
   Button,
   Card,
@@ -43,6 +42,10 @@ import { fetchSkills } from '../../redux/skillsSlice/thunks/fetchSkills'
 import { createPostKickoffSubmission } from '../../service/postKickoffSubmissionService'
 import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
 import { notifications } from '@mantine/notifications'
+import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
+import { useQuery } from 'react-query'
+import { getProjectTeams } from '../../request/projectTeam'
+import { Query } from '../../state/query'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
   const shuffledArray = [...array]
@@ -81,7 +84,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const courseIterationWithOpenKickOffPeriod = useAppSelector(
     (state) => state.courseIterations.courseIterationWithOpenKickOffPeriod,
   )
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
+  const { projectTeams, setProjectTeams } = useProjectTeamStore()
   const skills = useAppSelector((state) => state.skills.skills)
   const dispatch = useDispatch<AppDispatch>()
   const [leftSideState, leftSideStateHandlers] = useListState<ProjectTeam>([])
@@ -121,6 +124,18 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   })
   const [formSubmitted, setFormSubmitted] = useState(false)
 
+  const { data: fetchedProjectTeams } = useQuery<ProjectTeam[]>({
+    queryKey: [Query.PROJECT_TEAM, courseIterationWithOpenKickOffPeriod?.semesterName],
+    queryFn: () => getProjectTeams(courseIterationWithOpenKickOffPeriod?.semesterName ?? ''),
+    enabled: !!courseIterationWithOpenKickOffPeriod,
+  })
+
+  useEffect(() => {
+    if (fetchedProjectTeams) {
+      setProjectTeams(fetchedProjectTeams)
+    }
+  }, [fetchedProjectTeams, setProjectTeams])
+
   useEffect(() => {
     void dispatch(fetchCourseIterationsWithOpenKickOffPeriod())
     void dispatch(fetchSkills())
@@ -138,12 +153,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       }),
     })
   }, [form, skills])
-
-  useEffect(() => {
-    if (courseIterationWithOpenKickOffPeriod) {
-      void dispatch(fetchProjectTeams(courseIterationWithOpenKickOffPeriod.semesterName))
-    }
-  }, [dispatch, courseIterationWithOpenKickOffPeriod])
 
   useEffect(() => {
     rightSideStateHandlers.setState(shuffleProjectTeams(projectTeams))

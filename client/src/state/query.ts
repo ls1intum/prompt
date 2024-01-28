@@ -4,4 +4,5 @@ export enum Query {
   COACH_APPLICATION = 'coachApplication',
   TUTOR_APPLICATION = 'tutorApplication',
   COURSE_ITERATION = 'courseIteration',
+  PROJECT_TEAM = 'projectTeam',
 }
