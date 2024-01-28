@@ -1,11 +1,10 @@
-import { Badge, Button, Card, Group, Modal, Text } from '@mantine/core'
-import { type Skill } from '../../../../redux/skillsSlice/skillsSlice'
+import { Badge, Button, Card, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../../redux/store'
-import { deleteSkill } from '../../../../redux/skillsSlice/thunks/deleteSkill'
-import { toggleSkill } from '../../../../redux/skillsSlice/thunks/toggleSkill'
 import { useState } from 'react'
+import { Skill } from '../../../../interface/skill'
+import { useMutation, useQueryClient } from 'react-query'
+import { Query } from '../../../../state/query'
+import { deleteSkill, toggleSkill } from '../../../../network/skill'
 
 interface SkillDeletionConfirmationModalProps {
   opened: boolean
@@ -44,51 +43,69 @@ interface SkillCardProps {
 }
 
 export const SkillCard = ({ skill }: SkillCardProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const [deletionConfirmationModalOpened, setDeletionConfirmationModalOpened] = useState(false)
 
+  const deActivateSkill = useMutation({
+    mutationFn: () => {
+      return toggleSkill(skill.id ?? '')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.SKILL] })
+    },
+  })
+
+  const removeSkill = useMutation({
+    mutationFn: () => {
+      return deleteSkill(skill.id ?? '')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.SKILL] })
+    },
+  })
+
   return (
-    <Card shadow='sm' padding='lg' radius='md' withBorder style={{ width: '50vw' }}>
-      <Group align='apart' mt='md' mb='xs'>
+    <Card shadow='sm' padding='lg' radius='md' withBorder style={{ width: '100%', height: '100%' }}>
+      <SkillDeletionConfirmationModal
+        opened={deletionConfirmationModalOpened}
+        onClose={() => {
+          setDeletionConfirmationModalOpened(false)
+        }}
+        onConfirm={() => {
+          if (skill.id) {
+            removeSkill.mutate()
+          }
+        }}
+        skill={skill}
+      />
+      <Stack justify='space-between' style={{ height: '100%' }}>
         <Text fw={500}>{skill.title}</Text>
-        <Badge
-          color={skill.active ? 'green' : 'red'}
-          variant='light'
-          onClick={() => {
-            if (skill.id) {
-              void dispatch(toggleSkill(skill.id))
-            }
-          }}
-        >
-          {skill.active ? 'Active' : 'Disabled'}
-        </Badge>
-      </Group>
-      <Text size='sm' color='dimmed'>
-        {skill.description}
-      </Text>
-      <Group align='right'>
-        <SkillDeletionConfirmationModal
-          opened={deletionConfirmationModalOpened}
-          onClose={() => {
-            setDeletionConfirmationModalOpened(false)
-          }}
-          onConfirm={() => {
-            if (skill.id) {
-              void dispatch(deleteSkill(skill.id))
-            }
-          }}
-          skill={skill}
-        />
-        <Button
-          variant='outline'
-          leftSection={<IconTrash />}
-          onClick={() => {
-            setDeletionConfirmationModalOpened(true)
-          }}
-        >
-          Delete
-        </Button>
-      </Group>
+        <Text size='sm' c='dimmed'>
+          {skill.description}
+        </Text>
+        <Group justify='space-between'>
+          <Button
+            variant='outline'
+            leftSection={<IconTrash />}
+            onClick={() => {
+              setDeletionConfirmationModalOpened(true)
+            }}
+          >
+            Delete
+          </Button>
+          <Badge
+            color={skill.active ? 'green' : 'red'}
+            variant='light'
+            onClick={() => {
+              if (skill.id) {
+                deActivateSkill.mutate()
+              }
+            }}
+          >
+            {skill.active ? 'Active' : 'Disabled'}
+          </Badge>
+        </Group>
+      </Stack>
     </Card>
   )
 }

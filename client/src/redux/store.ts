@@ -7,7 +7,6 @@ import thesisApplicationsReducer from './thesisApplicationsSlice/thesisApplicati
 import projectTeamsReducer from './projectTeamsSlice/projectTeamsSlice'
 import studentPostKickoffSubmissionsReducer from './studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import introCourseReducer from './introCourseSlice/introCourseSlice'
-import skillsReducer from './skillsSlice/skillsSlice'
 import coursePhasesReducer from './coursePhasesSlice/coursePhasesSlice'
 
 const store = configureStore({
@@ -20,7 +19,6 @@ const store = configureStore({
     projectTeams: projectTeamsReducer,
     studentPostKickoffSubmissions: studentPostKickoffSubmissionsReducer,
     introCourse: introCourseReducer,
-    skills: skillsReducer,
   },
 })
 

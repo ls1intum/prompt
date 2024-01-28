@@ -38,7 +38,6 @@ import {
   SkillProficiency,
   type StudentPostKickoffSubmission,
 } from '../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
-import { fetchSkills } from '../../redux/skillsSlice/thunks/fetchSkills'
 import { createPostKickoffSubmission } from '../../service/postKickoffSubmissionService'
 import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
 import { notifications } from '@mantine/notifications'
@@ -46,6 +45,9 @@ import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { useQuery } from 'react-query'
 import { getProjectTeams } from '../../network/projectTeam'
 import { Query } from '../../state/query'
+import { useSkillStore } from '../../state/zustand/useSkillStore'
+import { getSkills } from '../../network/skill'
+import { Skill } from '../../interface/skill'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
   const shuffledArray = [...array]
@@ -85,7 +87,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     (state) => state.courseIterations.courseIterationWithOpenKickOffPeriod,
   )
   const { projectTeams, setProjectTeams } = useProjectTeamStore()
-  const skills = useAppSelector((state) => state.skills.skills)
+  const { skills, setSkills } = useSkillStore()
   const dispatch = useDispatch<AppDispatch>()
   const [leftSideState, leftSideStateHandlers] = useListState<ProjectTeam>([])
   const [rightSideState, rightSideStateHandlers] = useListState<ProjectTeam>([])
@@ -136,9 +138,17 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     }
   }, [fetchedProjectTeams, setProjectTeams])
 
+  const { data: fetchedSkills } = useQuery<Skill[]>({
+    queryKey: [Query.SKILL],
+    queryFn: getSkills,
+  })
+
+  useEffect(() => {
+    setSkills(fetchedSkills ?? [])
+  }, [fetchedSkills, setSkills])
+
   useEffect(() => {
     void dispatch(fetchCourseIterationsWithOpenKickOffPeriod())
-    void dispatch(fetchSkills())
   }, [dispatch])
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { notifications } from '@mantine/notifications'
 import { ProjectTeam } from '../redux/projectTeamsSlice/projectTeamsSlice'
 import { Patch, axiosInstance } from '../service/configService'
 
@@ -5,6 +6,12 @@ export const getProjectTeams = async (courseIteration: string): Promise<ProjectT
   try {
     return (await axiosInstance.get(`/api/project-teams?courseIteration=${courseIteration}`)).data
   } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Could not fetch project teams.`,
+    })
     return []
   }
 }
