@@ -32,12 +32,17 @@ import '@mantine/tiptap/styles.css'
 import '@mantine/dropzone/styles.css'
 import 'mantine-contextmenu/styles.layer.css'
 import 'mantine-datatable/styles.layer.css'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
+
+const queryClient = new QueryClient()
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
 
   return (
-    <div>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <MantineProvider defaultColorScheme='auto'>
         <ContextMenuProvider>
           <Notifications limit={5} />
@@ -188,7 +193,7 @@ export const App = (): JSX.Element => {
           </BrowserRouter>
         </ContextMenuProvider>
       </MantineProvider>
-    </div>
+    </QueryClientProvider>
   )
 }
 

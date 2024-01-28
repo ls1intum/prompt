@@ -130,7 +130,7 @@ export const CourseIterationManager = (): JSX.Element => {
           },
           {
             accessor: 'actions',
-            title: <Text mr='xs'>Actions</Text>,
+            title: 'Actions',
             textAlign: 'right',
             render: (courseIteration) => (
               <Group gap={4} align='right' wrap='nowrap'>
