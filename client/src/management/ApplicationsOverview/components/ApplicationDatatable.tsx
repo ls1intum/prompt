@@ -22,14 +22,18 @@ import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
 import { useContextMenu } from 'mantine-contextmenu'
 
 interface ApplicationDatatableProps {
-  applications: Application[]
+  developerApplications: Application[]
+  coachApplications: Application[]
+  tutorApplications: Application[]
   searchQuery: string
   filters: Filters
   setFilters: (filters: Filters) => void
 }
 
 export const ApplicationDatatable = ({
-  applications,
+  developerApplications,
+  coachApplications,
+  tutorApplications,
   searchQuery,
   filters,
   setFilters,
@@ -40,7 +44,9 @@ export const ApplicationDatatable = ({
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [tablePage, setTablePage] = useState(1)
-  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(applications.length)
+  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(
+    developerApplications.length + coachApplications.length + tutorApplications.length,
+  )
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<Application[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<Application[]>([])
@@ -60,9 +66,19 @@ export const ApplicationDatatable = ({
     const from = (tablePage - 1) * tablePageSize
     const to = from + tablePageSize
 
+    const applications: Application[] = []
+    if (filters.applicationType.includes('developer')) {
+      applications.push(...developerApplications)
+    }
+    if (filters.applicationType.includes('coach')) {
+      applications.push(...coachApplications)
+    }
+    if (filters.applicationType.includes('tutor')) {
+      applications.push(...tutorApplications)
+    }
+
     const filteredSortedData = sortBy(
       applications
-        .filter(({ type }) => filters.applicationType.some((selectedType) => selectedType === type))
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
@@ -108,7 +124,9 @@ export const ApplicationDatatable = ({
       )
     }
   }, [
-    applications,
+    developerApplications,
+    coachApplications,
+    tutorApplications,
     tablePageSize,
     tablePage,
     searchQuery,
@@ -119,7 +137,7 @@ export const ApplicationDatatable = ({
 
   return (
     <Stack>
-      {selectedApplicationToView?.type === 'DEVELOPER' && (
+      {selectedApplicationToView?.type === 'developer' && (
         <Modal
           centered
           opened={!!selectedApplicationToView}
@@ -139,7 +157,7 @@ export const ApplicationDatatable = ({
           </div>
         </Modal>
       )}
-      {selectedApplicationToView?.type === 'COACH' && (
+      {selectedApplicationToView?.type === 'coach' && (
         <Modal
           centered
           opened={!!selectedApplicationToView}
@@ -159,7 +177,7 @@ export const ApplicationDatatable = ({
           </div>
         </Modal>
       )}
-      {selectedApplicationToView?.type === 'TUTOR' && (
+      {selectedApplicationToView?.type === 'tutor' && (
         <Modal
           centered
           opened={!!selectedApplicationToView}
@@ -284,10 +302,10 @@ export const ApplicationDatatable = ({
                 data={[
                   {
                     label: 'Developer',
-                    value: 'DEVELOPER',
+                    value: 'developer',
                   },
-                  { label: 'Coach', value: 'COACH' },
-                  { label: 'Tutor', value: 'TUTOR' },
+                  { label: 'Coach', value: 'coach' },
+                  { label: 'Tutor', value: 'tutor' },
                 ]}
                 value={filters.applicationType}
                 placeholder='Search types...'

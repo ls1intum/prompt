@@ -1,16 +1,10 @@
 import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip } from '@mantine/core'
 import { IconAdjustments, IconSearch } from '@tabler/icons-react'
-import { useState, useEffect, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
-import {
-  fetchDeveloperApplications,
-  fetchCoachApplications,
-  fetchTutorApplications,
-} from '../../redux/applicationsSlice/thunks/fetchApplications'
+import { useState, useMemo } from 'react'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
 import { ApplicationDatatable } from './components/ApplicationDatatable'
 import { MatchingResultsUploadModal } from './components/MatchingResultsUploadModal'
+import { useApplicationStore } from '../../state/zustand/useApplicationStore'
 
 export interface Filters {
   male: boolean
@@ -20,57 +14,33 @@ export interface Filters {
 }
 
 export const StudentApplicationOverview = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const developerApplications = useAppSelector((state) => state.applications.developerApplications)
-  const coachApplications = useAppSelector((state) => state.applications.coachApplications)
-  const tutorApplications = useAppSelector((state) => state.applications.tutorApplications)
+  const { developerApplications, coachApplications, tutorApplications } = useApplicationStore()
   const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
     useState(false)
   const [matchingResultsUploadModalOpened, setMatchingResultsUploadModalOpened] = useState(false)
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<Filters>({
     male: false,
     female: false,
     status: [],
-    applicationType: ['DEVELOPER'],
+    applicationType: ['developer'],
   })
-
-  useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(
-        fetchDeveloperApplications({
-          courseIteration: selectedCourseIteration.semesterName,
-        }),
-      )
-      void dispatch(
-        fetchCoachApplications({
-          courseIteration: selectedCourseIteration.semesterName,
-        }),
-      )
-      void dispatch(
-        fetchTutorApplications({
-          courseIteration: selectedCourseIteration.semesterName,
-        }),
-      )
-    }
-  }, [dispatch, selectedCourseIteration])
 
   const tumIdToApplicationMap = useMemo(() => {
     const map = new Map<string, string>()
-    if (filters.applicationType.includes('DEVELOPER')) {
+    if (filters.applicationType.includes('developer')) {
       developerApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
         }
       })
-    } else if (filters.applicationType.includes('COACH')) {
+    } else if (filters.applicationType.includes('coach')) {
       coachApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
         }
       })
-    } else if (filters.applicationType.includes('TUTOR')) {
+    } else if (filters.applicationType.includes('tutor')) {
       tutorApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
@@ -194,7 +164,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
         )}
       </Group>
       <ApplicationDatatable
-        applications={[...developerApplications, ...coachApplications, ...tutorApplications]}
+        developerApplications={developerApplications}
+        coachApplications={coachApplications}
+        tutorApplications={tutorApplications}
         filters={filters}
         setFilters={setFilters}
         searchQuery={searchQuery}

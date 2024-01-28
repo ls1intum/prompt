@@ -24,6 +24,12 @@ import { IconArrowBadgeRightFilled, IconArrowUp } from '@tabler/icons-react'
 import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout'
 import { useWindowScroll } from '@mantine/hooks'
 import styles from './ManagementConsole.module.scss'
+import { useQuery } from 'react-query'
+import { Application } from '../redux/applicationsSlice/applicationsSlice'
+import { ApplicationType } from '../interface/application'
+import { getApplications } from '../request/application'
+import { Query } from '../state/query'
+import { useApplicationStore } from '../state/zustand/useApplicationStore'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -89,6 +95,8 @@ export const ManagementConsole = ({
   const [authenticated, setAuthenticated] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const { currentState, courseIterations } = useAppSelector((state) => state.courseIterations)
+  const { setDeveloperApplications, setCoachApplications, setTutorApplications } =
+    useApplicationStore()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const keycloak = new Keycloak({
@@ -171,6 +179,50 @@ export const ManagementConsole = ({
       void keycloakValue.logout()
     }
   }, [authenticated, keycloakValue, mgmtAccess])
+
+  const { data: fetchedDeveloperApplications } = useQuery<Application[]>({
+    queryKey: [Query.DEVELOPER_APPLICATION, currentState?.semesterName],
+    queryFn: () => getApplications(ApplicationType.DEVELOPER, currentState?.semesterName ?? ''),
+    enabled: !!currentState,
+    select: (applications) =>
+      applications.map((application) => {
+        return { ...application, type: ApplicationType.DEVELOPER }
+      }),
+  })
+  const { data: fetchedCoachApplications } = useQuery<Application[]>({
+    queryKey: [Query.COACH_APPLICATION, currentState?.semesterName],
+    queryFn: () => getApplications(ApplicationType.COACH, currentState?.semesterName ?? ''),
+    enabled: !!currentState,
+    select: (applications) =>
+      applications.map((application) => {
+        return { ...application, type: ApplicationType.COACH }
+      }),
+  })
+  const { data: fetchedTutorApplications } = useQuery<Application[]>({
+    queryKey: [Query.TUTOR_APPLICATION, currentState?.semesterName],
+    queryFn: () => getApplications(ApplicationType.TUTOR, currentState?.semesterName ?? ''),
+    enabled: !!currentState,
+    select: (applications) =>
+      applications.map((application) => {
+        return { ...application, type: ApplicationType.TUTOR }
+      }),
+  })
+
+  useEffect(() => {
+    if (fetchedDeveloperApplications) {
+      setDeveloperApplications(fetchedDeveloperApplications)
+    }
+  }, [fetchedDeveloperApplications, setDeveloperApplications])
+  useEffect(() => {
+    if (fetchedCoachApplications) {
+      setCoachApplications(fetchedCoachApplications)
+    }
+  }, [fetchedCoachApplications, setCoachApplications])
+  useEffect(() => {
+    if (fetchedTutorApplications) {
+      setTutorApplications(fetchedTutorApplications)
+    }
+  }, [fetchedTutorApplications, setTutorApplications])
 
   return (
     <div className={styles.root}>

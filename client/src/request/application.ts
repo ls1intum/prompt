@@ -3,10 +3,11 @@ import {
   type Application,
   type ApplicationStatus,
 } from '../redux/applicationsSlice/applicationsSlice'
-import { axiosInstance } from '../service/configService'
+import { type ApplicationType } from '../interface/application'
+import { Patch, axiosInstance } from '../service/configService'
 
 export const getApplications = async (
-  applicationType: string,
+  applicationType: ApplicationType,
   courseIteration: string,
   status?: keyof typeof ApplicationStatus,
 ): Promise<Application[]> => {
@@ -26,5 +27,22 @@ export const getApplications = async (
       message: `Could not fetch ${applicationType} applications.`,
     })
     return []
+  }
+}
+
+export const patchApplicationAssessment = async (
+  applicationType: ApplicationType,
+  applicationId: string,
+  assessmentPatch: Patch[],
+): Promise<Application | undefined> => {
+  try {
+    return (
+      await axiosInstance.patch(
+        `/api/applications/${applicationType}/${applicationId}/assessment`,
+        assessmentPatch,
+      )
+    ).data
+  } catch (err) {
+    return undefined
   }
 }

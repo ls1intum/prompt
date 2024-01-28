@@ -6,11 +6,6 @@ import {
   createInstructorCommentForCoachApplication,
   createInstructorCommentForTutorApplication,
 } from './thunks/createInstructorComment'
-import {
-  fetchDeveloperApplications,
-  fetchCoachApplications,
-  fetchTutorApplications,
-} from './thunks/fetchApplications'
 import { removeDeveloperApplicationFromProjectTeam } from './thunks/removeDeveloperApplicationFromProjectTeam'
 import { updateDeveloperApplication } from './thunks/updateDeveloperApplication'
 import {
@@ -42,6 +37,7 @@ import {
   enrollDeveloperApplicationsToCourse,
   enrollTutorApplicationsToCourse,
 } from './thunks/enrollApplicationsToCourse'
+import { ApplicationType } from '../../interface/application'
 
 enum LanguageProficiency {
   A1A2 = 'A1/A2',
@@ -129,8 +125,6 @@ interface Grade {
   comment: string
 }
 
-type ApplicationType = 'DEVELOPER' | 'COACH' | 'TUTOR'
-
 interface Application {
   id: string
   // The following field is artificially filled out by the client
@@ -199,60 +193,6 @@ export const applicationsState = createSlice({
     })
 
     builder.addCase(updateStudentAssessment.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
-    builder.addCase(fetchDeveloperApplications.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(fetchDeveloperApplications.fulfilled, (state, { payload }) => {
-      state.developerApplications = payload.map((application: Application) => ({
-        ...application,
-        type: 'DEVELOPER',
-      }))
-      state.status = 'idle'
-    })
-
-    builder.addCase(fetchDeveloperApplications.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
-    builder.addCase(fetchCoachApplications.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(fetchCoachApplications.fulfilled, (state, { payload }) => {
-      state.coachApplications = payload.map((application: Application) => ({
-        ...application,
-        type: 'COACH',
-      }))
-      state.status = 'idle'
-    })
-
-    builder.addCase(fetchCoachApplications.rejected, (state, { payload }) => {
-      if (payload) state.error = 'error'
-      state.status = 'idle'
-    })
-
-    builder.addCase(fetchTutorApplications.pending, (state) => {
-      state.status = 'loading'
-      state.error = null
-    })
-
-    builder.addCase(fetchTutorApplications.fulfilled, (state, { payload }) => {
-      state.tutorApplications = payload.map((application: Application) => ({
-        ...application,
-        type: 'TUTOR',
-      }))
-      state.status = 'idle'
-    })
-
-    builder.addCase(fetchTutorApplications.rejected, (state, { payload }) => {
       if (payload) state.error = 'error'
       state.status = 'idle'
     })
@@ -678,7 +618,6 @@ export {
   type Application,
   type InstructorComment,
   type ApplicationAssessment,
-  type ApplicationType,
   LanguageProficiency,
   StudyDegree,
   StudyProgram,

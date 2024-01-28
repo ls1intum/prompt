@@ -3,6 +3,7 @@ import {
   type Student,
   type ApplicationAssessment,
 } from '../redux/applicationsSlice/applicationsSlice'
+import { ApplicationType } from '../interface/application'
 import {
   Button,
   Checkbox,
@@ -36,11 +37,6 @@ import {
 } from '@tabler/icons-react'
 import { type Patch } from '../service/configService'
 import {
-  updateCoachApplicationAssessment,
-  updateDeveloperApplicationAssessment,
-  updateTutorApplicationAssessment,
-} from '../redux/applicationsSlice/thunks/updateApplicationAssessment'
-import {
   sendCoachInterviewInvitation,
   sendTutorInterviewInvitation,
 } from '../redux/applicationsSlice/thunks/sendInterviewInvitation'
@@ -52,7 +48,9 @@ import {
   sendCoachApplicationAcceptance,
   sendTutorApplicationAcceptance,
 } from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
-import { updateStudentAssessment } from '../redux/applicationsSlice/thunks/updateStudentAssessment'
+import { useMutation, useQueryClient } from 'react-query'
+import { patchApplicationAssessment } from '../request/application'
+import { Query } from '../state/query'
 
 interface ConfirmationModalProps {
   title: string
@@ -86,7 +84,7 @@ const ConfirmationModal = ({
 
 interface ApplicationAssessmentFormProps {
   applicationId: string
-  applicationType: 'developer' | 'coach' | 'tutor'
+  applicationType: ApplicationType
   student: Student
   assessment?: ApplicationAssessment
 }
@@ -97,6 +95,7 @@ export const ApplicationAssessmentForm = ({
   assessment,
   applicationType,
 }: ApplicationAssessmentFormProps): JSX.Element => {
+  const queryClient = useQueryClient()
   const dispatch = useDispatch<AppDispatch>()
   const auth = useAppSelector((state) => state.auth)
   const [comment, setComment] = useState('')
@@ -129,6 +128,23 @@ export const ApplicationAssessmentForm = ({
       suggestedAsTutor: student?.suggestedAsTutor ?? false,
       blockedByPm: student?.blockedByPm ?? false,
       reasonForBlockedByPm: student?.reasonForBlockedByPm ?? '',
+    },
+  })
+
+  const updateApplicationAssessment = useMutation({
+    mutationFn: (assessmentPatch: Patch[]) => {
+      return patchApplicationAssessment(applicationType, applicationId, assessmentPatch)
+    },
+    onSuccess: () => {
+      if (applicationType === ApplicationType.DEVELOPER) {
+        queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
+      }
+      if (applicationType === ApplicationType.COACH) {
+        queryClient.invalidateQueries({ queryKey: [Query.COACH_APPLICATION] })
+      }
+      if (applicationType === ApplicationType.TUTOR) {
+        queryClient.invalidateQueries({ queryKey: [Query.TUTOR_APPLICATION] })
+      }
     },
   })
 
@@ -176,28 +192,7 @@ export const ApplicationAssessmentForm = ({
     const obj = Object.fromEntries(assessmentPatchObject)
     assessmentPatchObjectArray.push(obj)
 
-    if (applicationType === 'developer') {
-      void dispatch(
-        updateDeveloperApplicationAssessment({
-          applicationId,
-          applicationAssessmentPatch: assessmentPatchObjectArray,
-        }),
-      )
-    } else if (applicationType === 'coach') {
-      void dispatch(
-        updateCoachApplicationAssessment({
-          applicationId,
-          applicationAssessmentPatch: assessmentPatchObjectArray,
-        }),
-      )
-    } else if (applicationType === 'tutor') {
-      void dispatch(
-        updateTutorApplicationAssessment({
-          applicationId,
-          applicationAssessmentPatch: assessmentPatchObjectArray,
-        }),
-      )
-    }
+    updateApplicationAssessment.mutate(assessmentPatchObjectArray)
   }
 
   return (
@@ -336,12 +331,7 @@ export const ApplicationAssessmentForm = ({
                         }
                       })
 
-                      void dispatch(
-                        updateStudentAssessment({
-                          studentId: student.id,
-                          studentAssessmentPatch: studentPatchObjectArray,
-                        }),
-                      )
+                      updateApplicationAssessment.mutate(studentPatchObjectArray)
                     }
 
                     if (assessmentForm.isDirty()) {
@@ -360,28 +350,7 @@ export const ApplicationAssessmentForm = ({
                         }
                       })
 
-                      if (applicationType === 'developer') {
-                        void dispatch(
-                          updateDeveloperApplicationAssessment({
-                            applicationId,
-                            applicationAssessmentPatch: assessmentPatchObjectArray,
-                          }),
-                        )
-                      } else if (applicationType === 'coach') {
-                        void dispatch(
-                          updateCoachApplicationAssessment({
-                            applicationId,
-                            applicationAssessmentPatch: assessmentPatchObjectArray,
-                          }),
-                        )
-                      } else if (applicationType === 'tutor') {
-                        void dispatch(
-                          updateTutorApplicationAssessment({
-                            applicationId,
-                            applicationAssessmentPatch: assessmentPatchObjectArray,
-                          }),
-                        )
-                      }
+                      updateApplicationAssessment.mutate(assessmentPatchObjectArray)
                     }
                   }}
                 >

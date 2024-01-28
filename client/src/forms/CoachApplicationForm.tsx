@@ -16,6 +16,7 @@ import {
 import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenCoachApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { ApplicationType } from '../interface/application'
 import { useDispatch } from 'react-redux'
 import { useAppSelector, type AppDispatch } from '../redux/store'
 import { createCoachApplication } from '../service/applicationsService'
@@ -272,7 +273,7 @@ export const CoachApplicationForm = ({
                       applicationId={coachApplication.id}
                       student={coachApplication.student}
                       assessment={coachApplication.assessment}
-                      applicationType='coach'
+                      applicationType={ApplicationType.COACH}
                     />
                   )}
                 </>

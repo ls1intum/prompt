@@ -10,7 +10,6 @@ import { StudentProjectTeamPreferencesManager } from './components/StudentProjec
 import { SkillsManager } from './components/SkillsManager/SkillsManager'
 import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { Link } from 'react-router-dom'
-import { fetchDeveloperApplications } from '../../redux/applicationsSlice/thunks/fetchApplications'
 import { useDispatch } from 'react-redux'
 import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { useEffect } from 'react'
@@ -23,12 +22,6 @@ export const TeamAllocationConsole = (): JSX.Element => {
 
   useEffect(() => {
     if (selectedCourseIteration) {
-      void dispatch(
-        fetchDeveloperApplications({
-          courseIteration: selectedCourseIteration.semesterName,
-          status: 'INTRO_COURSE_PASSED',
-        }),
-      )
       void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
       void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
       void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))

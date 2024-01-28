@@ -15,6 +15,7 @@ import {
   Title,
 } from '@mantine/core'
 import { type Application } from '../redux/applicationsSlice/applicationsSlice'
+import { ApplicationType } from '../interface/application'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenTutorApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { useDispatch } from 'react-redux'
@@ -284,7 +285,7 @@ export const TutorApplicationForm = ({
                       applicationId={tutorApplication.id}
                       student={tutorApplication.student}
                       assessment={tutorApplication.assessment}
-                      applicationType='tutor'
+                      applicationType={ApplicationType.TUTOR}
                     />
                   )}
                 </>

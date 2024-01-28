@@ -35,7 +35,13 @@ import 'mantine-datatable/styles.layer.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()

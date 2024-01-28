@@ -18,6 +18,7 @@ import { type AppDispatch, useAppSelector } from '../redux/store'
 import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { useEffect, useState } from 'react'
 import { fetchCourseIterationsWithOpenDeveloperApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { ApplicationType } from '../interface/application'
 import { createDeveloperApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
@@ -278,7 +279,7 @@ export const DeveloperApplicationForm = ({
                       applicationId={developerApplication.id}
                       student={developerApplication.student}
                       assessment={developerApplication.assessment}
-                      applicationType='developer'
+                      applicationType={ApplicationType.DEVELOPER}
                     />
                   )}
                 </>

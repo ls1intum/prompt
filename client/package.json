@@ -53,9 +53,11 @@
     "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.5.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.17.22",
     "@types/copy-webpack-plugin": "^10.1.0",
     "@types/dotenv-webpack": "^7.0.7",
     "@types/eslint": "^8",
