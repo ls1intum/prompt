@@ -8,7 +8,7 @@ import { ProjectTeamGrading } from './components/ProjectTeamGrading'
 import { useQuery } from 'react-query'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
-import { getProjectTeams } from '../../request/projectTeam'
+import { getProjectTeams } from '../../network/projectTeam'
 import { Query } from '../../state/query'
 
 export const GradingManagementConsole = (): JSX.Element => {

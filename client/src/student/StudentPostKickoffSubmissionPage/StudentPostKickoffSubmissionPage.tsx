@@ -44,7 +44,7 @@ import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
 import { notifications } from '@mantine/notifications'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { useQuery } from 'react-query'
-import { getProjectTeams } from '../../request/projectTeam'
+import { getProjectTeams } from '../../network/projectTeam'
 import { Query } from '../../state/query'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {

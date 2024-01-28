@@ -18,7 +18,7 @@ import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { useQuery } from 'react-query'
 import { Query } from '../../state/query'
-import { getProjectTeams } from '../../request/projectTeam'
+import { getProjectTeams } from '../../network/projectTeam'
 
 export const TeamAllocationConsole = (): JSX.Element => {
   const { setProjectTeams } = useProjectTeamStore()

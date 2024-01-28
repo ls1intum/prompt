@@ -5,8 +5,12 @@ import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTea
 import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
 import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
-import { type Application } from '../../../../redux/applicationsSlice/applicationsSlice'
+import {
+  ApplicationStatus,
+  type Application,
+} from '../../../../redux/applicationsSlice/applicationsSlice'
 import { TransferList, TransferListItem } from '../../../../utilities/TransferList/TransferList'
+import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 
 interface ProjectTeamMemberListModalProps {
   projectTeam: ProjectTeam
@@ -21,7 +25,12 @@ export const ProjectTeamMemberListModal = ({
 }: ProjectTeamMemberListModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const developerApplications = useAppSelector((state) => state.applications.developerApplications)
+  const developerApplications = useApplicationStore((state) =>
+    state.developerApplications.filter(
+      (application) =>
+        application.assessment.status === String(ApplicationStatus.INTRO_COURSE_PASSED),
+    ),
+  )
   const [data, setData] = useState<TransferListItem[][]>([[], []])
 
   useEffect(() => {

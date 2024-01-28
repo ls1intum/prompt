@@ -49,7 +49,7 @@ import {
   sendTutorApplicationAcceptance,
 } from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
 import { useMutation, useQueryClient } from 'react-query'
-import { patchApplicationAssessment } from '../request/application'
+import { patchApplicationAssessment } from '../network/application'
 import { Query } from '../state/query'
 
 interface ConfirmationModalProps {

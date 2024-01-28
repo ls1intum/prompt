@@ -27,7 +27,7 @@ import styles from './ManagementConsole.module.scss'
 import { useQuery } from 'react-query'
 import { Application } from '../redux/applicationsSlice/applicationsSlice'
 import { ApplicationType } from '../interface/application'
-import { getApplications } from '../request/application'
+import { getApplications } from '../network/application'
 import { Query } from '../state/query'
 import { useApplicationStore } from '../state/zustand/useApplicationStore'
 
