@@ -41,7 +41,7 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
         <Tabs
           orientation='vertical'
           placement='right'
-          variant='outline'
+          variant='pills'
           value={selectedDeveloperApplicationId}
           onChange={setSelectedDeveloperApplicationId}
         >

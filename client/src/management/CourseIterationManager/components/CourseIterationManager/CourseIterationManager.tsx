@@ -100,7 +100,7 @@ export const CourseIterationManager = (): JSX.Element => {
             accessor: 'developerApplicationPeriod',
             title: ' Developer Application Period',
             render: (courseIteration) => (
-              <Text>
+              <Text fz='sm'>
                 {`${moment(courseIteration.developerApplicationPeriodStart).format(
                   'DD. MMMM YYYY',
                 )} -
@@ -112,7 +112,7 @@ export const CourseIterationManager = (): JSX.Element => {
             accessor: 'coachApplicationPeriod',
             title: ' Coach Application Period',
             render: (courseIteration) => (
-              <Text>
+              <Text fz='sm'>
                 {`${moment(courseIteration.coachApplicationPeriodStart).format('DD. MMMM YYYY')} -
                 ${moment(courseIteration.coachApplicationPeriodEnd).format('DD. MMMM YYYY')}`}
               </Text>
@@ -122,7 +122,7 @@ export const CourseIterationManager = (): JSX.Element => {
             accessor: 'tutorApplicationPeriod',
             title: ' Tutor Application Period',
             render: (courseIteration) => (
-              <Text>
+              <Text fz='sm'>
                 {`${moment(courseIteration.tutorApplicationPeriodStart).format('DD. MMMM YYYY')} - 
                 ${moment(courseIteration.tutorApplicationPeriodEnd).format('DD. MMMM YYYY')}`}
               </Text>
@@ -132,7 +132,7 @@ export const CourseIterationManager = (): JSX.Element => {
             accessor: 'introCourse',
             title: 'Intro Course',
             render: (courseIteration) => (
-              <Text>
+              <Text fz='sm'>
                 {`${moment(courseIteration.introCourseStart).format('DD. MMMM YYYY')} - 
                 ${moment(courseIteration.introCourseEnd).format('DD. MMMM YYYY')}`}
               </Text>
@@ -143,10 +143,10 @@ export const CourseIterationManager = (): JSX.Element => {
             title: 'Actions',
             textAlign: 'right',
             render: (courseIteration) => (
-              <Group gap={4} align='right' wrap='nowrap'>
+              <Group gap={4} justify='flex-end' wrap='nowrap'>
                 <Tooltip label='Edit course iteration'>
                   <ActionIcon
-                    variant='"transparent"'
+                    variant='transparent'
                     color='blue'
                     onClick={() => {
                       setSelectedCourseIteration(courseIteration)
@@ -158,7 +158,7 @@ export const CourseIterationManager = (): JSX.Element => {
                 </Tooltip>
                 <Tooltip label='Delete course iteration'>
                   <ActionIcon
-                    variant='"transparent"'
+                    variant='transparent'
                     color='red'
                     onClick={() => {
                       removeCourseIteration.mutate(courseIteration.id)

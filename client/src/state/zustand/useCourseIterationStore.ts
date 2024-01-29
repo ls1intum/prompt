@@ -15,7 +15,14 @@ export const useCourseIterationStore = create<
   CourseIterationStoreState & CourseIterationStoreAction
 >((set) => ({
   courseIterations: [],
-  setSelectedCourseIteration: (courseIteration) =>
-    set({ selectedCourseIteration: courseIteration }),
+  setSelectedCourseIteration: (courseIteration) => {
+    if (courseIteration) {
+      localStorage.setItem('course-iteration', courseIteration.id)
+    } else {
+      localStorage.removeItem('course-iteration')
+    }
+
+    return set({ selectedCourseIteration: courseIteration })
+  },
   setCourseIterations: (courseIterations) => set({ courseIterations: courseIterations }),
 }))
