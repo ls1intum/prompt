@@ -8,10 +8,7 @@ import {
   StudyProgram,
 } from '../../../redux/applicationsSlice/applicationsSlice'
 import moment from 'moment'
-import {
-  FocusTopic,
-  ResearchArea,
-} from '../../../redux/thesisApplicationsSlice/thesisApplicationsSlice'
+import { FocusTopic, ResearchArea } from '../../../interface/thesisApplication'
 
 const mockStudent = {
   publicId: '9002767c-3247-49bc-9cc9-aadb1bbbc9ca',

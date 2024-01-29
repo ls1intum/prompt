@@ -1,5 +1,7 @@
 export enum Query {
   AUTHENTICATION = 'authentication',
+  THESIS_APPLICATION = 'thesisApplication',
+  THESIS_ADVISOR = 'thesisAdvisor',
   DEVELOPER_APPLICATION = 'developerApplication',
   COACH_APPLICATION = 'coachApplication',
   TUTOR_APPLICATION = 'tutorApplication',

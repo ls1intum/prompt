@@ -7,16 +7,27 @@ import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../../redux/authSlice/authSlice'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'
 import { Affix, Button, Center, Transition, rem } from '@mantine/core'
-import { updateThesisAdvisorList } from '../../redux/thesisApplicationsSlice/thunks/updateThesisAdvisorList'
 import { IconArrowUp } from '@tabler/icons-react'
 import { useWindowScroll } from '@mantine/hooks'
 import styles from './ThesisApplicationsManagementConsole.module.scss'
+import { useMutation, useQueryClient } from 'react-query'
+import { putThesisAdvisor } from '../../network/thesisApplication'
+import { ThesisAdvisor } from '../../interface/thesisApplication'
+import { Query } from '../../state/query'
 
 export const ThesisApplicationsManagementConsole = (): JSX.Element => {
+  const queryClient = useQueryClient()
   const dispatch = useDispatch<AppDispatch>()
   const [scroll, scrollTo] = useWindowScroll()
   const [authenticated, setAuthenticated] = useState(false)
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
+
+  const addThesisAdvisor = useMutation({
+    mutationFn: (thesisAdvisor: ThesisAdvisor) => putThesisAdvisor(thesisAdvisor),
+    onSuccess: () => {
+      queryClient.invalidateQueries(Query.THESIS_APPLICATION)
+    },
+  })
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const keycloak = new Keycloak({
@@ -75,14 +86,12 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
             )
 
             if (keycloak.hasResourceRole('chair-member', 'prompt-server')) {
-              void dispatch(
-                updateThesisAdvisorList({
-                  firstName: decodedJwt.given_name,
-                  lastName: decodedJwt.family_name,
-                  email: decodedJwt.email,
-                  tumId: decodedJwt.preferred_username,
-                }),
-              )
+              addThesisAdvisor.mutate({
+                firstName: decodedJwt.given_name,
+                lastName: decodedJwt.family_name,
+                email: decodedJwt.email,
+                tumId: decodedJwt.preferred_username,
+              })
             }
           }
         } catch (error) {
