@@ -11,12 +11,9 @@ import {
   rem,
 } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
-import { type AppDispatch, useAppSelector } from '../redux/store'
 import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
-import { useDispatch } from 'react-redux'
 import Keycloak from 'keycloak-js'
 import { jwtDecode } from 'jwt-decode'
-import { setAuthState } from '../redux/authSlice/authSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
 import { IconArrowBadgeRightFilled, IconArrowUp } from '@tabler/icons-react'
 import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout'
@@ -31,6 +28,7 @@ import { useApplicationStore } from '../state/zustand/useApplicationStore'
 import { useCourseIterationStore } from '../state/zustand/useCourseIterationStore'
 import { CourseIteration } from '../interface/courseIteration'
 import { getCourseIterations } from '../network/courseIteration'
+import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -92,9 +90,8 @@ export const ManagementConsole = ({
   onKeycloakValueChange,
 }: ManagmentConsoleProps): JSX.Element => {
   const [scroll, scrollTo] = useWindowScroll()
-  const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
+  const { user, setUser } = useAuthenticationStore()
   const [authenticated, setAuthenticated] = useState(false)
-  const dispatch = useDispatch<AppDispatch>()
   const {
     selectedCourseIteration,
     courseIterations,
@@ -142,27 +139,23 @@ export const ManagementConsole = ({
               email: string
               preferred_username: string
             }>(keycloak.token)
-            dispatch(
-              setAuthState({
-                firstName: decodedJwt.given_name,
-                lastName: decodedJwt.family_name,
-                email: decodedJwt.email,
-                username: decodedJwt.preferred_username,
-                mgmtAccess: permission.some((p) => keycloak.hasResourceRole(p, 'prompt-server')),
-              }),
-            )
+
+            setUser({
+              firstName: decodedJwt.given_name,
+              lastName: decodedJwt.family_name,
+              email: decodedJwt.email,
+              username: decodedJwt.preferred_username,
+              mgmtAccess: permission.some((p) => keycloak.hasResourceRole(p, 'prompt-server')),
+            })
           }
         } catch (error) {
-          dispatch(
-            setAuthState({
-              firstName: '',
-              lastName: '',
-              email: '',
-              username: '',
-              mgmtAccess: false,
-              error,
-            }),
-          )
+          setUser({
+            firstName: '',
+            lastName: '',
+            email: '',
+            username: '',
+            mgmtAccess: false,
+          })
         }
         setKeycloakValue(keycloak)
         onKeycloakValueChange(keycloak)
@@ -171,7 +164,7 @@ export const ManagementConsole = ({
         alert(err)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch])
+  }, [])
 
   useEffect(() => {
     if (
@@ -186,13 +179,13 @@ export const ManagementConsole = ({
         setSelectedCourseIteration(savedCourseIteration)
       }
     }
-  }, [selectedCourseIteration, courseIterations, dispatch, setSelectedCourseIteration])
+  }, [selectedCourseIteration, courseIterations, setSelectedCourseIteration])
 
   useEffect(() => {
-    if (authenticated && !mgmtAccess) {
+    if (authenticated && !user?.mgmtAccess) {
       void keycloakValue.logout()
     }
-  }, [authenticated, keycloakValue, mgmtAccess])
+  }, [authenticated, keycloakValue, user])
 
   const { data: developerApplications } = useQuery<Application[]>({
     queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
@@ -243,7 +236,7 @@ export const ManagementConsole = ({
 
   return (
     <div className={styles.root}>
-      {authenticated && mgmtAccess ? (
+      {authenticated && user && user.mgmtAccess ? (
         <div>
           {selectedCourseIteration ? (
             <NavigationLayout keycloak={keycloakValue}>
@@ -262,7 +255,9 @@ export const ManagementConsole = ({
             height: '100vh',
           }}
         >
-          <Center>{authenticated && !mgmtAccess ? <AccessRestricted /> : <Loader />}</Center>
+          <Center>
+            {authenticated && user && !user.mgmtAccess ? <AccessRestricted /> : <Loader />}
+          </Center>
         </div>
       )}
       <Affix position={{ bottom: 20, right: 20 }}>

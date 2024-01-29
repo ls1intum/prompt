@@ -24,7 +24,7 @@ import {
   createInstructorCommentForTutorApplication,
 } from '../redux/applicationsSlice/thunks/createInstructorComment'
 import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../redux/store'
+import { type AppDispatch } from '../redux/store'
 import { useEffect, useState } from 'react'
 import {
   IconBan,
@@ -51,6 +51,7 @@ import {
 import { useMutation, useQueryClient } from 'react-query'
 import { patchApplicationAssessment } from '../network/application'
 import { Query } from '../state/query'
+import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'
 
 interface ConfirmationModalProps {
   title: string
@@ -97,7 +98,7 @@ export const ApplicationAssessmentForm = ({
 }: ApplicationAssessmentFormProps): JSX.Element => {
   const queryClient = useQueryClient()
   const dispatch = useDispatch<AppDispatch>()
-  const auth = useAppSelector((state) => state.auth)
+  const { user } = useAuthenticationStore()
   const [comment, setComment] = useState('')
   const [activeTimelineStatus, setActiveTimelineStatus] = useState(0)
   const [
@@ -477,7 +478,7 @@ export const ApplicationAssessmentForm = ({
                   instructorComments: [
                     ...assessmentForm.values.instructorComments,
                     {
-                      author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                      author: user ? `${user.firstName} ${user.lastName}` : '',
                       text: comment,
                     },
                   ],
@@ -488,7 +489,7 @@ export const ApplicationAssessmentForm = ({
                     createInstructorCommentForDeveloperApplication({
                       applicationId,
                       instructorComment: {
-                        author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                        author: user ? `${user.firstName} ${user.lastName}` : '',
                         text: comment,
                       },
                     }),
@@ -498,7 +499,7 @@ export const ApplicationAssessmentForm = ({
                     createInstructorCommentForCoachApplication({
                       applicationId,
                       instructorComment: {
-                        author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                        author: user ? `${user.firstName} ${user.lastName}` : '',
                         text: comment,
                       },
                     }),
@@ -508,7 +509,7 @@ export const ApplicationAssessmentForm = ({
                     createInstructorCommentForTutorApplication({
                       applicationId,
                       instructorComment: {
-                        author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                        author: user ? `${user.firstName} ${user.lastName}` : '',
                         text: comment,
                       },
                     }),

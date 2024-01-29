@@ -1,10 +1,7 @@
 import Keycloak from 'keycloak-js'
 import { axiosInstance, keycloakRealmName, keycloakUrl } from '../../service/configService'
-import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../../redux/store'
 import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
-import { setAuthState } from '../../redux/authSlice/authSlice'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'
 import { Affix, Button, Center, Transition, rem } from '@mantine/core'
 import { IconArrowUp } from '@tabler/icons-react'
@@ -14,13 +11,13 @@ import { useMutation, useQueryClient } from 'react-query'
 import { putThesisAdvisor } from '../../network/thesisApplication'
 import { ThesisAdvisor } from '../../interface/thesisApplication'
 import { Query } from '../../state/query'
+import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
 
 export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   const queryClient = useQueryClient()
-  const dispatch = useDispatch<AppDispatch>()
   const [scroll, scrollTo] = useWindowScroll()
   const [authenticated, setAuthenticated] = useState(false)
-  const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
+  const { user, setUser } = useAuthenticationStore()
 
   const addThesisAdvisor = useMutation({
     mutationFn: (thesisAdvisor: ThesisAdvisor) => putThesisAdvisor(thesisAdvisor),
@@ -73,17 +70,15 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
               email: string
               preferred_username: string
             }>(keycloak.token)
-            dispatch(
-              setAuthState({
-                firstName: decodedJwt.given_name,
-                lastName: decodedJwt.family_name,
-                email: decodedJwt.email,
-                username: decodedJwt.preferred_username,
-                mgmtAccess:
-                  keycloak.hasResourceRole('chair-member', 'prompt-server') ||
-                  keycloak.hasResourceRole('prompt-admin', 'prompt-server'),
-              }),
-            )
+            setUser({
+              firstName: decodedJwt.given_name,
+              lastName: decodedJwt.family_name,
+              email: decodedJwt.email,
+              username: decodedJwt.preferred_username,
+              mgmtAccess:
+                keycloak.hasResourceRole('chair-member', 'prompt-server') ||
+                keycloak.hasResourceRole('prompt-admin', 'prompt-server'),
+            })
 
             if (keycloak.hasResourceRole('chair-member', 'prompt-server')) {
               addThesisAdvisor.mutate({
@@ -95,16 +90,13 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
             }
           }
         } catch (error) {
-          dispatch(
-            setAuthState({
-              firstName: '',
-              lastName: '',
-              email: '',
-              username: '',
-              mgmtAccess: false,
-              error,
-            }),
-          )
+          setUser({
+            firstName: '',
+            lastName: '',
+            email: '',
+            username: '',
+            mgmtAccess: false,
+          })
         }
         setKeycloakValue(keycloak)
       })
@@ -112,11 +104,11 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
         alert(err)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch])
+  }, [])
 
   return (
     <div className={styles.root}>
-      {authenticated && mgmtAccess && (
+      {authenticated && user && user.mgmtAccess && (
         <Center>
           <ThesisApplicationsDatatable />
           <Affix position={{ bottom: 20, right: 20 }}>

@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { type TypedUseSelectorHook, useSelector } from 'react-redux'
-import authReducer from './authSlice/authSlice'
 import applicationsReducer from './applicationsSlice/applicationsSlice'
 import projectTeamsReducer from './projectTeamsSlice/projectTeamsSlice'
 import studentPostKickoffSubmissionsReducer from './studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
@@ -9,7 +8,6 @@ import coursePhasesReducer from './coursePhasesSlice/coursePhasesSlice'
 
 const store = configureStore({
   reducer: {
-    auth: authReducer,
     coursePhases: coursePhasesReducer,
     applications: applicationsReducer,
     projectTeams: projectTeamsReducer,

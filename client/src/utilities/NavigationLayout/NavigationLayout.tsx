@@ -11,7 +11,6 @@ import {
   rem,
   useMantineColorScheme,
 } from '@mantine/core'
-import { Permission } from '../../redux/authSlice/authSlice'
 import {
   IconAppsFilled,
   IconDeviceDesktop,
@@ -26,12 +25,13 @@ import {
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAppSelector } from '../../redux/store'
 import { useEffect, useState } from 'react'
 import styles from './NavigationLayout.module.scss'
 import classNames from 'classnames'
 import useDeviceDetection from '../hooks/useDeviceDetection'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
+import { Permission } from '../../interface/authentication'
 
 const navigationContents = [
   {
@@ -84,7 +84,7 @@ interface NavigationLayoutProps {
 }
 
 export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps): JSX.Element => {
-  const auth = useAppSelector((state) => state.auth)
+  const { user } = useAuthenticationStore()
   const navigate = useNavigate()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
@@ -135,16 +135,18 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
           </Group>
           <Menu>
             <Menu.Target>
-              <Group className={styles.avatar}>
-                <Avatar color='blue' radius='xl'>{`${auth.firstName.at(0) ?? ''}${
-                  auth.lastName.at(0) ?? ''
-                }`}</Avatar>
-                {!isMobileDevice && (
-                  <Text c='dimmed' fw={500}>
-                    {auth.firstName} {auth.lastName}
-                  </Text>
-                )}
-              </Group>
+              {user && (
+                <Group className={styles.avatar}>
+                  <Avatar color='blue' radius='xl'>{`${user.firstName.at(0) ?? ''}${
+                    user.lastName.at(0) ?? ''
+                  }`}</Avatar>
+                  {!isMobileDevice && (
+                    <Text c='dimmed' fw={500}>
+                      {user.firstName} {user.lastName}
+                    </Text>
+                  )}
+                </Group>
+              )}
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item
