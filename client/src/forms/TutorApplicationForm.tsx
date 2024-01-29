@@ -16,14 +16,15 @@ import {
 } from '@mantine/core'
 import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { ApplicationType } from '../interface/application'
-import { useEffect, useState } from 'react'
-import { fetchCourseIterationsWithOpenTutorApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
-import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../redux/store'
+import { useState } from 'react'
 import { createTutorApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
+import { useQuery } from 'react-query'
+import { CourseIteration } from '../interface/courseIteration'
+import { getCourseIterationsWithOpenApplicationPeriod } from '../network/courseIteration'
+import { Query } from '../state/query'
 
 interface TutorApplicationFormProps {
   tutorApplication?: Application
@@ -36,12 +37,7 @@ export const TutorApplicationForm = ({
   tutorApplication,
   onSuccess,
 }: TutorApplicationFormProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const courseIterationWithOpenTutorApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenTutorApplicationPeriod,
-  )
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
-  const loading = useAppSelector((state) => state.courseIterations.status)
   const defaultForm = useForm<Partial<Application>>({
     initialValues: tutorApplication
       ? {
@@ -143,15 +139,15 @@ export const TutorApplicationForm = ({
     },
   })
 
-  useEffect(() => {
-    if (accessMode === ApplicationFormAccessMode.STUDENT) {
-      void dispatch(fetchCourseIterationsWithOpenTutorApplicationPeriod())
-    }
-  }, [accessMode, dispatch])
+  const { data: courseIteration, isLoading } = useQuery<CourseIteration | undefined>({
+    queryKey: [Query.COURSE_ITERATION, ApplicationType.TUTOR],
+    enabled: accessMode === ApplicationFormAccessMode.STUDENT,
+    queryFn: () => getCourseIterationsWithOpenApplicationPeriod(ApplicationType.TUTOR),
+  })
 
   return (
     <>
-      {loading === 'loading' ? (
+      {isLoading ? (
         <div
           style={{
             display: 'flex',
@@ -167,8 +163,7 @@ export const TutorApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenTutorApplicationPeriod ??
-          accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
+          {courseIteration ?? accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               style={{
                 display: 'flex',
@@ -254,18 +249,13 @@ export const TutorApplicationForm = ({
                       }
                       type='submit'
                       onClick={() => {
-                        if (
-                          defaultForm.isValid() &&
-                          courseIterationWithOpenTutorApplicationPeriod &&
-                          !tutorApplication
-                        ) {
+                        if (defaultForm.isValid() && courseIteration && !tutorApplication) {
                           createTutorApplication({
                             application: {
                               ...defaultForm.values,
                               ...tutorForm.values,
                             },
-                            courseIteration:
-                              courseIterationWithOpenTutorApplicationPeriod.semesterName,
+                            courseIteration: courseIteration.semesterName,
                           })
                             .then((response) => {
                               if (response) {

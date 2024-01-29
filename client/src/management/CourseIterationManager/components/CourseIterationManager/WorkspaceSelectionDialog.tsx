@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Button,
   Center,
@@ -13,18 +13,14 @@ import {
   Title,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useDispatch } from 'react-redux'
-import { fetchAllCourseIterations } from '../../../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
-import {
-  type CourseIteration,
-  setCurrentState,
-} from '../../../../redux/courseIterationSlice/courseIterationSlice'
-import { createCourseIteration } from '../../../../redux/courseIterationSlice/thunks/createCourseIteration'
 import { DatePickerInput, DateTimePicker } from '@mantine/dates'
 import { IconCalendar } from '@tabler/icons-react'
-import { updateCourseIteration } from '../../../../redux/courseIterationSlice/thunks/updateCourseIteration'
 import { type Patch } from '../../../../service/configService'
+import { useMutation, useQueryClient } from 'react-query'
+import { patchCourseIteration, postCourseIteration } from '../../../../network/courseIteration'
+import { Query } from '../../../../state/query'
+import { CourseIteration } from '../../../../interface/courseIteration'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 
 interface CourseIterationCreationModalProps {
   opened: boolean
@@ -37,7 +33,7 @@ export const CourseIterationCreationModal = ({
   onClose,
   courseIteration,
 }: CourseIterationCreationModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const form = useForm<CourseIteration>({
     initialValues: courseIteration
       ? {
@@ -79,6 +75,24 @@ export const CourseIterationCreationModal = ({
           iosTag: '',
           phases: [],
         },
+  })
+
+  const createCourseIteration = useMutation({
+    mutationFn: () => {
+      return postCourseIteration(form.values)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_ITERATION] })
+    },
+  })
+
+  const updateCourseIteration = useMutation({
+    mutationFn: (courseIterationPatch: Patch[]) => {
+      return patchCourseIteration(courseIteration?.id ?? '', courseIterationPatch)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_ITERATION] })
+    },
   })
 
   return (
@@ -213,14 +227,9 @@ export const CourseIterationCreationModal = ({
                     courseIterationPatchObjectArray.push(obj)
                   }
                 })
-                void dispatch(
-                  updateCourseIteration({
-                    courseIterationId: courseIteration.id.toString(),
-                    courseIterationPatch: courseIterationPatchObjectArray,
-                  }),
-                )
+                updateCourseIteration.mutate(courseIterationPatchObjectArray)
               } else {
-                void dispatch(createCourseIteration(form.values))
+                createCourseIteration.mutate()
               }
               form.reset()
               onClose()
@@ -235,18 +244,10 @@ export const CourseIterationCreationModal = ({
 }
 
 export const WorkspaceSelectionDialog = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const fetchedCourseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
-  const [courseIterations, setCourseIterations] = useState<CourseIteration[] | []>([])
+  const { courseIterations, setSelectedCourseIteration } = useCourseIterationStore()
   const [workspaceCreationModalOpen, setWorkspaceCreationModalOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize] = useState(5)
-
-  useEffect(() => {
-    if (fetchAllCourseIterations.length > 0) {
-      setCourseIterations(fetchedCourseIterations)
-    }
-  }, [fetchedCourseIterations])
 
   return (
     <div
@@ -292,7 +293,7 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
                         variant='outline'
                         key={courseIteration.id}
                         onClick={() => {
-                          dispatch(setCurrentState(courseIteration))
+                          setSelectedCourseIteration(courseIteration)
                         }}
                       >
                         {courseIteration.semesterName}

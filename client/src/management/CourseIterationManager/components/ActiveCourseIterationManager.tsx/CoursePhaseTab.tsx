@@ -1,8 +1,8 @@
 import { Checkbox, Group, Paper, Stack, Text } from '@mantine/core'
-import { type CourseIterationPhase } from '../../../../redux/courseIterationSlice/courseIterationSlice'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../../redux/store'
-import { toggleCourseIterationPhaseCheckEntry } from '../../../../redux/courseIterationSlice/thunks/toggleCourseIterationPhaseCheckEntry'
+import { useMutation, useQueryClient } from 'react-query'
+import { Query } from '../../../../state/query'
+import { CourseIterationPhase } from '../../../../interface/courseIteration'
+import { toggleCourseIterationPhaseCheckEntry } from '../../../../network/courseIteration'
 
 interface CoursePhaseTabProps {
   courseIterationId: string
@@ -13,7 +13,19 @@ export const CoursePhaseTab = ({
   courseIterationId,
   courseIterationPhase,
 }: CoursePhaseTabProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
+
+  const deActivateCourseIterationPhaseCheckEntry = useMutation({
+    mutationFn: (courseIterationPhaseCheckEntryId: string) => {
+      return toggleCourseIterationPhaseCheckEntry(
+        courseIterationId,
+        courseIterationPhaseCheckEntryId,
+      )
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_ITERATION] })
+    },
+  })
 
   return (
     <Stack style={{ padding: '0 5vw' }}>
@@ -42,12 +54,7 @@ export const CoursePhaseTab = ({
                     mt='md'
                     checked={checkEntry.fulfilled}
                     onChange={() => {
-                      void dispatch(
-                        toggleCourseIterationPhaseCheckEntry({
-                          courseIterationId,
-                          courseIterationPhaseCheckEntryId: checkEntry.id,
-                        }),
-                      )
+                      deActivateCourseIterationPhaseCheckEntry.mutate(checkEntry.id)
                     }}
                   />
                 </Group>

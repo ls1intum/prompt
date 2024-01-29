@@ -1,17 +1,18 @@
 import { ActionIcon, Button, Group, Text, Tooltip } from '@mantine/core'
 import { DataTable } from 'mantine-datatable'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { useEffect, useState } from 'react'
 import { IconEdit, IconPlus, IconTrash } from '@tabler/icons-react'
 import moment from 'moment'
-import { useDispatch } from 'react-redux'
-import { deleteCourseIteration } from '../../../../redux/courseIterationSlice/thunks/deleteCourseIteration'
-import { type CourseIteration } from '../../../../redux/courseIterationSlice/courseIterationSlice'
 import { CourseIterationCreationModal } from './WorkspaceSelectionDialog'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
+import { CourseIteration } from '../../../../interface/courseIteration'
+import { deleteCourseIteration } from '../../../../network/courseIteration'
+import { useMutation, useQueryClient } from 'react-query'
+import { Query } from '../../../../state/query'
 
 export const CourseIterationManager = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const courseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
+  const queryClient = useQueryClient()
+  const { courseIterations } = useCourseIterationStore()
   const [tableRecords, setTableRecords] = useState<CourseIteration[]>([])
   const [tablePageSize, setTablePageSize] = useState(15)
   const [tablePage, setTablePage] = useState(1)
@@ -20,6 +21,15 @@ export const CourseIterationManager = (): JSX.Element => {
   const [selectedCourseIteration, setSelectedCourseIteration] = useState<
     CourseIteration | undefined
   >(undefined)
+
+  const removeCourseIteration = useMutation({
+    mutationFn: (courseIterationId: string) => {
+      return deleteCourseIteration(courseIterationId)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_ITERATION] })
+    },
+  })
 
   useEffect(() => {
     setTableRecords(courseIterations)
@@ -151,7 +161,7 @@ export const CourseIterationManager = (): JSX.Element => {
                     variant='"transparent"'
                     color='red'
                     onClick={() => {
-                      void dispatch(deleteCourseIteration(courseIteration.id.toString()))
+                      removeCourseIteration.mutate(courseIteration.id)
                     }}
                   >
                     <IconTrash size={16} />

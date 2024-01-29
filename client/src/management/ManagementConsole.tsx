@@ -14,11 +14,9 @@ import React, { useEffect, useState } from 'react'
 import { type AppDispatch, useAppSelector } from '../redux/store'
 import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
 import { useDispatch } from 'react-redux'
-import { fetchAllCourseIterations } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import Keycloak from 'keycloak-js'
 import { jwtDecode } from 'jwt-decode'
 import { setAuthState } from '../redux/authSlice/authSlice'
-import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
 import { keycloakRealmName, keycloakUrl } from '../service/configService'
 import { IconArrowBadgeRightFilled, IconArrowUp } from '@tabler/icons-react'
 import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout'
@@ -30,6 +28,9 @@ import { ApplicationType } from '../interface/application'
 import { getApplications } from '../network/application'
 import { Query } from '../state/query'
 import { useApplicationStore } from '../state/zustand/useApplicationStore'
+import { useCourseIterationStore } from '../state/zustand/useCourseIterationStore'
+import { CourseIteration } from '../interface/courseIteration'
+import { getCourseIterations } from '../network/courseIteration'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -94,9 +95,24 @@ export const ManagementConsole = ({
   const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
   const [authenticated, setAuthenticated] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
-  const { currentState, courseIterations } = useAppSelector((state) => state.courseIterations)
+  const {
+    selectedCourseIteration,
+    courseIterations,
+    setSelectedCourseIteration,
+    setCourseIterations,
+  } = useCourseIterationStore()
   const { setDeveloperApplications, setCoachApplications, setTutorApplications } =
     useApplicationStore()
+
+  const { data: fetchedCourseIterations } = useQuery<CourseIteration[]>({
+    queryKey: [Query.COURSE_ITERATION],
+    enabled: authenticated && !selectedCourseIteration,
+    queryFn: getCourseIterations,
+  })
+
+  useEffect(() => {
+    setCourseIterations(fetchedCourseIterations ?? [])
+  }, [fetchedCourseIterations, setCourseIterations])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const keycloak = new Keycloak({
@@ -158,21 +174,19 @@ export const ManagementConsole = ({
   }, [dispatch])
 
   useEffect(() => {
-    if (authenticated && !currentState) {
-      void dispatch(fetchAllCourseIterations())
-    }
-  }, [authenticated, currentState, dispatch])
-
-  useEffect(() => {
-    if (!currentState && courseIterations.length > 0 && localStorage.getItem('course-iteration')) {
+    if (
+      !selectedCourseIteration &&
+      courseIterations.length > 0 &&
+      localStorage.getItem('course-iteration')
+    ) {
       const savedCourseIteration = courseIterations.find(
         (as) => as.id === localStorage.getItem('course-iteration'),
       )
       if (savedCourseIteration) {
-        void dispatch(setCurrentState(savedCourseIteration))
+        setSelectedCourseIteration(savedCourseIteration)
       }
     }
-  }, [currentState, courseIterations, dispatch])
+  }, [selectedCourseIteration, courseIterations, dispatch, setSelectedCourseIteration])
 
   useEffect(() => {
     if (authenticated && !mgmtAccess) {
@@ -181,27 +195,30 @@ export const ManagementConsole = ({
   }, [authenticated, keycloakValue, mgmtAccess])
 
   const { data: developerApplications } = useQuery<Application[]>({
-    queryKey: [Query.DEVELOPER_APPLICATION, currentState?.semesterName],
-    queryFn: () => getApplications(ApplicationType.DEVELOPER, currentState?.semesterName ?? ''),
-    enabled: !!currentState,
+    queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
+    queryFn: () =>
+      getApplications(ApplicationType.DEVELOPER, selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
     select: (applications) =>
       applications.map((application) => {
         return { ...application, type: ApplicationType.DEVELOPER }
       }),
   })
   const { data: coachApplications } = useQuery<Application[]>({
-    queryKey: [Query.COACH_APPLICATION, currentState?.semesterName],
-    queryFn: () => getApplications(ApplicationType.COACH, currentState?.semesterName ?? ''),
-    enabled: !!currentState,
+    queryKey: [Query.COACH_APPLICATION, selectedCourseIteration?.semesterName],
+    queryFn: () =>
+      getApplications(ApplicationType.COACH, selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
     select: (applications) =>
       applications.map((application) => {
         return { ...application, type: ApplicationType.COACH }
       }),
   })
   const { data: tutorApplications } = useQuery<Application[]>({
-    queryKey: [Query.TUTOR_APPLICATION, currentState?.semesterName],
-    queryFn: () => getApplications(ApplicationType.TUTOR, currentState?.semesterName ?? ''),
-    enabled: !!currentState,
+    queryKey: [Query.TUTOR_APPLICATION, selectedCourseIteration?.semesterName],
+    queryFn: () =>
+      getApplications(ApplicationType.TUTOR, selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
     select: (applications) =>
       applications.map((application) => {
         return { ...application, type: ApplicationType.TUTOR }
@@ -228,7 +245,7 @@ export const ManagementConsole = ({
     <div className={styles.root}>
       {authenticated && mgmtAccess ? (
         <div>
-          {currentState ? (
+          {selectedCourseIteration ? (
             <NavigationLayout keycloak={keycloakValue}>
               {authenticated && <div style={{ margin: '2vh 2vw' }}>{child}</div>}
             </NavigationLayout>

@@ -37,6 +37,7 @@ import {
 } from '../../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { IntroCourseEntryModal } from './IntroCourseEntryModal'
 import { SeatPlanUploadModal } from './SeatPlanUploadModal'
+import { useCourseIterationStore } from '../../../state/zustand/useCourseIterationStore'
 
 interface TechnicalDataEmailInvitationsSendConfirmationModalProps {
   opened: boolean
@@ -47,7 +48,7 @@ const TechnicalDataEmailInvitationsSendConfirmationModal = ({
   opened,
   onClose,
 }: TechnicalDataEmailInvitationsSendConfirmationModalProps): JSX.Element => {
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
 
   return (
     <Modal opened={opened} onClose={onClose} centered>

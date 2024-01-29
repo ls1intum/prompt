@@ -1,9 +1,10 @@
 import { Tabs, Text } from '@mantine/core'
-import { useAppSelector } from '../../../../redux/store'
 import { CoursePhaseTab } from './CoursePhaseTab'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 
 export const ActiveCourseIterationManager = (): JSX.Element => {
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
+
   return (
     <Tabs orientation='vertical' style={{ padding: '5vh 0', height: '80vh' }}>
       <Tabs.List>

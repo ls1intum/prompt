@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react'
 import { StudentProjectTeamPreferencesManager } from './components/StudentProjectTeamPreferencesManager/StudentProjectTeamPreferencesManager'
 import { SkillsManager } from './components/SkillsManager/SkillsManager'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
+import { type AppDispatch } from '../../redux/store'
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
@@ -19,11 +19,12 @@ import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { useQuery } from 'react-query'
 import { Query } from '../../state/query'
 import { getProjectTeams } from '../../network/projectTeam'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 
 export const TeamAllocationConsole = (): JSX.Element => {
   const { setProjectTeams } = useProjectTeamStore()
   const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
 
   const { data: projectTeams } = useQuery<ProjectTeam[]>({
     queryKey: [Query.PROJECT_TEAM, selectedCourseIteration?.semesterName],

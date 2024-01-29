@@ -1,4 +1,4 @@
-import { type AppDispatch, useAppSelector } from '../../../redux/store'
+import { type AppDispatch } from '../../../redux/store'
 import { useState } from 'react'
 import {
   type SeatPlanAssignment,
@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux'
 import { notifications } from '@mantine/notifications'
 import { createSeatPlanAssignments } from '../../../redux/introCourseSlice/thunks/createSeatPlanAssignments'
 import { createSeatPlan } from '../../../redux/introCourseSlice/thunks/createSeatPlan'
+import { useCourseIterationStore } from '../../../state/zustand/useCourseIterationStore'
 
 interface SeatPlanUploadModalProps {
   opened: boolean
@@ -43,7 +44,7 @@ export const SeatPlanUploadModal = ({
   tutors,
 }: SeatPlanUploadModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
   const [stepperActiveStep, setStepperActiveStep] = useState(0)
   const [uploadMode, setUploadMode] = useState('full')
   const [columnNames, setColumnNames] = useState<string[]>([])

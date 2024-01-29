@@ -25,6 +25,12 @@ export const postProjectTeam = async (
       await axiosInstance.post(`/api/project-teams?courseIteration=${courseIteration}`, projectTeam)
     ).data
   } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Could not create project team.`,
+    })
     return undefined
   }
 }
@@ -42,6 +48,12 @@ export const patchProjectTeam = async (
       })
     ).data
   } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Could not update project team.`,
+    })
     return undefined
   }
 }
@@ -50,6 +62,12 @@ export const deleteProjectTeam = async (projectTeamId: string): Promise<string |
   try {
     return (await axiosInstance.delete(`/api/project-teams/${projectTeamId}`)).data
   } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Could not delete project team.`,
+    })
     return undefined
   }
 }

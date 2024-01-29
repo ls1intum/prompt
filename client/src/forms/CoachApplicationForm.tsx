@@ -14,15 +14,16 @@ import {
   Title,
 } from '@mantine/core'
 import { type Application } from '../redux/applicationsSlice/applicationsSlice'
-import { useEffect, useState } from 'react'
-import { fetchCourseIterationsWithOpenCoachApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { useState } from 'react'
 import { ApplicationType } from '../interface/application'
-import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../redux/store'
 import { createCoachApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
+import { useQuery } from 'react-query'
+import { CourseIteration } from '../interface/courseIteration'
+import { Query } from '../state/query'
+import { getCourseIterationsWithOpenApplicationPeriod } from '../network/courseIteration'
 
 interface CoachApplicationFormProps {
   coachApplication?: Application
@@ -35,12 +36,7 @@ export const CoachApplicationForm = ({
   coachApplication,
   onSuccess,
 }: CoachApplicationFormProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
-  const courseIterationWithOpenCoachApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenCoachApplicationPeriod,
-  )
-  const loading = useAppSelector((state) => state.courseIterations.status)
   const defaultForm = useForm<Partial<Application>>({
     initialValues: coachApplication
       ? {
@@ -142,15 +138,15 @@ export const CoachApplicationForm = ({
     },
   })
 
-  useEffect(() => {
-    if (accessMode === ApplicationFormAccessMode.STUDENT) {
-      void dispatch(fetchCourseIterationsWithOpenCoachApplicationPeriod())
-    }
-  }, [accessMode, dispatch])
+  const { data: courseIteration, isLoading } = useQuery<CourseIteration | undefined>({
+    queryKey: [Query.COURSE_ITERATION, ApplicationType.COACH],
+    enabled: accessMode === ApplicationFormAccessMode.STUDENT,
+    queryFn: () => getCourseIterationsWithOpenApplicationPeriod(ApplicationType.COACH),
+  })
 
   return (
     <>
-      {loading === 'loading' ? (
+      {isLoading ? (
         <div
           style={{
             display: 'flex',
@@ -166,8 +162,7 @@ export const CoachApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenCoachApplicationPeriod ??
-          accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
+          {courseIteration ?? accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               style={{
                 display: 'flex',
@@ -244,7 +239,7 @@ export const CoachApplicationForm = ({
                         if (
                           defaultForm.isValid() &&
                           coachForm.isValid() &&
-                          courseIterationWithOpenCoachApplicationPeriod &&
+                          courseIteration &&
                           !coachApplication
                         ) {
                           createCoachApplication({
@@ -252,8 +247,7 @@ export const CoachApplicationForm = ({
                               ...defaultForm.values,
                               ...coachForm.values,
                             },
-                            courseIteration:
-                              courseIterationWithOpenCoachApplicationPeriod.semesterName,
+                            courseIteration: courseIteration.semesterName,
                           })
                             .then((response) => {
                               if (response) {

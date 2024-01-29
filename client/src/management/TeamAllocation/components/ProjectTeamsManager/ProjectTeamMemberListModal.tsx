@@ -2,7 +2,7 @@ import { Button, Modal } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
+import { type AppDispatch } from '../../../../redux/store'
 import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
 import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../../../redux/applicationsSlice/applicationsSlice'
 import { TransferList, TransferListItem } from '../../../../utilities/TransferList/TransferList'
 import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 
 interface ProjectTeamMemberListModalProps {
   projectTeam: ProjectTeam
@@ -24,7 +25,7 @@ export const ProjectTeamMemberListModal = ({
   onClose,
 }: ProjectTeamMemberListModalProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
   const developerApplications = useApplicationStore((state) =>
     state.developerApplications.filter(
       (application) =>

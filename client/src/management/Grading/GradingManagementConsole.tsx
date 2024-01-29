@@ -1,6 +1,6 @@
 import { Tabs } from '@mantine/core'
 import { IconUsersGroup } from '@tabler/icons-react'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
+import { type AppDispatch } from '../../redux/store'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchProjectTeamDevelopers } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeamDevelopers'
@@ -10,11 +10,12 @@ import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { getProjectTeams } from '../../network/projectTeam'
 import { Query } from '../../state/query'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 
 export const GradingManagementConsole = (): JSX.Element => {
   const { projectTeams, setProjectTeams } = useProjectTeamStore()
   const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
   const [activeProjectTeam, setActiveProjectTeam] = useState<string | null>()
 
   const { data: fetchedProjectTeams } = useQuery<ProjectTeam[]>({

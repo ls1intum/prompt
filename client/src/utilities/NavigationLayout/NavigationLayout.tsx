@@ -26,13 +26,12 @@ import {
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
+import { useAppSelector } from '../../redux/store'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { setCurrentState } from '../../redux/courseIterationSlice/courseIterationSlice'
 import styles from './NavigationLayout.module.scss'
 import classNames from 'classnames'
 import useDeviceDetection from '../hooks/useDeviceDetection'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 
 const navigationContents = [
   {
@@ -85,15 +84,14 @@ interface NavigationLayoutProps {
 }
 
 export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
   const auth = useAppSelector((state) => state.auth)
   const navigate = useNavigate()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
   const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const [navigationRoutes, setNavigationRoutes] = useState(navigationContents)
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const courseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
+  const { selectedCourseIteration, courseIterations, setSelectedCourseIteration } =
+    useCourseIterationStore()
   const location = useLocation()
   const [active, setActive] = useState(location.pathname)
   const isMobileDevice = useDeviceDetection() === 'mobile'
@@ -179,7 +177,7 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
                 (as) => as.id.toString() === changedCourseIterationId,
               )
               if (changedCourseIteration) {
-                void dispatch(setCurrentState(changedCourseIteration))
+                setSelectedCourseIteration(changedCourseIteration)
               }
             }}
           />

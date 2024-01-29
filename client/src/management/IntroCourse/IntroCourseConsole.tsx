@@ -1,7 +1,7 @@
 import { Alert, Progress, Stack } from '@mantine/core'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../../redux/store'
+import { type AppDispatch } from '../../redux/store'
 import { useEffect, useMemo } from 'react'
 import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 import { SeatPlanManager } from './components/SeatPlanManager'
@@ -9,6 +9,7 @@ import moment from 'moment'
 import { fetchAllIntroCourseTutors } from '../../redux/introCourseSlice/thunks/fetchAllIntroCourseTutors'
 import { Link } from 'react-router-dom'
 import type Keycloak from 'keycloak-js'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 
 interface IntroCourseConsoleProps {
   keycloak: Keycloak
@@ -16,7 +17,7 @@ interface IntroCourseConsoleProps {
 
 export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
 
   const introCourseProgress = useMemo(() => {
     if (selectedCourseIteration) {

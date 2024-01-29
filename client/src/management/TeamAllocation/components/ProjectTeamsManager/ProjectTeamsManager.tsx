@@ -25,7 +25,7 @@ import {
   type ProjectTeamPatch,
   type ProjectTeam,
 } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
+import { type AppDispatch } from '../../../../redux/store'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
@@ -37,6 +37,7 @@ import { Query } from '../../../../state/query'
 import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
 import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 import { Patch } from '../../../../service/configService'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -50,7 +51,7 @@ const ProjectTeamCreationModal = ({
   onClose,
 }: ProjectTeamCreationModalProps): JSX.Element => {
   const queryClient = useQueryClient()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
   const form = useForm<ProjectTeam>({
     initialValues: projectTeam
       ? { ...projectTeam }
@@ -144,7 +145,7 @@ const ProjectTeamCreationModal = ({
 export const ProjectTeamsManager = (): JSX.Element => {
   const queryClient = useQueryClient()
   const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
   const { projectTeams } = useProjectTeamStore()
   const { developerApplications } = useApplicationStore()
   const [invitationSendOutConfirmationModalOpened, setInvitationSendOutConfirmationModalOpened] =

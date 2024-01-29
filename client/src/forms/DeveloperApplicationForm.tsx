@@ -13,16 +13,17 @@ import {
 } from '@mantine/core'
 import { ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch, useAppSelector } from '../redux/store'
 import { type Application } from '../redux/applicationsSlice/applicationsSlice'
-import { useEffect, useState } from 'react'
-import { fetchCourseIterationsWithOpenDeveloperApplicationPeriod } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
+import { useState } from 'react'
 import { ApplicationType } from '../interface/application'
 import { createDeveloperApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
+import { useQuery } from 'react-query'
+import { CourseIteration } from '../interface/courseIteration'
+import { Query } from '../state/query'
+import { getCourseIterationsWithOpenApplicationPeriod } from '../network/courseIteration'
 
 export interface DeveloperApplicationFormProps {
   developerApplication?: Application
@@ -35,12 +36,7 @@ export const DeveloperApplicationForm = ({
   developerApplication,
   onSuccess,
 }: DeveloperApplicationFormProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const courseIterationWithOpenApplicationPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenDeveloperApplicationPeriod,
-  )
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
-  const loading = useAppSelector((state) => state.courseIterations.status)
   const form = useForm<Partial<Application>>({
     initialValues: developerApplication
       ? {
@@ -132,15 +128,15 @@ export const DeveloperApplicationForm = ({
     },
   })
 
-  useEffect(() => {
-    if (accessMode === ApplicationFormAccessMode.STUDENT) {
-      void dispatch(fetchCourseIterationsWithOpenDeveloperApplicationPeriod())
-    }
-  }, [accessMode, dispatch])
+  const { data: courseIteration, isLoading } = useQuery<CourseIteration | undefined>({
+    queryKey: [Query.COURSE_ITERATION, ApplicationType.DEVELOPER],
+    enabled: accessMode === ApplicationFormAccessMode.STUDENT,
+    queryFn: () => getCourseIterationsWithOpenApplicationPeriod(ApplicationType.DEVELOPER),
+  })
 
   return (
     <>
-      {loading === 'loading' ? (
+      {isLoading ? (
         <div
           style={{
             display: 'flex',
@@ -156,8 +152,7 @@ export const DeveloperApplicationForm = ({
         </div>
       ) : (
         <>
-          {courseIterationWithOpenApplicationPeriod ??
-          accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
+          {courseIteration ?? accessMode === ApplicationFormAccessMode.INSTRUCTOR ? (
             <Box
               style={{
                 display: 'flex',
@@ -252,14 +247,10 @@ export const DeveloperApplicationForm = ({
                         (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
                       }
                       onClick={() => {
-                        if (
-                          form.isValid() &&
-                          courseIterationWithOpenApplicationPeriod &&
-                          !developerApplication
-                        ) {
+                        if (form.isValid() && courseIteration && !developerApplication) {
                           createDeveloperApplication({
                             application: form.values,
-                            courseIteration: courseIterationWithOpenApplicationPeriod.semesterName,
+                            courseIteration: courseIteration.semesterName,
                           })
                             .then((response) => {
                               if (response) {
