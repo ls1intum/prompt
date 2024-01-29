@@ -48,7 +48,7 @@ import {
   sendCoachApplicationAcceptance,
   sendTutorApplicationAcceptance,
 } from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { patchApplicationAssessment } from '../network/application'
 import { Query } from '../state/query'
 import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'

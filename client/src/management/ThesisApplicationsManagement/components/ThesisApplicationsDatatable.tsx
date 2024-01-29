@@ -9,7 +9,7 @@ import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm
 import moment from 'moment'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useThesisApplicationStore } from '../../../state/zustand/useThesisApplicationStore'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../../state/query'
 import { getThesisAdvisors, getThesisApplications } from '../../../network/thesisApplication'
 import { ThesisAdvisor, ThesisApplication } from '../../../interface/thesisApplication'
@@ -47,7 +47,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
   })
 
   const { data: fetchedThesisApplications, isLoading } = useQuery<ThesisApplication[]>({
-    queryKey: Query.THESIS_APPLICATION,
+    queryKey: [Query.THESIS_APPLICATION],
     queryFn: () => getThesisApplications(),
   })
 
@@ -58,7 +58,7 @@ export const ThesisApplicationsDatatable = (): JSX.Element => {
   }, [fetchedThesisApplications, setThesisApplications])
 
   const { data: fetchedThesisAdvisors } = useQuery<ThesisAdvisor[]>({
-    queryKey: Query.THESIS_ADVISOR,
+    queryKey: [Query.THESIS_ADVISOR],
     queryFn: () => getThesisAdvisors(),
   })
 

@@ -37,7 +37,7 @@ import { useEffect, useState } from 'react'
 import { FormTextField } from './components/FormTextField'
 import { FormSelectField } from './components/FormSelectField'
 import { useThesisApplicationStore } from '../state/zustand/useThesisApplicationStore'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   getThesisApplicationBachelorReportFile,
   getThesisApplicationCvFile,
@@ -224,7 +224,7 @@ export const ThesisApplicationForm = ({
         assessmentComment: form.values.assessmentComment ?? '',
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries(Query.THESIS_APPLICATION)
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
     },
   })
 
@@ -232,21 +232,21 @@ export const ThesisApplicationForm = ({
     mutationFn: () =>
       postThesisApplicationThesisAdvisorAssignment(application?.id ?? '', thesisAdvisorId ?? ''),
     onSuccess: () => {
-      queryClient.invalidateQueries(Query.THESIS_APPLICATION)
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
     },
   })
 
   const acceptThesisApplication = useMutation({
     mutationFn: () => postThesisApplicatioAcceptance(application?.id ?? '', notifyStudent),
     onSuccess: () => {
-      queryClient.invalidateQueries(Query.THESIS_APPLICATION)
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
     },
   })
 
   const rejectThesisApplication = useMutation({
     mutationFn: () => postThesisApplicationRejection(application?.id ?? '', notifyStudent),
     onSuccess: () => {
-      queryClient.invalidateQueries(Query.THESIS_APPLICATION)
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
     },
   })
 
@@ -886,26 +886,26 @@ export const ThesisApplicationForm = ({
                   style={{ width: '20vw' }}
                   variant='outline'
                   color='red'
-                  disabled={rejectThesisApplication.isLoading}
+                  disabled={rejectThesisApplication.isPending}
                   onClick={() => {
                     if (application) {
                       rejectThesisApplication.mutate()
                     }
                   }}
                 >
-                  {rejectThesisApplication.isLoading ? <Loader /> : 'Reject'}
+                  {rejectThesisApplication.isPending ? <Loader /> : 'Reject'}
                 </Button>
                 <Button
                   style={{ width: '20vw' }}
                   color='green'
-                  disabled={!application?.thesisAdvisor || acceptThesisApplication.isLoading}
+                  disabled={!application?.thesisAdvisor || acceptThesisApplication.isPending}
                   onClick={() => {
                     if (application) {
                       acceptThesisApplication.mutate()
                     }
                   }}
                 >
-                  {acceptThesisApplication.isLoading ? <Loader /> : 'Accept'}
+                  {acceptThesisApplication.isPending ? <Loader /> : 'Accept'}
                 </Button>
               </Group>
               <Group align='right'>

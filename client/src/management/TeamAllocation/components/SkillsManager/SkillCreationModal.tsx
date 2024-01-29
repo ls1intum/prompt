@@ -1,7 +1,7 @@
 import { Button, Checkbox, Modal, Stack, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { IconPlus } from '@tabler/icons-react'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { postSkill } from '../../../../network/skill'
 import { Query } from '../../../../state/query'
 import { Skill } from '../../../../interface/skill'

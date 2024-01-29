@@ -7,7 +7,7 @@ import { CourseIterationCreationModal } from './WorkspaceSelectionDialog'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 import { CourseIteration } from '../../../../interface/courseIteration'
 import { deleteCourseIteration } from '../../../../network/courseIteration'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Query } from '../../../../state/query'
 
 export const CourseIterationManager = (): JSX.Element => {

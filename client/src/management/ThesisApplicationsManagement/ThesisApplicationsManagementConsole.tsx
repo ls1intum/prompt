@@ -7,7 +7,7 @@ import { Affix, Button, Center, Transition, rem } from '@mantine/core'
 import { IconArrowUp } from '@tabler/icons-react'
 import { useWindowScroll } from '@mantine/hooks'
 import styles from './ThesisApplicationsManagementConsole.module.scss'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { putThesisAdvisor } from '../../network/thesisApplication'
 import { ThesisAdvisor } from '../../interface/thesisApplication'
 import { Query } from '../../state/query'
@@ -22,7 +22,7 @@ export const ThesisApplicationsManagementConsole = (): JSX.Element => {
   const addThesisAdvisor = useMutation({
     mutationFn: (thesisAdvisor: ThesisAdvisor) => putThesisAdvisor(thesisAdvisor),
     onSuccess: () => {
-      queryClient.invalidateQueries(Query.THESIS_APPLICATION)
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
     },
   })
 

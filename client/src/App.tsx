@@ -32,8 +32,8 @@ import '@mantine/tiptap/styles.css'
 import '@mantine/dropzone/styles.css'
 import 'mantine-contextmenu/styles.layer.css'
 import 'mantine-datatable/styles.layer.css'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const queryClient = new QueryClient({
   defaultOptions: {

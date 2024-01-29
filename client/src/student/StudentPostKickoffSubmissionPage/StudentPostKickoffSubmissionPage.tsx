@@ -39,7 +39,7 @@ import { createPostKickoffSubmission } from '../../service/postKickoffSubmission
 import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
 import { notifications } from '@mantine/notifications'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { getProjectTeams } from '../../network/projectTeam'
 import { Query } from '../../state/query'
 import { useSkillStore } from '../../state/zustand/useSkillStore'

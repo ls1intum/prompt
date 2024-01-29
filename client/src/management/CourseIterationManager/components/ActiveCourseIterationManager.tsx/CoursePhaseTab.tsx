@@ -1,5 +1,5 @@
 import { Checkbox, Group, Paper, Stack, Text } from '@mantine/core'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Query } from '../../../../state/query'
 import { CourseIterationPhase } from '../../../../interface/courseIteration'
 import { toggleCourseIterationPhaseCheckEntry } from '../../../../network/courseIteration'

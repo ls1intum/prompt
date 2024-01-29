@@ -16,7 +16,7 @@ import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKicko
 import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../state/query'
 import { getProjectTeams } from '../../network/projectTeam'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'

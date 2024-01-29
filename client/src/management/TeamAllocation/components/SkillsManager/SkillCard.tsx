@@ -2,7 +2,7 @@ import { Badge, Button, Card, Group, Modal, Stack, Text } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { useState } from 'react'
 import { Skill } from '../../../../interface/skill'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Query } from '../../../../state/query'
 import { deleteSkill, toggleSkill } from '../../../../network/skill'
 
