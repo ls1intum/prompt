@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { axiosInstance, serverBaseUrl } from '../../../service/configService'
-import { type Grade } from '../../applicationsSlice/applicationsSlice'
 import { notifications } from '@mantine/notifications'
+import { Grade } from '../../../interface/application'
 
 export const gradeDeveloperApplication = createAsyncThunk(
   'projectTeams/gradeDeveloperApplication',

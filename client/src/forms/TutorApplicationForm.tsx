@@ -14,10 +14,9 @@ import {
   Textarea,
   Title,
 } from '@mantine/core'
-import { type Application } from '../redux/applicationsSlice/applicationsSlice'
+import { type Application } from '../interface/application'
 import { ApplicationType } from '../interface/application'
 import { useState } from 'react'
-import { createTutorApplication } from '../service/applicationsService'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
@@ -25,6 +24,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CourseIteration } from '../interface/courseIteration'
 import { getCourseIterationsWithOpenApplicationPeriod } from '../network/courseIteration'
 import { Query } from '../state/query'
+import { postApplication } from '../network/application'
 
 interface TutorApplicationFormProps {
   tutorApplication?: Application
@@ -250,13 +250,14 @@ export const TutorApplicationForm = ({
                       type='submit'
                       onClick={() => {
                         if (defaultForm.isValid() && courseIteration && !tutorApplication) {
-                          createTutorApplication({
-                            application: {
+                          postApplication(
+                            ApplicationType.TUTOR,
+                            {
                               ...defaultForm.values,
                               ...tutorForm.values,
                             },
-                            courseIteration: courseIteration.semesterName,
-                          })
+                            courseIteration.semesterName,
+                          )
                             .then((response) => {
                               if (response) {
                                 setApplicationSuccessfullySubmitted(true)

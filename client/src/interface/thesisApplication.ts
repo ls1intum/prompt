@@ -1,9 +1,4 @@
-import {
-  ApplicationStatus,
-  Student,
-  StudyDegree,
-  StudyProgram,
-} from '../redux/applicationsSlice/applicationsSlice'
+import { ApplicationStatus, Student, StudyDegree, StudyProgram } from '../interface/application'
 
 export enum ResearchArea {
   EDUCATION_TECHNOLOGIES = 'Education Technologies',

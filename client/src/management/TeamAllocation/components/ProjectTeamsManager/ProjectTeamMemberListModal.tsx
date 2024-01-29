@@ -1,17 +1,20 @@
 import { Button, Modal } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
-import { type AppDispatch } from '../../../../redux/store'
-import { assignDeveloperApplicationToProjectTeam } from '../../../../redux/applicationsSlice/thunks/assignDeveloperApplicationToProjectTeam'
-import { removeDeveloperApplicationFromProjectTeam } from '../../../../redux/applicationsSlice/thunks/removeDeveloperApplicationFromProjectTeam'
 import {
   ApplicationStatus,
   type Application,
-} from '../../../../redux/applicationsSlice/applicationsSlice'
+  ApplicationType,
+} from '../../../../interface/application'
 import { TransferList, TransferListItem } from '../../../../utilities/TransferList/TransferList'
 import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  deleteApplicatioProjectTeamAssigment,
+  postApplicationProjectTeamAssignment,
+} from '../../../../network/application'
+import { Query } from '../../../../state/query'
 
 interface ProjectTeamMemberListModalProps {
   projectTeam: ProjectTeam
@@ -24,7 +27,7 @@ export const ProjectTeamMemberListModal = ({
   opened,
   onClose,
 }: ProjectTeamMemberListModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const { selectedCourseIteration } = useCourseIterationStore()
   const developerApplications = useApplicationStore((state) =>
     state.developerApplications.filter(
@@ -33,6 +36,31 @@ export const ProjectTeamMemberListModal = ({
     ),
   )
   const [data, setData] = useState<TransferListItem[][]>([[], []])
+
+  const assignApplicationToProjectTeam = useMutation({
+    mutationFn: (applicationId: string) =>
+      postApplicationProjectTeamAssignment(
+        ApplicationType.DEVELOPER,
+        applicationId,
+        projectTeam.id,
+        selectedCourseIteration?.semesterName ?? '',
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
+    },
+  })
+
+  const removeApplicationFromProjectTeam = useMutation({
+    mutationFn: (applicationId: string) =>
+      deleteApplicatioProjectTeamAssigment(
+        ApplicationType.DEVELOPER,
+        applicationId,
+        selectedCourseIteration?.semesterName ?? '',
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
+    },
+  })
 
   useEffect(() => {
     setData([
@@ -83,24 +111,13 @@ export const ProjectTeamMemberListModal = ({
 
     studentApplicationsAddedToProjectTeam.forEach((studentApplication) => {
       if (selectedCourseIteration) {
-        void dispatch(
-          assignDeveloperApplicationToProjectTeam({
-            studentApplicationId: studentApplication.id,
-            projectTeamId: projectTeam.id,
-            courseIteration: selectedCourseIteration?.semesterName,
-          }),
-        )
+        assignApplicationToProjectTeam.mutate(studentApplication.id)
       }
     })
 
     studentApplicationsRemovedFromProjectTeam.forEach((studentApplication) => {
       if (selectedCourseIteration) {
-        void dispatch(
-          removeDeveloperApplicationFromProjectTeam({
-            applicationId: studentApplication.id,
-            courseIteration: selectedCourseIteration.semesterName,
-          }),
-        )
+        removeApplicationFromProjectTeam.mutate(studentApplication.id)
       }
     })
   }

@@ -6,11 +6,14 @@ import { CSVLink } from 'react-csv'
 import { DataTable } from 'mantine-datatable'
 import './StudentProjectTeamPreferencesManager.scss'
 import classNames from 'classnames'
+import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
-  const enrolledDeveloperApplications = useAppSelector(
-    (state) => state.applications.developerApplications,
-  ).filter((application) => application.assessment.status === 'INTRO_COURSE_PASSED')
+  const enrolledDeveloperApplications = useApplicationStore((state) =>
+    state.developerApplications.filter(
+      (application) => application.assessment.status === 'INTRO_COURSE_PASSED',
+    ),
+  )
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const studentPostKickoffSubmissions = useAppSelector(
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { fetchProjectTeamDevelopers } from './thunks/fetchProjectTeamDevelopers'
-import { type Application } from '../applicationsSlice/applicationsSlice'
 import { gradeDeveloperApplication } from './thunks/gradeDeveloperApplication'
+import { Application } from '../../interface/application'
 
 interface ProjectTeam {
   id: string

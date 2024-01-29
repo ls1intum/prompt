@@ -24,7 +24,7 @@ import {
   rem,
   useMantineTheme,
 } from '@mantine/core'
-import { Gender, StudyDegree, StudyProgram } from '../redux/applicationsSlice/applicationsSlice'
+import { Gender, StudyDegree, StudyProgram } from '../interface/application'
 import { ApplicationFormAccessMode } from './DefaultApplicationForm'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { IconCalendar, IconPhoto, IconUpload, IconX } from '@tabler/icons-react'

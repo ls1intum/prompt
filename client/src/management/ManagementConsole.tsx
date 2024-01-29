@@ -20,11 +20,7 @@ import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout
 import { useWindowScroll } from '@mantine/hooks'
 import styles from './ManagementConsole.module.scss'
 import { useQuery } from '@tanstack/react-query'
-import { Application } from '../redux/applicationsSlice/applicationsSlice'
-import { ApplicationType } from '../interface/application'
-import { getApplications } from '../network/application'
 import { Query } from '../state/query'
-import { useApplicationStore } from '../state/zustand/useApplicationStore'
 import { useCourseIterationStore } from '../state/zustand/useCourseIterationStore'
 import { CourseIteration } from '../interface/courseIteration'
 import { getCourseIterations } from '../network/courseIteration'
@@ -98,8 +94,6 @@ export const ManagementConsole = ({
     setSelectedCourseIteration,
     setCourseIterations,
   } = useCourseIterationStore()
-  const { setDeveloperApplications, setCoachApplications, setTutorApplications } =
-    useApplicationStore()
 
   const { data: fetchedCourseIterations } = useQuery<CourseIteration[]>({
     queryKey: [Query.COURSE_ITERATION],
@@ -186,53 +180,6 @@ export const ManagementConsole = ({
       void keycloakValue.logout()
     }
   }, [authenticated, keycloakValue, user])
-
-  const { data: developerApplications } = useQuery<Application[]>({
-    queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
-    queryFn: () =>
-      getApplications(ApplicationType.DEVELOPER, selectedCourseIteration?.semesterName ?? ''),
-    enabled: !!selectedCourseIteration,
-    select: (applications) =>
-      applications.map((application) => {
-        return { ...application, type: ApplicationType.DEVELOPER }
-      }),
-  })
-  const { data: coachApplications } = useQuery<Application[]>({
-    queryKey: [Query.COACH_APPLICATION, selectedCourseIteration?.semesterName],
-    queryFn: () =>
-      getApplications(ApplicationType.COACH, selectedCourseIteration?.semesterName ?? ''),
-    enabled: !!selectedCourseIteration,
-    select: (applications) =>
-      applications.map((application) => {
-        return { ...application, type: ApplicationType.COACH }
-      }),
-  })
-  const { data: tutorApplications } = useQuery<Application[]>({
-    queryKey: [Query.TUTOR_APPLICATION, selectedCourseIteration?.semesterName],
-    queryFn: () =>
-      getApplications(ApplicationType.TUTOR, selectedCourseIteration?.semesterName ?? ''),
-    enabled: !!selectedCourseIteration,
-    select: (applications) =>
-      applications.map((application) => {
-        return { ...application, type: ApplicationType.TUTOR }
-      }),
-  })
-
-  useEffect(() => {
-    if (developerApplications) {
-      setDeveloperApplications(developerApplications)
-    }
-  }, [developerApplications, setDeveloperApplications])
-  useEffect(() => {
-    if (coachApplications) {
-      setCoachApplications(coachApplications)
-    }
-  }, [coachApplications, setCoachApplications])
-  useEffect(() => {
-    if (tutorApplications) {
-      setTutorApplications(tutorApplications)
-    }
-  }, [tutorApplications, setTutorApplications])
 
   return (
     <div className={styles.root}>

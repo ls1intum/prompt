@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { type Student } from '../applicationsSlice/applicationsSlice'
 import { fetchIntroCourseParticipations } from './thunks/fetchIntroCourseParticipations'
 import { updateIntroCourseParticipation } from './thunks/updateIntroCourseParticipation'
 import { createSeatPlanAssignments } from './thunks/createSeatPlanAssignments'
@@ -11,6 +10,7 @@ import { type SkillProficiency } from '../studentPostKickoffSubmissionsSlice/stu
 import { markPassed } from './thunks/markPassed'
 import { markNotPassed } from './thunks/markNotPassed'
 import { markDroppedOut, unmarkDroppedOut } from './thunks/markAsDroppedOut'
+import { Student } from '../../interface/application'
 
 interface IntroCourseAbsence {
   id: string

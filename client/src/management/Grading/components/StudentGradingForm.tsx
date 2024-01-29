@@ -1,5 +1,5 @@
 import { Button, Stack, Text, TextInput, Textarea } from '@mantine/core'
-import { type Grade, type Application } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Grade, type Application } from '../../../interface/application'
 import { useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'

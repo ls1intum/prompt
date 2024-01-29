@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux'
 import { type AppDispatch } from '../../../redux/store'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { type IntroCourseParticipation } from '../../../redux/introCourseSlice/introCourseSlice'
-import { type Student } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Student } from '../../../interface/application'
 import { type Patch } from '../../../service/configService'
 import { updateIntroCourseParticipation } from '../../../redux/introCourseSlice/thunks/updateIntroCourseParticipation'
 import {

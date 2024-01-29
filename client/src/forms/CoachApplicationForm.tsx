@@ -13,10 +13,8 @@ import {
   Textarea,
   Title,
 } from '@mantine/core'
-import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { useState } from 'react'
-import { ApplicationType } from '../interface/application'
-import { createCoachApplication } from '../service/applicationsService'
+import { Application, ApplicationType } from '../interface/application'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
@@ -24,6 +22,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CourseIteration } from '../interface/courseIteration'
 import { Query } from '../state/query'
 import { getCourseIterationsWithOpenApplicationPeriod } from '../network/courseIteration'
+import { postApplication } from '../network/application'
 
 interface CoachApplicationFormProps {
   coachApplication?: Application
@@ -242,13 +241,14 @@ export const CoachApplicationForm = ({
                           courseIteration &&
                           !coachApplication
                         ) {
-                          createCoachApplication({
-                            application: {
+                          postApplication(
+                            ApplicationType.COACH,
+                            {
                               ...defaultForm.values,
                               ...coachForm.values,
                             },
-                            courseIteration: courseIteration.semesterName,
-                          })
+                            courseIteration.semesterName,
+                          )
                             .then((response) => {
                               if (response) {
                                 setApplicationSuccessfullySubmitted(true)

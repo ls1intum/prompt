@@ -6,7 +6,7 @@ import {
   LanguageProficiency,
   StudyDegree,
   StudyProgram,
-} from '../../../redux/applicationsSlice/applicationsSlice'
+} from '../../../interface/application'
 import moment from 'moment'
 import { FocusTopic, ResearchArea } from '../../../interface/thesisApplication'
 

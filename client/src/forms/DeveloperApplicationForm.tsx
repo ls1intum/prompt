@@ -13,10 +13,8 @@ import {
 } from '@mantine/core'
 import { ApplicationFormAccessMode, DefaultApplicationForm } from './DefaultApplicationForm'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { type Application } from '../redux/applicationsSlice/applicationsSlice'
 import { useState } from 'react'
-import { ApplicationType } from '../interface/application'
-import { createDeveloperApplication } from '../service/applicationsService'
+import { Application, ApplicationType } from '../interface/application'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { ApplicationAssessmentForm } from './ApplicationAssessmentForm'
@@ -24,6 +22,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CourseIteration } from '../interface/courseIteration'
 import { Query } from '../state/query'
 import { getCourseIterationsWithOpenApplicationPeriod } from '../network/courseIteration'
+import { postApplication } from '../network/application'
 
 export interface DeveloperApplicationFormProps {
   developerApplication?: Application
@@ -248,10 +247,11 @@ export const DeveloperApplicationForm = ({
                       }
                       onClick={() => {
                         if (form.isValid() && courseIteration && !developerApplication) {
-                          createDeveloperApplication({
-                            application: form.values,
-                            courseIteration: courseIteration.semesterName,
-                          })
+                          postApplication(
+                            ApplicationType.DEVELOPER,
+                            form.values,
+                            courseIteration.semesterName,
+                          )
                             .then((response) => {
                               if (response) {
                                 setApplicationSuccessfullySubmitted(true)

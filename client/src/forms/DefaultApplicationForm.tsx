@@ -22,7 +22,7 @@ import {
   Device,
   Course,
   type Application,
-} from '../redux/applicationsSlice/applicationsSlice'
+} from '../interface/application'
 
 export enum ApplicationFormAccessMode {
   INSTRUCTOR,

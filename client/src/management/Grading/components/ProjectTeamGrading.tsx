@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAppSelector } from '../../../redux/store'
 import { StudentGradingForm } from './StudentGradingForm'
 import { Tabs, Text } from '@mantine/core'
-import { type Application } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Application } from '../../../interface/application'
 
 interface ProjectTeamGradingProps {
   projectTeamId: string

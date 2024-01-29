@@ -1,9 +1,5 @@
 import { useForm } from '@mantine/form'
-import {
-  type Student,
-  type ApplicationAssessment,
-} from '../redux/applicationsSlice/applicationsSlice'
-import { ApplicationType } from '../interface/application'
+import { ApplicationAssessment, ApplicationType, Student } from '../interface/application'
 import {
   Button,
   Checkbox,
@@ -18,14 +14,7 @@ import {
   Tooltip,
 } from '@mantine/core'
 import { StudentApplicationComment } from './StudentApplicationComment'
-import {
-  createInstructorCommentForCoachApplication,
-  createInstructorCommentForDeveloperApplication,
-  createInstructorCommentForTutorApplication,
-} from '../redux/applicationsSlice/thunks/createInstructorComment'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../redux/store'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   IconBan,
   IconCalendarEvent,
@@ -36,20 +25,14 @@ import {
   IconSend,
 } from '@tabler/icons-react'
 import { type Patch } from '../service/configService'
-import {
-  sendCoachInterviewInvitation,
-  sendTutorInterviewInvitation,
-} from '../redux/applicationsSlice/thunks/sendInterviewInvitation'
-import {
-  sendCoachApplicationRejection,
-  sendTutorApplicationRejection,
-} from '../redux/applicationsSlice/thunks/sendApplicationRejection'
-import {
-  sendCoachApplicationAcceptance,
-  sendTutorApplicationAcceptance,
-} from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { patchApplicationAssessment } from '../network/application'
+import {
+  patchApplicationAssessment,
+  postApplicationAcceptance,
+  postApplicationRejection,
+  postInstructorComment,
+  postInterviewInvitation,
+} from '../network/application'
 import { Query } from '../state/query'
 import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'
 
@@ -97,7 +80,6 @@ export const ApplicationAssessmentForm = ({
   applicationType,
 }: ApplicationAssessmentFormProps): JSX.Element => {
   const queryClient = useQueryClient()
-  const dispatch = useDispatch<AppDispatch>()
   const { user } = useAuthenticationStore()
   const [comment, setComment] = useState('')
   const [activeTimelineStatus, setActiveTimelineStatus] = useState(0)
@@ -132,20 +114,53 @@ export const ApplicationAssessmentForm = ({
     },
   })
 
+  const queryKey = useMemo(() => {
+    if (applicationType === ApplicationType.DEVELOPER) {
+      return [Query.DEVELOPER_APPLICATION]
+    }
+    if (applicationType === ApplicationType.COACH) {
+      return [Query.COACH_APPLICATION]
+    }
+    if (applicationType === ApplicationType.TUTOR) {
+      return [Query.TUTOR_APPLICATION]
+    }
+  }, [applicationType])
+
   const updateApplicationAssessment = useMutation({
     mutationFn: (assessmentPatch: Patch[]) => {
       return patchApplicationAssessment(applicationType, applicationId, assessmentPatch)
     },
     onSuccess: () => {
-      if (applicationType === ApplicationType.DEVELOPER) {
-        queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
-      }
-      if (applicationType === ApplicationType.COACH) {
-        queryClient.invalidateQueries({ queryKey: [Query.COACH_APPLICATION] })
-      }
-      if (applicationType === ApplicationType.TUTOR) {
-        queryClient.invalidateQueries({ queryKey: [Query.TUTOR_APPLICATION] })
-      }
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const createInstructorComment = useMutation({
+    mutationFn: (instructorComment: { author: string; text: string }) =>
+      postInstructorComment(applicationType, applicationId, instructorComment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const sendInterviewInvitation = useMutation({
+    mutationFn: () => postInterviewInvitation(applicationType, applicationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const sendAcceptance = useMutation({
+    mutationFn: () => postApplicationAcceptance(applicationType, applicationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const sendRejection = useMutation({
+    mutationFn: () => postApplicationRejection(applicationType, applicationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
     },
   })
 
@@ -206,11 +221,7 @@ export const ApplicationAssessmentForm = ({
           setInterviewInvitationSendConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          if (applicationType === 'coach') {
-            void dispatch(sendCoachInterviewInvitation(applicationId))
-          } else if (applicationType === 'tutor') {
-            void dispatch(sendTutorInterviewInvitation(applicationId))
-          }
+          sendInterviewInvitation.mutate()
           setInterviewInvitationSendConfirmationModalOpened(false)
         }}
       />
@@ -222,11 +233,7 @@ export const ApplicationAssessmentForm = ({
           setApplicationAcceptanceSendConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          if (applicationType === 'coach') {
-            void dispatch(sendCoachApplicationAcceptance(applicationId))
-          } else if (applicationType === 'tutor') {
-            void dispatch(sendTutorApplicationAcceptance(applicationId))
-          }
+          sendAcceptance.mutate()
           setApplicationAcceptanceSendConfirmationModalOpened(false)
         }}
       />
@@ -238,11 +245,7 @@ export const ApplicationAssessmentForm = ({
           setApplicationRejectionSendConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          if (applicationType === 'coach') {
-            void dispatch(sendCoachApplicationRejection(applicationId))
-          } else if (applicationType === 'tutor') {
-            void dispatch(sendTutorApplicationRejection(applicationId))
-          }
+          sendRejection.mutate()
           setApplicationRejectionSendConfirmationModalOpened(false)
         }}
       />
@@ -484,37 +487,10 @@ export const ApplicationAssessmentForm = ({
                   ],
                 })
                 setComment('')
-                if (applicationType === 'developer') {
-                  void dispatch(
-                    createInstructorCommentForDeveloperApplication({
-                      applicationId,
-                      instructorComment: {
-                        author: user ? `${user.firstName} ${user.lastName}` : '',
-                        text: comment,
-                      },
-                    }),
-                  )
-                } else if (applicationType === 'coach') {
-                  void dispatch(
-                    createInstructorCommentForCoachApplication({
-                      applicationId,
-                      instructorComment: {
-                        author: user ? `${user.firstName} ${user.lastName}` : '',
-                        text: comment,
-                      },
-                    }),
-                  )
-                } else if (applicationType === 'tutor') {
-                  void dispatch(
-                    createInstructorCommentForTutorApplication({
-                      applicationId,
-                      instructorComment: {
-                        author: user ? `${user.firstName} ${user.lastName}` : '',
-                        text: comment,
-                      },
-                    }),
-                  )
-                }
+                createInstructorComment.mutate({
+                  author: user ? `${user.firstName} ${user.lastName}` : '',
+                  text: comment,
+                })
               }
             }}
           >

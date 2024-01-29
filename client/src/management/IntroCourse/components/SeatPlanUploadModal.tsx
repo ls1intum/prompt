@@ -22,7 +22,7 @@ import {
 } from '@mantine/core'
 import { IconUpload } from '@tabler/icons-react'
 import Daddy from 'papaparse'
-import { type Student } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Student } from '../../../interface/application'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { useDispatch } from 'react-redux'
 import { notifications } from '@mantine/notifications'

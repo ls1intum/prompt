@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Application } from '../../redux/applicationsSlice/applicationsSlice'
+import { Application } from '../../interface/application'
 
 interface ApplicationStoreState {
   developerApplications: Application[]

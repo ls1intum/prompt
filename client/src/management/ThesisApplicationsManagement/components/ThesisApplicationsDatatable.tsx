@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../../state/query'
 import { getThesisAdvisors, getThesisApplications } from '../../../network/thesisApplication'
 import { ThesisAdvisor, ThesisApplication } from '../../../interface/thesisApplication'
-import { ApplicationStatus, Gender } from '../../../redux/applicationsSlice/applicationsSlice'
+import { ApplicationStatus, Gender } from '../../../interface/application'
 
 interface Filters {
   male: boolean

@@ -1,8 +1,8 @@
 import { notifications } from '@mantine/notifications'
 import { axiosInstance } from '../service/configService'
 import { ThesisAdvisor, ThesisApplication } from '../interface/thesisApplication'
-import { ApplicationStatus } from '../redux/applicationsSlice/applicationsSlice'
 import { AxiosError } from 'axios'
+import { ApplicationStatus } from '../interface/application'
 
 export const getThesisApplications = async (): Promise<ThesisApplication[]> => {
   try {

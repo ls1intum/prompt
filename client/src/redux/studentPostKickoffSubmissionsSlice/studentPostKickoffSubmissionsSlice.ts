@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { deleteStudentProjectTeamPreferences } from './thunks/deleteStudentProjectTeamPreferences'
-import { type Student } from '../applicationsSlice/applicationsSlice'
 import { fetchStudentPostKickoffSubmissions } from './thunks/fetchStudentPostKickoffSubmissions'
 import { sendKickoffSubmissionInvitations } from './thunks/sendKickoffSubmissionInvitations'
 import { Skill } from '../../interface/skill'
+import { Student } from '../../interface/application'
 
 enum SkillProficiency {
   NOVICE = 'Novice',
