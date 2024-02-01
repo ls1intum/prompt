@@ -1,4 +1,4 @@
-import { CoursePhase, CoursePhaseCheck } from '../redux/coursePhasesSlice/coursePhasesSlice'
+import { CoursePhase, CoursePhaseCheck } from './coursePhase'
 
 export interface CourseIterationRequest {
   semesterName: string

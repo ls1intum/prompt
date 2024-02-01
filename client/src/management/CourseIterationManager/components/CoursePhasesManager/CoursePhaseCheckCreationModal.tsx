@@ -1,13 +1,10 @@
 import { Button, Group, Modal, Select, Stack, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import {
-  type CoursePhase,
-  type CoursePhaseCheck,
-} from '../../../../redux/coursePhasesSlice/coursePhasesSlice'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../../redux/store'
-import { createCoursePhaseCheck } from '../../../../redux/coursePhasesSlice/thunks/createCoursePhaseCheck'
 import { useState } from 'react'
+import { CoursePhase, CoursePhaseCheck } from '../../../../interface/coursePhase'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { postCoursePhaseCheck } from '../../../../network/coursePhase'
+import { Query } from '../../../../state/query'
 
 interface CoursePhaseCheckCreationModalProps {
   coursePhases: CoursePhase[]
@@ -20,7 +17,7 @@ export const CoursePhaseCheckCreationModal = ({
   opened,
   onClose,
 }: CoursePhaseCheckCreationModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const [selectedCoursePhaseId, setSelectedCoursePhaseId] = useState<string | null>()
   const form = useForm<CoursePhaseCheck>({
     initialValues: {
@@ -28,6 +25,21 @@ export const CoursePhaseCheckCreationModal = ({
       title: '',
       description: '',
       sequentialOrder: 0,
+    },
+  })
+
+  const createCoursePhaseCheck = useMutation({
+    mutationFn: () =>
+      postCoursePhaseCheck(selectedCoursePhaseId ?? '', {
+        ...form.values,
+        sequentialOrder:
+          coursePhases.filter((coursePhase) => coursePhase.id === selectedCoursePhaseId).at(0)
+            ?.checks.length ?? 0,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_PHASE] })
+      form.reset()
+      onClose()
     },
   })
 
@@ -65,20 +77,7 @@ export const CoursePhaseCheckCreationModal = ({
           <Button
             onClick={() => {
               if (selectedCoursePhaseId) {
-                void dispatch(
-                  createCoursePhaseCheck({
-                    coursePhaseId: selectedCoursePhaseId,
-                    coursePhaseCheck: {
-                      ...form.values,
-                      sequentialOrder:
-                        coursePhases
-                          .filter((coursePhase) => coursePhase.id === selectedCoursePhaseId)
-                          .at(0)?.checks.length ?? 0,
-                    },
-                  }),
-                )
-                form.reset()
-                onClose()
+                createCoursePhaseCheck.mutate()
               }
             }}
           >

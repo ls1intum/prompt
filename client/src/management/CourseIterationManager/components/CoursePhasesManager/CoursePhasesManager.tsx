@@ -1,5 +1,3 @@
-import { useDispatch } from 'react-redux'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import {
   useEffect,
@@ -12,19 +10,21 @@ import {
   type ReactFragment,
   type ReactPortal,
 } from 'react'
-import { fetchAllCoursePhases } from '../../../../redux/coursePhasesSlice/thunks/fetchAllCoursePhases'
 import { Button, Group, Stack, Text } from '@mantine/core'
 import { CoursePhaseCheckCreationModal } from './CoursePhaseCheckCreationModal'
 import { CoursePhaseAccordionItem } from './CoursePhaseAccordionItem'
 import { IconChecks, IconGripVertical, IconPlus } from '@tabler/icons-react'
 import { CoursePhaseCreationModal } from './CoursePhaseCreationModal'
 import { useListState } from '@mantine/hooks'
-import { type CoursePhase } from '../../../../redux/coursePhasesSlice/coursePhasesSlice'
+import { useCoursePhaseStore } from '../../../../state/zustand/useCoursePhaseStore'
+import { useQuery } from '@tanstack/react-query'
+import { Query } from '../../../../state/query'
+import { CoursePhase } from '../../../../interface/coursePhase'
+import { getCoursePhases } from '../../../../network/coursePhase'
 
 export const CoursePhasesManager = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
   const [state, handlers] = useListState<CoursePhase>([])
-  const coursePhases = useAppSelector((s) => s.coursePhases.coursePhases)
+  const { coursePhases, setCoursePhases } = useCoursePhaseStore()
   const [coursePhaseCreationModalOpened, setCoursePhaseCreationModalOpened] = useState(false)
   const [coursePhaseCheckCreationModalOpened, setCoursePhaseCheckCreationModalOpened] =
     useState(false)
@@ -34,9 +34,16 @@ export const CoursePhasesManager = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursePhases])
 
+  const { data: fetchedCoursePhases } = useQuery<CoursePhase[]>({
+    queryKey: [Query.COURSE_PHASE],
+    queryFn: getCoursePhases,
+  })
+
   useEffect(() => {
-    void dispatch(fetchAllCoursePhases())
-  }, [dispatch])
+    if (fetchedCoursePhases) {
+      setCoursePhases(fetchedCoursePhases)
+    }
+  }, [fetchedCoursePhases, setCoursePhases])
 
   const coursePhaseDndItems = state.map((coursePhase, index) => (
     <Draggable
