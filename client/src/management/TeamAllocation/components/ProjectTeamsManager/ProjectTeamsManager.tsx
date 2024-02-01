@@ -31,13 +31,14 @@ import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { sendKickoffSubmissionInvitations } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/sendKickoffSubmissionInvitations'
 import { notifications } from '@mantine/notifications'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { patchProjectTeam, postProjectTeam } from '../../../../network/projectTeam'
 import { Query } from '../../../../state/query'
 import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
-import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 import { Patch } from '../../../../service/configService'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
+import { Application, ApplicationType } from '../../../../interface/application'
+import { getApplications } from '../../../../network/application'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -147,7 +148,6 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const { selectedCourseIteration } = useCourseIterationStore()
   const { projectTeams } = useProjectTeamStore()
-  const { developerApplications } = useApplicationStore()
   const [invitationSendOutConfirmationModalOpened, setInvitationSendOutConfirmationModalOpened] =
     useState(false)
   const [projectTeamCreationModalOpen, setProjectTeamCreationModalOpen] = useState(false)
@@ -163,6 +163,16 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteAttemptNonEmptyProjectTeamShowed, setDeleteAttemptNotEmptyProjectTeamShowed] =
     useState(false)
+
+  const { data: developerApplications = [], isLoading } = useQuery<Application[]>({
+    queryKey: [Query.DEVELOPER_APPLICATION],
+    queryFn: () =>
+      getApplications(
+        ApplicationType.DEVELOPER,
+        selectedCourseIteration?.semesterName ?? '',
+        'INTRO_COURSE_PASSED',
+      ),
+  })
 
   const deleteProjectTeam = useMutation({
     mutationFn: (projectTeamId: string) => {
@@ -278,6 +288,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
       )}
       {selectedProjectTeam && (
         <ProjectTeamMemberListModal
+          applications={developerApplications}
           projectTeam={selectedProjectTeam}
           opened={projectTeamMemberListModalOpen}
           onClose={() => {
@@ -300,6 +311,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         </Notification>
       )}
       <DataTable
+        fetching={isLoading}
         withTableBorder
         highlightOnHover
         borderRadius='sm'

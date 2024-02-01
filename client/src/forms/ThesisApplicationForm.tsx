@@ -942,7 +942,6 @@ export const ThesisApplicationForm = ({
                     void (async () => {
                       loadingOverlayHandlers.open()
                       if (uploads.values.examinationReport && uploads.values.cv) {
-                        console.log(form.values)
                         const response = await postThesisApplication({
                           application: form.values,
                           examinationReport: uploads.values.examinationReport,

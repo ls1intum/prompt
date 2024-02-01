@@ -14,10 +14,8 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
   const [value, setValue] = useState<TransferListItem[]>([])
   const [search, setSearch] = useState('')
 
-  const handleValueSelect = (val: TransferListItem): void =>
-    setValue((current) =>
-      current.includes(val) ? current.filter((v) => v !== val) : [...current, val],
-    )
+  const handleValueSelect = (val: string): void =>
+    setValue((current) => [...current, ...options.filter((option) => option.value === val)])
 
   const items = useMemo(() => {
     return options
@@ -48,7 +46,7 @@ const RenderList = ({ options, onTransfer, type }: RenderListProps): JSX.Element
       <Combobox
         store={combobox}
         onOptionSubmit={(values) => {
-          handleValueSelect({ label: values, value: values })
+          handleValueSelect(values)
         }}
       >
         <Combobox.EventsTarget>
@@ -113,6 +111,7 @@ export const TransferList = ({
       const transferFromData = current[transferFrom].filter(
         (item) => !options.some((o) => o.value === item.value),
       )
+
       const transferToData = [...current[transferTo], ...options]
 
       const result: TransferListItem[][] = []

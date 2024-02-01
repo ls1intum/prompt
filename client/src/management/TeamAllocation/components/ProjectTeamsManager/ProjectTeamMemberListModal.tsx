@@ -1,13 +1,8 @@
 import { Button, Modal } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
-import {
-  ApplicationStatus,
-  type Application,
-  ApplicationType,
-} from '../../../../interface/application'
+import { type Application, ApplicationType } from '../../../../interface/application'
 import { TransferList, TransferListItem } from '../../../../utilities/TransferList/TransferList'
-import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -17,24 +12,20 @@ import {
 import { Query } from '../../../../state/query'
 
 interface ProjectTeamMemberListModalProps {
+  applications: Application[]
   projectTeam: ProjectTeam
   opened: boolean
   onClose: () => void
 }
 
 export const ProjectTeamMemberListModal = ({
+  applications,
   projectTeam,
   opened,
   onClose,
 }: ProjectTeamMemberListModalProps): JSX.Element => {
   const queryClient = useQueryClient()
   const { selectedCourseIteration } = useCourseIterationStore()
-  const developerApplications = useApplicationStore((state) =>
-    state.developerApplications.filter(
-      (application) =>
-        application.assessment.status === String(ApplicationStatus.INTRO_COURSE_PASSED),
-    ),
-  )
   const [data, setData] = useState<TransferListItem[][]>([[], []])
 
   const assignApplicationToProjectTeam = useMutation({
@@ -64,7 +55,7 @@ export const ProjectTeamMemberListModal = ({
 
   useEffect(() => {
     setData([
-      developerApplications
+      applications
         .filter((studentApplication: Application) => {
           return studentApplication.projectTeam?.id !== projectTeam.id
         })
@@ -76,7 +67,7 @@ export const ProjectTeamMemberListModal = ({
             } ${studentApplication.projectTeam ? `(${studentApplication.projectTeam.name})` : ''}`,
           }
         }),
-      developerApplications
+      applications
         .filter((studentApplication) => studentApplication.projectTeam?.id === projectTeam.id)
         .map((studentApplication) => {
           return {
@@ -87,15 +78,15 @@ export const ProjectTeamMemberListModal = ({
           }
         }),
     ])
-  }, [projectTeam, developerApplications])
+  }, [projectTeam, applications])
 
   const save = (): void => {
-    const studentApplicationsPreviouslyInProjectTeam = developerApplications.filter(
+    const studentApplicationsPreviouslyInProjectTeam = applications.filter(
       (studentApplication) => studentApplication.projectTeam?.id === projectTeam.id,
     )
 
-    const studentApplicationsCurrentlyInProjectTeam = developerApplications.filter(
-      (studentApplication) => data[1].map((entry) => entry.value).includes(studentApplication.id),
+    const studentApplicationsCurrentlyInProjectTeam = applications.filter((studentApplication) =>
+      data[1].map((entry) => entry.value).includes(studentApplication.id),
     )
 
     const studentApplicationsRemovedFromProjectTeam =
