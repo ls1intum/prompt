@@ -1,6 +1,5 @@
 import { Button, Modal } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { type ProjectTeam } from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
 import { type Application, ApplicationType } from '../../../../interface/application'
 import { TransferList, TransferListItem } from '../../../../utilities/TransferList/TransferList'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
@@ -10,6 +9,7 @@ import {
   postApplicationProjectTeamAssignment,
 } from '../../../../network/application'
 import { Query } from '../../../../state/query'
+import { ProjectTeam } from '../../../../interface/projectTeam'
 
 interface ProjectTeamMemberListModalProps {
   applications: Application[]

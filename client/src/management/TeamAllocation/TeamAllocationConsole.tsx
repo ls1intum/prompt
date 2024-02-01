@@ -15,11 +15,11 @@ import { useEffect } from 'react'
 import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
 import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
-import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../state/query'
 import { getProjectTeams } from '../../network/projectTeam'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { ProjectTeam } from '../../interface/projectTeam'
 
 export const TeamAllocationConsole = (): JSX.Element => {
   const { setProjectTeams } = useProjectTeamStore()

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
+import { ProjectTeam } from '../../interface/projectTeam'
 
 interface ProjectTeamStoreState {
   projectTeams: ProjectTeam[]

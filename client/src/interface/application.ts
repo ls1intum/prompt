@@ -1,4 +1,4 @@
-import { ProjectTeam } from '../redux/projectTeamsSlice/projectTeamsSlice'
+import { ProjectTeam } from './projectTeam'
 
 export enum ApplicationType {
   DEVELOPER = 'developer',

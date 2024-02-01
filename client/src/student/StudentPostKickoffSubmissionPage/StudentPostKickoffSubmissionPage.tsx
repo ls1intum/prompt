@@ -27,7 +27,6 @@ import {
   Textarea,
   Title,
 } from '@mantine/core'
-import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
 import { isNotEmpty, useForm } from '@mantine/form'
 import {
@@ -47,6 +46,7 @@ import { getSkills } from '../../network/skill'
 import { Skill } from '../../interface/skill'
 import { CourseIteration } from '../../interface/courseIteration'
 import { getCourseIterationsWithOpenKickOffPeriod } from '../../network/courseIteration'
+import { ProjectTeam } from '../../interface/projectTeam'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
   const shuffledArray = [...array]

@@ -21,10 +21,6 @@ import {
 import { DataTable } from 'mantine-datatable'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import {
-  type ProjectTeamPatch,
-  type ProjectTeam,
-} from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
 import { type AppDispatch } from '../../../../redux/store'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
@@ -39,6 +35,7 @@ import { Patch } from '../../../../service/configService'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 import { Application, ApplicationType } from '../../../../interface/application'
 import { getApplications } from '../../../../network/application'
+import { ProjectTeam } from '../../../../interface/projectTeam'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -117,7 +114,7 @@ const ProjectTeamCreationModal = ({
           onClick={() => {
             if (selectedCourseIteration) {
               if (projectTeam) {
-                const projectTeamPatchObjectArray: ProjectTeamPatch[] = []
+                const projectTeamPatchObjectArray: Patch[] = []
                 Object.keys(form.values).forEach((key) => {
                   const projectTeamPatchObject = new Map()
                   projectTeamPatchObject.set('op', 'replace')

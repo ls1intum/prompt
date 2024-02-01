@@ -5,6 +5,7 @@ import {
   InstructorComment,
   Application,
   ApplicationStatus,
+  Grade,
 } from '../interface/application'
 import { Patch, axiosInstance } from '../service/configService'
 import { AxiosError } from 'axios'
@@ -30,6 +31,60 @@ export const getApplications = async (
       message: `Could not fetch ${applicationType} applications.`,
     })
     return []
+  }
+}
+
+export const getDeveloperApplicationsByProjectTeam = async (
+  projectTeamId: string,
+): Promise<Application[]> => {
+  try {
+    return (
+      await axiosInstance.get(`/api/project-teams/${projectTeamId}/developers`, {
+        headers: {
+          'Content-Type': 'application/json-path+json',
+        },
+      })
+    ).data
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Could not fetch developer application for the project team.`,
+    })
+    return []
+  }
+}
+
+export const postDeveloperApplicationGrade = async (
+  applicationId: string,
+  grade: Partial<Grade>,
+): Promise<Application | undefined> => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/applications/developer/${applicationId}/grading`,
+      grade,
+      {
+        headers: {
+          'Content-Type': 'application/json-path+json',
+        },
+      },
+    )
+    notifications.show({
+      color: 'green',
+      autoClose: 10000,
+      title: 'Success',
+      message: `Grade has been assigned successfully.`,
+    })
+    return response.data
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Could not assign a grade.`,
+    })
+    return undefined
   }
 }
 

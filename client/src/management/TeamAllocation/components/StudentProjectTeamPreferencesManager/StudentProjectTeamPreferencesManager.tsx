@@ -7,6 +7,7 @@ import { DataTable } from 'mantine-datatable'
 import './StudentProjectTeamPreferencesManager.scss'
 import classNames from 'classnames'
 import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
+import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const enrolledDeveloperApplications = useApplicationStore((state) =>
@@ -19,7 +20,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
   )
   const introCourseParticipations = useAppSelector((state) => state.introCourse.participations)
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
+  const { projectTeams } = useProjectTeamStore()
   const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
   const [expandedStudentPreferences, setExpandedStudentPreferences] = useState<string[]>([])
   const [inverseTableView, setInverseTableView] = useState(false)
