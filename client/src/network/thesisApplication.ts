@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications'
-import { axiosInstance } from '../service/configService'
+import { axiosInstance } from './configService'
 import { ThesisAdvisor, ThesisApplication } from '../interface/thesisApplication'
 import { AxiosError } from 'axios'
 import { ApplicationStatus } from '../interface/application'

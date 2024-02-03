@@ -1,6 +1,6 @@
 import { notifications } from '@mantine/notifications'
 import { CoursePhase, CoursePhaseCheck } from '../interface/coursePhase'
-import { axiosInstance } from '../service/configService'
+import { axiosInstance } from './configService'
 
 export const getCoursePhases = async (): Promise<CoursePhase[]> => {
   try {

@@ -6,8 +6,8 @@ import {
   type JiraProjectRoleActor,
   addJiraProjectRoleActors,
   JIRA_PROJECT_ROLES,
-} from '../../../../service/jiraService'
-import { fetchJiraProjectRoles } from '../../../../service/jiraService'
+} from '../../../../network/jiraService'
+import { fetchJiraProjectRoles } from '../../../../network/jiraService'
 import { Accordion, Button, Group, MultiSelect, Stack, Title } from '@mantine/core'
 
 interface JiraPermissionManagerProps {

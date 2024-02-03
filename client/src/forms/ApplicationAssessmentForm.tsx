@@ -24,7 +24,7 @@ import {
   IconQuestionMark,
   IconSend,
 } from '@tabler/icons-react'
-import { type Patch } from '../service/configService'
+import { type Patch } from '../network/configService'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   patchApplicationAssessment,

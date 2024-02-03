@@ -1,5 +1,5 @@
-import { SkillProficiency } from '../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { Student } from './application'
+import { SkillProficiency } from './postKickOffSubmission'
 
 export interface IntroCourseAbsence {
   id: string

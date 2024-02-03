@@ -20,22 +20,20 @@ import {
 } from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../../redux/store'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { sendKickoffSubmissionInvitations } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/sendKickoffSubmissionInvitations'
 import { notifications } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { patchProjectTeam, postProjectTeam } from '../../../../network/projectTeam'
 import { Query } from '../../../../state/query'
 import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
-import { Patch } from '../../../../service/configService'
+import { Patch } from '../../../../network/configService'
 import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 import { Application, ApplicationType } from '../../../../interface/application'
 import { getApplications } from '../../../../network/application'
 import { ProjectTeam } from '../../../../interface/projectTeam'
+import { postInvitationsToPostKickOffSubmissions } from '../../../../network/postKickOffSubmission'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -142,7 +140,6 @@ const ProjectTeamCreationModal = ({
 
 export const ProjectTeamsManager = (): JSX.Element => {
   const queryClient = useQueryClient()
-  const dispatch = useDispatch<AppDispatch>()
   const { selectedCourseIteration } = useCourseIterationStore()
   const { projectTeams } = useProjectTeamStore()
   const [invitationSendOutConfirmationModalOpened, setInvitationSendOutConfirmationModalOpened] =
@@ -207,7 +204,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         }}
         onConfirm={() => {
           if (selectedCourseIteration) {
-            void dispatch(sendKickoffSubmissionInvitations(selectedCourseIteration.semesterName))
+            postInvitationsToPostKickOffSubmissions(selectedCourseIteration.semesterName)
             setInvitationSendOutConfirmationModalOpened(false)
           } else {
             notifications.show({

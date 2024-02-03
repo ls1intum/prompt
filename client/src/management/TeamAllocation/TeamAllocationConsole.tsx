@@ -8,11 +8,8 @@ import {
 } from '@tabler/icons-react'
 import { StudentProjectTeamPreferencesManager } from './components/StudentProjectTeamPreferencesManager/StudentProjectTeamPreferencesManager'
 import { SkillsManager } from './components/SkillsManager/SkillsManager'
-import { type AppDispatch } from '../../redux/store'
 import { Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
-import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../state/query'
@@ -22,11 +19,14 @@ import { ProjectTeam } from '../../interface/projectTeam'
 import { useIntroCourseStore } from '../../state/zustand/useIntroCourseStore'
 import { IntroCourseParticipation } from '../../interface/introCourse'
 import { getIntroCourseParticipations } from '../../network/introCourse'
+import { usePostKickOffSubmissionStore } from '../../state/zustand/usePostKickOffSubmissionStore'
+import { StudentPostKickoffSubmission } from '../../interface/postKickOffSubmission'
+import { getPostKickOffSubmissions } from '../../network/postKickOffSubmission'
 
 export const TeamAllocationConsole = (): JSX.Element => {
   const { setProjectTeams } = useProjectTeamStore()
   const { setParticipations } = useIntroCourseStore()
-  const dispatch = useDispatch<AppDispatch>()
+  const { setPostKickOffSubmissions } = usePostKickOffSubmissionStore()
   const { selectedCourseIteration } = useCourseIterationStore()
 
   const { data: projectTeams } = useQuery<ProjectTeam[]>({
@@ -53,11 +53,17 @@ export const TeamAllocationConsole = (): JSX.Element => {
     }
   }, [participations, setParticipations])
 
+  const { data: postKickOffSubmissions } = useQuery<StudentPostKickoffSubmission[]>({
+    queryKey: [Query.POST_KICK_OFF],
+    queryFn: () => getPostKickOffSubmissions(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
+
   useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
+    if (postKickOffSubmissions) {
+      setPostKickOffSubmissions(postKickOffSubmissions)
     }
-  }, [dispatch, selectedCourseIteration])
+  }, [postKickOffSubmissions, setPostKickOffSubmissions])
 
   return (
     <Stack>

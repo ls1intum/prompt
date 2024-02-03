@@ -28,16 +28,27 @@ import {
 } from '@tabler/icons-react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type Keycloak from 'keycloak-js'
-import {
-  SkillProficiency,
-  getBadgeColor,
-} from '../../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { IntroCourseEntryModal } from './IntroCourseEntryModal'
 import { SeatPlanUploadModal } from './SeatPlanUploadModal'
 import { useCourseIterationStore } from '../../../state/zustand/useCourseIterationStore'
 import { useIntroCourseStore } from '../../../state/zustand/useIntroCourseStore'
 import { IntroCourseParticipation } from '../../../interface/introCourse'
 import { postInvitationsToTechnicalDetailsSubmission } from '../../../network/introCourse'
+import { SkillProficiency } from '../../../interface/postKickOffSubmission'
+
+const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
+  switch (skillProfieciency) {
+    case 'NOVICE':
+      return 'yellow'
+    case 'INTERMEDIATE':
+      return 'orange'
+    case 'ADVANCED':
+      return 'teal'
+    case 'EXPERT':
+      return 'green'
+  }
+  return 'gray'
+}
 
 interface TechnicalDataEmailInvitationsSendConfirmationModalProps {
   opened: boolean

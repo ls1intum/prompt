@@ -10,4 +10,5 @@ export enum Query {
   PROJECT_TEAM = 'projectTeam',
   SKILL = 'skill',
   INTRO_COURSE = 'introCourse',
+  POST_KICK_OFF = 'postKickOff',
 }

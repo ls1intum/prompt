@@ -1,5 +1,5 @@
 import Keycloak from 'keycloak-js'
-import { axiosInstance, keycloakRealmName, keycloakUrl } from '../../service/configService'
+import { axiosInstance, keycloakRealmName, keycloakUrl } from '../../network/configService'
 import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { ThesisApplicationsDatatable } from './components/ThesisApplicationsDatatable'

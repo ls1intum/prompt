@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications'
-import { axiosInstance } from '../service/configService'
+import { axiosInstance } from './configService'
 import { Skill } from '../interface/skill'
 
 export const getSkills = async (): Promise<Skill[]> => {

@@ -6,7 +6,7 @@ import {
   SeatPlanAssignment,
   TechnicalDetails,
 } from '../interface/introCourse'
-import { Patch, axiosInstance } from '../service/configService'
+import { Patch, axiosInstance } from './configService'
 import { Student } from '../interface/application'
 
 export const getIntroCourseParticipations = async (

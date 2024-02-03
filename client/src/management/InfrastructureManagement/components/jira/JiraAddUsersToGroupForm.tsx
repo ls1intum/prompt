@@ -4,7 +4,7 @@ import {
   addUsersToJiraGroup,
   createJiraGroups,
   fetchJiraGroups,
-} from '../../../../service/jiraService'
+} from '../../../../network/jiraService'
 import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
 import { MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 

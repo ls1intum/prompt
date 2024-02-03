@@ -29,12 +29,6 @@ import {
 } from '@mantine/core'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
 import { isNotEmpty, useForm } from '@mantine/form'
-import {
-  SkillAssessmentSource,
-  SkillProficiency,
-  type StudentPostKickoffSubmission,
-} from '../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
-import { createPostKickoffSubmission } from '../../service/postKickoffSubmissionService'
 import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
 import { notifications } from '@mantine/notifications'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
@@ -47,6 +41,12 @@ import { Skill } from '../../interface/skill'
 import { CourseIteration } from '../../interface/courseIteration'
 import { getCourseIterationsWithOpenKickOffPeriod } from '../../network/courseIteration'
 import { ProjectTeam } from '../../interface/projectTeam'
+import {
+  SkillAssessmentSource,
+  SkillProficiency,
+  StudentPostKickoffSubmission,
+} from '../../interface/postKickOffSubmission'
+import { postPostKickoffSubmission } from '../../network/postKickOffSubmission'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
   const shuffledArray = [...array]
@@ -485,19 +485,16 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                     })
 
                     if (courseIteration) {
-                      const response = await createPostKickoffSubmission({
-                        studentId,
-                        studentPostKickoffSubmission: {
-                          ...form.values,
-                          studentProjectTeamPreferences: leftSideState.map(
-                            (projectTeam, priorityScore) => {
-                              return {
-                                projectTeamId: projectTeam.id,
-                                priorityScore,
-                              }
-                            },
-                          ),
-                        },
+                      const response = await postPostKickoffSubmission(studentId, {
+                        ...form.values,
+                        studentProjectTeamPreferences: leftSideState.map(
+                          (projectTeam, priorityScore) => {
+                            return {
+                              projectTeamId: projectTeam.id,
+                              priorityScore,
+                            }
+                          },
+                        ),
                       })
                       if (response) {
                         setFormSubmitted(true)

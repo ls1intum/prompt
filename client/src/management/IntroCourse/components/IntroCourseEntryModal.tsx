@@ -17,11 +17,7 @@ import {
 import { forwardRef, useEffect, useState } from 'react'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { type Student } from '../../../interface/application'
-import { type Patch } from '../../../service/configService'
-import {
-  SkillProficiency,
-  getBadgeColor,
-} from '../../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
+import { type Patch } from '../../../network/configService'
 import { IconCalendar, IconPlus, IconTrash } from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
@@ -40,6 +36,21 @@ import {
 } from '../../../network/introCourse'
 import { Query } from '../../../state/query'
 import { IntroCourseParticipation } from '../../../interface/introCourse'
+import { SkillProficiency } from '../../../interface/postKickOffSubmission'
+
+const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
+  switch (skillProfieciency) {
+    case 'NOVICE':
+      return 'yellow'
+    case 'INTERMEDIATE':
+      return 'orange'
+    case 'ADVANCED':
+      return 'teal'
+    case 'EXPERT':
+      return 'green'
+  }
+  return 'gray'
+}
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string

@@ -7,7 +7,7 @@ import {
   ApplicationStatus,
   Grade,
 } from '../interface/application'
-import { Patch, axiosInstance } from '../service/configService'
+import { Patch, axiosInstance } from './configService'
 import { AxiosError } from 'axios'
 
 export const getApplications = async (

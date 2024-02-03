@@ -1,5 +1,5 @@
 import { Button, Stack } from '@mantine/core'
-import { createBambooProjects } from '../../../../service/bambooService'
+import { createBambooProjects } from '../../../../network/bambooService'
 import { useState } from 'react'
 import { MultiSelectCreatable, MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 

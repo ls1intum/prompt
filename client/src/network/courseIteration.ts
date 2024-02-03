@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications'
-import { Patch, axiosInstance } from '../service/configService'
+import { Patch, axiosInstance } from './configService'
 import { CourseIteration, CourseIterationRequest } from '../interface/courseIteration'
 import { ApplicationType } from '../interface/application'
 

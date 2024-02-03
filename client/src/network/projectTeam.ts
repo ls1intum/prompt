@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications'
-import { Patch, axiosInstance } from '../service/configService'
+import { Patch, axiosInstance } from './configService'
 import { ProjectTeam } from '../interface/projectTeam'
 
 export const getProjectTeams = async (courseIteration: string): Promise<ProjectTeam[]> => {
