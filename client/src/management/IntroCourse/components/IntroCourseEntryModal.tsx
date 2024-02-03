@@ -15,13 +15,9 @@ import {
   Textarea,
 } from '@mantine/core'
 import { forwardRef, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { type IntroCourseParticipation } from '../../../redux/introCourseSlice/introCourseSlice'
 import { type Student } from '../../../interface/application'
 import { type Patch } from '../../../service/configService'
-import { updateIntroCourseParticipation } from '../../../redux/introCourseSlice/thunks/updateIntroCourseParticipation'
 import {
   SkillProficiency,
   getBadgeColor,
@@ -31,15 +27,19 @@ import { DataTable } from 'mantine-datatable'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import moment from 'moment'
 import { ConfirmationModal } from '../../../utilities/ConfirmationModal'
-import { deleteIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks/deleteIntroCourseAbsence'
-import { createIntroCourseAbsence } from '../../../redux/introCourseSlice/thunks/createIntroCourseAbsence'
 import { DatePickerInput } from '@mantine/dates'
-import { markNotPassed } from '../../../redux/introCourseSlice/thunks/markNotPassed'
-import { markPassed } from '../../../redux/introCourseSlice/thunks/markPassed'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  markDroppedOut,
-  unmarkDroppedOut,
-} from '../../../redux/introCourseSlice/thunks/markAsDroppedOut'
+  deleteIntroCourseAbsence,
+  deleteIntroCourseDropOut,
+  patchIntroCourseParticipation,
+  postIntroCourseAbsence,
+  postIntroCourseDropOut,
+  postNotPassedIntroCourseParticipation,
+  postPassedIntroCourseParticipation,
+} from '../../../network/introCourse'
+import { Query } from '../../../state/query'
+import { IntroCourseParticipation } from '../../../interface/introCourse'
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string
@@ -66,7 +66,7 @@ const IntroCourseAbsenceCreationModal = ({
   opened,
   onClose,
 }: IntroCourseAbsenceCreationModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const introCourseAbsenceForm = useForm({
     initialValues: {
       id: '',
@@ -75,6 +75,14 @@ const IntroCourseAbsenceCreationModal = ({
     },
     validate: {
       date: isNotEmpty('Please select a date'),
+    },
+  })
+
+  const createIntroCourseAbsence = useMutation({
+    mutationFn: () =>
+      postIntroCourseAbsence(introCourseParticipationId, introCourseAbsenceForm.values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
     },
   })
 
@@ -99,12 +107,7 @@ const IntroCourseAbsenceCreationModal = ({
         <Button
           disabled={!introCourseAbsenceForm.isValid()}
           onClick={() => {
-            void dispatch(
-              createIntroCourseAbsence({
-                introCourseParticipationId,
-                introCourseAbsence: introCourseAbsenceForm.values,
-              }),
-            )
+            createIntroCourseAbsence.mutate()
             close()
           }}
         >
@@ -130,7 +133,7 @@ export const IntroCourseEntryModal = ({
   tutors,
   isTutor,
 }: IntroCourseEntryModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const introCourseParticipationForm = useForm({
     initialValues: {
@@ -148,6 +151,53 @@ export const IntroCourseEntryModal = ({
     initialValues: {
       passed: introCourseParticipation.passed,
       droppedOut: introCourseParticipation.droppedOut ?? false,
+    },
+  })
+
+  const updateIntroCourseParticipation = useMutation({
+    mutationFn: (introCourseParticipationPatch: Patch[]) =>
+      patchIntroCourseParticipation(introCourseParticipation.id, introCourseParticipationPatch),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+    },
+  })
+
+  const removeIntroCourseAbsence = useMutation({
+    mutationFn: () =>
+      deleteIntroCourseAbsence(
+        introCourseParticipation.id,
+        selectedIntroCourseAbsenceToDelete ?? '',
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+    },
+  })
+
+  const markDroppedOut = useMutation({
+    mutationFn: () => postIntroCourseDropOut(introCourseParticipation.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+    },
+  })
+
+  const unmarkDroppedOut = useMutation({
+    mutationFn: () => deleteIntroCourseDropOut(introCourseParticipation.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+    },
+  })
+
+  const markPassed = useMutation({
+    mutationFn: () => postPassedIntroCourseParticipation(introCourseParticipation.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+    },
+  })
+
+  const markNotPassed = useMutation({
+    mutationFn: () => postNotPassedIntroCourseParticipation(introCourseParticipation.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
     },
   })
 
@@ -205,12 +255,7 @@ export const IntroCourseEntryModal = ({
         }}
         onConfirm={() => {
           if (selectedIntroCourseAbsenceToDelete) {
-            void dispatch(
-              deleteIntroCourseAbsence({
-                introCourseParticipationId: introCourseParticipation.id,
-                introCourseAbsenceId: selectedIntroCourseAbsenceToDelete,
-              }),
-            )
+            removeIntroCourseAbsence.mutate()
           }
           setSelectedIntroCourseAbsenceToDelete(undefined)
         }}
@@ -257,12 +302,7 @@ export const IntroCourseEntryModal = ({
                 }
               })
 
-              void dispatch(
-                updateIntroCourseParticipation({
-                  introCourseParticipationId: introCourseParticipation.id,
-                  introCourseParticipationPatch: introCourseParticipationPatchObjectArray,
-                }),
-              )
+              updateIntroCourseParticipation.mutate(introCourseParticipationPatchObjectArray)
 
               close()
             }}
@@ -323,12 +363,7 @@ export const IntroCourseEntryModal = ({
                   },
                 ]
               }
-              void dispatch(
-                updateIntroCourseParticipation({
-                  introCourseParticipationId: introCourseParticipation.id,
-                  introCourseParticipationPatch: patchObject,
-                }),
-              )
+              updateIntroCourseParticipation.mutate(patchObject)
             }}
           >
             Save
@@ -438,14 +473,14 @@ export const IntroCourseEntryModal = ({
           <Button
             onClick={() => {
               if (introCourseAssessmentForm.values.passed) {
-                void dispatch(markPassed(introCourseParticipation.id))
+                markPassed.mutate()
               } else if (introCourseAssessmentForm.values.passed === false) {
-                void dispatch(markNotPassed(introCourseParticipation.id))
+                markNotPassed.mutate()
               }
               if (introCourseAssessmentForm.values.droppedOut) {
-                void dispatch(markDroppedOut(introCourseParticipation.id))
+                markDroppedOut.mutate()
               } else {
-                void dispatch(unmarkDroppedOut(introCourseParticipation.id))
+                unmarkDroppedOut.mutate()
               }
               close()
             }}

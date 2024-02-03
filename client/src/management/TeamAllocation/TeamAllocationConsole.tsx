@@ -13,16 +13,19 @@ import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
-import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../state/query'
 import { getProjectTeams } from '../../network/projectTeam'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 import { ProjectTeam } from '../../interface/projectTeam'
+import { useIntroCourseStore } from '../../state/zustand/useIntroCourseStore'
+import { IntroCourseParticipation } from '../../interface/introCourse'
+import { getIntroCourseParticipations } from '../../network/introCourse'
 
 export const TeamAllocationConsole = (): JSX.Element => {
   const { setProjectTeams } = useProjectTeamStore()
+  const { setParticipations } = useIntroCourseStore()
   const dispatch = useDispatch<AppDispatch>()
   const { selectedCourseIteration } = useCourseIterationStore()
 
@@ -38,10 +41,21 @@ export const TeamAllocationConsole = (): JSX.Element => {
     }
   }, [projectTeams, setProjectTeams])
 
+  const { data: participations } = useQuery<IntroCourseParticipation[]>({
+    queryKey: [Query.INTRO_COURSE],
+    queryFn: () => getIntroCourseParticipations(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
+
+  useEffect(() => {
+    if (participations) {
+      setParticipations(participations)
+    }
+  }, [participations, setParticipations])
+
   useEffect(() => {
     if (selectedCourseIteration) {
       void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
-      void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
     }
   }, [dispatch, selectedCourseIteration])
 

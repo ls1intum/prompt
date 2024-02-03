@@ -8,6 +8,7 @@ import './StudentProjectTeamPreferencesManager.scss'
 import classNames from 'classnames'
 import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
+import { useIntroCourseStore } from '../../../../state/zustand/useIntroCourseStore'
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const enrolledDeveloperApplications = useApplicationStore((state) =>
@@ -19,7 +20,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
   const studentPostKickoffSubmissions = useAppSelector(
     (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
   )
-  const introCourseParticipations = useAppSelector((state) => state.introCourse.participations)
+  const { participations: introCourseParticipations } = useIntroCourseStore()
   const { projectTeams } = useProjectTeamStore()
   const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
   const [expandedStudentPreferences, setExpandedStudentPreferences] = useState<string[]>([])

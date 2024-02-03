@@ -11,10 +11,10 @@ import {
   Title,
 } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { type TechnicalDetails } from '../../redux/introCourseSlice/introCourseSlice'
 import { StudentTechnicalDetailsSubmissionCodeModal } from './components/StudentTechnicalDetailsSubmissionCodeModal'
-import { submitStudentTechnicalDetails } from '../../service/introCourseService'
 import { useParams } from 'react-router-dom'
+import { TechnicalDetails } from '../../interface/introCourse'
+import { postTechnicalDetails } from '../../network/introCourse'
 
 interface SuccessfulSubmissionProps {
   title: string
@@ -127,7 +127,7 @@ export const StudentTechnicalDetailsSubmissionPage = (): JSX.Element => {
                 void (async () => {
                   if (studentId) {
                     if (semesterName && studentId) {
-                      const response = await submitStudentTechnicalDetails({
+                      const response = await postTechnicalDetails({
                         semesterName,
                         studentId,
                         technicalDetails: form.values,

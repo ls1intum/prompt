@@ -1,23 +1,47 @@
 import { Alert, Progress, Stack } from '@mantine/core'
 import { IconAlertCircle } from '@tabler/icons-react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../redux/store'
 import { useEffect, useMemo } from 'react'
-import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
 import { SeatPlanManager } from './components/SeatPlanManager'
 import moment from 'moment'
-import { fetchAllIntroCourseTutors } from '../../redux/introCourseSlice/thunks/fetchAllIntroCourseTutors'
 import { Link } from 'react-router-dom'
 import type Keycloak from 'keycloak-js'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { useIntroCourseStore } from '../../state/zustand/useIntroCourseStore'
+import { useQuery } from '@tanstack/react-query'
+import { IntroCourseParticipation } from '../../interface/introCourse'
+import { Query } from '../../state/query'
+import { getIntroCourseParticipations, getIntroCourseTutors } from '../../network/introCourse'
+import { Student } from '../../interface/application'
 
 interface IntroCourseConsoleProps {
   keycloak: Keycloak
 }
 
 export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
   const { selectedCourseIteration } = useCourseIterationStore()
+  const { setParticipations, setTutors } = useIntroCourseStore()
+
+  const { data: participations } = useQuery<IntroCourseParticipation[]>({
+    queryKey: [Query.INTRO_COURSE],
+    queryFn: () => getIntroCourseParticipations(selectedCourseIteration?.semesterName ?? ''),
+  })
+
+  const { data: tutors } = useQuery<Student[]>({
+    queryKey: [Query.INTRO_COURSE],
+    queryFn: () => getIntroCourseTutors(selectedCourseIteration?.semesterName ?? ''),
+  })
+
+  useEffect(() => {
+    if (participations) {
+      setParticipations(participations)
+    }
+  }, [participations, setParticipations])
+
+  useEffect(() => {
+    if (tutors) {
+      setTutors(tutors)
+    }
+  }, [tutors, setTutors])
 
   const introCourseProgress = useMemo(() => {
     if (selectedCourseIteration) {
@@ -33,13 +57,6 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
       return Math.min(Math.max(progress, 0), 100)
     }
   }, [selectedCourseIteration])
-
-  useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
-      void dispatch(fetchAllIntroCourseTutors(selectedCourseIteration.semesterName))
-    }
-  }, [dispatch, selectedCourseIteration])
 
   return (
     <Stack>
