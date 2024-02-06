@@ -8,9 +8,9 @@ import {
   ApplicationStatus,
   ApplicationType,
 } from '../../../interface/application'
-import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack } from '@mantine/core'
+import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack, Text } from '@mantine/core'
 import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { ConfirmationModal } from '../../../utilities/ConfirmationModal'
@@ -79,6 +79,42 @@ export const ApplicationDatatable = ({
       }
     },
   })
+
+  const getAssessmentBadge = (application): ReactNode => {
+    let color: string = 'gray'
+    switch (application.assessment?.status) {
+      case 'ACCEPTED':
+        color = 'green'
+        break
+      case 'ENROLLED':
+        color = 'green'
+        break
+      case 'REJECTED':
+        color = 'red'
+        break
+      default:
+        break
+    }
+    return (
+      <Badge color={color}>
+        {ApplicationStatus[application.assessment?.status]}{' '}
+        {`${
+          application.assessment?.technicalChallengeProgrammingScore
+            ? `${application.assessment?.technicalChallengeProgrammingScore} %`
+            : ''
+        } ${
+          application.assessment?.technicalChallengeProgrammingScore &&
+          application.assessment?.technicalChallengeQuizScore
+            ? '/'
+            : ''
+        } ${
+          application.assessment?.technicalChallengeQuizScore
+            ? `${application.assessment?.technicalChallengeQuizScore} %`
+            : ''
+        }`}
+      </Badge>
+    )
+  }
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -155,16 +191,25 @@ export const ApplicationDatatable = ({
 
   return (
     <Stack>
-      {selectedApplicationToView?.type === 'developer' && (
+      {!!selectedApplicationToView && (
         <Modal
+          title={
+            <Group>
+              <Text
+                fw={500}
+                fz='md'
+              >{`${selectedApplicationToView.student.firstName} ${selectedApplicationToView.student.lastName}`}</Text>
+              {getAssessmentBadge(selectedApplicationToView)}
+            </Group>
+          }
           centered
           opened={!!selectedApplicationToView}
           onClose={() => {
             setSelectedApplicationToView(undefined)
           }}
-          size='80%'
+          size='90%'
         >
-          <div style={{ padding: '3vh 3vw' }}>
+          {selectedApplicationToView?.type === 'developer' && (
             <DeveloperApplicationForm
               accessMode={ApplicationFormAccessMode.INSTRUCTOR}
               developerApplication={selectedApplicationToView}
@@ -172,19 +217,8 @@ export const ApplicationDatatable = ({
                 setSelectedApplicationToView(undefined)
               }}
             />
-          </div>
-        </Modal>
-      )}
-      {selectedApplicationToView?.type === 'coach' && (
-        <Modal
-          centered
-          opened={!!selectedApplicationToView}
-          onClose={() => {
-            setSelectedApplicationToView(undefined)
-          }}
-          size='80%'
-        >
-          <div style={{ padding: '3vh 3vw' }}>
+          )}
+          {selectedApplicationToView?.type === 'coach' && (
             <CoachApplicationForm
               accessMode={ApplicationFormAccessMode.INSTRUCTOR}
               coachApplication={selectedApplicationToView}
@@ -192,19 +226,8 @@ export const ApplicationDatatable = ({
                 setSelectedApplicationToView(undefined)
               }}
             />
-          </div>
-        </Modal>
-      )}
-      {selectedApplicationToView?.type === 'tutor' && (
-        <Modal
-          centered
-          opened={!!selectedApplicationToView}
-          onClose={() => {
-            setSelectedApplicationToView(undefined)
-          }}
-          size='80%'
-        >
-          <div style={{ padding: '3vh 3vw' }}>
+          )}
+          {selectedApplicationToView?.type === 'tutor' && (
             <TutorApplicationForm
               accessMode={ApplicationFormAccessMode.INSTRUCTOR}
               tutorApplication={selectedApplicationToView}
@@ -212,7 +235,61 @@ export const ApplicationDatatable = ({
                 setSelectedApplicationToView(undefined)
               }}
             />
-          </div>
+          )}
+        </Modal>
+      )}
+      {selectedApplicationToView?.type === 'coach' && (
+        <Modal
+          title={
+            <Group>
+              <Text
+                fw={500}
+                fz='md'
+              >{`${selectedApplicationToView.student.firstName} ${selectedApplicationToView.student.lastName}`}</Text>
+              {getAssessmentBadge(selectedApplicationToView)}
+            </Group>
+          }
+          centered
+          opened={!!selectedApplicationToView}
+          onClose={() => {
+            setSelectedApplicationToView(undefined)
+          }}
+          size='90%'
+        >
+          <CoachApplicationForm
+            accessMode={ApplicationFormAccessMode.INSTRUCTOR}
+            coachApplication={selectedApplicationToView}
+            onSuccess={() => {
+              setSelectedApplicationToView(undefined)
+            }}
+          />
+        </Modal>
+      )}
+      {selectedApplicationToView?.type === 'tutor' && (
+        <Modal
+          title={
+            <Group>
+              <Text
+                fw={500}
+                fz='md'
+              >{`${selectedApplicationToView.student.firstName} ${selectedApplicationToView.student.lastName}`}</Text>
+              {getAssessmentBadge(selectedApplicationToView)}
+            </Group>
+          }
+          centered
+          opened={!!selectedApplicationToView}
+          onClose={() => {
+            setSelectedApplicationToView(undefined)
+          }}
+          size='90%'
+        >
+          <TutorApplicationForm
+            accessMode={ApplicationFormAccessMode.INSTRUCTOR}
+            tutorApplication={selectedApplicationToView}
+            onSuccess={() => {
+              setSelectedApplicationToView(undefined)
+            }}
+          />
         </Modal>
       )}
       {selectedApplicationToDelete && (
@@ -377,41 +454,7 @@ export const ApplicationDatatable = ({
               />
             ),
             filtering: filters.applicationType.length > 0,
-            render: (application) => {
-              let color: string = 'gray'
-              switch (application.assessment?.status) {
-                case 'ACCEPTED':
-                  color = 'green'
-                  break
-                case 'ENROLLED':
-                  color = 'green'
-                  break
-                case 'REJECTED':
-                  color = 'red'
-                  break
-                default:
-                  break
-              }
-              return (
-                <Badge color={color}>
-                  {ApplicationStatus[application.assessment?.status]}{' '}
-                  {`${
-                    application.assessment?.technicalChallengeProgrammingScore
-                      ? `${application.assessment?.technicalChallengeProgrammingScore} %`
-                      : ''
-                  } ${
-                    application.assessment?.technicalChallengeProgrammingScore &&
-                    application.assessment?.technicalChallengeQuizScore
-                      ? '/'
-                      : ''
-                  } ${
-                    application.assessment?.technicalChallengeQuizScore
-                      ? `${application.assessment?.technicalChallengeQuizScore} %`
-                      : ''
-                  }`}
-                </Badge>
-              )
-            },
+            render: (application) => getAssessmentBadge(application),
           },
           {
             accessor: 'assessment.assessmentScore',
