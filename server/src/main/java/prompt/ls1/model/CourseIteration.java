@@ -68,7 +68,7 @@ public class CourseIteration {
     @Column(columnDefinition = "boolean default false")
     private Boolean projectTeamPreferencesSubmissionOpen;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinTable(name="course_iteration_phases",
             joinColumns = @JoinColumn(name = "course_iteration_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "phase_id", referencedColumnName = "id"))
