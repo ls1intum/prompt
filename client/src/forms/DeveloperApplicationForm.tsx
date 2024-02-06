@@ -236,35 +236,36 @@ export const DeveloperApplicationForm = ({
                           type: 'checkbox',
                         })}
                       />
+                      <Group align='right' mt='md'>
+                        <Button
+                          type='submit'
+                          disabled={
+                            !form.isValid() ||
+                            (!consentForm.isValid() &&
+                              accessMode === ApplicationFormAccessMode.STUDENT)
+                          }
+                          onClick={() => {
+                            if (form.isValid() && courseIteration && !developerApplication) {
+                              postApplication(
+                                ApplicationType.DEVELOPER,
+                                form.values,
+                                courseIteration.semesterName,
+                              )
+                                .then((response) => {
+                                  if (response) {
+                                    setApplicationSuccessfullySubmitted(true)
+                                  }
+                                })
+                                .catch(() => {})
+                              onSuccess()
+                            }
+                          }}
+                        >
+                          Submit
+                        </Button>
+                      </Group>
                     </Stack>
                   )}
-                  <Group align='right' mt='md'>
-                    <Button
-                      type='submit'
-                      disabled={
-                        !form.isValid() ||
-                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
-                      }
-                      onClick={() => {
-                        if (form.isValid() && courseIteration && !developerApplication) {
-                          postApplication(
-                            ApplicationType.DEVELOPER,
-                            form.values,
-                            courseIteration.semesterName,
-                          )
-                            .then((response) => {
-                              if (response) {
-                                setApplicationSuccessfullySubmitted(true)
-                              }
-                            })
-                            .catch(() => {})
-                          onSuccess()
-                        }
-                      }}
-                    >
-                      Submit
-                    </Button>
-                  </Group>
                   {accessMode === ApplicationFormAccessMode.INSTRUCTOR && developerApplication && (
                     <ApplicationAssessmentForm
                       applicationId={developerApplication.id}
