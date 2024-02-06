@@ -97,7 +97,7 @@ export const ManagementConsole = ({
 
   const { data: fetchedCourseIterations } = useQuery<CourseIteration[]>({
     queryKey: [Query.COURSE_ITERATION],
-    enabled: authenticated && !selectedCourseIteration,
+    enabled: authenticated,
     queryFn: getCourseIterations,
   })
 

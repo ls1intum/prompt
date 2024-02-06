@@ -48,6 +48,7 @@ export const CourseIterationManager = (): JSX.Element => {
           opened={editModalOpen}
           onClose={() => {
             setEditModalOpen(false)
+            setSelectedCourseIteration(undefined)
           }}
           courseIteration={selectedCourseIteration}
         />
