@@ -224,44 +224,45 @@ export const CoachApplicationForm = ({
                           type: 'checkbox',
                         })}
                       />
+                      <Group align='right' mt='md'>
+                        <Button
+                          disabled={
+                            !defaultForm.isValid() ||
+                            !coachForm.isValid() ||
+                            (!consentForm.isValid() &&
+                              accessMode === ApplicationFormAccessMode.STUDENT)
+                          }
+                          type='submit'
+                          onClick={() => {
+                            if (
+                              defaultForm.isValid() &&
+                              coachForm.isValid() &&
+                              courseIteration &&
+                              !coachApplication
+                            ) {
+                              postApplication(
+                                ApplicationType.COACH,
+                                {
+                                  ...defaultForm.values,
+                                  ...coachForm.values,
+                                },
+                                courseIteration.semesterName,
+                              )
+                                .then((response) => {
+                                  if (response) {
+                                    setApplicationSuccessfullySubmitted(true)
+                                  }
+                                })
+                                .catch(() => {})
+                              onSuccess()
+                            }
+                          }}
+                        >
+                          Submit
+                        </Button>
+                      </Group>
                     </Stack>
                   )}
-                  <Group align='right' mt='md'>
-                    <Button
-                      disabled={
-                        !defaultForm.isValid() ||
-                        !coachForm.isValid() ||
-                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
-                      }
-                      type='submit'
-                      onClick={() => {
-                        if (
-                          defaultForm.isValid() &&
-                          coachForm.isValid() &&
-                          courseIteration &&
-                          !coachApplication
-                        ) {
-                          postApplication(
-                            ApplicationType.COACH,
-                            {
-                              ...defaultForm.values,
-                              ...coachForm.values,
-                            },
-                            courseIteration.semesterName,
-                          )
-                            .then((response) => {
-                              if (response) {
-                                setApplicationSuccessfullySubmitted(true)
-                              }
-                            })
-                            .catch(() => {})
-                          onSuccess()
-                        }
-                      }}
-                    >
-                      Submit
-                    </Button>
-                  </Group>
                   {accessMode === ApplicationFormAccessMode.INSTRUCTOR && coachApplication && (
                     <ApplicationAssessmentForm
                       applicationId={coachApplication.id}
