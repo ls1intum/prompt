@@ -12,9 +12,12 @@ export interface Patch {
 
 const axiosInstance = axios.create({
   baseURL: serverBaseUrl,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-  },
+  headers:
+    !!localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== ''
+      ? {
+          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
+        }
+      : {},
 })
 
 export { axiosInstance }
