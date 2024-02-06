@@ -16,7 +16,7 @@
     "@mantine/dropzone": "^7.2.2",
     "@mantine/form": "^7.2.2",
     "@mantine/hooks": "^7.2.2",
-    "@mantine/notifications": "^7.2.2",
+    "@mantine/notifications": "^7.5.1",
     "@mantine/tiptap": "^7.2.2",
     "@tabler/icons-react": "^2.44.0",
     "@tanstack/react-query": "^5.17.19",
