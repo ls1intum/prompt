@@ -238,39 +238,40 @@ export const TutorApplicationForm = ({
                           type: 'checkbox',
                         })}
                       />
+                      <Group align='right' mt='md'>
+                        <Button
+                          disabled={
+                            !defaultForm.isValid() ||
+                            !tutorForm.isValid() ||
+                            (!consentForm.isValid() &&
+                              accessMode === ApplicationFormAccessMode.STUDENT)
+                          }
+                          type='submit'
+                          onClick={() => {
+                            if (defaultForm.isValid() && courseIteration && !tutorApplication) {
+                              postApplication(
+                                ApplicationType.TUTOR,
+                                {
+                                  ...defaultForm.values,
+                                  ...tutorForm.values,
+                                },
+                                courseIteration.semesterName,
+                              )
+                                .then((response) => {
+                                  if (response) {
+                                    setApplicationSuccessfullySubmitted(true)
+                                  }
+                                })
+                                .catch(() => {})
+                              onSuccess()
+                            }
+                          }}
+                        >
+                          Submit
+                        </Button>
+                      </Group>
                     </Stack>
                   )}
-                  <Group align='right' mt='md'>
-                    <Button
-                      disabled={
-                        !defaultForm.isValid() ||
-                        !tutorForm.isValid() ||
-                        (!consentForm.isValid() && accessMode === ApplicationFormAccessMode.STUDENT)
-                      }
-                      type='submit'
-                      onClick={() => {
-                        if (defaultForm.isValid() && courseIteration && !tutorApplication) {
-                          postApplication(
-                            ApplicationType.TUTOR,
-                            {
-                              ...defaultForm.values,
-                              ...tutorForm.values,
-                            },
-                            courseIteration.semesterName,
-                          )
-                            .then((response) => {
-                              if (response) {
-                                setApplicationSuccessfullySubmitted(true)
-                              }
-                            })
-                            .catch(() => {})
-                          onSuccess()
-                        }
-                      }}
-                    >
-                      Submit
-                    </Button>
-                  </Group>
                   {accessMode === ApplicationFormAccessMode.INSTRUCTOR && tutorApplication && (
                     <ApplicationAssessmentForm
                       applicationId={tutorApplication.id}
