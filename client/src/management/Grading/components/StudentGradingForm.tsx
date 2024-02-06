@@ -1,16 +1,16 @@
 import { Button, Stack, Text, TextInput, Textarea } from '@mantine/core'
-import { type Grade, type Application } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Grade, type Application } from '../../../interface/application'
 import { useForm } from '@mantine/form'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
-import { gradeDeveloperApplication } from '../../../redux/projectTeamsSlice/thunks/gradeDeveloperApplication'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { postDeveloperApplicationGrade } from '../../../network/application'
+import { Query } from '../../../state/query'
 
 interface StudentGradingFormProps {
   application: Application
 }
 
 export const StudentGradingForm = ({ application }: StudentGradingFormProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const form = useForm<Partial<Grade>>({
     initialValues: application.finalGrade
       ? {
@@ -29,6 +29,13 @@ export const StudentGradingForm = ({ application }: StudentGradingFormProps): JS
           return 'The maximum allowed number of characters is 500.'
         }
       },
+    },
+  })
+
+  const assignGrade = useMutation({
+    mutationFn: () => postDeveloperApplicationGrade(application.id, form.values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
     },
   })
 
@@ -59,13 +66,11 @@ export const StudentGradingForm = ({ application }: StudentGradingFormProps): JS
         )}
       </div>
       <Button
+        disabled={!form.isTouched() || !form.isDirty() || !form.isValid()}
         onClick={() => {
-          void dispatch(
-            gradeDeveloperApplication({
-              applicationId: application.id,
-              grade: form.values,
-            }),
-          )
+          assignGrade.mutate()
+          form.resetDirty()
+          form.resetTouched()
         }}
       >
         Save

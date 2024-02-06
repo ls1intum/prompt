@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Group, Stack, Table, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { type ConfluenceSpace, createConfluenceSpaces } from '../../../../service/confluenceService'
+import { type ConfluenceSpace, createConfluenceSpaces } from '../../../../network/confluenceService'
 import { IconX } from '@tabler/icons-react'
 import { useForm } from '@mantine/form'
 

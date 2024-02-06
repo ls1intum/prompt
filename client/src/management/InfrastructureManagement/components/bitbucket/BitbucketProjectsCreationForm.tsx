@@ -1,6 +1,6 @@
 import { Button, Checkbox, Stack, Tooltip } from '@mantine/core'
 import { useState } from 'react'
-import { createBitbucketProjects } from '../../../../service/bitbucketService'
+import { createBitbucketProjects } from '../../../../network/bitbucketService'
 import { MultiSelectCreatable, MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface BitbucketProjectsCreationFormProps {

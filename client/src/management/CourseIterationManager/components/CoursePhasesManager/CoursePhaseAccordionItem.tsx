@@ -2,11 +2,6 @@ import { ActionIcon, Button, Collapse, Group, Paper, Stack, Text } from '@mantin
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { IconArrowDown, IconArrowUp, IconDeviceFloppy, IconTrash, IconX } from '@tabler/icons-react'
 import {
-  type CoursePhase,
-  type CoursePhaseCheck,
-} from '../../../../redux/coursePhasesSlice/coursePhasesSlice'
-import { useDispatch } from 'react-redux'
-import {
   type ClassAttributes,
   type HTMLAttributes,
   type LegacyRef,
@@ -17,12 +12,12 @@ import {
   useState,
   useEffect,
 } from 'react'
-import { type AppDispatch } from '../../../../redux/store'
-import { deleteCoursePhaseCheck } from '../../../../redux/coursePhasesSlice/thunks/deleteCoursePhaseCheck'
 import { useListState } from '@mantine/hooks'
-import { updateCoursePhaseCheckOrdering } from '../../../../redux/coursePhasesSlice/thunks/updateCoursePhaseCheckOrdering'
 import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
-import { deleteCoursePhase } from '../../../../redux/coursePhasesSlice/thunks/deleteCoursePhase'
+import { CoursePhase, CoursePhaseCheck } from '../../../../interface/coursePhase'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Query } from '../../../../state/query'
+import { patchCoursePhaseCheckOrder } from '../../../../network/coursePhase'
 
 interface CoursePhaseAccordionItemProps {
   coursePhase: CoursePhase
@@ -31,7 +26,7 @@ interface CoursePhaseAccordionItemProps {
 export const CoursePhaseAccordionItem = ({
   coursePhase,
 }: CoursePhaseAccordionItemProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const [expanded, setExpanded] = useState(false)
   const [state, handlers] = useListState<CoursePhaseCheck>(coursePhase.checks)
   const [coursePhaseCheckToDelete, setCoursePhaseCheckToDelete] = useState<
@@ -46,6 +41,29 @@ export const CoursePhaseAccordionItem = ({
     setCoursePhaseDeletionConfirmationModalOpened,
   ] = useState(false)
   const [coursePhaseChecksReordered, setCoursePhaseChecksReordered] = useState(false)
+
+  const deleteCoursePhase = useMutation({
+    mutationFn: () => deleteCoursePhase(coursePhase.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_PHASE] })
+    },
+  })
+
+  const deleteCoursePhaseCheck = useMutation({
+    mutationFn: (coursePhaseCheckId: string) =>
+      deleteCoursePhaseCheck(coursePhase.id, coursePhaseCheckId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_PHASE] })
+    },
+  })
+
+  const changeCoursePhaseCheckOrder = useMutation({
+    mutationFn: (coursePhaseChecks: CoursePhaseCheck[]) =>
+      patchCoursePhaseCheckOrder(coursePhase.id, coursePhaseChecks),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_PHASE] })
+    },
+  })
 
   useEffect(() => {
     handlers.setState([...coursePhase.checks].sort((a, b) => a.sequentialOrder - b.sequentialOrder))
@@ -105,12 +123,7 @@ export const CoursePhaseAccordionItem = ({
             setCoursePhaseCheckDeletionConfirmationModalOpened(false)
           }}
           onConfirm={() => {
-            void dispatch(
-              deleteCoursePhaseCheck({
-                coursePhaseId: coursePhase.id,
-                coursePhaseCheckId: coursePhaseCheckToDelete.id,
-              }),
-            )
+            deleteCoursePhaseCheck.mutate(coursePhaseCheckToDelete.id)
             setCoursePhaseCheckDeletionConfirmationModalOpened(false)
           }}
         />
@@ -123,7 +136,7 @@ export const CoursePhaseAccordionItem = ({
           setCoursePhaseDeletionConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          void dispatch(deleteCoursePhase(coursePhase.id))
+          deleteCoursePhase.mutate()
           setCoursePhaseDeletionConfirmationModalOpened(false)
         }}
       />
@@ -194,12 +207,9 @@ export const CoursePhaseAccordionItem = ({
               disabled={!coursePhaseChecksReordered}
               leftSection={<IconDeviceFloppy />}
               onClick={() => {
-                void dispatch(
-                  updateCoursePhaseCheckOrdering({
-                    coursePhaseId: coursePhase.id,
-                    coursePhaseChecks: state.map((coursePhaseCheck, idx) => {
-                      return { ...coursePhaseCheck, sequentialOrder: idx }
-                    }),
+                changeCoursePhaseCheckOrder.mutate(
+                  state.map((coursePhaseCheck, idx) => {
+                    return { ...coursePhaseCheck, sequentialOrder: idx }
                   }),
                 )
                 setCoursePhaseChecksReordered(false)

@@ -1,4 +1,3 @@
-import { useAppSelector } from '../../../../redux/store'
 import { useRef, useState } from 'react'
 import { Button, Group, Switch, Text, Transition } from '@mantine/core'
 import { IconBuilding, IconChevronRight, IconDownload, IconUser } from '@tabler/icons-react'
@@ -6,17 +5,21 @@ import { CSVLink } from 'react-csv'
 import { DataTable } from 'mantine-datatable'
 import './StudentProjectTeamPreferencesManager.scss'
 import classNames from 'classnames'
+import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
+import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
+import { useIntroCourseStore } from '../../../../state/zustand/useIntroCourseStore'
+import { usePostKickOffSubmissionStore } from '../../../../state/zustand/usePostKickOffSubmissionStore'
 
 export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
-  const enrolledDeveloperApplications = useAppSelector(
-    (state) => state.applications.developerApplications,
-  ).filter((application) => application.assessment.status === 'INTRO_COURSE_PASSED')
-  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
-  const studentPostKickoffSubmissions = useAppSelector(
-    (state) => state.studentPostKickoffSubmissions.studentPostKickoffSubmissions,
+  const enrolledDeveloperApplications = useApplicationStore((state) =>
+    state.developerApplications.filter(
+      (application) => application.assessment.status === 'INTRO_COURSE_PASSED',
+    ),
   )
-  const introCourseParticipations = useAppSelector((state) => state.introCourse.participations)
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
+  const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
+  const { postKickOffSubmissions } = usePostKickOffSubmissionStore()
+  const { participations: introCourseParticipations } = useIntroCourseStore()
+  const { projectTeams } = useProjectTeamStore()
   const [expandedStudentIds, setExpandedStudentIds] = useState<string[]>([])
   const [expandedStudentPreferences, setExpandedStudentPreferences] = useState<string[]>([])
   const [inverseTableView, setInverseTableView] = useState(false)
@@ -42,7 +45,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
         <Button
           leftSection={<IconDownload />}
           variant='filled'
-          disabled={studentPostKickoffSubmissions.length === 0}
+          disabled={postKickOffSubmissions.length === 0}
           onClick={() => {
             downloadLinkRef.current?.link?.click()
           }}
@@ -67,12 +70,12 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
             supervisorAssessment: introCourseParticipations
               .filter((participation) => participation.student.id === student.student.id)
               .at(0)?.supervisorAssessment,
-            selfAssessment: studentPostKickoffSubmissions
+            selfAssessment: postKickOffSubmissions
               .filter((stp) => stp.student?.id === student.student.id)
               .at(0)?.selfReportedExperienceLevel,
             devices: student.devices,
           }
-          studentPostKickoffSubmissions
+          postKickOffSubmissions
             .filter((stp) => stp.student?.id === student.student.id)
             .forEach((stp) => {
               const preferences = new Map()
@@ -127,7 +130,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                 ),
               },
             ]}
-            records={studentPostKickoffSubmissions}
+            records={postKickOffSubmissions}
             rowExpansion={{
               allowMultiple: true,
               expanded: {
@@ -157,9 +160,8 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                     },
                   ]}
                   records={[
-                    ...(studentPostKickoffSubmissions
-                      .filter((spp) => spp.id === record.record.id)
-                      .at(0)?.studentProjectTeamPreferences ?? []),
+                    ...(postKickOffSubmissions.filter((spp) => spp.id === record.record.id).at(0)
+                      ?.studentProjectTeamPreferences ?? []),
                   ].sort((a, b) => a.priorityScore - b.priorityScore)}
                 />
               ),
@@ -236,7 +238,7 @@ export const StudentProjectTeamPreferencesManager = (): JSX.Element => {
                       ),
                     },
                   ]}
-                  records={studentPostKickoffSubmissions.filter((spp) => {
+                  records={postKickOffSubmissions.filter((spp) => {
                     return spp.studentProjectTeamPreferences
                       .map((p) => p.projectTeamId)
                       .includes(record.record.id)

@@ -6,7 +6,7 @@ import {
   type JiraProject,
   type JiraProjectCategory,
   fetchJiraProjectCategories,
-} from '../../../../service/jiraService'
+} from '../../../../network/jiraService'
 import { IconX } from '@tabler/icons-react'
 import { isNotEmpty, useForm } from '@mantine/form'
 

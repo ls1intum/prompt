@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
-import { useAppSelector } from '../../../redux/store'
 import { StudentGradingForm } from './StudentGradingForm'
 import { Tabs, Text } from '@mantine/core'
-import { type Application } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Application } from '../../../interface/application'
+import { useQuery } from '@tanstack/react-query'
+import { Query } from '../../../state/query'
+import { getDeveloperApplicationsByProjectTeam } from '../../../network/application'
+import { useProjectTeamStore } from '../../../state/zustand/useProjectTeamStore'
 
 interface ProjectTeamGradingProps {
   projectTeamId: string
 }
 
 export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): JSX.Element => {
-  const status = useAppSelector((state) => state.projectTeams.status)
-  const projectTeam = useAppSelector((state) =>
-    state.projectTeams.projectTeams.find((team) => team.id === projectTeamId),
+  const projectTeam = useProjectTeamStore((state) =>
+    state.projectTeams.find((pt) => pt.id === projectTeamId),
   )
   const [selectedDeveloperApplicationId, setSelectedDeveloperApplicationId] = useState<
     string | null
@@ -19,34 +21,37 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
   const [selectedDeveloperApplication, setSelectedDeveloperApplication] =
     useState<Application | null>()
 
+  const { data: developerApplications, isLoading } = useQuery({
+    queryKey: [Query.DEVELOPER_APPLICATION, projectTeamId],
+    queryFn: () => getDeveloperApplicationsByProjectTeam(projectTeamId),
+  })
   useEffect(() => {
     if (projectTeam && selectedDeveloperApplicationId) {
       setSelectedDeveloperApplication(
-        projectTeam.developers?.find(
+        developerApplications?.find(
           (application) => application.id === selectedDeveloperApplicationId,
         ),
       )
     }
-  }, [projectTeam, selectedDeveloperApplicationId])
+  }, [developerApplications, projectTeam, selectedDeveloperApplicationId])
 
   return (
     <div style={{ margin: '10vh 5vw' }}>
-      {status !== 'loading' &&
-        (!projectTeam?.developers || projectTeam?.developers?.length === 0) && (
-          <Text c='dimmed' fw={500}>{`No developers are assigned to ${
-            projectTeam?.customer ?? ''
-          } project team.`}</Text>
-        )}
-      {projectTeam?.developers && (
+      {!isLoading && (!developerApplications || developerApplications?.length === 0) && (
+        <Text c='dimmed' fw={500}>{`No developers are assigned to ${
+          projectTeam?.customer ?? ''
+        } project team.`}</Text>
+      )}
+      {developerApplications && (
         <Tabs
           orientation='vertical'
           placement='right'
-          variant='outline'
+          variant='pills'
           value={selectedDeveloperApplicationId}
           onChange={setSelectedDeveloperApplicationId}
         >
           <Tabs.List>
-            {projectTeam.developers.map((developerApplication) => {
+            {developerApplications?.map((developerApplication) => {
               return (
                 <Tabs.Tab key={developerApplication.id} value={developerApplication.id}>
                   {`${developerApplication.student.firstName} ${developerApplication.student.lastName}`}
@@ -54,7 +59,7 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
               )
             })}
           </Tabs.List>
-          {projectTeam.developers.map((developerApplication) => {
+          {developerApplications?.map((developerApplication) => {
             return (
               <Tabs.Panel value={developerApplication.id} key={developerApplication.id}>
                 {selectedDeveloperApplication && selectedDeveloperApplication && (

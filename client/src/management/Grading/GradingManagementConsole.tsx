@@ -1,29 +1,30 @@
 import { Tabs } from '@mantine/core'
 import { IconUsersGroup } from '@tabler/icons-react'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
-import { fetchProjectTeamDevelopers } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeamDevelopers'
 import { ProjectTeamGrading } from './components/ProjectTeamGrading'
+import { useQuery } from '@tanstack/react-query'
+import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
+import { getProjectTeams } from '../../network/projectTeam'
+import { Query } from '../../state/query'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { ProjectTeam } from '../../interface/projectTeam'
 
 export const GradingManagementConsole = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
+  const { projectTeams, setProjectTeams } = useProjectTeamStore()
+  const { selectedCourseIteration } = useCourseIterationStore()
   const [activeProjectTeam, setActiveProjectTeam] = useState<string | null>()
 
-  useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(fetchProjectTeams(selectedCourseIteration?.semesterName))
-    }
-  }, [dispatch, selectedCourseIteration])
+  const { data: fetchedProjectTeams } = useQuery<ProjectTeam[]>({
+    queryKey: [Query.PROJECT_TEAM, selectedCourseIteration?.semesterName],
+    queryFn: () => getProjectTeams(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
 
   useEffect(() => {
-    if (activeProjectTeam) {
-      void dispatch(fetchProjectTeamDevelopers(activeProjectTeam))
+    if (fetchedProjectTeams) {
+      setProjectTeams(fetchedProjectTeams)
     }
-  }, [activeProjectTeam, dispatch])
+  }, [fetchedProjectTeams, setProjectTeams])
 
   return (
     <Tabs

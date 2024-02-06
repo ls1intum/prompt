@@ -1,8 +1,5 @@
 import { useForm } from '@mantine/form'
-import {
-  type Student,
-  type ApplicationAssessment,
-} from '../redux/applicationsSlice/applicationsSlice'
+import { ApplicationAssessment, ApplicationType, Student } from '../interface/application'
 import {
   Button,
   Checkbox,
@@ -17,14 +14,7 @@ import {
   Tooltip,
 } from '@mantine/core'
 import { StudentApplicationComment } from './StudentApplicationComment'
-import {
-  createInstructorCommentForCoachApplication,
-  createInstructorCommentForDeveloperApplication,
-  createInstructorCommentForTutorApplication,
-} from '../redux/applicationsSlice/thunks/createInstructorComment'
-import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../redux/store'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   IconBan,
   IconCalendarEvent,
@@ -34,25 +24,17 @@ import {
   IconQuestionMark,
   IconSend,
 } from '@tabler/icons-react'
-import { type Patch } from '../service/configService'
+import { type Patch } from '../network/configService'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  updateCoachApplicationAssessment,
-  updateDeveloperApplicationAssessment,
-  updateTutorApplicationAssessment,
-} from '../redux/applicationsSlice/thunks/updateApplicationAssessment'
-import {
-  sendCoachInterviewInvitation,
-  sendTutorInterviewInvitation,
-} from '../redux/applicationsSlice/thunks/sendInterviewInvitation'
-import {
-  sendCoachApplicationRejection,
-  sendTutorApplicationRejection,
-} from '../redux/applicationsSlice/thunks/sendApplicationRejection'
-import {
-  sendCoachApplicationAcceptance,
-  sendTutorApplicationAcceptance,
-} from '../redux/applicationsSlice/thunks/sendApplicationAcceptance'
-import { updateStudentAssessment } from '../redux/applicationsSlice/thunks/updateStudentAssessment'
+  patchApplicationAssessment,
+  postApplicationAcceptance,
+  postApplicationRejection,
+  postInstructorComment,
+  postInterviewInvitation,
+} from '../network/application'
+import { Query } from '../state/query'
+import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'
 
 interface ConfirmationModalProps {
   title: string
@@ -86,7 +68,7 @@ const ConfirmationModal = ({
 
 interface ApplicationAssessmentFormProps {
   applicationId: string
-  applicationType: 'developer' | 'coach' | 'tutor'
+  applicationType: ApplicationType
   student: Student
   assessment?: ApplicationAssessment
 }
@@ -97,8 +79,8 @@ export const ApplicationAssessmentForm = ({
   assessment,
   applicationType,
 }: ApplicationAssessmentFormProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const auth = useAppSelector((state) => state.auth)
+  const queryClient = useQueryClient()
+  const { user } = useAuthenticationStore()
   const [comment, setComment] = useState('')
   const [activeTimelineStatus, setActiveTimelineStatus] = useState(0)
   const [
@@ -129,6 +111,56 @@ export const ApplicationAssessmentForm = ({
       suggestedAsTutor: student?.suggestedAsTutor ?? false,
       blockedByPm: student?.blockedByPm ?? false,
       reasonForBlockedByPm: student?.reasonForBlockedByPm ?? '',
+    },
+  })
+
+  const queryKey = useMemo(() => {
+    if (applicationType === ApplicationType.DEVELOPER) {
+      return [Query.DEVELOPER_APPLICATION]
+    }
+    if (applicationType === ApplicationType.COACH) {
+      return [Query.COACH_APPLICATION]
+    }
+    if (applicationType === ApplicationType.TUTOR) {
+      return [Query.TUTOR_APPLICATION]
+    }
+  }, [applicationType])
+
+  const updateApplicationAssessment = useMutation({
+    mutationFn: (assessmentPatch: Patch[]) => {
+      return patchApplicationAssessment(applicationType, applicationId, assessmentPatch)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const createInstructorComment = useMutation({
+    mutationFn: (instructorComment: { author: string; text: string }) =>
+      postInstructorComment(applicationType, applicationId, instructorComment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const sendInterviewInvitation = useMutation({
+    mutationFn: () => postInterviewInvitation(applicationType, applicationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const sendAcceptance = useMutation({
+    mutationFn: () => postApplicationAcceptance(applicationType, applicationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    },
+  })
+
+  const sendRejection = useMutation({
+    mutationFn: () => postApplicationRejection(applicationType, applicationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
     },
   })
 
@@ -176,28 +208,7 @@ export const ApplicationAssessmentForm = ({
     const obj = Object.fromEntries(assessmentPatchObject)
     assessmentPatchObjectArray.push(obj)
 
-    if (applicationType === 'developer') {
-      void dispatch(
-        updateDeveloperApplicationAssessment({
-          applicationId,
-          applicationAssessmentPatch: assessmentPatchObjectArray,
-        }),
-      )
-    } else if (applicationType === 'coach') {
-      void dispatch(
-        updateCoachApplicationAssessment({
-          applicationId,
-          applicationAssessmentPatch: assessmentPatchObjectArray,
-        }),
-      )
-    } else if (applicationType === 'tutor') {
-      void dispatch(
-        updateTutorApplicationAssessment({
-          applicationId,
-          applicationAssessmentPatch: assessmentPatchObjectArray,
-        }),
-      )
-    }
+    updateApplicationAssessment.mutate(assessmentPatchObjectArray)
   }
 
   return (
@@ -210,11 +221,7 @@ export const ApplicationAssessmentForm = ({
           setInterviewInvitationSendConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          if (applicationType === 'coach') {
-            void dispatch(sendCoachInterviewInvitation(applicationId))
-          } else if (applicationType === 'tutor') {
-            void dispatch(sendTutorInterviewInvitation(applicationId))
-          }
+          sendInterviewInvitation.mutate()
           setInterviewInvitationSendConfirmationModalOpened(false)
         }}
       />
@@ -226,11 +233,7 @@ export const ApplicationAssessmentForm = ({
           setApplicationAcceptanceSendConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          if (applicationType === 'coach') {
-            void dispatch(sendCoachApplicationAcceptance(applicationId))
-          } else if (applicationType === 'tutor') {
-            void dispatch(sendTutorApplicationAcceptance(applicationId))
-          }
+          sendAcceptance.mutate()
           setApplicationAcceptanceSendConfirmationModalOpened(false)
         }}
       />
@@ -242,11 +245,7 @@ export const ApplicationAssessmentForm = ({
           setApplicationRejectionSendConfirmationModalOpened(false)
         }}
         onConfirm={() => {
-          if (applicationType === 'coach') {
-            void dispatch(sendCoachApplicationRejection(applicationId))
-          } else if (applicationType === 'tutor') {
-            void dispatch(sendTutorApplicationRejection(applicationId))
-          }
+          sendRejection.mutate()
           setApplicationRejectionSendConfirmationModalOpened(false)
         }}
       />
@@ -336,12 +335,7 @@ export const ApplicationAssessmentForm = ({
                         }
                       })
 
-                      void dispatch(
-                        updateStudentAssessment({
-                          studentId: student.id,
-                          studentAssessmentPatch: studentPatchObjectArray,
-                        }),
-                      )
+                      updateApplicationAssessment.mutate(studentPatchObjectArray)
                     }
 
                     if (assessmentForm.isDirty()) {
@@ -360,28 +354,7 @@ export const ApplicationAssessmentForm = ({
                         }
                       })
 
-                      if (applicationType === 'developer') {
-                        void dispatch(
-                          updateDeveloperApplicationAssessment({
-                            applicationId,
-                            applicationAssessmentPatch: assessmentPatchObjectArray,
-                          }),
-                        )
-                      } else if (applicationType === 'coach') {
-                        void dispatch(
-                          updateCoachApplicationAssessment({
-                            applicationId,
-                            applicationAssessmentPatch: assessmentPatchObjectArray,
-                          }),
-                        )
-                      } else if (applicationType === 'tutor') {
-                        void dispatch(
-                          updateTutorApplicationAssessment({
-                            applicationId,
-                            applicationAssessmentPatch: assessmentPatchObjectArray,
-                          }),
-                        )
-                      }
+                      updateApplicationAssessment.mutate(assessmentPatchObjectArray)
                     }
                   }}
                 >
@@ -508,43 +481,16 @@ export const ApplicationAssessmentForm = ({
                   instructorComments: [
                     ...assessmentForm.values.instructorComments,
                     {
-                      author: auth ? `${auth.firstName} ${auth.lastName}` : '',
+                      author: user ? `${user.firstName} ${user.lastName}` : '',
                       text: comment,
                     },
                   ],
                 })
                 setComment('')
-                if (applicationType === 'developer') {
-                  void dispatch(
-                    createInstructorCommentForDeveloperApplication({
-                      applicationId,
-                      instructorComment: {
-                        author: auth ? `${auth.firstName} ${auth.lastName}` : '',
-                        text: comment,
-                      },
-                    }),
-                  )
-                } else if (applicationType === 'coach') {
-                  void dispatch(
-                    createInstructorCommentForCoachApplication({
-                      applicationId,
-                      instructorComment: {
-                        author: auth ? `${auth.firstName} ${auth.lastName}` : '',
-                        text: comment,
-                      },
-                    }),
-                  )
-                } else if (applicationType === 'tutor') {
-                  void dispatch(
-                    createInstructorCommentForTutorApplication({
-                      applicationId,
-                      instructorComment: {
-                        author: auth ? `${auth.firstName} ${auth.lastName}` : '',
-                        text: comment,
-                      },
-                    }),
-                  )
-                }
+                createInstructorComment.mutate({
+                  author: user ? `${user.firstName} ${user.lastName}` : '',
+                  text: comment,
+                })
               }
             }}
           >

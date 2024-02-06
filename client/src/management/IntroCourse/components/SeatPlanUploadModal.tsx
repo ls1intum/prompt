@@ -1,10 +1,4 @@
-import { type AppDispatch, useAppSelector } from '../../../redux/store'
 import { useState } from 'react'
-import {
-  type SeatPlanAssignment,
-  type IntroCourseParticipation,
-  type Seat,
-} from '../../../redux/introCourseSlice/introCourseSlice'
 import {
   Group,
   Tooltip,
@@ -22,12 +16,14 @@ import {
 } from '@mantine/core'
 import { IconUpload } from '@tabler/icons-react'
 import Daddy from 'papaparse'
-import { type Student } from '../../../redux/applicationsSlice/applicationsSlice'
+import { type Student } from '../../../interface/application'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { useDispatch } from 'react-redux'
 import { notifications } from '@mantine/notifications'
-import { createSeatPlanAssignments } from '../../../redux/introCourseSlice/thunks/createSeatPlanAssignments'
-import { createSeatPlan } from '../../../redux/introCourseSlice/thunks/createSeatPlan'
+import { useCourseIterationStore } from '../../../state/zustand/useCourseIterationStore'
+import { IntroCourseParticipation, Seat, SeatPlanAssignment } from '../../../interface/introCourse'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { postSeatPlan, postSeatPlanAssignment } from '../../../network/introCourse'
+import { Query } from '../../../state/query'
 
 interface SeatPlanUploadModalProps {
   opened: boolean
@@ -42,8 +38,8 @@ export const SeatPlanUploadModal = ({
   introCourseParticipations,
   tutors,
 }: SeatPlanUploadModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const queryClient = useQueryClient()
+  const { selectedCourseIteration } = useCourseIterationStore()
   const [stepperActiveStep, setStepperActiveStep] = useState(0)
   const [uploadMode, setUploadMode] = useState('full')
   const [columnNames, setColumnNames] = useState<string[]>([])
@@ -75,6 +71,21 @@ export const SeatPlanUploadModal = ({
         isNotEmpty(value) || !values.withTutorAssignment || uploadMode === 'plain'
           ? null
           : 'Please select a column',
+    },
+  })
+
+  const createSeatPlan = useMutation({
+    mutationFn: (seatPlan: Seat[]) => postSeatPlan(selectedCourseIteration?.id ?? '', seatPlan),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+    },
+  })
+
+  const createSeatPlanAssignment = useMutation({
+    mutationFn: (seatPlanAssignments: SeatPlanAssignment[]) =>
+      postSeatPlanAssignment(seatPlanAssignments),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
     },
   })
 
@@ -315,7 +326,7 @@ export const SeatPlanUploadModal = ({
                       seatPlanAssignments.push(seatPlanAssignment)
                     }
                   })
-                  void dispatch(createSeatPlanAssignments(seatPlanAssignments))
+                  createSeatPlanAssignment.mutate(seatPlanAssignments)
                 } else {
                   if (selectedCourseIteration) {
                     const seatPlan: Seat[] = []
@@ -342,12 +353,7 @@ export const SeatPlanUploadModal = ({
                       seatPlan.push(seat)
                     })
 
-                    void dispatch(
-                      createSeatPlan({
-                        courseIterationId: selectedCourseIteration.id,
-                        seatPlan,
-                      }),
-                    )
+                    createSeatPlan.mutate(seatPlan)
                   }
                 }
                 close()

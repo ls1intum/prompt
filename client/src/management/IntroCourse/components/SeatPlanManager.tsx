@@ -1,9 +1,7 @@
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import sortBy from 'lodash/sortBy'
-import { useAppSelector } from '../../../redux/store'
 import { CSVLink } from 'react-csv'
 import { useEffect, useRef, useState } from 'react'
-import { type IntroCourseParticipation } from '../../../redux/introCourseSlice/introCourseSlice'
 import {
   Center,
   Group,
@@ -30,13 +28,27 @@ import {
 } from '@tabler/icons-react'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type Keycloak from 'keycloak-js'
-import { sendInvitationsForStudentTechnicalDetailsSubmission } from '../../../service/introCourseService'
-import {
-  SkillProficiency,
-  getBadgeColor,
-} from '../../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
 import { IntroCourseEntryModal } from './IntroCourseEntryModal'
 import { SeatPlanUploadModal } from './SeatPlanUploadModal'
+import { useCourseIterationStore } from '../../../state/zustand/useCourseIterationStore'
+import { useIntroCourseStore } from '../../../state/zustand/useIntroCourseStore'
+import { IntroCourseParticipation } from '../../../interface/introCourse'
+import { postInvitationsToTechnicalDetailsSubmission } from '../../../network/introCourse'
+import { SkillProficiency } from '../../../interface/postKickOffSubmission'
+
+const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
+  switch (skillProfieciency) {
+    case 'NOVICE':
+      return 'yellow'
+    case 'INTERMEDIATE':
+      return 'orange'
+    case 'ADVANCED':
+      return 'teal'
+    case 'EXPERT':
+      return 'green'
+  }
+  return 'gray'
+}
 
 interface TechnicalDataEmailInvitationsSendConfirmationModalProps {
   opened: boolean
@@ -47,7 +59,7 @@ const TechnicalDataEmailInvitationsSendConfirmationModal = ({
   opened,
   onClose,
 }: TechnicalDataEmailInvitationsSendConfirmationModalProps): JSX.Element => {
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
 
   return (
     <Modal opened={opened} onClose={onClose} centered>
@@ -63,7 +75,7 @@ const TechnicalDataEmailInvitationsSendConfirmationModal = ({
           <Button
             onClick={() => {
               if (selectedCourseIteration) {
-                void sendInvitationsForStudentTechnicalDetailsSubmission(selectedCourseIteration.id)
+                void postInvitationsToTechnicalDetailsSubmission(selectedCourseIteration.id)
               }
               onClose()
             }}
@@ -89,8 +101,7 @@ interface SeatPlanManagerProps {
 }
 
 export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element => {
-  const participations = useAppSelector((state) => state.introCourse.participations)
-  const tutors = useAppSelector((state) => state.introCourse.tutors)
+  const { participations, tutors } = useIntroCourseStore()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const [tablePageSize, setTablePageSize] = useState(20)

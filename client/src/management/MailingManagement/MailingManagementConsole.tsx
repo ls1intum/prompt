@@ -19,7 +19,7 @@ import {
   Tabs,
   Text,
 } from '@mantine/core'
-import { MailTemplate, fetchMailTemplate, updateMailTemplate } from '../../service/mailingService'
+import { MailTemplate, fetchMailTemplate, updateMailTemplate } from '../../network/mailingService'
 import { useEffect, useState } from 'react'
 import { IconEyeCheck, IconHtml, IconInfoCircle } from '@tabler/icons-react'
 import {

@@ -6,41 +6,49 @@ import {
   Gender,
   type Application,
   ApplicationStatus,
-} from '../../../redux/applicationsSlice/applicationsSlice'
+  ApplicationType,
+} from '../../../interface/application'
 import { ActionIcon, Badge, Group, Modal, MultiSelect, Stack } from '@mantine/core'
 import { IconDownload, IconEyeEdit, IconSearch, IconTrash } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { DeveloperApplicationForm } from '../../../forms/DeveloperApplicationForm'
 import { ApplicationFormAccessMode } from '../../../forms/DefaultApplicationForm'
 import { ConfirmationModal } from '../../../utilities/ConfirmationModal'
-import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../../../redux/store'
-import { deleteDeveloperApplication } from '../../../redux/applicationsSlice/thunks/deleteApplication'
 import { type Filters } from '../ApplicationOverview'
 import { CoachApplicationForm } from '../../../forms/CoachApplicationForm'
 import { TutorApplicationForm } from '../../../forms/TutorApplicationForm'
 import { useContextMenu } from 'mantine-contextmenu'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { deleteApplication } from '../../../network/application'
+import { Query } from '../../../state/query'
 
 interface ApplicationDatatableProps {
-  applications: Application[]
+  developerApplications: Application[]
+  coachApplications: Application[]
+  tutorApplications: Application[]
   searchQuery: string
   filters: Filters
   setFilters: (filters: Filters) => void
+  isLoading: boolean
 }
 
 export const ApplicationDatatable = ({
-  applications,
+  developerApplications,
+  coachApplications,
+  tutorApplications,
   searchQuery,
   filters,
   setFilters,
+  isLoading,
 }: ApplicationDatatableProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const loadingStatus = useAppSelector((state) => state.applications.status)
+  const queryClient = useQueryClient()
   const { showContextMenu } = useContextMenu()
   const [bodyRef] = useAutoAnimate<HTMLTableSectionElement>()
   const downloadLinkRef = useRef<HTMLAnchorElement & { link: HTMLAnchorElement }>(null)
   const [tablePage, setTablePage] = useState(1)
-  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(applications.length)
+  const [totalDisplayedRecords, setTotalDisplayedRecords] = useState(
+    developerApplications.length + coachApplications.length + tutorApplications.length,
+  )
   const [tablePageSize, setTablePageSize] = useState(20)
   const [tableRecords, setTableRecords] = useState<Application[]>([])
   const [selectedTableRecords, setSelectedTableRecords] = useState<Application[]>([])
@@ -56,13 +64,39 @@ export const ApplicationDatatable = ({
   >(undefined)
   const [bulkDeleteConfirmationOpened, setBulkDeleteConfirmationOpened] = useState(false)
 
+  const removeApplication = useMutation({
+    mutationFn: (vars: { applicationType: ApplicationType; applicationId: string }) =>
+      deleteApplication(vars.applicationType, vars.applicationId),
+    onSuccess: (data, variables) => {
+      if (variables.applicationType === ApplicationType.DEVELOPER) {
+        queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
+      }
+      if (variables.applicationType === ApplicationType.COACH) {
+        queryClient.invalidateQueries({ queryKey: [Query.COACH_APPLICATION] })
+      }
+      if (variables.applicationType === ApplicationType.TUTOR) {
+        queryClient.invalidateQueries({ queryKey: [Query.TUTOR_APPLICATION] })
+      }
+    },
+  })
+
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
     const to = from + tablePageSize
 
+    const applications: Application[] = []
+    if (filters.applicationType.includes(ApplicationType.DEVELOPER)) {
+      applications.push(...developerApplications)
+    }
+    if (filters.applicationType.includes(ApplicationType.COACH)) {
+      applications.push(...coachApplications)
+    }
+    if (filters.applicationType.includes(ApplicationType.TUTOR)) {
+      applications.push(...tutorApplications)
+    }
+
     const filteredSortedData = sortBy(
       applications
-        .filter(({ type }) => filters.applicationType.some((selectedType) => selectedType === type))
         .filter(({ student }) => {
           return `${student.firstName ?? ''} ${student.lastName ?? ''} ${student.tumId ?? ''} ${
             student.matriculationNumber ?? ''
@@ -108,7 +142,9 @@ export const ApplicationDatatable = ({
       )
     }
   }, [
-    applications,
+    developerApplications,
+    coachApplications,
+    tutorApplications,
     tablePageSize,
     tablePage,
     searchQuery,
@@ -119,7 +155,7 @@ export const ApplicationDatatable = ({
 
   return (
     <Stack>
-      {selectedApplicationToView?.type === 'DEVELOPER' && (
+      {selectedApplicationToView?.type === 'developer' && (
         <Modal
           centered
           opened={!!selectedApplicationToView}
@@ -139,7 +175,7 @@ export const ApplicationDatatable = ({
           </div>
         </Modal>
       )}
-      {selectedApplicationToView?.type === 'COACH' && (
+      {selectedApplicationToView?.type === 'coach' && (
         <Modal
           centered
           opened={!!selectedApplicationToView}
@@ -159,7 +195,7 @@ export const ApplicationDatatable = ({
           </div>
         </Modal>
       )}
-      {selectedApplicationToView?.type === 'TUTOR' && (
+      {selectedApplicationToView?.type === 'tutor' && (
         <Modal
           centered
           opened={!!selectedApplicationToView}
@@ -190,7 +226,10 @@ export const ApplicationDatatable = ({
             setSelectedApplicationToDelete(undefined)
           }}
           onConfirm={() => {
-            void dispatch(deleteDeveloperApplication(selectedApplicationToDelete.id))
+            removeApplication.mutate({
+              applicationType: ApplicationType.DEVELOPER,
+              applicationId: selectedApplicationToDelete?.id ?? '',
+            })
             setBulkDeleteConfirmationOpened(false)
           }}
         />
@@ -204,7 +243,10 @@ export const ApplicationDatatable = ({
         }}
         onConfirm={() => {
           selectedTableRecords.forEach((applicationToDelete) => {
-            void dispatch(deleteDeveloperApplication(applicationToDelete.id))
+            removeApplication.mutate({
+              applicationType: ApplicationType.DEVELOPER,
+              applicationId: applicationToDelete.id,
+            })
           })
           setSelectedTableRecords([])
           setBulkDeleteConfirmationOpened(false)
@@ -227,7 +269,7 @@ export const ApplicationDatatable = ({
         target='_blank'
       />
       <DataTable
-        fetching={loadingStatus === 'loading'}
+        fetching={isLoading}
         withTableBorder
         minHeight={200}
         noRecordsText='No records to show'
@@ -284,17 +326,17 @@ export const ApplicationDatatable = ({
                 data={[
                   {
                     label: 'Developer',
-                    value: 'DEVELOPER',
+                    value: ApplicationType.DEVELOPER,
                   },
-                  { label: 'Coach', value: 'COACH' },
-                  { label: 'Tutor', value: 'TUTOR' },
+                  { label: 'Coach', value: ApplicationType.COACH },
+                  { label: 'Tutor', value: ApplicationType.TUTOR },
                 ]}
                 value={filters.applicationType}
                 placeholder='Search types...'
                 onChange={(value) => {
                   setFilters({
                     ...filters,
-                    applicationType: value,
+                    applicationType: value as ApplicationType[],
                   })
                 }}
                 leftSection={<IconSearch size={16} />}

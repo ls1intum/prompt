@@ -1,14 +1,14 @@
 import { Button, Card, Center, SimpleGrid, Stack, Title } from '@mantine/core'
 import { useState } from 'react'
-import { useAppSelector } from '../../redux/store'
 import { ManagementSetupModal } from './components/ManagementSetupModal'
 import { IconSettings } from '@tabler/icons-react'
 import { IntroCourseSetupStepper } from './components/IntroCourseSetupStepper'
 import { TeamAssignmentModal } from './components/TeamAssignmentModal'
 import { TeamsSetupStepper } from './components/TeamSetupStepper'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 
 export const InfrastructureManagement = (): JSX.Element => {
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { selectedCourseIteration } = useCourseIterationStore()
   const [mgmtSetupStepperOpened, setMgmtSetupStepperOpened] = useState(false)
   const [introCourseSetupStepperOpened, setIntroCourseSetupStepperOpened] = useState(false)
   const [teamAssignmentModalOpened, setTeamAssignmentModalOpened] = useState(false)

@@ -11,19 +11,20 @@ import {
   rem,
 } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
-import { type AppDispatch, useAppSelector } from '../redux/store'
 import { WorkspaceSelectionDialog } from './CourseIterationManager/components/CourseIterationManager/WorkspaceSelectionDialog'
-import { useDispatch } from 'react-redux'
-import { fetchAllCourseIterations } from '../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import Keycloak from 'keycloak-js'
 import { jwtDecode } from 'jwt-decode'
-import { setAuthState } from '../redux/authSlice/authSlice'
-import { setCurrentState } from '../redux/courseIterationSlice/courseIterationSlice'
-import { keycloakRealmName, keycloakUrl } from '../service/configService'
+import { keycloakRealmName, keycloakUrl } from '../network/configService'
 import { IconArrowBadgeRightFilled, IconArrowUp } from '@tabler/icons-react'
 import { NavigationLayout } from '../utilities/NavigationLayout/NavigationLayout'
 import { useWindowScroll } from '@mantine/hooks'
 import styles from './ManagementConsole.module.scss'
+import { useQuery } from '@tanstack/react-query'
+import { Query } from '../state/query'
+import { useCourseIterationStore } from '../state/zustand/useCourseIterationStore'
+import { CourseIteration } from '../interface/courseIteration'
+import { getCourseIterations } from '../network/courseIteration'
+import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -85,10 +86,24 @@ export const ManagementConsole = ({
   onKeycloakValueChange,
 }: ManagmentConsoleProps): JSX.Element => {
   const [scroll, scrollTo] = useWindowScroll()
-  const mgmtAccess = useAppSelector((state) => state.auth.mgmtAccess)
+  const { user, setUser } = useAuthenticationStore()
   const [authenticated, setAuthenticated] = useState(false)
-  const dispatch = useDispatch<AppDispatch>()
-  const { currentState, courseIterations } = useAppSelector((state) => state.courseIterations)
+  const {
+    selectedCourseIteration,
+    courseIterations,
+    setSelectedCourseIteration,
+    setCourseIterations,
+  } = useCourseIterationStore()
+
+  const { data: fetchedCourseIterations } = useQuery<CourseIteration[]>({
+    queryKey: [Query.COURSE_ITERATION],
+    enabled: authenticated && !selectedCourseIteration,
+    queryFn: getCourseIterations,
+  })
+
+  useEffect(() => {
+    setCourseIterations(fetchedCourseIterations ?? [])
+  }, [fetchedCourseIterations, setCourseIterations])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const keycloak = new Keycloak({
@@ -118,27 +133,23 @@ export const ManagementConsole = ({
               email: string
               preferred_username: string
             }>(keycloak.token)
-            dispatch(
-              setAuthState({
-                firstName: decodedJwt.given_name,
-                lastName: decodedJwt.family_name,
-                email: decodedJwt.email,
-                username: decodedJwt.preferred_username,
-                mgmtAccess: permission.some((p) => keycloak.hasResourceRole(p, 'prompt-server')),
-              }),
-            )
+
+            setUser({
+              firstName: decodedJwt.given_name,
+              lastName: decodedJwt.family_name,
+              email: decodedJwt.email,
+              username: decodedJwt.preferred_username,
+              mgmtAccess: permission.some((p) => keycloak.hasResourceRole(p, 'prompt-server')),
+            })
           }
         } catch (error) {
-          dispatch(
-            setAuthState({
-              firstName: '',
-              lastName: '',
-              email: '',
-              username: '',
-              mgmtAccess: false,
-              error,
-            }),
-          )
+          setUser({
+            firstName: '',
+            lastName: '',
+            email: '',
+            username: '',
+            mgmtAccess: false,
+          })
         }
         setKeycloakValue(keycloak)
         onKeycloakValueChange(keycloak)
@@ -147,36 +158,34 @@ export const ManagementConsole = ({
         alert(err)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch])
+  }, [])
 
   useEffect(() => {
-    if (authenticated && !currentState) {
-      void dispatch(fetchAllCourseIterations())
-    }
-  }, [authenticated, currentState, dispatch])
-
-  useEffect(() => {
-    if (!currentState && courseIterations.length > 0 && localStorage.getItem('course-iteration')) {
+    if (
+      !selectedCourseIteration &&
+      courseIterations.length > 0 &&
+      localStorage.getItem('course-iteration')
+    ) {
       const savedCourseIteration = courseIterations.find(
         (as) => as.id === localStorage.getItem('course-iteration'),
       )
       if (savedCourseIteration) {
-        void dispatch(setCurrentState(savedCourseIteration))
+        setSelectedCourseIteration(savedCourseIteration)
       }
     }
-  }, [currentState, courseIterations, dispatch])
+  }, [selectedCourseIteration, courseIterations, setSelectedCourseIteration])
 
   useEffect(() => {
-    if (authenticated && !mgmtAccess) {
+    if (authenticated && !user?.mgmtAccess) {
       void keycloakValue.logout()
     }
-  }, [authenticated, keycloakValue, mgmtAccess])
+  }, [authenticated, keycloakValue, user])
 
   return (
     <div className={styles.root}>
-      {authenticated && mgmtAccess ? (
+      {authenticated && user && user.mgmtAccess ? (
         <div>
-          {currentState ? (
+          {selectedCourseIteration ? (
             <NavigationLayout keycloak={keycloakValue}>
               {authenticated && <div style={{ margin: '2vh 2vw' }}>{child}</div>}
             </NavigationLayout>
@@ -193,7 +202,9 @@ export const ManagementConsole = ({
             height: '100vh',
           }}
         >
-          <Center>{authenticated && !mgmtAccess ? <AccessRestricted /> : <Loader />}</Center>
+          <Center>
+            {authenticated && user && !user.mgmtAccess ? <AccessRestricted /> : <Loader />}
+          </Center>
         </div>
       )}
       <Affix position={{ bottom: 20, right: 20 }}>

@@ -1,11 +1,11 @@
 import { Button, Group, MultiSelect, Select, Stack, Title } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { type JiraGroup, fetchJiraGroups } from '../../../../service/jiraService'
+import { type JiraGroup, fetchJiraGroups } from '../../../../network/jiraService'
 import {
   type ConfluenceSpace,
   assignConfluenceSpaceAdminPermissionToUserGroups,
   fetchConfluenceSpacesByKeys,
-} from '../../../../service/confluenceService'
+} from '../../../../network/confluenceService'
 
 interface ConfluenceSpacePermissionAssignmentFormProps {
   iosTag: string

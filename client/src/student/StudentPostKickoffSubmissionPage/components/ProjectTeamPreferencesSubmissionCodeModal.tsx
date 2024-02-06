@@ -1,9 +1,9 @@
 import { Button, Group, Modal, TextInput } from '@mantine/core'
 import { useState } from 'react'
-import { serverBaseUrl } from '../../../service/configService'
+import { serverBaseUrl } from '../../../network/configService'
 import axios, { isAxiosError } from 'axios'
 import { useParams } from 'react-router-dom'
-import { type TechnicalDetails } from '../../../redux/introCourseSlice/introCourseSlice'
+import { TechnicalDetails } from '../../../interface/introCourse'
 
 interface ProjectTeamPreferencesSubmissionCodeModalProps {
   open: boolean

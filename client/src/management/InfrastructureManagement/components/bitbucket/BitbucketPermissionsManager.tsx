@@ -1,11 +1,11 @@
 import { Accordion, Button, Group, MultiSelect, Stack, Title } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { type JiraGroup, fetchJiraGroups } from '../../../../service/jiraService'
+import { type JiraGroup, fetchJiraGroups } from '../../../../network/jiraService'
 import {
   BITBUCKET_PROJECT_PERMISSIONS,
   grantBitbucketProjectPermissions,
   type BitbucketProjectPermissionGrant,
-} from '../../../../service/bitbucketService'
+} from '../../../../network/bitbucketService'
 
 interface BitbucketPermissionsManagerProps {
   iosTag: string

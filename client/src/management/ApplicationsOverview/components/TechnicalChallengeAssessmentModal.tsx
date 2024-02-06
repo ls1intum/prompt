@@ -14,9 +14,9 @@ import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Papa from 'papaparse'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
-import { assignTechnicalChallengeScores } from '../../../redux/applicationsSlice/thunks/assignTechnicalChallengeScores'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { postTechnicalScores } from '../../../network/application'
+import { Query } from '../../../state/query'
 
 export interface TechnicalChallengeResult {
   programmingScoreThreshold: number
@@ -42,7 +42,7 @@ export const TechnicalChallengeAssessmentModal = ({
   onClose,
   tumIdToDeveloperApplicationMap,
 }: TechnicalChallengeAssessmentModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const [columnNames, setColumnNames] = useState<string[]>([])
   const [upload, setUpload] = useState<object[]>()
   const technicalChallengeForm = useForm({
@@ -63,6 +63,22 @@ export const TechnicalChallengeAssessmentModal = ({
       quizScoreThreshold: isNotEmpty('Please enter the quiz score threshold'),
     },
     validateInputOnBlur: true,
+  })
+
+  const assignTechnicalScores = useMutation({
+    mutationFn: (variables: {
+      programmingScoreThreshold: number
+      quizScoreThreshold: number
+      scores: Array<{ developerApplicationId: string; programmingScore: number; quizScore: number }>
+    }) =>
+      postTechnicalScores(
+        variables.programmingScoreThreshold,
+        variables.quizScoreThreshold,
+        variables.scores,
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
+    },
   })
 
   return (
@@ -192,14 +208,11 @@ export const TechnicalChallengeAssessmentModal = ({
                 }
               })
 
-              void dispatch(
-                assignTechnicalChallengeScores({
-                  programmingScoreThreshold:
-                    technicalChallengeForm.values.programmingScoreThreshold,
-                  quizScoreThreshold: technicalChallengeForm.values.quizScoreThreshold,
-                  scores,
-                }),
-              )
+              assignTechnicalScores.mutate({
+                programmingScoreThreshold: technicalChallengeForm.values.programmingScoreThreshold,
+                quizScoreThreshold: technicalChallengeForm.values.quizScoreThreshold,
+                scores,
+              })
 
               onClose()
             }}
