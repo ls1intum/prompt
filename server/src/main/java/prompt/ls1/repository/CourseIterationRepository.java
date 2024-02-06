@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Repository
 public interface CourseIterationRepository extends JpaRepository<CourseIteration, UUID> {
     @Transactional
