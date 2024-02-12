@@ -114,6 +114,12 @@ export const ManagementConsole = ({
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>(keycloak)
 
   useEffect(() => {
+    keycloak.onTokenExpired = () => {
+      keycloak.updateToken(5).then(() => {
+        localStorage.setItem('jwt_token', keycloak.token ?? '')
+        localStorage.setItem('refreshToken', keycloak.refreshToken ?? '')
+      })
+    }
     void keycloak
       .init({ onLoad: 'login-required' })
       .then((isAuthenticated) => {
