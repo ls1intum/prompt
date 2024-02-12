@@ -68,7 +68,7 @@ const navigationContents = [
     label: 'Grading',
     icon: IconStairs,
     link: '/management/grading',
-    permission: [Permission.PM],
+    permission: [Permission.PM, Permission.COACH, Permission.PL],
   },
   {
     label: 'Mailing',

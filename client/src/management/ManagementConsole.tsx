@@ -86,7 +86,7 @@ export const ManagementConsole = ({
   onKeycloakValueChange,
 }: ManagmentConsoleProps): JSX.Element => {
   const [scroll, scrollTo] = useWindowScroll()
-  const { user, setUser } = useAuthenticationStore()
+  const { user, setUser, setPermissions } = useAuthenticationStore()
   const [authenticated, setAuthenticated] = useState(false)
   const {
     selectedCourseIteration,
@@ -133,7 +133,6 @@ export const ManagementConsole = ({
               email: string
               preferred_username: string
             }>(keycloak.token)
-
             setUser({
               firstName: decodedJwt.given_name,
               lastName: decodedJwt.family_name,
@@ -141,6 +140,9 @@ export const ManagementConsole = ({
               username: decodedJwt.preferred_username,
               mgmtAccess: permission.some((p) => keycloak.hasResourceRole(p, 'prompt-server')),
             })
+            if (keycloak.resourceAccess) {
+              setPermissions(keycloak.resourceAccess['prompt-server'].roles)
+            }
           }
         } catch (error) {
           setUser({

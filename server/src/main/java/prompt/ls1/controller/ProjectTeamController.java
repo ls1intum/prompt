@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,6 +25,7 @@ import prompt.ls1.service.CourseIterationService;
 import prompt.ls1.service.ProjectTeamService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -75,8 +77,13 @@ public class ProjectTeamController {
     }
 
     @GetMapping("/{projectTeamId}/developers")
-    @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<DeveloperApplication>> getProjectTeamDevelopers(@PathVariable UUID projectTeamId) {
-        return ResponseEntity.ok(applicationService.findDeveloperApplicationsByProjectTeamId(projectTeamId));
+    @PreAuthorize("hasRole('ipraktikum-pm')  || hasRole('ipraktikum-coach') || hasRole('ipraktikum-pl')")
+    public ResponseEntity<List<DeveloperApplication>> getProjectTeamDevelopersManagedBy(
+            @PathVariable final UUID projectTeamId,
+            JwtAuthenticationToken token) {
+        if (token.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ipraktikum-pm"))) {
+            return ResponseEntity.ok(applicationService.findDeveloperApplicationsByProjectTeamId(projectTeamId, Optional.empty()));
+        }
+        return ResponseEntity.ok(applicationService.findDeveloperApplicationsByProjectTeamId(projectTeamId, Optional.of(token.getName())));
     }
 }

@@ -1,6 +1,9 @@
 export enum Permission {
   PM = 'ipraktikum-pm',
   TUTOR = 'ipraktikum-tutor',
+  COACH = 'ipraktikum-coach',
+  PL = 'ipraktikum-pl',
+  CHAIR_MEMBER = 'chair-member',
 }
 
 export interface User {
