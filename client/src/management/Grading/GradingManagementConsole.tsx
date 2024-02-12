@@ -8,8 +8,11 @@ import { getProjectTeams } from '../../network/projectTeam'
 import { Query } from '../../state/query'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 import { ProjectTeam } from '../../interface/projectTeam'
+import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
+import { Permission } from '../../interface/authentication'
 
 export const GradingManagementConsole = (): JSX.Element => {
+  const { user, permissions } = useAuthenticationStore()
   const { projectTeams, setProjectTeams } = useProjectTeamStore()
   const { selectedCourseIteration } = useCourseIterationStore()
   const [activeProjectTeam, setActiveProjectTeam] = useState<string | null>()
@@ -22,9 +25,19 @@ export const GradingManagementConsole = (): JSX.Element => {
 
   useEffect(() => {
     if (fetchedProjectTeams) {
-      setProjectTeams(fetchedProjectTeams)
+      if (permissions.includes(Permission.PM)) {
+        setProjectTeams(fetchedProjectTeams)
+      } else {
+        setProjectTeams(
+          fetchedProjectTeams.filter(
+            (projectTeam) =>
+              projectTeam.coachTumId === user?.username ||
+              projectTeam.projectLeadTumId === user?.username,
+          ),
+        )
+      }
     }
-  }, [fetchedProjectTeams, setProjectTeams])
+  }, [fetchedProjectTeams, permissions, setProjectTeams, user?.username])
 
   return (
     <Tabs

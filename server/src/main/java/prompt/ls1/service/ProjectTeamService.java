@@ -52,7 +52,7 @@ public class ProjectTeamService {
         return projectTeamRepository.findAllByCourseIterationId(courseIterationId);
     }
 
-    private ProjectTeam findById(final UUID projectTeamId) {
+    public ProjectTeam findById(final UUID projectTeamId) {
         return projectTeamRepository.findById(projectTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
     }

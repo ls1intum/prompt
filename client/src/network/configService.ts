@@ -12,12 +12,13 @@ export interface Patch {
 
 const axiosInstance = axios.create({
   baseURL: serverBaseUrl,
-  headers:
-    !!localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== ''
-      ? {
-          Authorization: `Bearer ${localStorage.getItem('jwt_token') ?? ''}`,
-        }
-      : {},
+})
+
+axiosInstance.interceptors.request.use((config) => {
+  if (!!localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== '') {
+    config.headers['Authorization'] = `Bearer ${localStorage.getItem('jwt_token') ?? ''}`
+  }
+  return config
 })
 
 export { axiosInstance }

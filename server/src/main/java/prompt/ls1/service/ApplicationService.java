@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.TechnicalChallengeScore;
+import prompt.ls1.exception.AccessDeniedException;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
@@ -20,7 +21,6 @@ import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.DeveloperApplicationRepository;
 import prompt.ls1.repository.InstructorCommentRepository;
 import prompt.ls1.repository.IntroCourseParticipationRepository;
-import prompt.ls1.repository.ProjectTeamRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
 
@@ -40,7 +40,7 @@ public class ApplicationService {
     private final CourseIterationRepository courseIterationRepository;
     private final InstructorCommentRepository instructorCommentRepository;
     private final StudentRepository studentRepository;
-    private final ProjectTeamRepository projectTeamRepository;
+    private final ProjectTeamService projectTeamService;
     private final IntroCourseParticipationRepository introCourseParticipationRepository;
     private final MailingService mailingService;
 
@@ -52,7 +52,7 @@ public class ApplicationService {
             final CourseIterationRepository courseIterationRepository,
             final InstructorCommentRepository instructorCommentRepository,
             final StudentRepository studentRepository,
-            final ProjectTeamRepository projectTeamRepository,
+            final ProjectTeamService projectTeamService,
             final IntroCourseParticipationRepository introCourseParticipationRepository,
             final MailingService mailingService) {
         this.developerApplicationRepository = developerApplicationRepository;
@@ -61,7 +61,7 @@ public class ApplicationService {
         this.courseIterationRepository = courseIterationRepository;
         this.instructorCommentRepository = instructorCommentRepository;
         this.studentRepository = studentRepository;
-        this.projectTeamRepository = projectTeamRepository;
+        this.projectTeamService = projectTeamService;
         this.introCourseParticipationRepository = introCourseParticipationRepository;
         this.mailingService = mailingService;
     }
@@ -141,8 +141,16 @@ public class ApplicationService {
         return applications;
     }
 
-    public List<DeveloperApplication> findDeveloperApplicationsByProjectTeamId(final UUID projectTeamId) {
-        return developerApplicationRepository.findByProjectTeamId(projectTeamId);
+    public List<DeveloperApplication> findDeveloperApplicationsByProjectTeamId(final UUID projectTeamId, final Optional<String> managedBy) {
+        final ProjectTeam projectTeam = projectTeamService.findById(projectTeamId);
+        if (managedBy.isEmpty()) {
+            return developerApplicationRepository.findByProjectTeamId(projectTeamId);
+        }
+        if ((projectTeam.getCoachTumId() != null && projectTeam.getCoachTumId().equals(managedBy.get())) ||
+                (projectTeam.getProjectLeadTumId() != null && projectTeam.getProjectLeadTumId().equals(managedBy.get()))) {
+            return developerApplicationRepository.findByProjectTeamId(projectTeamId);
+        }
+        throw new ResourceNotFoundException("Could not find a project team.");
     }
 
     public DeveloperApplication createDeveloperApplication(final DeveloperApplication developerApplication) {
@@ -478,8 +486,7 @@ public class ApplicationService {
     public Application assignDeveloperApplicationToProjectTeam(final UUID developerApplicationId, final UUID projectTeamId, final UUID courseIterationId) {
         DeveloperApplication application = findDeveloperApplicationById(developerApplicationId);
 
-        ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
+        ProjectTeam projectTeam = projectTeamService.findById(projectTeamId);
 
         if (!application.getCourseIterationId().equals(projectTeam.getCourseIteration().getId()) ||
                 !application.getCourseIterationId().equals(courseIterationId)) {
@@ -506,15 +513,21 @@ public class ApplicationService {
     public void assignDeveloperApplicationToProjectTeam(final UUID studentId, final UUID projectTeamId) {
         final DeveloperApplication application = developerApplicationRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", studentId)));
-        final ProjectTeam projectTeam = projectTeamRepository.findById(projectTeamId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
+        final ProjectTeam projectTeam = projectTeamService.findById(projectTeamId);
 
         application.setProjectTeam(projectTeam);
         developerApplicationRepository.save(application);
     }
 
-    public DeveloperApplication gradeDeveloperApplication(final UUID applicationId, final Grade grade) {
+    public DeveloperApplication gradeDeveloperApplication(final UUID applicationId, final Grade grade, final Optional<String> author) {
         final DeveloperApplication application = findDeveloperApplicationById(applicationId);
+        final ProjectTeam projectTeam = application.getProjectTeam();
+        if (author.isPresent() && !(
+                (projectTeam.getCoachTumId()!= null && projectTeam.getCoachTumId().equals(author.get()))
+                        || (projectTeam.getProjectLeadTumId() != null && projectTeam.getProjectLeadTumId().equals(author.get())))
+        ) {
+            throw new AccessDeniedException("Access denied.");
+        }
         application.setFinalGrade(grade);
         return developerApplicationRepository.save(application);
     }
