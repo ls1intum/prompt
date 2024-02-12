@@ -5,7 +5,7 @@ import { ApplicationType } from '../interface/application'
 
 export const getCourseIterations = async (): Promise<CourseIteration[]> => {
   try {
-    return (await axiosInstance.get(`/api/course-iterations`)).data
+    return (await axiosInstance.get(`http://localhost:8080/api/course-iterations`)).data
   } catch (err) {
     notifications.show({
       color: 'red',

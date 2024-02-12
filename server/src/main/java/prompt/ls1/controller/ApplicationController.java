@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -274,10 +275,14 @@ public class ApplicationController {
     }
 
     @PostMapping("/developer/{applicationId}/grading")
-    @PreAuthorize("hasRole('ipraktikum-pm')")
+    @PreAuthorize("hasRole('ipraktikum-pm')  || hasRole('ipraktikum-coach') || hasRole('ipraktikum-pl')")
     public ResponseEntity<Application> gradeDeveloperApplication(@PathVariable UUID applicationId,
-                                                                                  @RequestBody Grade grade) {
-        return ResponseEntity.ok(applicationService.gradeDeveloperApplication(applicationId, grade));
+                                                                 @RequestBody Grade grade,
+                                                                 JwtAuthenticationToken token) {
+        if (token.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ipraktikum-pm"))) {
+            return ResponseEntity.ok(applicationService.gradeDeveloperApplication(applicationId, grade, Optional.empty()));
+        }
+        return ResponseEntity.ok(applicationService.gradeDeveloperApplication(applicationId, grade, Optional.of(token.getName())));
     }
 
     @PostMapping(path = "/developer/{developerApplicationId}/project-team/{projectTeamId}")

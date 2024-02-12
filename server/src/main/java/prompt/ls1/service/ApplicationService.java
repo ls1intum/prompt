@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.TechnicalChallengeScore;
+import prompt.ls1.exception.AccessDeniedException;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
@@ -518,8 +519,15 @@ public class ApplicationService {
         developerApplicationRepository.save(application);
     }
 
-    public DeveloperApplication gradeDeveloperApplication(final UUID applicationId, final Grade grade) {
+    public DeveloperApplication gradeDeveloperApplication(final UUID applicationId, final Grade grade, final Optional<String> author) {
         final DeveloperApplication application = findDeveloperApplicationById(applicationId);
+        final ProjectTeam projectTeam = application.getProjectTeam();
+        if (author.isPresent() && !(
+                (projectTeam.getCoachTumId()!= null && projectTeam.getCoachTumId().equals(author.get()))
+                        || (projectTeam.getProjectLeadTumId() != null && projectTeam.getProjectLeadTumId().equals(author.get())))
+        ) {
+            throw new AccessDeniedException("Access denied.");
+        }
         application.setFinalGrade(grade);
         return developerApplicationRepository.save(application);
     }
