@@ -419,6 +419,7 @@ export const ApplicationDatatable = ({
                 leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
+                comboboxProps={{ withinPortal: false }}
               />
             ),
             filtering: filters.applicationType.length > 0,
@@ -451,6 +452,7 @@ export const ApplicationDatatable = ({
                 leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
+                comboboxProps={{ withinPortal: false }}
               />
             ),
             filtering: filters.applicationType.length > 0,

@@ -379,6 +379,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                   leftSection={<IconSearch size={16} />}
                   clearable
                   searchable
+                  comboboxProps={{ withinPortal: false }}
                 />
                 <Checkbox
                   label='Show only dropped out?'
@@ -429,6 +430,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 leftSection={<IconSearch size={16} />}
                 clearable
                 searchable
+                comboboxProps={{ withinPortal: false }}
               />
             ),
             filtering: filters.tutors.length > 0,
