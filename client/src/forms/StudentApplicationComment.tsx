@@ -33,7 +33,7 @@ export const StudentApplicationComment = ({
           ? moment(instructorComment.timestamp).fromNow()
           : moment(instructorComment.timestamp).format('DD-MM-YYYY hh:mm')}
       </legend>
-      <Text>{instructorComment.text}</Text>
+      <Text fz='sm'>{instructorComment.text}</Text>
     </fieldset>
   )
 }
