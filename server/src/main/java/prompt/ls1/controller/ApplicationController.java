@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +28,7 @@ import prompt.ls1.model.Application;
 import prompt.ls1.model.CoachApplication;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
+import prompt.ls1.model.Grade;
 import prompt.ls1.model.InstructorComment;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.TutorApplication;
@@ -65,7 +67,7 @@ public class ApplicationController {
 
     @GetMapping("/{applicationType}")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<List<Application>> getAllDeveloperApplications(
+    public ResponseEntity<List<Application>> getApplications(
             @PathVariable final String applicationType,
             @RequestParam(name = "courseIteration") @NotNull final String courseIterationName,
             @RequestParam(required = false) final Optional<ApplicationStatus> applicationStatus
@@ -272,9 +274,20 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.createInstructorCommentForTutorApplication(applicationId, instructorComment));
     }
 
+    @PostMapping("/developer/{applicationId}/grading")
+    @PreAuthorize("hasRole('ipraktikum-pm')  || hasRole('ipraktikum-coach') || hasRole('ipraktikum-pl')")
+    public ResponseEntity<Application> gradeDeveloperApplication(@PathVariable UUID applicationId,
+                                                                 @RequestBody Grade grade,
+                                                                 JwtAuthenticationToken token) {
+        if (token.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ipraktikum-pm"))) {
+            return ResponseEntity.ok(applicationService.gradeDeveloperApplication(applicationId, grade, Optional.empty()));
+        }
+        return ResponseEntity.ok(applicationService.gradeDeveloperApplication(applicationId, grade, Optional.of(token.getName())));
+    }
+
     @PostMapping(path = "/developer/{developerApplicationId}/project-team/{projectTeamId}")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> assignStudentApplicationToProjectTeam(
+    public ResponseEntity<Application> assignDeveloperApplicationToProjectTeam(
             @RequestParam(name="courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId,
             @PathVariable UUID projectTeamId
@@ -286,7 +299,7 @@ public class ApplicationController {
 
     @DeleteMapping(path = "/developer/{developerApplicationId}/project-team")
     @PreAuthorize("hasRole('ipraktikum-pm')")
-    public ResponseEntity<Application> removeStudentApplicationFromProjectTeam(
+    public ResponseEntity<Application> removeDeveloperApplicationFromProjectTeam(
             @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId
     ) {

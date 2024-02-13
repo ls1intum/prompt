@@ -1,20 +1,26 @@
-import { useDispatch } from 'react-redux'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { useEffect, useState } from 'react'
-import { fetchSkills } from '../../../../redux/skillsSlice/thunks/fetchSkills'
 import { SkillCard } from './SkillCard'
-import { Button, Stack } from '@mantine/core'
+import { Button, Grid } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { SkillCreationModal } from './SkillCreationModal'
+import { useQuery } from '@tanstack/react-query'
+import { Skill } from '../../../../interface/skill'
+import { Query } from '../../../../state/query'
+import { getSkills } from '../../../../network/skill'
+import { useSkillStore } from '../../../../state/zustand/useSkillStore'
 
 export const SkillsManager = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const fetchedSkills = useAppSelector((state) => state.skills.skills)
+  const { skills, setSkills } = useSkillStore()
   const [skillCreationModalOpened, setSkillCreationModalOpened] = useState(false)
 
+  const { data: fetchedSkills } = useQuery<Skill[]>({
+    queryKey: [Query.SKILL],
+    queryFn: getSkills,
+  })
+
   useEffect(() => {
-    void dispatch(fetchSkills())
-  }, [dispatch])
+    setSkills(fetchedSkills ?? [])
+  }, [fetchedSkills, setSkills])
 
   return (
     <>
@@ -35,13 +41,13 @@ export const SkillsManager = (): JSX.Element => {
           Create Skill
         </Button>
       </div>
-      <Stack style={{ alignItems: 'center' }}>
-        {fetchedSkills.map((skill) => (
-          <div key={skill.id}>
+      <Grid grow>
+        {skills.map((skill) => (
+          <Grid.Col span={4} key={skill.id}>
             <SkillCard skill={skill} />
-          </div>
+          </Grid.Col>
         ))}
-      </Stack>
+      </Grid>
     </>
   )
 }

@@ -7,9 +7,9 @@ import {
   fetchBitbucketProjects,
   type BitbucketRepositoryPermissionGrant,
   grantBitbucketProjectRepositoryPermissions,
-} from '../../../../service/bitbucketService'
+} from '../../../../network/bitbucketService'
 import { Accordion, Button, Group, Select, Stack, Title } from '@mantine/core'
-import { fetchJiraGroups } from '../../../../service/jiraService'
+import { fetchJiraGroups } from '../../../../network/jiraService'
 import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
 import { MultiSelectItem, MultiSelectSearchable } from '../../../../utilities/CustomMultiSelect'
 

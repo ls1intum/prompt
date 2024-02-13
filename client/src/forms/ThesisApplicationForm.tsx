@@ -4,11 +4,6 @@ import moment from 'moment'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import {
-  ResearchArea,
-  FocusTopic,
-  type ThesisApplication,
-} from '../redux/thesisApplicationsSlice/thesisApplicationsSlice'
-import {
   ActionIcon,
   Box,
   Button,
@@ -29,30 +24,32 @@ import {
   rem,
   useMantineTheme,
 } from '@mantine/core'
-import { Gender, StudyDegree, StudyProgram } from '../redux/applicationsSlice/applicationsSlice'
+import { Gender, StudyDegree, StudyProgram } from '../interface/application'
 import { ApplicationFormAccessMode } from './DefaultApplicationForm'
 import { DeclarationOfDataConsent } from './DeclarationOfDataConsent'
 import { IconCalendar, IconPhoto, IconUpload, IconX } from '@tabler/icons-react'
 import LS1Logo from '../static/ls1logo.png'
-import {
-  createThesisApplication,
-  loadThesisApplicationBachelorReportFile,
-  loadThesisApplicationCvFile,
-  loadThesisApplicationExaminationFile,
-} from '../service/thesisApplicationService'
 import { DatePickerInput } from '@mantine/dates'
-import { useDispatch } from 'react-redux'
-import { useAppSelector, type AppDispatch } from '../redux/store'
-import { assessThesisApplication } from '../redux/thesisApplicationsSlice/thunks/assessThesisApplication'
 import { notifications } from '@mantine/notifications'
 import { useDisclosure } from '@mantine/hooks'
 import { ApplicationSuccessfulSubmission } from '../student/StudentApplicationSubmissionPage/ApplicationSuccessfulSubmission'
 import { useEffect, useState } from 'react'
-import { rejectThesisApplication } from '../redux/thesisApplicationsSlice/thunks/rejectThesisApplication'
-import { acceptThesisApplication } from '../redux/thesisApplicationsSlice/thunks/acceptThesisApplication'
-import { assignThesisAdvisor } from '../redux/thesisApplicationsSlice/thunks/assignThesisAdvisor'
 import { FormTextField } from './components/FormTextField'
 import { FormSelectField } from './components/FormSelectField'
+import { useThesisApplicationStore } from '../state/zustand/useThesisApplicationStore'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  getThesisApplicationBachelorReportFile,
+  getThesisApplicationCvFile,
+  getThesisApplicationExaminationFile,
+  postThesisApplicatioAcceptance,
+  postThesisApplication,
+  postThesisApplicationAssessment,
+  postThesisApplicationRejection,
+  postThesisApplicationThesisAdvisorAssignment,
+} from '../network/thesisApplication'
+import { FocusTopic, ResearchArea, ThesisApplication } from '../interface/thesisApplication'
+import { Query } from '../state/query'
 
 countries.registerLocale(enLocale)
 const countriesArr = Object.entries(countries.getNames('en', { select: 'alias' })).map(
@@ -74,10 +71,8 @@ export const ThesisApplicationForm = ({
   accessMode,
 }: ThesisApplicationFormProps): JSX.Element => {
   const theme = useMantineTheme()
-  const dispatch = useDispatch<AppDispatch>()
-  const { thesisAdvisors, status: thesisAppliccationsSliceState } = useAppSelector(
-    (state) => state.thesisApplications,
-  )
+  const queryClient = useQueryClient()
+  const { thesisAdvisors } = useThesisApplicationStore()
   const [loadingOverlayVisible, loadingOverlayHandlers] = useDisclosure(false)
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const [notifyStudent, setNotifyStudent] = useState(true)
@@ -221,6 +216,39 @@ export const ThesisApplicationForm = ({
   const [thesisAdvisorId, setThesisAdvisorId] = useState<string | null>(
     application?.thesisAdvisor?.id ?? null,
   )
+
+  const assessThesisApplication = useMutation({
+    mutationFn: () =>
+      postThesisApplicationAssessment(application?.id ?? '', {
+        status: form.values.applicationStatus,
+        assessmentComment: form.values.assessmentComment ?? '',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
+    },
+  })
+
+  const assignThesisApplicationToThesisAdvisor = useMutation({
+    mutationFn: () =>
+      postThesisApplicationThesisAdvisorAssignment(application?.id ?? '', thesisAdvisorId ?? ''),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
+    },
+  })
+
+  const acceptThesisApplication = useMutation({
+    mutationFn: () => postThesisApplicatioAcceptance(application?.id ?? '', notifyStudent),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
+    },
+  })
+
+  const rejectThesisApplication = useMutation({
+    mutationFn: () => postThesisApplicationRejection(application?.id ?? '', notifyStudent),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.THESIS_APPLICATION] })
+    },
+  })
 
   useEffect(() => {
     setThesisAdvisorId(application?.thesisAdvisor?.id ?? null)
@@ -749,7 +777,7 @@ export const ThesisApplicationForm = ({
                   <Button
                     onClick={() => {
                       void (async () => {
-                        const response = await loadThesisApplicationExaminationFile(application.id)
+                        const response = await getThesisApplicationExaminationFile(application.id)
                         if (response) {
                           const url = window.URL.createObjectURL(response)
                           const a = document.createElement('a')
@@ -772,7 +800,7 @@ export const ThesisApplicationForm = ({
                   <Button
                     onClick={() => {
                       void (async () => {
-                        const response = await loadThesisApplicationCvFile(application.id)
+                        const response = await getThesisApplicationCvFile(application.id)
                         if (response) {
                           const url = window.URL.createObjectURL(response)
                           const a = document.createElement('a')
@@ -792,7 +820,7 @@ export const ThesisApplicationForm = ({
                   <Button
                     onClick={() => {
                       void (async () => {
-                        const response = await loadThesisApplicationBachelorReportFile(
+                        const response = await getThesisApplicationBachelorReportFile(
                           application.id,
                         )
                         if (response) {
@@ -831,12 +859,7 @@ export const ThesisApplicationForm = ({
                 onChange={(value) => {
                   setThesisAdvisorId(value)
                   if (application && value) {
-                    void dispatch(
-                      assignThesisAdvisor({
-                        thesisApplicationId: application?.id,
-                        thesisAdvisorId: value,
-                      }),
-                    )
+                    assignThesisApplicationToThesisAdvisor.mutate()
                   }
                 }}
               />
@@ -851,15 +874,7 @@ export const ThesisApplicationForm = ({
                 <Button
                   onClick={() => {
                     if (application) {
-                      void dispatch(
-                        assessThesisApplication({
-                          thesisApplicationId: application.id,
-                          assessment: {
-                            status: form.values.applicationStatus,
-                            assessmentComment: form.values.assessmentComment ?? '',
-                          },
-                        }),
-                      )
+                      assessThesisApplication.mutate()
                     }
                   }}
                 >
@@ -871,38 +886,26 @@ export const ThesisApplicationForm = ({
                   style={{ width: '20vw' }}
                   variant='outline'
                   color='red'
-                  disabled={thesisAppliccationsSliceState === 'pending'}
+                  disabled={rejectThesisApplication.isPending}
                   onClick={() => {
                     if (application) {
-                      void dispatch(
-                        rejectThesisApplication({
-                          thesisApplicationId: application.id,
-                          notifyStudent,
-                        }),
-                      )
+                      rejectThesisApplication.mutate()
                     }
                   }}
                 >
-                  {thesisAppliccationsSliceState === 'pending' ? <Loader /> : 'Reject'}
+                  {rejectThesisApplication.isPending ? <Loader /> : 'Reject'}
                 </Button>
                 <Button
                   style={{ width: '20vw' }}
                   color='green'
-                  disabled={
-                    !application?.thesisAdvisor || thesisAppliccationsSliceState === 'pending'
-                  }
+                  disabled={!application?.thesisAdvisor || acceptThesisApplication.isPending}
                   onClick={() => {
                     if (application) {
-                      void dispatch(
-                        acceptThesisApplication({
-                          thesisApplicationId: application.id,
-                          notifyStudent,
-                        }),
-                      )
+                      acceptThesisApplication.mutate()
                     }
                   }}
                 >
-                  {thesisAppliccationsSliceState === 'pending' ? <Loader /> : 'Accept'}
+                  {acceptThesisApplication.isPending ? <Loader /> : 'Accept'}
                 </Button>
               </Group>
               <Group align='right'>
@@ -939,8 +942,7 @@ export const ThesisApplicationForm = ({
                     void (async () => {
                       loadingOverlayHandlers.open()
                       if (uploads.values.examinationReport && uploads.values.cv) {
-                        console.log(form.values)
-                        const response = await createThesisApplication({
+                        const response = await postThesisApplication({
                           application: form.values,
                           examinationReport: uploads.values.examinationReport,
                           cv: uploads.values.cv,

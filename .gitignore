@@ -1,4 +1,5 @@
 .env
+db_backups
 
 # User-specific stuff
 .idea/**/workspace.xml

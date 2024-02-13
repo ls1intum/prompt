@@ -11,7 +11,6 @@ import {
   rem,
   useMantineColorScheme,
 } from '@mantine/core'
-import { Permission } from '../../redux/authSlice/authSlice'
 import {
   IconAppsFilled,
   IconDeviceDesktop,
@@ -26,13 +25,14 @@ import {
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { setCurrentState } from '../../redux/courseIterationSlice/courseIterationSlice'
 import styles from './NavigationLayout.module.scss'
 import classNames from 'classnames'
 import useDeviceDetection from '../hooks/useDeviceDetection'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
+import { Permission } from '../../interface/authentication'
+import { useQueryClient } from '@tanstack/react-query'
 
 const navigationContents = [
   {
@@ -69,7 +69,7 @@ const navigationContents = [
     label: 'Grading',
     icon: IconStairs,
     link: '/management/grading',
-    permission: [Permission.PM],
+    permission: [Permission.PM, Permission.COACH, Permission.PL],
   },
   {
     label: 'Mailing',
@@ -85,15 +85,15 @@ interface NavigationLayoutProps {
 }
 
 export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const auth = useAppSelector((state) => state.auth)
+  const queryClient = useQueryClient()
+  const { user } = useAuthenticationStore()
   const navigate = useNavigate()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
   const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const [navigationRoutes, setNavigationRoutes] = useState(navigationContents)
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const courseIterations = useAppSelector((state) => state.courseIterations.courseIterations)
+  const { selectedCourseIteration, courseIterations, setSelectedCourseIteration } =
+    useCourseIterationStore()
   const location = useLocation()
   const [active, setActive] = useState(location.pathname)
   const isMobileDevice = useDeviceDetection() === 'mobile'
@@ -137,16 +137,18 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
           </Group>
           <Menu>
             <Menu.Target>
-              <Group className={styles.avatar}>
-                <Avatar color='blue' radius='xl'>{`${auth.firstName.at(0) ?? ''}${
-                  auth.lastName.at(0) ?? ''
-                }`}</Avatar>
-                {!isMobileDevice && (
-                  <Text c='dimmed' fw={500}>
-                    {auth.firstName} {auth.lastName}
-                  </Text>
-                )}
-              </Group>
+              {user && (
+                <Group className={styles.avatar}>
+                  <Avatar color='blue' radius='xl'>{`${user.firstName.at(0) ?? ''}${
+                    user.lastName.at(0) ?? ''
+                  }`}</Avatar>
+                  {!isMobileDevice && (
+                    <Text c='dimmed' fw={500}>
+                      {user.firstName} {user.lastName}
+                    </Text>
+                  )}
+                </Group>
+              )}
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item
@@ -179,7 +181,9 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
                 (as) => as.id.toString() === changedCourseIterationId,
               )
               if (changedCourseIteration) {
-                void dispatch(setCurrentState(changedCourseIteration))
+                const oldCourseIterationSemesterName = selectedCourseIteration?.semesterName
+                setSelectedCourseIteration(changedCourseIteration)
+                queryClient.invalidateQueries({ queryKey: [oldCourseIterationSemesterName] })
               }
             }}
           />

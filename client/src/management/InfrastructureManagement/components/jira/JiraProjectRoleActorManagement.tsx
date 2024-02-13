@@ -14,7 +14,7 @@ import {
   fetchJiraProjectRoles,
   type JiraProjectRoleActor,
   JIRA_PROJECT_ROLES,
-} from '../../../../service/jiraService'
+} from '../../../../network/jiraService'
 
 export interface ProjectRoleActorMapping {
   projectKey: string

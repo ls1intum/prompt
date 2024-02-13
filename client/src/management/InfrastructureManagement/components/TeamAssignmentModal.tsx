@@ -3,7 +3,7 @@ import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Papa from 'papaparse'
 import { useState } from 'react'
-import { addUsersToJiraGroup } from '../../../service/jiraService'
+import { addUsersToJiraGroup } from '../../../network/jiraService'
 
 interface TeamAssignmentModalProps {
   opened: boolean

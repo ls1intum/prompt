@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   JIRA_PROJECT_CATEGORIES_MGMT,
   createJiraProjectCategories,
-} from '../../../../service/jiraService'
+} from '../../../../network/jiraService'
 import { Button, Stack } from '@mantine/core'
 import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
 import { MultiSelectItem } from '../../../../utilities/CustomMultiSelect'

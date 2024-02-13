@@ -3,7 +3,7 @@ import {
   JIRA_USER_GROUPS_MGMT,
   JIRA_USER_GROUPS_TEAMS,
   createJiraGroups,
-} from '../../../../service/jiraService'
+} from '../../../../network/jiraService'
 import { Button, Stack, TextInput } from '@mantine/core'
 import { MultiSelectCreatable } from '../../../../utilities/CustomMultiSelect/MultiSelectCreatable'
 import { MultiSelectItem } from '../../../../utilities/CustomMultiSelect'

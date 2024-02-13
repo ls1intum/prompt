@@ -42,6 +42,10 @@ public interface DeveloperApplicationRepository extends JpaRepository<DeveloperA
     @Query(value="select da from DeveloperApplication da where da.student.id=?1")
     Optional<DeveloperApplication> findByStudentId(final UUID studentId);
 
+    @Transactional
+    @Query(value="select da from DeveloperApplication da where da.projectTeam.id=?1")
+    List<DeveloperApplication> findByProjectTeamId(final UUID projectTeamId);
+
     Optional<DeveloperApplication> findById(final UUID developerApplicationId);
 
     @Transactional

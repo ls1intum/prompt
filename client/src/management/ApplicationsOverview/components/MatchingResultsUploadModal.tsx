@@ -2,21 +2,18 @@ import { Button, FileInput, Group, Modal, Select, Stack, Table, Text } from '@ma
 import { notifications } from '@mantine/notifications'
 import { IconUpload } from '@tabler/icons-react'
 import Daddy from 'papaparse'
+import { postApplicationEnrollment } from '../../../network/application'
+import { ApplicationType } from '../../../interface/application'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Query } from '../../../state/query'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../redux/store'
-import {
-  enrollCoachApplicationsToCourse,
-  enrollDeveloperApplicationsToCourse,
-  enrollTutorApplicationsToCourse,
-} from '../../../redux/applicationsSlice/thunks/enrollApplicationsToCourse'
 
 interface MatchingResultsUploadModalProps {
   opened: boolean
   onClose: () => void
   tumIdToApplicationMap: Map<string, string>
   matriculationNumberToApplicationMap: Map<string, string>
-  applicationType: string
+  applicationType: ApplicationType
 }
 
 export const MatchingResultsUploadModal = ({
@@ -26,11 +23,25 @@ export const MatchingResultsUploadModal = ({
   tumIdToApplicationMap,
   matriculationNumberToApplicationMap,
 }: MatchingResultsUploadModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const [columnNames, setColumnNames] = useState<string[]>([])
   const [upload, setUpload] = useState<object[]>()
   const [joinColumnName, setJoinColumnName] = useState<string | null>(null)
   const [joinColumnName2, setJoinColumnName2] = useState<string | null>(null)
+
+  const enrollApplication = useMutation({
+    mutationFn: (variables: { applicationType: ApplicationType; applicationIds: string[] }) =>
+      postApplicationEnrollment(variables.applicationType, variables.applicationIds),
+    onSuccess: (data, variables) => {
+      if (variables.applicationType === ApplicationType.DEVELOPER) {
+        queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
+      } else if (variables.applicationType === ApplicationType.COACH) {
+        queryClient.invalidateQueries({ queryKey: [Query.COACH_APPLICATION] })
+      } else if (variables.applicationType === ApplicationType.TUTOR) {
+        queryClient.invalidateQueries({ queryKey: [Query.TUTOR_APPLICATION] })
+      }
+    },
+  })
 
   return (
     <Modal
@@ -125,13 +136,10 @@ export const MatchingResultsUploadModal = ({
                     )
                   })
               }
-              if (applicationType === 'DEVELOPER') {
-                void dispatch(enrollDeveloperApplicationsToCourse(enrolledApplicationIds))
-              } else if (applicationType === 'COACH') {
-                void dispatch(enrollCoachApplicationsToCourse(enrolledApplicationIds))
-              } else if (applicationType === 'TUTOR') {
-                void dispatch(enrollTutorApplicationsToCourse(enrolledApplicationIds))
-              }
+              enrollApplication.mutate({
+                applicationType: applicationType as ApplicationType,
+                applicationIds: enrolledApplicationIds,
+              })
               onClose()
             }
           }}

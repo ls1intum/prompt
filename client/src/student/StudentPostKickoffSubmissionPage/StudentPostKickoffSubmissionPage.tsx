@@ -11,9 +11,6 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
-import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import {
   Button,
   Card,
@@ -30,19 +27,26 @@ import {
   Textarea,
   Title,
 } from '@mantine/core'
-import { type ProjectTeam } from '../../redux/projectTeamsSlice/projectTeamsSlice'
 import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
-import { fetchCourseIterationsWithOpenKickOffPeriod } from '../../redux/courseIterationSlice/thunks/fetchAllCourseIterations'
 import { isNotEmpty, useForm } from '@mantine/form'
+import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
+import { notifications } from '@mantine/notifications'
+import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
+import { useQuery } from '@tanstack/react-query'
+import { getProjectTeams } from '../../network/projectTeam'
+import { Query } from '../../state/query'
+import { useSkillStore } from '../../state/zustand/useSkillStore'
+import { getSkills } from '../../network/skill'
+import { Skill } from '../../interface/skill'
+import { CourseIteration } from '../../interface/courseIteration'
+import { getCourseIterationsWithOpenKickOffPeriod } from '../../network/courseIteration'
+import { ProjectTeam } from '../../interface/projectTeam'
 import {
   SkillAssessmentSource,
   SkillProficiency,
-  type StudentPostKickoffSubmission,
-} from '../../redux/studentPostKickoffSubmissionsSlice/studentPostKickoffSubmissionsSlice'
-import { fetchSkills } from '../../redux/skillsSlice/thunks/fetchSkills'
-import { createPostKickoffSubmission } from '../../service/postKickoffSubmissionService'
-import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
-import { notifications } from '@mantine/notifications'
+  StudentPostKickoffSubmission,
+} from '../../interface/postKickOffSubmission'
+import { postPostKickoffSubmission } from '../../network/postKickOffSubmission'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
   const shuffledArray = [...array]
@@ -78,12 +82,8 @@ const SuccessfulSubmission = ({ title, text }: SuccessfulSubmissionProps): JSX.E
 
 export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   const [studentId, setStudentId] = useState('')
-  const courseIterationWithOpenKickOffPeriod = useAppSelector(
-    (state) => state.courseIterations.courseIterationWithOpenKickOffPeriod,
-  )
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
-  const skills = useAppSelector((state) => state.skills.skills)
-  const dispatch = useDispatch<AppDispatch>()
+  const { projectTeams, setProjectTeams } = useProjectTeamStore()
+  const { skills, setSkills } = useSkillStore()
   const [leftSideState, leftSideStateHandlers] = useListState<ProjectTeam>([])
   const [rightSideState, rightSideStateHandlers] = useListState<ProjectTeam>([])
   const [studentVerificationDialogOpened, setStudentVerificationDialogOpened] = useState(false)
@@ -121,10 +121,31 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   })
   const [formSubmitted, setFormSubmitted] = useState(false)
 
+  const { data: courseIteration } = useQuery<CourseIteration | undefined>({
+    queryKey: [Query.COURSE_ITERATION],
+    queryFn: () => getCourseIterationsWithOpenKickOffPeriod(),
+  })
+
+  const { data: fetchedProjectTeams } = useQuery<ProjectTeam[]>({
+    queryKey: [Query.PROJECT_TEAM, courseIteration?.semesterName],
+    queryFn: () => getProjectTeams(courseIteration?.semesterName ?? ''),
+    enabled: !!courseIteration,
+  })
+
   useEffect(() => {
-    void dispatch(fetchCourseIterationsWithOpenKickOffPeriod())
-    void dispatch(fetchSkills())
-  }, [dispatch])
+    if (fetchedProjectTeams) {
+      setProjectTeams(fetchedProjectTeams)
+    }
+  }, [fetchedProjectTeams, setProjectTeams])
+
+  const { data: fetchedSkills } = useQuery<Skill[]>({
+    queryKey: [Query.SKILL],
+    queryFn: getSkills,
+  })
+
+  useEffect(() => {
+    setSkills(fetchedSkills ?? [])
+  }, [fetchedSkills, setSkills])
 
   useEffect(() => {
     form.setValues({
@@ -138,12 +159,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       }),
     })
   }, [form, skills])
-
-  useEffect(() => {
-    if (courseIterationWithOpenKickOffPeriod) {
-      void dispatch(fetchProjectTeams(courseIterationWithOpenKickOffPeriod.semesterName))
-    }
-  }, [dispatch, courseIterationWithOpenKickOffPeriod])
 
   useEffect(() => {
     rightSideStateHandlers.setState(shuffleProjectTeams(projectTeams))
@@ -456,7 +471,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
             <Button
               variant='filled'
               disabled={
-                !courseIterationWithOpenKickOffPeriod ||
+                !courseIteration ||
                 !form.isValid() ||
                 !consentForm.isValid() ||
                 leftSideState.length !== projectTeams.length
@@ -469,20 +484,17 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                       preferencesMap.set(preference.id, index)
                     })
 
-                    if (courseIterationWithOpenKickOffPeriod) {
-                      const response = await createPostKickoffSubmission({
-                        studentId,
-                        studentPostKickoffSubmission: {
-                          ...form.values,
-                          studentProjectTeamPreferences: leftSideState.map(
-                            (projectTeam, priorityScore) => {
-                              return {
-                                projectTeamId: projectTeam.id,
-                                priorityScore,
-                              }
-                            },
-                          ),
-                        },
+                    if (courseIteration) {
+                      const response = await postPostKickoffSubmission(studentId, {
+                        ...form.values,
+                        studentProjectTeamPreferences: leftSideState.map(
+                          (projectTeam, priorityScore) => {
+                            return {
+                              projectTeamId: projectTeam.id,
+                              priorityScore,
+                            }
+                          },
+                        ),
                       })
                       if (response) {
                         setFormSubmitted(true)

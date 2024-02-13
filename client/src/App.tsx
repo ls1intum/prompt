@@ -32,12 +32,24 @@ import '@mantine/tiptap/styles.css'
 import '@mantine/dropzone/styles.css'
 import 'mantine-contextmenu/styles.layer.css'
 import 'mantine-datatable/styles.layer.css'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Permission } from './interface/authentication'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 export const App = (): JSX.Element => {
   const [keycloakValue, setKeycloakValue] = useState<Keycloak>()
 
   return (
-    <div>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <MantineProvider defaultColorScheme='auto'>
         <ContextMenuProvider>
           <Notifications limit={5} />
@@ -52,7 +64,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<CourseIterationConsole />}
-                    permission={['ipraktikum-pm']}
+                    permission={[Permission.PM]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -62,7 +74,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<StudentApplicationOverview />}
-                    permission={['ipraktikum-pm']}
+                    permission={[Permission.PM]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -72,7 +84,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<TeamAllocationConsole />}
-                    permission={['ipraktikum-pm']}
+                    permission={[Permission.PM]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -82,7 +94,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={keycloakValue ? <IntroCourseConsole keycloak={keycloakValue} /> : <></>}
-                    permission={['ipraktikum-pm', 'ipraktikum-tutor']}
+                    permission={[Permission.PM, Permission.TUTOR]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -92,7 +104,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<InfrastructureManagement />}
-                    permission={['ipraktikum-pm']}
+                    permission={[Permission.PM]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -102,7 +114,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<GradingManagementConsole />}
-                    permission={['ipraktikum-pm']}
+                    permission={[Permission.PM, Permission.COACH, Permission.PL]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -112,7 +124,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<MailingManagementConsole />}
-                    permission={['ipraktikum-pm', 'chair-member']}
+                    permission={[Permission.PM, Permission.CHAIR_MEMBER]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -122,7 +134,7 @@ export const App = (): JSX.Element => {
                 element={
                   <ManagementConsole
                     child={<ManagementRoot />}
-                    permission={['ipraktikum-pm', 'ipraktikum-tutor']}
+                    permission={[Permission.PM, Permission.TUTOR, Permission.COACH, Permission.PL]}
                     onKeycloakValueChange={setKeycloakValue}
                   />
                 }
@@ -188,7 +200,7 @@ export const App = (): JSX.Element => {
           </BrowserRouter>
         </ContextMenuProvider>
       </MantineProvider>
-    </div>
+    </QueryClientProvider>
   )
 }
 

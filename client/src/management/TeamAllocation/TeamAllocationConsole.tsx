@@ -8,32 +8,62 @@ import {
 } from '@tabler/icons-react'
 import { StudentProjectTeamPreferencesManager } from './components/StudentProjectTeamPreferencesManager/StudentProjectTeamPreferencesManager'
 import { SkillsManager } from './components/SkillsManager/SkillsManager'
-import { type AppDispatch, useAppSelector } from '../../redux/store'
 import { Link } from 'react-router-dom'
-import { fetchDeveloperApplications } from '../../redux/applicationsSlice/thunks/fetchApplications'
-import { useDispatch } from 'react-redux'
-import { fetchProjectTeams } from '../../redux/projectTeamsSlice/thunks/fetchProjectTeams'
 import { useEffect } from 'react'
-import { fetchStudentPostKickoffSubmissions } from '../../redux/studentPostKickoffSubmissionsSlice/thunks/fetchStudentPostKickoffSubmissions'
-import { fetchIntroCourseParticipations } from '../../redux/introCourseSlice/thunks/fetchIntroCourseParticipations'
+import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
+import { useQuery } from '@tanstack/react-query'
+import { Query } from '../../state/query'
+import { getProjectTeams } from '../../network/projectTeam'
+import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { ProjectTeam } from '../../interface/projectTeam'
+import { useIntroCourseStore } from '../../state/zustand/useIntroCourseStore'
+import { IntroCourseParticipation } from '../../interface/introCourse'
+import { getIntroCourseParticipations } from '../../network/introCourse'
+import { usePostKickOffSubmissionStore } from '../../state/zustand/usePostKickOffSubmissionStore'
+import { StudentPostKickoffSubmission } from '../../interface/postKickOffSubmission'
+import { getPostKickOffSubmissions } from '../../network/postKickOffSubmission'
 
 export const TeamAllocationConsole = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const { setProjectTeams } = useProjectTeamStore()
+  const { setParticipations } = useIntroCourseStore()
+  const { setPostKickOffSubmissions } = usePostKickOffSubmissionStore()
+  const { selectedCourseIteration } = useCourseIterationStore()
+
+  const { data: projectTeams } = useQuery<ProjectTeam[]>({
+    queryKey: [Query.PROJECT_TEAM, selectedCourseIteration?.semesterName],
+    queryFn: () => getProjectTeams(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
 
   useEffect(() => {
-    if (selectedCourseIteration) {
-      void dispatch(
-        fetchDeveloperApplications({
-          courseIteration: selectedCourseIteration.semesterName,
-          status: 'INTRO_COURSE_PASSED',
-        }),
-      )
-      void dispatch(fetchProjectTeams(selectedCourseIteration.semesterName))
-      void dispatch(fetchStudentPostKickoffSubmissions(selectedCourseIteration.semesterName))
-      void dispatch(fetchIntroCourseParticipations(selectedCourseIteration.semesterName))
+    if (projectTeams) {
+      setProjectTeams(projectTeams)
     }
-  }, [dispatch, selectedCourseIteration])
+  }, [projectTeams, setProjectTeams])
+
+  const { data: participations } = useQuery<IntroCourseParticipation[]>({
+    queryKey: [Query.INTRO_COURSE, selectedCourseIteration?.semesterName],
+    queryFn: () => getIntroCourseParticipations(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
+
+  useEffect(() => {
+    if (participations) {
+      setParticipations(participations)
+    }
+  }, [participations, setParticipations])
+
+  const { data: postKickOffSubmissions } = useQuery<StudentPostKickoffSubmission[]>({
+    queryKey: [Query.POST_KICK_OFF, selectedCourseIteration?.semesterName],
+    queryFn: () => getPostKickOffSubmissions(selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+  })
+
+  useEffect(() => {
+    if (postKickOffSubmissions) {
+      setPostKickOffSubmissions(postKickOffSubmissions)
+    }
+  }, [postKickOffSubmissions, setPostKickOffSubmissions])
 
   return (
     <Stack>

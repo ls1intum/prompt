@@ -1,10 +1,10 @@
 import { Button, Checkbox, Modal, Stack, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { type Skill } from '../../../../redux/skillsSlice/skillsSlice'
 import { IconPlus } from '@tabler/icons-react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../../redux/store'
-import { createSkill } from '../../../../redux/skillsSlice/thunks/createSkill'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { postSkill } from '../../../../network/skill'
+import { Query } from '../../../../state/query'
+import { Skill } from '../../../../interface/skill'
 
 interface SkillCreationModalProps {
   opened: boolean
@@ -12,12 +12,21 @@ interface SkillCreationModalProps {
 }
 
 export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const form = useForm<Skill>({
     initialValues: {
       title: '',
       description: '',
       active: true,
+    },
+  })
+
+  const createSkill = useMutation({
+    mutationFn: () => {
+      return postSkill(form.values)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.SKILL] })
     },
   })
 
@@ -52,7 +61,7 @@ export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps)
           <Button
             leftSection={<IconPlus />}
             onClick={() => {
-              void dispatch(createSkill(form.values))
+              createSkill.mutate()
               close()
             }}
           >

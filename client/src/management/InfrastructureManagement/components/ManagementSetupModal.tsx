@@ -6,7 +6,7 @@ import { JiraProjectCategoriesCreationForm } from './jira/JiraProjectCategoriesC
 import { JiraProjectsCreationForm } from './jira/JiraProjectsCreationForm'
 import { ConfluenceSpaceCreationForm } from './confluence/ConfluenceSpaceCreationForm'
 import { ConfluenceSpacePermissionAssignmentForm } from './confluence/ConfluenceSpacePermissionAssignmentForm'
-import { JIRA_USER_GROUPS_MGMT } from '../../../service/jiraService'
+import { JIRA_USER_GROUPS_MGMT } from '../../../network/jiraService'
 
 interface ManagementSetupModalProps {
   opened: boolean

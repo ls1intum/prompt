@@ -1,13 +1,10 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../../../redux/store'
 import { useForm } from '@mantine/form'
-import {
-  type CoursePhase,
-  CoursePhaseType,
-} from '../../../../redux/coursePhasesSlice/coursePhasesSlice'
-import { createCoursePhase } from '../../../../redux/coursePhasesSlice/thunks/createCoursePhase'
 import { useEffect } from 'react'
+import { CoursePhase, CoursePhaseType } from '../../../../interface/coursePhase'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { postCoursePhase } from '../../../../network/coursePhase'
+import { Query } from '../../../../state/query'
 
 interface CoursePhaseCreationModalProps {
   opened: boolean
@@ -20,7 +17,7 @@ export const CoursePhaseCreationModal = ({
   onClose,
   nextSeqOrderNumber,
 }: CoursePhaseCreationModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
+  const queryClient = useQueryClient()
   const form = useForm<CoursePhase>({
     initialValues: {
       id: '',
@@ -28,6 +25,14 @@ export const CoursePhaseCreationModal = ({
       type: CoursePhaseType.OTHER,
       sequentialOrder: nextSeqOrderNumber,
       checks: [],
+    },
+  })
+
+  const createCoursePhase = useMutation({
+    mutationFn: () => postCoursePhase(form.values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.COURSE_PHASE] })
+      onClose()
     },
   })
 
@@ -49,8 +54,7 @@ export const CoursePhaseCreationModal = ({
         <Group align='right'>
           <Button
             onClick={() => {
-              void dispatch(createCoursePhase(form.values))
-              onClose()
+              createCoursePhase.mutate()
             }}
           >
             Submit

@@ -5,7 +5,6 @@ import {
   Modal,
   Notification,
   Stack,
-  Text,
   TextInput,
   Tooltip,
 } from '@mantine/core'
@@ -21,20 +20,20 @@ import {
 } from '@tabler/icons-react'
 import { DataTable } from 'mantine-datatable'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import {
-  type ProjectTeamPatch,
-  type ProjectTeam,
-} from '../../../../redux/projectTeamsSlice/projectTeamsSlice'
-import { createProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/createProjectTeam'
-import { deleteProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/deleteProjectTeam'
-import { updateProjectTeam } from '../../../../redux/projectTeamsSlice/thunks/updateProjectTeam'
-import { type AppDispatch, useAppSelector } from '../../../../redux/store'
 import { ProjectTeamMemberListModal } from './ProjectTeamMemberListModal'
 import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { sendKickoffSubmissionInvitations } from '../../../../redux/studentPostKickoffSubmissionsSlice/thunks/sendKickoffSubmissionInvitations'
 import { notifications } from '@mantine/notifications'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { patchProjectTeam, postProjectTeam } from '../../../../network/projectTeam'
+import { Query } from '../../../../state/query'
+import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
+import { Patch } from '../../../../network/configService'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
+import { Application, ApplicationType } from '../../../../interface/application'
+import { getApplications } from '../../../../network/application'
+import { ProjectTeam } from '../../../../interface/projectTeam'
+import { postInvitationsToPostKickOffSubmissions } from '../../../../network/postKickOffSubmission'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -47,8 +46,8 @@ const ProjectTeamCreationModal = ({
   opened,
   onClose,
 }: ProjectTeamCreationModalProps): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
+  const queryClient = useQueryClient()
+  const { selectedCourseIteration } = useCourseIterationStore()
   const form = useForm<ProjectTeam>({
     initialValues: projectTeam
       ? { ...projectTeam }
@@ -56,11 +55,31 @@ const ProjectTeamCreationModal = ({
           id: '',
           name: '',
           customer: '',
+          projectLeadTumId: '',
+          coachTumId: '',
         },
   })
 
+  const createProjectTeam = useMutation({
+    mutationFn: () => {
+      return postProjectTeam(selectedCourseIteration?.semesterName ?? '', form.values)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
+    },
+  })
+
+  const updateProjectTeam = useMutation({
+    mutationFn: (projectTeamPatch: Patch[]) => {
+      return patchProjectTeam(projectTeam?.id ?? '', projectTeamPatch)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
+    },
+  })
+
   return (
-    <Modal opened={opened} onClose={onClose} centered>
+    <Modal title={projectTeam?.customer} opened={opened} onClose={onClose} centered>
       <Stack>
         <TextInput
           withAsterisk
@@ -76,12 +95,24 @@ const ProjectTeamCreationModal = ({
           placeholder='Customer'
           {...form.getInputProps('customer')}
         />
+        <Group grow>
+          <TextInput
+            label='Project Lead TUM ID'
+            placeholder='Project lead TUM ID'
+            {...form.getInputProps('projectLeadTumId')}
+          />
+          <TextInput
+            label='Coach TUM ID'
+            placeholder='Coach TUM ID'
+            {...form.getInputProps('coachTumId')}
+          />
+        </Group>
         <Button
           type='submit'
           onClick={() => {
             if (selectedCourseIteration) {
               if (projectTeam) {
-                const projectTeamPatchObjectArray: ProjectTeamPatch[] = []
+                const projectTeamPatchObjectArray: Patch[] = []
                 Object.keys(form.values).forEach((key) => {
                   const projectTeamPatchObject = new Map()
                   projectTeamPatchObject.set('op', 'replace')
@@ -91,19 +122,9 @@ const ProjectTeamCreationModal = ({
                   projectTeamPatchObjectArray.push(obj)
                 })
 
-                void dispatch(
-                  updateProjectTeam({
-                    projectTeamId: projectTeam.id,
-                    projectTeamPatch: projectTeamPatchObjectArray,
-                  }),
-                )
+                updateProjectTeam.mutate(projectTeamPatchObjectArray)
               } else {
-                void dispatch(
-                  createProjectTeam({
-                    projectTeam: form.values,
-                    courseIteration: selectedCourseIteration.semesterName,
-                  }),
-                )
+                createProjectTeam.mutate()
               }
               form.reset()
               onClose()
@@ -118,10 +139,9 @@ const ProjectTeamCreationModal = ({
 }
 
 export const ProjectTeamsManager = (): JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>()
-  const selectedCourseIteration = useAppSelector((state) => state.courseIterations.currentState)
-  const projectTeams = useAppSelector((state) => state.projectTeams.projectTeams)
-  const studentApplications = useAppSelector((state) => state.applications.developerApplications)
+  const queryClient = useQueryClient()
+  const { selectedCourseIteration } = useCourseIterationStore()
+  const { projectTeams } = useProjectTeamStore()
   const [invitationSendOutConfirmationModalOpened, setInvitationSendOutConfirmationModalOpened] =
     useState(false)
   const [projectTeamCreationModalOpen, setProjectTeamCreationModalOpen] = useState(false)
@@ -137,6 +157,25 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteAttemptNonEmptyProjectTeamShowed, setDeleteAttemptNotEmptyProjectTeamShowed] =
     useState(false)
+
+  const { data: developerApplications = [], isLoading } = useQuery<Application[]>({
+    queryKey: [Query.DEVELOPER_APPLICATION],
+    queryFn: () =>
+      getApplications(
+        ApplicationType.DEVELOPER,
+        selectedCourseIteration?.semesterName ?? '',
+        'INTRO_COURSE_PASSED',
+      ),
+  })
+
+  const deleteProjectTeam = useMutation({
+    mutationFn: (projectTeamId: string) => {
+      return deleteProjectTeam(projectTeamId)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
+    },
+  })
 
   useEffect(() => {
     const from = (tablePage - 1) * tablePageSize
@@ -165,7 +204,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         }}
         onConfirm={() => {
           if (selectedCourseIteration) {
-            void dispatch(sendKickoffSubmissionInvitations(selectedCourseIteration.semesterName))
+            postInvitationsToPostKickOffSubmissions(selectedCourseIteration.semesterName)
             setInvitationSendOutConfirmationModalOpened(false)
           } else {
             notifications.show({
@@ -234,7 +273,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
           text={`Are you sure you want to delete the project team ${selectedProjectTeam.name}?`}
           onConfirm={() => {
             if (selectedProjectTeam) {
-              void dispatch(deleteProjectTeam(selectedProjectTeam.id))
+              deleteProjectTeam.mutate(selectedProjectTeam.id)
               setProjectTeamDeletionConfirmationOpen(false)
               setSelectedProjectTeam(undefined)
             }
@@ -243,6 +282,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
       )}
       {selectedProjectTeam && (
         <ProjectTeamMemberListModal
+          applications={developerApplications}
           projectTeam={selectedProjectTeam}
           opened={projectTeamMemberListModalOpen}
           onClose={() => {
@@ -265,6 +305,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         </Notification>
       )}
       <DataTable
+        fetching={isLoading}
         withTableBorder
         highlightOnHover
         borderRadius='sm'
@@ -296,11 +337,11 @@ export const ProjectTeamsManager = (): JSX.Element => {
             accessor: 'size',
             title: 'Team Size',
             render: ({ id }) =>
-              `${studentApplications.filter((sa) => sa.projectTeam?.id === id).length}`,
+              `${developerApplications.filter((sa) => sa.projectTeam?.id === id).length}`,
           },
           {
             accessor: 'actions',
-            title: <Text mr='xs'>Actions</Text>,
+            title: 'Actions',
             textAlign: 'right',
             render: (projectTeam) => (
               <Group gap={4} justify='flex-end' wrap='nowrap'>
@@ -334,7 +375,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
                     color='red'
                     onClick={(e) => {
                       if (
-                        studentApplications.filter((sa) => sa.projectTeam?.id === projectTeam.id)
+                        developerApplications.filter((sa) => sa.projectTeam?.id === projectTeam.id)
                           .length > 0
                       ) {
                         setDeleteAttemptNotEmptyProjectTeamShowed(true)

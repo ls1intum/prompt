@@ -4,7 +4,7 @@ import {
   type BitbucketProject,
   fetchBitbucketProjects,
   createBitbucketProjectRepositories,
-} from '../../../../service/bitbucketService'
+} from '../../../../network/bitbucketService'
 import { MultiSelectCreatable, MultiSelectItem } from '../../../../utilities/CustomMultiSelect'
 
 interface BitbucketStudentRepositoryCreationFormProps {
