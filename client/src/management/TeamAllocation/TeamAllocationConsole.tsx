@@ -42,7 +42,7 @@ export const TeamAllocationConsole = (): JSX.Element => {
   }, [projectTeams, setProjectTeams])
 
   const { data: participations } = useQuery<IntroCourseParticipation[]>({
-    queryKey: [Query.INTRO_COURSE],
+    queryKey: [Query.INTRO_COURSE, selectedCourseIteration?.semesterName],
     queryFn: () => getIntroCourseParticipations(selectedCourseIteration?.semesterName ?? ''),
     enabled: !!selectedCourseIteration,
   })
@@ -54,7 +54,7 @@ export const TeamAllocationConsole = (): JSX.Element => {
   }, [participations, setParticipations])
 
   const { data: postKickOffSubmissions } = useQuery<StudentPostKickoffSubmission[]>({
-    queryKey: [Query.POST_KICK_OFF],
+    queryKey: [Query.POST_KICK_OFF, selectedCourseIteration?.semesterName],
     queryFn: () => getPostKickOffSubmissions(selectedCourseIteration?.semesterName ?? ''),
     enabled: !!selectedCourseIteration,
   })

@@ -32,6 +32,7 @@ import useDeviceDetection from '../hooks/useDeviceDetection'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
 import { Permission } from '../../interface/authentication'
+import { useQueryClient } from '@tanstack/react-query'
 
 const navigationContents = [
   {
@@ -84,6 +85,7 @@ interface NavigationLayoutProps {
 }
 
 export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps): JSX.Element => {
+  const queryClient = useQueryClient()
   const { user } = useAuthenticationStore()
   const navigate = useNavigate()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
@@ -179,7 +181,9 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
                 (as) => as.id.toString() === changedCourseIterationId,
               )
               if (changedCourseIteration) {
+                const oldCourseIterationSemesterName = selectedCourseIteration?.semesterName
                 setSelectedCourseIteration(changedCourseIteration)
+                queryClient.invalidateQueries({ queryKey: [oldCourseIterationSemesterName] })
               }
             }}
           />
