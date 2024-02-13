@@ -244,7 +244,9 @@ export const CourseIterationCreationModal = ({
 }
 
 export const WorkspaceSelectionDialog = (): JSX.Element => {
-  const { courseIterations, setSelectedCourseIteration } = useCourseIterationStore()
+  const queryClient = useQueryClient()
+  const { courseIterations, selectedCourseIteration, setSelectedCourseIteration } =
+    useCourseIterationStore()
   const [workspaceCreationModalOpen, setWorkspaceCreationModalOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize] = useState(5)
@@ -293,7 +295,12 @@ export const WorkspaceSelectionDialog = (): JSX.Element => {
                         variant='outline'
                         key={courseIteration.id}
                         onClick={() => {
+                          const oldCourseIterationSemesterName =
+                            selectedCourseIteration?.semesterName
                           setSelectedCourseIteration(courseIteration)
+                          queryClient.invalidateQueries({
+                            queryKey: [oldCourseIterationSemesterName],
+                          })
                         }}
                       >
                         {courseIteration.semesterName}
