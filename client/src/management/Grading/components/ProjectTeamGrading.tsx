@@ -1,16 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StudentGradingForm } from './StudentGradingForm'
 import { Tabs, Text } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../../state/query'
 import { getDeveloperApplicationsByProjectTeam } from '../../../network/application'
 import { useProjectTeamStore } from '../../../state/zustand/useProjectTeamStore'
+import { Application } from '../../../interface/application'
 
 interface ProjectTeamGradingProps {
   projectTeamId: string
+  setExportGrades: (projectTeam: string, applications: Application[]) => void
 }
 
-export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): JSX.Element => {
+export const ProjectTeamGrading = ({
+  projectTeamId,
+  setExportGrades,
+}: ProjectTeamGradingProps): JSX.Element => {
   const projectTeam = useProjectTeamStore((state) =>
     state.projectTeams.find((pt) => pt.id === projectTeamId),
   )
@@ -23,10 +28,17 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
     queryFn: () => getDeveloperApplicationsByProjectTeam(projectTeamId),
   })
 
+  useEffect(() => {
+    if (developerApplications) {
+      setExportGrades(projectTeam?.name ?? '', developerApplications)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [developerApplications, projectTeam])
+
   return (
-    <div style={{ margin: '10vh 5vw' }}>
+    <div style={{ margin: '5vh 0vw' }}>
       {!isLoading && (!developerApplications || developerApplications?.length === 0) && (
-        <Text c='dimmed' fw={500}>{`No developers are assigned to ${
+        <Text c='dimmed' fw={500} ta='center'>{`No developers are assigned to ${
           projectTeam?.customer ?? ''
         } project team.`}</Text>
       )}

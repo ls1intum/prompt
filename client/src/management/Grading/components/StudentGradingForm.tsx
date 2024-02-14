@@ -41,7 +41,10 @@ export const StudentGradingForm = ({ application }: StudentGradingFormProps): JS
 
   return (
     <Stack>
-      <Text>{`${application.student.firstName} ${application.student.lastName}`}</Text>
+      <Text
+        fw={500}
+        ta='center'
+      >{`${application.student.firstName} ${application.student.lastName}`}</Text>
       <TextInput
         onWheel={(e) => {
           e.currentTarget.blur()
@@ -58,7 +61,7 @@ export const StudentGradingForm = ({ application }: StudentGradingFormProps): JS
           label='Comment'
           autosize
           minRows={5}
-          placeholder='Why do you want to participate in iPraktikum?'
+          placeholder='Comment'
           {...form.getInputProps('comment')}
         />
         {!form.errors.comment && (
