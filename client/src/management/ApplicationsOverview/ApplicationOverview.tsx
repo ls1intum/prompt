@@ -141,61 +141,62 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   return (
     <Stack>
-      <Group align='apart'>
-        <Group align='left' style={{ alignItems: 'center' }}>
-          <TextInput
-            style={{ margin: '1vh 0', width: '30vw' }}
-            placeholder='Search applications...'
-            leftSection={<IconSearch size={16} />}
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.currentTarget.value)
-            }}
-          />
-          <Menu withArrow closeOnItemClick={false}>
-            <Menu.Target>
-              <IconAdjustments />
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item>
-                <Checkbox
-                  label='Male'
-                  checked={filters.male}
-                  onChange={(e) => {
-                    setFilters({ ...filters, male: e.currentTarget.checked })
-                  }}
-                />
-              </Menu.Item>
-              <Menu.Item>
-                <Checkbox
-                  label='Female'
-                  checked={filters.female}
-                  onChange={(e) => {
-                    setFilters({ ...filters, female: e.currentTarget.checked })
-                  }}
-                />
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-        <Group>
-          <Button
-            variant='outline'
-            disabled={filters.applicationType.length !== 1}
-            onClick={() => {
-              setMatchingResultsUploadModalOpened(true)
-            }}
-          >
-            Upload Matching Results
-          </Button>
-          <Tooltip
-            withArrow
-            color='blue'
-            label="To start automatic assessment of developer applications based on the 
+      <Group>
+        <TextInput
+          style={{ margin: '1vh 0', width: '40vw' }}
+          placeholder='Search applications...'
+          leftSection={<IconSearch size={16} />}
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.currentTarget.value)
+          }}
+        />
+        <Menu withArrow closeOnItemClick={false}>
+          <Menu.Target>
+            <IconAdjustments />
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item>
+              <Checkbox
+                label='Male'
+                checked={filters.male}
+                onChange={(e) => {
+                  setFilters({ ...filters, male: e.currentTarget.checked })
+                }}
+              />
+            </Menu.Item>
+            <Menu.Item>
+              <Checkbox
+                label='Female'
+                checked={filters.female}
+                onChange={(e) => {
+                  setFilters({ ...filters, female: e.currentTarget.checked })
+                }}
+              />
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+        <Menu withArrow>
+          <Menu.Target>
+            <Button>Actions</Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item
+              disabled={filters.applicationType.length !== 1}
+              onClick={() => {
+                setMatchingResultsUploadModalOpened(true)
+              }}
+            >
+              Upload Matching Results
+            </Menu.Item>
+            <Tooltip
+              withArrow
+              color='blue'
+              label="To start automatic assessment of developer applications based on the 
             technical challenge score, please select solely 'Developer' sorting filter"
-          >
-            <div>
-              <Button
+            >
+              <Menu.Item
                 disabled={
                   filters.applicationType.length > 1 ||
                   !filters.applicationType.includes(ApplicationType.DEVELOPER)
@@ -205,10 +206,10 @@ export const StudentApplicationOverview = (): JSX.Element => {
                 }}
               >
                 Technical Challenge Assessment
-              </Button>
-            </div>
-          </Tooltip>
-        </Group>
+              </Menu.Item>
+            </Tooltip>
+          </Menu.Dropdown>
+        </Menu>
         <TechnicalChallengeAssessmentModal
           opened={technicalChallengeAssessmentModalOpened}
           onClose={() => {

@@ -75,8 +75,8 @@ export const TeamAllocationConsole = (): JSX.Element => {
           console and specify the dates!
         </Alert>
       )}
-      <Tabs defaultValue='teams' variant='outline'>
-        <Tabs.List>
+      <Tabs defaultValue='teams'>
+        <Tabs.List grow>
           <Tabs.Tab value='teams' leftSection={<IconUsers />}>
             Project Teams Management
           </Tabs.Tab>

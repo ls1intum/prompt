@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { StudentGradingForm } from './StudentGradingForm'
 import { Tabs, Text } from '@mantine/core'
-import { type Application } from '../../../interface/application'
 import { useQuery } from '@tanstack/react-query'
 import { Query } from '../../../state/query'
 import { getDeveloperApplicationsByProjectTeam } from '../../../network/application'
@@ -18,22 +17,11 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
   const [selectedDeveloperApplicationId, setSelectedDeveloperApplicationId] = useState<
     string | null
   >()
-  const [selectedDeveloperApplication, setSelectedDeveloperApplication] =
-    useState<Application | null>()
 
   const { data: developerApplications, isLoading } = useQuery({
     queryKey: [Query.DEVELOPER_APPLICATION, projectTeamId],
     queryFn: () => getDeveloperApplicationsByProjectTeam(projectTeamId),
   })
-  useEffect(() => {
-    if (projectTeam && selectedDeveloperApplicationId) {
-      setSelectedDeveloperApplication(
-        developerApplications?.find(
-          (application) => application.id === selectedDeveloperApplicationId,
-        ),
-      )
-    }
-  }, [developerApplications, projectTeam, selectedDeveloperApplicationId])
 
   return (
     <div style={{ margin: '10vh 5vw' }}>
@@ -44,8 +32,9 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
       )}
       {developerApplications && (
         <Tabs
+          defaultValue={developerApplications.at(0)?.id}
           orientation='vertical'
-          placement='right'
+          placement='left'
           variant='pills'
           value={selectedDeveloperApplicationId}
           onChange={setSelectedDeveloperApplicationId}
@@ -62,11 +51,9 @@ export const ProjectTeamGrading = ({ projectTeamId }: ProjectTeamGradingProps): 
           {developerApplications?.map((developerApplication) => {
             return (
               <Tabs.Panel value={developerApplication.id} key={developerApplication.id}>
-                {selectedDeveloperApplication && selectedDeveloperApplication && (
-                  <div style={{ margin: '0 2vw' }}>
-                    <StudentGradingForm application={selectedDeveloperApplication} />
-                  </div>
-                )}
+                <div style={{ margin: '0 2vw' }}>
+                  <StudentGradingForm application={developerApplication} />
+                </div>
               </Tabs.Panel>
             )
           })}

@@ -192,7 +192,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
   }, [projectTeams, tablePageSize, tablePage, searchQuery])
 
   return (
-    <Stack>
+    <Stack style={{ margin: '2vh 0' }}>
       <ConfirmationModal
         title='Kick-Off Submission Invitations Send Out'
         text="Are You sure You would like to invite students to submit 
@@ -234,7 +234,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
       )}
       <Group align='apart'>
         <TextInput
-          style={{ flexBasis: '60%', margin: '1vh 0' }}
+          style={{ flexBasis: '40%', margin: '1vh 0' }}
           placeholder='Search project teams...'
           leftSection={<IconSearch size={16} />}
           value={searchQuery}
@@ -310,6 +310,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
         highlightOnHover
         borderRadius='sm'
         striped
+        minHeight={200}
         verticalAlign='top'
         bodyRef={bodyRef}
         records={tableRecords}
