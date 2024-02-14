@@ -141,9 +141,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   return (
     <Stack>
-      <Group align='apart'>
+      <Group>
         <TextInput
-          style={{ margin: '1vh 0' }}
+          style={{ margin: '1vh 0', width: '40vw' }}
           placeholder='Search applications...'
           leftSection={<IconSearch size={16} />}
           value={searchQuery}
@@ -176,42 +176,40 @@ export const StudentApplicationOverview = (): JSX.Element => {
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-        <Group>
-          <Menu withArrow>
-            <Menu.Target>
-              <Button>Actions</Button>
-            </Menu.Target>
+        <Menu withArrow>
+          <Menu.Target>
+            <Button>Actions</Button>
+          </Menu.Target>
 
-            <Menu.Dropdown>
+          <Menu.Dropdown>
+            <Menu.Item
+              disabled={filters.applicationType.length !== 1}
+              onClick={() => {
+                setMatchingResultsUploadModalOpened(true)
+              }}
+            >
+              Upload Matching Results
+            </Menu.Item>
+            <Tooltip
+              withArrow
+              color='blue'
+              label="To start automatic assessment of developer applications based on the 
+            technical challenge score, please select solely 'Developer' sorting filter"
+            >
               <Menu.Item
-                disabled={filters.applicationType.length !== 1}
+                disabled={
+                  filters.applicationType.length > 1 ||
+                  !filters.applicationType.includes(ApplicationType.DEVELOPER)
+                }
                 onClick={() => {
-                  setMatchingResultsUploadModalOpened(true)
+                  setTechnicalChallengeAssessmentModalOpened(true)
                 }}
               >
-                Upload Matching Results
+                Technical Challenge Assessment
               </Menu.Item>
-              <Tooltip
-                withArrow
-                color='blue'
-                label="To start automatic assessment of developer applications based on the 
-            technical challenge score, please select solely 'Developer' sorting filter"
-              >
-                <Menu.Item
-                  disabled={
-                    filters.applicationType.length > 1 ||
-                    !filters.applicationType.includes(ApplicationType.DEVELOPER)
-                  }
-                  onClick={() => {
-                    setTechnicalChallengeAssessmentModalOpened(true)
-                  }}
-                >
-                  Technical Challenge Assessment
-                </Menu.Item>
-              </Tooltip>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
+            </Tooltip>
+          </Menu.Dropdown>
+        </Menu>
         <TechnicalChallengeAssessmentModal
           opened={technicalChallengeAssessmentModalOpened}
           onClose={() => {
