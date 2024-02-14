@@ -13,3 +13,4 @@ updates:
       - "airelawaleria"
     reviewers:
       - "airelawaleria"
+    open-pull-requests-limit: 10
