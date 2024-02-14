@@ -685,12 +685,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-highlight@npm:^2.1.12":
-  version: 2.1.12
-  resolution: "@tiptap/extension-highlight@npm:2.1.12"
+"@tiptap/extension-highlight@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@tiptap/extension-highlight@npm:2.2.2"
   peerDependencies:
     "@tiptap/core": ^2.0.0
-  checksum: 10c0/58425839d581d57cf70a8e1744135946a6b43bce72a3844eb6ddd7e59a27fb42e647a2588d7f458a529b1beb6c8d1a4eb90d2409ea668705321828a96f76519a
+  checksum: 10c0/dfaf5c12f377415cd52b82014c766f476e475e1a1af8c7d319ae658fde9744939c420194f2d5eeed2cb8252fa098ba4449e8bb6c1440a0a1d12f6d1f476fa8f7
   languageName: node
   linkType: hard
 
@@ -2409,7 +2409,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.17.19"
     "@tanstack/react-query-devtools": "npm:^5.17.21"
     "@tiptap/core": "npm:^2.1.12"
-    "@tiptap/extension-highlight": "npm:^2.1.12"
+    "@tiptap/extension-highlight": "npm:^2.2.2"
     "@tiptap/extension-link": "npm:^2.1.12"
     "@tiptap/extension-subscript": "npm:^2.1.12"
     "@tiptap/extension-superscript": "npm:^2.1.12"
