@@ -550,15 +550,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:^2.1.12":
-  version: 2.1.12
-  resolution: "@tiptap/core@npm:2.1.12"
-  peerDependencies:
-    "@tiptap/pm": ^2.0.0
-  checksum: 10c0/e6d02e6276186dc64540e48934d00b6df7939f127c4e2d15e432b5689aa1bf5b0eef4c1518fee0cbfd6d63dd8a55a83fd3cd08faef4c3b9948eccf99ff17412b
-  languageName: node
-  linkType: hard
-
 "@tiptap/core@npm:^2.2.2":
   version: 2.2.2
   resolution: "@tiptap/core@npm:2.2.2"
@@ -2408,7 +2399,7 @@ __metadata:
     "@tanstack/eslint-plugin-query": "npm:^5.17.22"
     "@tanstack/react-query": "npm:^5.17.19"
     "@tanstack/react-query-devtools": "npm:^5.17.21"
-    "@tiptap/core": "npm:^2.1.12"
+    "@tiptap/core": "npm:^2.2.2"
     "@tiptap/extension-highlight": "npm:^2.1.12"
     "@tiptap/extension-link": "npm:^2.1.12"
     "@tiptap/extension-subscript": "npm:^2.1.12"
