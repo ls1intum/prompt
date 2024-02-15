@@ -392,8 +392,7 @@ export const postTechnicalScores = async (
   try {
     return (
       await axiosInstance.post(
-        `/api/applications/developer/technical-challenge-scores?
-        programmingScoreThreshold=${programmingScoreThreshold}&quizScoreThreshold=${quizScoreThreshold}`,
+        `/api/applications/developer/technical-challenge-scores?programmingScoreThreshold=${programmingScoreThreshold}&quizScoreThreshold=${quizScoreThreshold}`,
         scores,
       )
     ).data
