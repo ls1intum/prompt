@@ -550,21 +550,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:^2.1.12":
-  version: 2.1.12
-  resolution: "@tiptap/core@npm:2.1.12"
-  peerDependencies:
-    "@tiptap/pm": ^2.0.0
-  checksum: 10c0/e6d02e6276186dc64540e48934d00b6df7939f127c4e2d15e432b5689aa1bf5b0eef4c1518fee0cbfd6d63dd8a55a83fd3cd08faef4c3b9948eccf99ff17412b
-  languageName: node
-  linkType: hard
-
 "@tiptap/core@npm:^2.2.2":
   version: 2.2.2
   resolution: "@tiptap/core@npm:2.2.2"
   peerDependencies:
     "@tiptap/pm": ^2.0.0
   checksum: 10c0/3d040f990d07d19c5438436b178a63a6ce35734887e7a861ce6494e7f69fb3fd7c0b896b2d771658e660e4b6105f770f8c30ad3a899a84b667293c9ea66f9f0e
+  languageName: node
+  linkType: hard
+
+"@tiptap/core@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@tiptap/core@npm:2.2.3"
+  peerDependencies:
+    "@tiptap/pm": ^2.0.0
+  checksum: 10c0/db0aba57471c1041fa8aac2a6ff162eeea8f423eacb21b5077160701dbf15eb36e4daba549bb65f515222575b977c25f479add59eed6cde98e43077c0d10b6f4
   languageName: node
   linkType: hard
 
@@ -2408,7 +2408,7 @@ __metadata:
     "@tanstack/eslint-plugin-query": "npm:^5.17.22"
     "@tanstack/react-query": "npm:^5.17.19"
     "@tanstack/react-query-devtools": "npm:^5.17.21"
-    "@tiptap/core": "npm:^2.1.12"
+    "@tiptap/core": "npm:^2.2.3"
     "@tiptap/extension-highlight": "npm:^2.1.12"
     "@tiptap/extension-link": "npm:^2.1.12"
     "@tiptap/extension-subscript": "npm:^2.1.12"
