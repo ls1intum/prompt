@@ -51,9 +51,7 @@ public class StudentPostKickoffSubmission implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "student_project_team_preferences_id", referencedColumnName = "id"))
     private Set<StudentProjectTeamPreference> studentProjectTeamPreferences;
 
-    @Lob
     private String reasonForFirstChoice;
 
-    @Lob
     private String reasonForLastChoice;
 }

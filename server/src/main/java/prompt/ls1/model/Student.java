@@ -59,6 +59,5 @@ public class Student implements Serializable {
 
     private Boolean blockedByPm;
 
-    @Lob
     private String reasonForBlockedByPm;
 }
