@@ -23,7 +23,6 @@ public class InstructorComment implements Serializable {
     @Column(columnDefinition = "TIMESTAMP")
     private Date timestamp;
 
-    @Lob
     @Column
     private String text;
 

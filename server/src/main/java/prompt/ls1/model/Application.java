@@ -47,11 +47,9 @@ public abstract class Application {
     @Enumerated(EnumType.STRING)
     private Set<Course> coursesTaken;
 
-    @Lob
     @Column(length = 500)
     private String experience;
 
-    @Lob
     @Column(length = 500)
     private String motivation;
 
