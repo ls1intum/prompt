@@ -31,7 +31,7 @@
     "@tiptap/pm": "^2.2.2",
     "@tiptap/react": "^2.2.2",
     "@tiptap/starter-kit": "^2.2.2",
-    "axios": "^1.6.0",
+    "axios": "^1.6.7",
     "classnames": "^2.5.1",
     "clsx": "^2.0.0",
     "css-loader": "^6.8.1",
