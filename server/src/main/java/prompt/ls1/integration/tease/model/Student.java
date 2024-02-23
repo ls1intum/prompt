@@ -18,11 +18,11 @@ public class Student {
     private String germanLanguageProficiency;
     private String englishLanguageProficiency;
     private String introSelfAssessment;
+    private String introCourseProficiency;
     private String supervisorAssessment;
     private String[] devices;
     private StudentSkill[] skills;
-    private Project[] projectPriorities;
-    private String studentComments;
-    private String tutorComments;
-
+    private Comment[] studentComments;
+    private Comment[] tutorComments;
+    private ProjectPreference[] projectPreferences;
 }

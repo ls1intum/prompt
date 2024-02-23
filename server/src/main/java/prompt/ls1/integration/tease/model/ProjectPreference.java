@@ -3,9 +3,8 @@ package prompt.ls1.integration.tease.model;
 import lombok.Data;
 
 @Data
-public class Allocation {
+public class ProjectPreference {
     // key
     private String projectId;
-    // list of tumIds
-    private String[] students;
+    private int priority;
 }
