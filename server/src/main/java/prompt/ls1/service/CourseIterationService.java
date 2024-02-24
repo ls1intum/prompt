@@ -115,9 +115,10 @@ public class CourseIterationService {
         return courseIteration.getId();
     }
 
+
     public CourseIteration findBySemesterName(final String courseIterationName) {
         return courseIterationRepository.findBySemesterName(courseIterationName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with key %s not found.", courseIterationName)));
     }
 
     public List<CourseIteration> findAll() {
@@ -144,7 +145,7 @@ public class CourseIterationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course iteration with open tutor application period not found."));
     }
 
-    private CourseIteration findById(final UUID courseIterationId) {
+    public CourseIteration findById(final UUID courseIterationId) {
         return courseIterationRepository.findById(courseIterationId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with id %s not found.", courseIterationId)));
     }

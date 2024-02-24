@@ -2,9 +2,9 @@ import { notifications } from '@mantine/notifications'
 import { axiosInstance } from './configService'
 import { Skill } from '../interface/skill'
 
-export const getSkills = async (): Promise<Skill[]> => {
+export const getSkills = async (courseIterationId: string): Promise<Skill[]> => {
   try {
-    return (await axiosInstance.get(`/api/skills`)).data
+    return (await axiosInstance.get(`/api/skills?courseIterationId=${courseIterationId}`)).data
   } catch (err) {
     notifications.show({
       color: 'red',

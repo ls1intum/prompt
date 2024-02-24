@@ -29,8 +29,8 @@ public class SkillController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Skill>> getAllSkills(@RequestParam(required = false) boolean includeDisabled) {
-        return ResponseEntity.ok(skillService.getAll());
+    public ResponseEntity<List<Skill>> getAllSkills(@RequestParam UUID courseIterationId) {
+        return ResponseEntity.ok(skillService.getByCourseIterationId(courseIterationId));
     }
 
     @PostMapping
