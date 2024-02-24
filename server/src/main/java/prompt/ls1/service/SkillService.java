@@ -18,8 +18,9 @@ public class SkillService {
         this.skillRepository = skillRepository;
     }
 
-    public List<Skill> getAll() {
-        return skillRepository.findAll().stream().filter(Skill::getActive).toList();
+    public List<Skill> getByCourseIterationId(final UUID courseIterationId) {
+        return skillRepository.findAllByCourseIterationId(courseIterationId)
+                .stream().filter(Skill::getActive).toList();
     }
 
     public Skill create(final Skill skill) {

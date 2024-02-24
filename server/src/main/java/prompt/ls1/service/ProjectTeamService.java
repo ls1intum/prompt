@@ -57,6 +57,11 @@ public class ProjectTeamService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with id %s not found.", projectTeamId)));
     }
 
+    public ProjectTeam findByName(final String projectTeamName) {
+        return projectTeamRepository.findByName(projectTeamName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Project team with name %s not found.", projectTeamName)));
+    }
+
     private ProjectTeam applyPatchToProjectTeam(
             JsonPatch patch, ProjectTeam targetProjectTeam) throws JsonPatchException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();

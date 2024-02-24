@@ -300,12 +300,9 @@ public class ApplicationController {
     @DeleteMapping(path = "/developer/{developerApplicationId}/project-team")
     @PreAuthorize("hasRole('ipraktikum-pm')")
     public ResponseEntity<Application> removeDeveloperApplicationFromProjectTeam(
-            @RequestParam(name = "courseIteration") @NotNull String courseIterationName,
             @PathVariable UUID developerApplicationId
     ) {
-        final CourseIteration courseIteration = courseIterationService.findBySemesterName(courseIterationName);
-
-        return ResponseEntity.ok(applicationService.removeFromProjectTeam(developerApplicationId, courseIteration.getId()));
+        return ResponseEntity.ok(applicationService.removeFromProjectTeam(developerApplicationId));
     }
 
     @DeleteMapping("/developer/{developerApplicationId}")

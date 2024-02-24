@@ -20,4 +20,6 @@ public interface ProjectTeamRepository extends JpaRepository<ProjectTeam, UUID> 
 
     Optional<ProjectTeam> findById(final UUID projectTeamId);
 
+    Optional<ProjectTeam> findByName(final String projectTeamName);
+
 }

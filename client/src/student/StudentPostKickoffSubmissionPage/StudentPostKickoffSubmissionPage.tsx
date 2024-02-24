@@ -140,7 +140,8 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
 
   const { data: fetchedSkills } = useQuery<Skill[]>({
     queryKey: [Query.SKILL],
-    queryFn: getSkills,
+    queryFn: () => getSkills(courseIteration?.id ?? ''),
+    enabled: !!courseIteration,
   })
 
   useEffect(() => {

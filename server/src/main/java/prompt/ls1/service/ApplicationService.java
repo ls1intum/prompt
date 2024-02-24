@@ -498,20 +498,16 @@ public class ApplicationService {
         return developerApplicationRepository.save(application);
     }
 
-    public Application removeFromProjectTeam(final UUID studentApplicationId, final UUID courseIterationId) {
+    public Application removeFromProjectTeam(final UUID studentApplicationId) {
         DeveloperApplication application = findDeveloperApplicationById(studentApplicationId);
-
-        if (!application.getCourseIterationId().equals(courseIterationId)) {
-            throw new ResourceInvalidParametersException(String.format("Developer application with id %s does not match with" +
-                    "the course iteration with id %s.", studentApplicationId, courseIterationId));
-        }
-
         application.setProjectTeam(null);
         return developerApplicationRepository.save(application);
     }
 
-    public void assignDeveloperApplicationToProjectTeam(final UUID studentId, final UUID projectTeamId) {
-        final DeveloperApplication application = developerApplicationRepository.findByStudentId(studentId)
+    public void assignStudentToProjectTeam(final UUID courseIterationId,
+                                                        final UUID studentId,
+                                                        final UUID projectTeamId) {
+        final DeveloperApplication application = developerApplicationRepository.findByStudentAndCourseIteration(studentId, courseIterationId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", studentId)));
         final ProjectTeam projectTeam = projectTeamService.findById(projectTeamId);
 

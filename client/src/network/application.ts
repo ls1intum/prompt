@@ -345,12 +345,11 @@ export const postApplicationProjectTeamAssignment = async (
 export const deleteApplicatioProjectTeamAssigment = async (
   applicatioType: ApplicationType,
   applicationId: string,
-  courseIteration: string,
 ): Promise<Application | undefined> => {
   try {
     return (
       await axiosInstance.delete(
-        `/api/applications/${applicatioType}/${applicationId}/project-team?courseIteration=${courseIteration}`,
+        `/api/applications/${applicatioType}/${applicationId}/project-team`,
       )
     ).data
   } catch (err) {

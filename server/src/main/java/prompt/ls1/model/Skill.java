@@ -24,4 +24,6 @@ public class Skill {
 
     private Boolean active;
 
+    private UUID courseIterationId;
+
 }

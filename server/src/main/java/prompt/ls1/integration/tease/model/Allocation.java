@@ -2,10 +2,13 @@ package prompt.ls1.integration.tease.model;
 
 import lombok.Data;
 
+import java.util.List;
+import java.util.UUID;
+
 @Data
 public class Allocation {
-    // key
+    // name
     private String projectId;
     // list of tumIds
-    private String[] students;
+    private List<UUID> students;
 }

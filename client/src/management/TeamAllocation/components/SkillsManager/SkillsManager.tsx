@@ -8,14 +8,17 @@ import { Skill } from '../../../../interface/skill'
 import { Query } from '../../../../state/query'
 import { getSkills } from '../../../../network/skill'
 import { useSkillStore } from '../../../../state/zustand/useSkillStore'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
 
 export const SkillsManager = (): JSX.Element => {
+  const { selectedCourseIteration } = useCourseIterationStore()
   const { skills, setSkills } = useSkillStore()
   const [skillCreationModalOpened, setSkillCreationModalOpened] = useState(false)
 
   const { data: fetchedSkills } = useQuery<Skill[]>({
     queryKey: [Query.SKILL],
-    queryFn: getSkills,
+    queryFn: () => getSkills(selectedCourseIteration?.id ?? ''),
+    enabled: !!selectedCourseIteration,
   })
 
   useEffect(() => {

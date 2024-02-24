@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { postSkill } from '../../../../network/skill'
 import { Query } from '../../../../state/query'
 import { Skill } from '../../../../interface/skill'
+import { useCourseIterationStore } from '../../../../state/zustand/useCourseIterationStore'
+import { useEffect } from 'react'
 
 interface SkillCreationModalProps {
   opened: boolean
@@ -12,9 +14,11 @@ interface SkillCreationModalProps {
 }
 
 export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps): JSX.Element => {
+  const { selectedCourseIteration } = useCourseIterationStore()
   const queryClient = useQueryClient()
   const form = useForm<Skill>({
     initialValues: {
+      courseIterationId: selectedCourseIteration?.id ?? '',
       title: '',
       description: '',
       active: true,
@@ -22,13 +26,20 @@ export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps)
   })
 
   const createSkill = useMutation({
-    mutationFn: () => {
-      return postSkill(form.values)
+    mutationFn: (skill: Skill) => {
+      return postSkill(skill)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.SKILL] })
     },
   })
+
+  useEffect(() => {
+    if (selectedCourseIteration) {
+      form.setFieldValue('courseIterationId', selectedCourseIteration.id)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCourseIteration])
 
   const close = (): void => {
     form.reset()
@@ -61,8 +72,7 @@ export const SkillCreationModal = ({ opened, onClose }: SkillCreationModalProps)
           <Button
             leftSection={<IconPlus />}
             onClick={() => {
-              createSkill.mutate()
-              close()
+              createSkill.mutate(form.values)
             }}
           >
             Create

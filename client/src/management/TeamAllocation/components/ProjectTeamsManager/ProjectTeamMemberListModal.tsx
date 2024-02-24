@@ -43,11 +43,7 @@ export const ProjectTeamMemberListModal = ({
 
   const removeApplicationFromProjectTeam = useMutation({
     mutationFn: (applicationId: string) =>
-      deleteApplicatioProjectTeamAssigment(
-        ApplicationType.DEVELOPER,
-        applicationId,
-        selectedCourseIteration?.semesterName ?? '',
-      ),
+      deleteApplicatioProjectTeamAssigment(ApplicationType.DEVELOPER, applicationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.DEVELOPER_APPLICATION] })
     },
