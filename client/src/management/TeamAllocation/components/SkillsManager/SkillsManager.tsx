@@ -16,7 +16,7 @@ export const SkillsManager = (): JSX.Element => {
   const [skillCreationModalOpened, setSkillCreationModalOpened] = useState(false)
 
   const { data: fetchedSkills } = useQuery<Skill[]>({
-    queryKey: [Query.SKILL],
+    queryKey: [Query.SKILL, selectedCourseIteration?.semesterName],
     queryFn: () => getSkills(selectedCourseIteration?.id ?? ''),
     enabled: !!selectedCourseIteration,
   })
