@@ -3,6 +3,7 @@ package prompt.ls1.integration.tease.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import prompt.ls1.integration.tease.model.Comment;
+import prompt.ls1.integration.tease.model.LanguageProficiency;
 import prompt.ls1.integration.tease.model.ProjectPreference;
 import prompt.ls1.integration.tease.model.StudentSkill;
 import prompt.ls1.model.DeveloperApplication;
@@ -39,8 +40,14 @@ public class TeaseStudentMapper {
         teaseStudent.setStudyDegree(developerApplication.getStudyDegree().getValue());
         teaseStudent.setStudyProgram(developerApplication.getStudyProgram().getValue());
         teaseStudent.setSemester(developerApplication.getCurrentSemester());
-        teaseStudent.setGermanLanguageProficiency(developerApplication.getGermanLanguageProficiency().getValue());
-        teaseStudent.setEnglishLanguageProficiency(developerApplication.getEnglishLanguageProficiency().getValue());
+
+        final LanguageProficiency germanLanguageProficiency = new LanguageProficiency();
+        germanLanguageProficiency.setLanguage("de");
+        germanLanguageProficiency.setProficiency(developerApplication.getGermanLanguageProficiency().getValue());
+        final LanguageProficiency englishLanguageProficiency = new LanguageProficiency();
+        englishLanguageProficiency.setLanguage("en");
+        englishLanguageProficiency.setProficiency(developerApplication.getEnglishLanguageProficiency().getValue());
+        teaseStudent.setLanguages(new LanguageProficiency[]{ germanLanguageProficiency, englishLanguageProficiency });
 
         final Optional<IntroCourseParticipation> introCourseParticipation =
                 introCourseParticipationRepository.findByStudentId(developerApplication.getStudent().getId());
@@ -76,7 +83,7 @@ public class TeaseStudentMapper {
         teaseStudent.setSkills(developerApplication.getStudentPostKickOffSubmission().getStudentSkills()
                 .stream().map(studentSkill -> {
                     final StudentSkill skill = new StudentSkill();
-                    skill.setId(studentSkill.getId().toString());
+                    skill.setId(studentSkill.getSkill().getId().toString());
                     skill.setProficiency(studentSkill.getSkillProficiency().getValue());
                     return skill;
                 }).toArray(StudentSkill[]::new));
