@@ -15,8 +15,7 @@ public class Student {
     private String studyDegree;
     private String studyProgram;
     private int semester;
-    private String germanLanguageProficiency;
-    private String englishLanguageProficiency;
+    private LanguageProficiency[] languages;
     private String introSelfAssessment;
     private String introCourseProficiency;
     private String supervisorAssessment;
