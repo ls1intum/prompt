@@ -18,14 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
-      - name: Use Computed Server Tag
-        run: echo "The computed server tag is ${{ inputs.server_image_tag }}"
-
-      - name: Use Computed Client Tag
-        run: echo "The computed client tag is ${{ inputs.client_image_tag }}"
-
       - name: SSH to VM and Execute Docker-Compose Down
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -46,7 +40,7 @@ jobs:
           echo "${{ vars.POSTFIX_MASTER_CF }}" > master.cf
 
       - name: Copy Docker Compose File From Repo to VM Host
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -59,7 +53,7 @@ jobs:
           target: /home/${{ vars.VM_USERNAME }}
 
       - name: Copy main.cf to VM Host
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -72,7 +66,7 @@ jobs:
           target: /home/${{ vars.VM_USERNAME }}/postfix-config/
 
       - name: Copy master.cf to VM Host
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -85,7 +79,7 @@ jobs:
           target: /home/${{ vars.VM_USERNAME }}/postfix-config/
 
       - name: SSH to VM and create .env.prod file
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -123,7 +117,7 @@ jobs:
             echo "CLIENT_IMAGE_TAG=${{ inputs.client_image_tag }}" >> .env.prod
 
       - name: SSH to VM and Execute Docker-Compose Up
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
