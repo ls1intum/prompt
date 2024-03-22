@@ -28,6 +28,7 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
 
   const { data: tutors } = useQuery<Student[]>({
     queryKey: [Query.INTRO_COURSE, selectedCourseIteration?.semesterName],
+    enabled: !!selectedCourseIteration,
     queryFn: () => getIntroCourseTutors(selectedCourseIteration?.semesterName ?? ''),
   })
 
