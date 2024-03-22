@@ -77,7 +77,7 @@ export const SeatPlanUploadModal = ({
   const createSeatPlan = useMutation({
     mutationFn: (seatPlan: Seat[]) => postSeatPlan(selectedCourseIteration?.id ?? '', seatPlan),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
@@ -85,7 +85,7 @@ export const SeatPlanUploadModal = ({
     mutationFn: (seatPlanAssignments: SeatPlanAssignment[]) =>
       postSeatPlanAssignment(seatPlanAssignments),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
