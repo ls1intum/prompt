@@ -42,7 +42,7 @@ export const TeamAllocationConsole = (): JSX.Element => {
   }, [projectTeams, setProjectTeams])
 
   const { data: participations } = useQuery<IntroCourseParticipation[]>({
-    queryKey: [Query.INTRO_COURSE, selectedCourseIteration?.semesterName],
+    queryKey: [Query.INTRO_COURSE_PARTICIPATIONS, selectedCourseIteration?.semesterName],
     queryFn: () => getIntroCourseParticipations(selectedCourseIteration?.semesterName ?? ''),
     enabled: !!selectedCourseIteration,
   })

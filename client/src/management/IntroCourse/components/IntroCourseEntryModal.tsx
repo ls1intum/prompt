@@ -93,7 +93,7 @@ const IntroCourseAbsenceCreationModal = ({
     mutationFn: () =>
       postIntroCourseAbsence(introCourseParticipationId, introCourseAbsenceForm.values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
@@ -169,7 +169,7 @@ export const IntroCourseEntryModal = ({
     mutationFn: (introCourseParticipationPatch: Patch[]) =>
       patchIntroCourseParticipation(introCourseParticipation.id, introCourseParticipationPatch),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
@@ -180,35 +180,35 @@ export const IntroCourseEntryModal = ({
         selectedIntroCourseAbsenceToDelete ?? '',
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const markDroppedOut = useMutation({
     mutationFn: () => postIntroCourseDropOut(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const unmarkDroppedOut = useMutation({
     mutationFn: () => deleteIntroCourseDropOut(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const markPassed = useMutation({
     mutationFn: () => postPassedIntroCourseParticipation(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const markNotPassed = useMutation({
     mutationFn: () => postNotPassedIntroCourseParticipation(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
