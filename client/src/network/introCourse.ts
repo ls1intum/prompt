@@ -8,6 +8,7 @@ import {
 } from '../interface/introCourse'
 import { Patch, axiosInstance } from './configService'
 import { Student } from '../interface/application'
+import { AxiosError } from 'axios'
 
 export const getIntroCourseParticipations = async (
   courseIterationName: string,
@@ -83,12 +84,21 @@ export const postIntroCourseAbsence = async (
     })
     return response.data
   } catch (err) {
-    notifications.show({
-      color: 'red',
-      autoClose: 10000,
-      title: 'Error',
-      message: `Failed to log an intro course absence.`,
-    })
+    if ((err as AxiosError)?.response?.status === 409) {
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `${((err as AxiosError)?.response?.data as string) ?? ''}`,
+      })
+    } else {
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `Failed to log an intro course absence.`,
+      })
+    }
 
     return undefined
   }

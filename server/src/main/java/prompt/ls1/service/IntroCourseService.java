@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
 import prompt.ls1.controller.payload.StudentTechnicalDetails;
+import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
@@ -206,7 +207,7 @@ public class IntroCourseService {
                                 .toLocalDate()))
                 .findFirst()
                 .ifPresent(absence -> {
-                    throw new ResourceInvalidParametersException(
+                    throw new ResourceConflictException(
                             String.format("Intro course absence for date %s already exists.",
                                     introCourseAbsence.getDate()));
                 });
