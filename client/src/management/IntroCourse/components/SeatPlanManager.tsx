@@ -280,7 +280,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 multiline
               >
                 <Button
-                  variant='outline'
+                  variant='light'
                   onClick={() => {
                     setTechnicalDataInvitationsRequestModalOpened(true)
                   }}
@@ -289,7 +289,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 </Button>
               </Tooltip>
               <Button
-                variant='outline'
+                variant='light'
                 leftSection={<IconDownload size={16} />}
                 onClick={() => {
                   downloadLinkRef.current?.link?.click()
