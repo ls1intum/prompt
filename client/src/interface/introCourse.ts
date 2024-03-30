@@ -1,10 +1,18 @@
 import { Student } from './application'
 import { SkillProficiency } from './postKickOffSubmission'
 
+export enum IntroCourseAbsenceReportStatus {
+  PENDING = 'Pending',
+  ACCEPTED = 'Accepted',
+  REJECTED = 'Rejected',
+}
+
 export interface IntroCourseAbsence {
   id: string
   date: Date
   excuse: string
+  selfReported: boolean
+  status: keyof typeof IntroCourseAbsenceReportStatus
 }
 
 export interface TechnicalDetails {

@@ -35,7 +35,10 @@ import {
   postPassedIntroCourseParticipation,
 } from '../../../network/introCourse'
 import { Query } from '../../../state/query'
-import { IntroCourseParticipation } from '../../../interface/introCourse'
+import {
+  IntroCourseAbsenceReportStatus,
+  IntroCourseParticipation,
+} from '../../../interface/introCourse'
 import { SkillProficiency } from '../../../interface/postKickOffSubmission'
 
 const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
@@ -83,6 +86,8 @@ const IntroCourseAbsenceCreationModal = ({
       id: '',
       date: new Date(),
       excuse: '',
+      selfReported: false,
+      status: 'ACCEPTED' as keyof typeof IntroCourseAbsenceReportStatus,
     },
     validate: {
       date: isNotEmpty('Please select a date'),
@@ -425,8 +430,13 @@ export const IntroCourseEntryModal = ({
             withColumnBorders
             verticalSpacing='sm'
             striped
-            records={introCourseParticipation.absences}
+            records={introCourseParticipation.absences
+              .filter((absence) => absence.status !== 'PENDING')
+              .sort((a, b) => (moment(a.date).isAfter(moment(b.date)) ? 1 : -1))}
             bodyRef={bodyRef}
+            rowColor={({ status }) => {
+              if (status === 'REJECTED') return 'red'
+            }}
             columns={[
               {
                 accessor: 'date',
