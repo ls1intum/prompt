@@ -35,6 +35,7 @@ import 'mantine-datatable/styles.layer.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Permission } from './interface/authentication'
+import { StudentIntroCourseAbsenceSelfReportPage } from './student/StudentIntroCourseAbsenceSelfReportPage/StudentIntroCourseAbsenceSelfReportPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -185,6 +186,14 @@ export const App = (): JSX.Element => {
               <Route
                 path='/intro-course/:semesterName/technical-details/:studentPublicId'
                 element={<StudentTechnicalDetailsSubmissionPage />}
+              />
+              <Route
+                path='/intro-course/:semesterName/absences'
+                element={
+                  <StudentIntroCourseAbsenceSelfReportPage
+                    onKeycloakValueChange={setKeycloakValue}
+                  />
+                }
               />
               <Route
                 path='/applications/thesis'

@@ -104,6 +104,102 @@ export const postIntroCourseAbsence = async (
   }
 }
 
+export const postIntroCourseAbsenceSelfReport = async (
+  semesterName: string,
+  tumId: string,
+  introCourseAbsence: IntroCourseAbsence,
+): Promise<IntroCourseParticipation | undefined> => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/intro-course/${semesterName}/students/${tumId}/absences`,
+      introCourseAbsence,
+    )
+
+    notifications.show({
+      color: 'green',
+      autoClose: 5000,
+      title: 'Success',
+      message: `Intro course absence was successfully reported!`,
+    })
+    return response.data
+  } catch (err) {
+    if ((err as AxiosError)?.response?.status === 409) {
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `${((err as AxiosError)?.response?.data as string) ?? ''}`,
+      })
+    } else {
+      notifications.show({
+        color: 'red',
+        autoClose: 10000,
+        title: 'Error',
+        message: `Failed to report an intro course absence.`,
+      })
+    }
+
+    return undefined
+  }
+}
+
+export const patchIntroCourseAbsence = async (
+  introCourseAbsenceId: string,
+  introCourseAbsencePatch: Patch[],
+): Promise<IntroCourseAbsence | undefined> => {
+  try {
+    return (
+      await axiosInstance.patch(
+        `/api/intro-course/absences/${introCourseAbsenceId}`,
+        introCourseAbsencePatch,
+        {
+          headers: {
+            'Content-Type': 'application/json-path+json',
+          },
+        },
+      )
+    ).data
+  } catch (err) {
+    return undefined
+  }
+}
+
+export const postIntroCourseAbsenceReportAcceptance = async (
+  introCourseAbsenceId: string,
+): Promise<IntroCourseAbsence | undefined> => {
+  try {
+    return (
+      await axiosInstance.patch(`/api/intro-course/absences/${introCourseAbsenceId}/acceptance`, {})
+    ).data
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Failed to accept an intro course absence.`,
+    })
+    return undefined
+  }
+}
+
+export const postIntroCourseAbsenceReportRejection = async (
+  introCourseAbsenceId: string,
+): Promise<IntroCourseAbsence | undefined> => {
+  try {
+    return (
+      await axiosInstance.patch(`/api/intro-course/absences/${introCourseAbsenceId}/rejection`, {})
+    ).data
+  } catch (err) {
+    notifications.show({
+      color: 'red',
+      autoClose: 10000,
+      title: 'Error',
+      message: `Failed to reject an intro course absence.`,
+    })
+    return undefined
+  }
+}
+
 export const deleteIntroCourseAbsence = async (
   introCourseParticipationId: string,
   introCourseAbsenceId: string,
