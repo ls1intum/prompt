@@ -35,7 +35,10 @@ import {
   postPassedIntroCourseParticipation,
 } from '../../../network/introCourse'
 import { Query } from '../../../state/query'
-import { IntroCourseParticipation } from '../../../interface/introCourse'
+import {
+  IntroCourseAbsenceReportStatus,
+  IntroCourseParticipation,
+} from '../../../interface/introCourse'
 import { SkillProficiency } from '../../../interface/postKickOffSubmission'
 
 const getBadgeColor = (skillProfieciency: keyof typeof SkillProficiency): string => {
@@ -83,9 +86,12 @@ const IntroCourseAbsenceCreationModal = ({
       id: '',
       date: new Date(),
       excuse: '',
+      selfReported: false,
+      status: 'ACCEPTED' as keyof typeof IntroCourseAbsenceReportStatus,
     },
     validate: {
       date: isNotEmpty('Please select a date'),
+      excuse: isNotEmpty('Please provide a valid excuse for the absence'),
     },
   })
 
@@ -93,14 +99,11 @@ const IntroCourseAbsenceCreationModal = ({
     mutationFn: () =>
       postIntroCourseAbsence(introCourseParticipationId, introCourseAbsenceForm.values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
+      introCourseAbsenceForm.reset()
+      onClose()
     },
   })
-
-  const close = (): void => {
-    introCourseAbsenceForm.reset()
-    onClose()
-  }
 
   return (
     <Modal centered size='90%' opened={opened} onClose={close}>
@@ -151,6 +154,10 @@ export const IntroCourseEntryModal = ({
       tutorId: introCourseParticipation.tutorId ?? '',
       seat: introCourseParticipation.seat ?? '',
       chairDevice: introCourseParticipation.chairDevice ?? '',
+    },
+  })
+  const introCourseParticipationAssessmentForm = useForm({
+    initialValues: {
       supervisorAssessment: introCourseParticipation.supervisorAssessment ?? null,
       tutorComments: introCourseParticipation.tutorComments ?? '',
     },
@@ -169,7 +176,7 @@ export const IntroCourseEntryModal = ({
     mutationFn: (introCourseParticipationPatch: Patch[]) =>
       patchIntroCourseParticipation(introCourseParticipation.id, introCourseParticipationPatch),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
@@ -180,35 +187,36 @@ export const IntroCourseEntryModal = ({
         selectedIntroCourseAbsenceToDelete ?? '',
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
+      setSelectedIntroCourseAbsenceToDelete(undefined)
     },
   })
 
   const markDroppedOut = useMutation({
     mutationFn: () => postIntroCourseDropOut(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const unmarkDroppedOut = useMutation({
     mutationFn: () => deleteIntroCourseDropOut(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const markPassed = useMutation({
     mutationFn: () => postPassedIntroCourseParticipation(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
   const markNotPassed = useMutation({
     mutationFn: () => postNotPassedIntroCourseParticipation(introCourseParticipation.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE] })
+      queryClient.invalidateQueries({ queryKey: [Query.INTRO_COURSE_PARTICIPATIONS] })
     },
   })
 
@@ -221,10 +229,13 @@ export const IntroCourseEntryModal = ({
       tutorId: introCourseParticipation.tutorId ?? '',
       seat: introCourseParticipation.seat ?? '',
       chairDevice: introCourseParticipation.chairDevice ?? '',
+    })
+    introCourseParticipationAssessmentForm.setValues({
       supervisorAssessment: introCourseParticipation.supervisorAssessment ?? null,
       tutorComments: introCourseParticipation.tutorComments ?? '',
     })
-  }, [introCourseAssessmentForm, introCourseParticipation, introCourseParticipationForm])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [introCourseParticipation])
 
   const close = (): void => {
     introCourseAssessmentForm.reset()
@@ -268,7 +279,6 @@ export const IntroCourseEntryModal = ({
           if (selectedIntroCourseAbsenceToDelete) {
             removeIntroCourseAbsence.mutate()
           }
-          setSelectedIntroCourseAbsenceToDelete(undefined)
         }}
       />
       <Stack>
@@ -295,8 +305,9 @@ export const IntroCourseEntryModal = ({
           placeholder='Chair device ID'
           {...introCourseParticipationForm.getInputProps('chairDevice')}
         />
-        <Group align='right'>
+        <Group justify='flex-end'>
           <Button
+            disabled={!introCourseParticipationForm.isDirty()}
             onClick={() => {
               const introCourseParticipationPatchObjectArray: Patch[] = []
               Object.keys(introCourseParticipationForm.values).forEach((key) => {
@@ -314,14 +325,19 @@ export const IntroCourseEntryModal = ({
               })
 
               updateIntroCourseParticipation.mutate(introCourseParticipationPatchObjectArray)
-
-              close()
             }}
           >
             Save
           </Button>
         </Group>
-        <Divider label={<Text c='dimmed'>Proficiency</Text>} labelPosition='center' />
+        <Divider
+          label={
+            <Text c='dimmed' fz='xs' fw='700'>
+              Proficiency
+            </Text>
+          }
+          labelPosition='center'
+        />
         <Select
           label='Proficiency Level'
           searchable
@@ -331,7 +347,7 @@ export const IntroCourseEntryModal = ({
               value: key,
             }
           })}
-          {...introCourseParticipationForm.getInputProps('supervisorAssessment')}
+          {...introCourseParticipationAssessmentForm.getInputProps('supervisorAssessment')}
           nothingFoundMessage='Nothing found'
           filter={({ options, search }) => {
             const filtered = (options as ComboboxItem[]).filter((option) =>
@@ -347,30 +363,31 @@ export const IntroCourseEntryModal = ({
           placeholder='Comment'
           autosize
           minRows={5}
-          {...introCourseParticipationForm.getInputProps('tutorComments')}
+          {...introCourseParticipationAssessmentForm.getInputProps('tutorComments')}
         />
-        {!introCourseParticipationForm.errors.tutorComments && (
+        {!introCourseParticipationAssessmentForm.errors.tutorComments && (
           <Text fz='xs' ta='right'>{`${
-            introCourseParticipationForm.values.tutorComments?.length ?? 0
+            introCourseParticipationAssessmentForm.values.tutorComments?.length ?? 0
           } / 500`}</Text>
         )}
-        <Group align='right'>
+        <Group justify='flex-end'>
           <Button
+            disabled={!introCourseParticipationAssessmentForm.isDirty()}
             onClick={() => {
               let patchObject: Patch[] = [
                 {
                   op: 'replace',
                   path: '/tutorComments',
-                  value: introCourseParticipationForm.values.tutorComments,
+                  value: introCourseParticipationAssessmentForm.values.tutorComments,
                 },
               ]
-              if (introCourseParticipationForm.values.supervisorAssessment) {
+              if (introCourseParticipationAssessmentForm.values.supervisorAssessment) {
                 patchObject = [
                   ...patchObject,
                   {
                     op: 'replace',
                     path: '/supervisorAssessment',
-                    value: introCourseParticipationForm.values.supervisorAssessment,
+                    value: introCourseParticipationAssessmentForm.values.supervisorAssessment,
                   },
                 ]
               }
@@ -380,9 +397,17 @@ export const IntroCourseEntryModal = ({
             Save
           </Button>
         </Group>
-        <Divider label={<Text c='dimmed'>Intro Course Absences</Text>} labelPosition='center' />
-        <Group align='right'>
+        <Divider
+          label={
+            <Text c='dimmed' fz='xs' fw='700'>
+              Intro Course Absences
+            </Text>
+          }
+          labelPosition='center'
+        />
+        <Group justify='flex-start'>
           <Button
+            variant='light'
             leftSection={<IconPlus />}
             onClick={() => {
               setAbsenceCreationModalOpened(true)
@@ -405,15 +430,20 @@ export const IntroCourseEntryModal = ({
             withColumnBorders
             verticalSpacing='sm'
             striped
-            records={introCourseParticipation.absences}
+            records={introCourseParticipation.absences
+              .filter((absence) => absence.status !== 'PENDING')
+              .sort((a, b) => (moment(a.date).isAfter(moment(b.date)) ? 1 : -1))}
             bodyRef={bodyRef}
+            rowColor={({ status }) => {
+              if (status === 'REJECTED') return 'red'
+            }}
             columns={[
               {
                 accessor: 'date',
                 title: 'Date',
                 textAlign: 'center',
                 render: ({ date }) => (
-                  <Text>{`${moment(date).format('dddd, DD. MMMM YYYY')}`}</Text>
+                  <Text fz='sm'>{`${moment(date).format('dddd, DD. MMMM YYYY')}`}</Text>
                 ),
               },
               {
@@ -425,8 +455,9 @@ export const IntroCourseEntryModal = ({
                 accessor: 'actions',
                 title: 'Actions',
                 render: (absence) => (
-                  <Group gap={4} align='right' wrap='nowrap'>
+                  <Group gap={4} justify='flex-end' wrap='nowrap'>
                     <ActionIcon
+                      variant='subtle'
                       color='red'
                       onClick={(e: React.MouseEvent) => {
                         e.stopPropagation()
@@ -441,7 +472,14 @@ export const IntroCourseEntryModal = ({
             ]}
           />
         )}
-        <Divider label={<Text c='dimmed'>Intro Course Assessment</Text>} labelPosition='center' />
+        <Divider
+          label={
+            <Text c='dimmed' fz='xs' fw='700'>
+              Intro Course Assessment
+            </Text>
+          }
+          labelPosition='center'
+        />
         <Select
           label='Assessment'
           data={['Passed', 'Not Passed']}
@@ -480,8 +518,9 @@ export const IntroCourseEntryModal = ({
             })
           }}
         />
-        <Group align='right'>
+        <Group justify='flex-end'>
           <Button
+            disabled={!introCourseAssessmentForm.isDirty()}
             onClick={() => {
               if (introCourseAssessmentForm.values.passed) {
                 markPassed.mutate()

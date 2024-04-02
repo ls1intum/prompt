@@ -47,6 +47,7 @@ export const GradingManagementConsole = (): JSX.Element => {
             projectTeam: projectTeam,
             tumId: application.student.tumId ?? '',
             matriculationNumber: application.student.matriculationNumber ?? '',
+            email: application.student.email ?? '',
             firstName: application.student.firstName ?? '',
             lastName: application.student.lastName ?? '',
             grade: application.finalGrade?.grade ?? 0,

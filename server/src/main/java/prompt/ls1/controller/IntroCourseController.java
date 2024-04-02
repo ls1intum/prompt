@@ -94,6 +94,34 @@ public class IntroCourseController {
         return ResponseEntity.ok(introCourseService.createIntroCourseAbsence(introCourseParticipationId, introCourseAbsence));
     }
 
+    @PatchMapping(path = "/absences/{introCourseAbsenceId}", consumes = "application/json-path+json")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseAbsence> updateIntroCourseAbsence(
+            @PathVariable final UUID introCourseAbsenceId,
+            @RequestBody @NotNull final JsonPatch introCourseAbsencePatch) throws JsonPatchException, JsonProcessingException {
+        return ResponseEntity.ok(introCourseService.updateIntroCourseAbsence(introCourseAbsenceId, introCourseAbsencePatch));
+    }
+
+    @PatchMapping("/absences/{introCourseAbsenceId}/acceptance")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseAbsence> acceptIntroCourseAbsenceReport(@PathVariable final UUID introCourseAbsenceId) {
+        return ResponseEntity.ok(introCourseService.acceptIntroCourseAbsence(introCourseAbsenceId));
+    }
+
+    @PatchMapping("/absences/{introCourseAbsenceId}/rejection")
+    @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
+    public ResponseEntity<IntroCourseAbsence> rejectIntroCourseAbsenceReport(@PathVariable final UUID introCourseAbsenceId) {
+        return ResponseEntity.ok(introCourseService.rejectIntroCourseAbsence(introCourseAbsenceId));
+    }
+
+    @PostMapping("/{semesterName}/students/{tumId}/absences")
+    public ResponseEntity<IntroCourseParticipation> createIntroCourseAbsenceReport(
+            @PathVariable final String semesterName,
+            @PathVariable final String tumId,
+            @RequestBody @NotNull final IntroCourseAbsence introCourseAbsence) {
+        return ResponseEntity.ok(introCourseService.createIntroCourseAbsenceReport(semesterName, tumId, introCourseAbsence));
+    }
+
     @PostMapping("/{semesterName}/verify-student/{studentPublicId}")
     public ResponseEntity<UUID> verifyStudentFormAccess(@PathVariable final String semesterName,
                                                         @PathVariable final String studentPublicId,

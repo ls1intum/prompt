@@ -9,6 +9,7 @@ export enum Query {
   COURSE_PHASE = 'coursePhase',
   PROJECT_TEAM = 'projectTeam',
   SKILL = 'skill',
-  INTRO_COURSE = 'introCourse',
+  INTRO_COURSE_PARTICIPATIONS = 'introCourseParticipations',
+  INTRO_COURSE_TUTORS = 'introCourseTutors',
   POST_KICK_OFF = 'postKickOff',
 }

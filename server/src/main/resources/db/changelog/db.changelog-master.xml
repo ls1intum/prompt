@@ -19,4 +19,5 @@
     <include file="changes/v0015.sql" relativeToChangelogFile="true"/>
     <include file="changes/v0016.sql" relativeToChangelogFile="true"/>
     <include file="changes/v0017.sql" relativeToChangelogFile="true"/>
+    <include file="changes/v0018.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

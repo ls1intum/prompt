@@ -1,6 +1,6 @@
-import { Alert, Progress, Stack } from '@mantine/core'
+import { Alert, Button, Progress, Stack } from '@mantine/core'
 import { IconAlertCircle } from '@tabler/icons-react'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SeatPlanManager } from './components/SeatPlanManager'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
@@ -8,10 +8,11 @@ import type Keycloak from 'keycloak-js'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 import { useIntroCourseStore } from '../../state/zustand/useIntroCourseStore'
 import { useQuery } from '@tanstack/react-query'
-import { IntroCourseParticipation } from '../../interface/introCourse'
+import { IntroCourseAbsence, IntroCourseParticipation } from '../../interface/introCourse'
 import { Query } from '../../state/query'
 import { getIntroCourseParticipations, getIntroCourseTutors } from '../../network/introCourse'
 import { Student } from '../../interface/application'
+import { IntroCourseAbsenceSelfReportConsole } from './components/IntroCourseAbsenceSelfReportConsole'
 
 interface IntroCourseConsoleProps {
   keycloak: Keycloak
@@ -20,14 +21,17 @@ interface IntroCourseConsoleProps {
 export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.Element => {
   const { selectedCourseIteration } = useCourseIterationStore()
   const { setParticipations, setTutors } = useIntroCourseStore()
+  const [introCourseAbsenceSeltReportConsoleOpened, setIntroCourseAbsenceSeltReportConsoledOpened] =
+    useState(false)
 
   const { data: participations } = useQuery<IntroCourseParticipation[]>({
-    queryKey: [Query.INTRO_COURSE, selectedCourseIteration?.semesterName],
+    queryKey: [Query.INTRO_COURSE_PARTICIPATIONS, selectedCourseIteration?.semesterName],
     queryFn: () => getIntroCourseParticipations(selectedCourseIteration?.semesterName ?? ''),
   })
 
   const { data: tutors } = useQuery<Student[]>({
-    queryKey: [Query.INTRO_COURSE, selectedCourseIteration?.semesterName],
+    queryKey: [Query.INTRO_COURSE_TUTORS, selectedCourseIteration?.semesterName],
+    enabled: !!selectedCourseIteration,
     queryFn: () => getIntroCourseTutors(selectedCourseIteration?.semesterName ?? ''),
   })
 
@@ -42,6 +46,18 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
       setTutors(tutors)
     }
   }, [tutors, setTutors])
+
+  const pendingIntroCourseAbsenceSelfReports:
+    | (IntroCourseAbsence & { student: Student })[]
+    | undefined = useMemo(() => {
+    return participations?.flatMap((p) => {
+      return p.absences
+        .filter((a) => a.status === 'PENDING')
+        .map((a) => {
+          return { ...a, student: p.student }
+        })
+    })
+  }, [participations])
 
   const introCourseProgress = useMemo(() => {
     if (selectedCourseIteration) {
@@ -66,6 +82,21 @@ export const IntroCourseConsole = ({ keycloak }: IntroCourseConsoleProps): JSX.E
           <Link to='/management/course-iterations'>Course Iteration Management</Link> console and
           specify the dates!
         </Alert>
+      )}
+      {pendingIntroCourseAbsenceSelfReports && pendingIntroCourseAbsenceSelfReports?.length > 0 && (
+        <>
+          <IntroCourseAbsenceSelfReportConsole
+            opened={introCourseAbsenceSeltReportConsoleOpened}
+            onClose={() => setIntroCourseAbsenceSeltReportConsoledOpened(false)}
+            introCourseAbsenceSelfReports={pendingIntroCourseAbsenceSelfReports}
+          />
+          <Button
+            variant='light'
+            onClick={() => setIntroCourseAbsenceSeltReportConsoledOpened(true)}
+          >
+            {pendingIntroCourseAbsenceSelfReports.length} Pending Absence Self Reports
+          </Button>
+        </>
       )}
       {selectedCourseIteration?.introCourseStart &&
         selectedCourseIteration?.introCourseEnd &&

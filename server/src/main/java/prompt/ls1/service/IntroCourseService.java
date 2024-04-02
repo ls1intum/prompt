@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
 import prompt.ls1.controller.payload.StudentTechnicalDetails;
+import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
@@ -23,6 +24,7 @@ import prompt.ls1.model.enums.ApplicationStatus;
 import prompt.ls1.model.enums.Device;
 import prompt.ls1.repository.CourseIterationRepository;
 import prompt.ls1.repository.DeveloperApplicationRepository;
+import prompt.ls1.repository.IntroCourseAbsenceRepository;
 import prompt.ls1.repository.IntroCourseParticipationRepository;
 import prompt.ls1.repository.StudentRepository;
 import prompt.ls1.repository.TutorApplicationRepository;
@@ -36,6 +38,7 @@ import java.util.UUID;
 @Service
 public class IntroCourseService {
     private final IntroCourseParticipationRepository introCourseParticipationRepository;
+    private final IntroCourseAbsenceRepository introCourseAbsenceRepository;
     private final CourseIterationRepository courseIterationRepository;
     private final StudentRepository studentRepository;
     private final DeveloperApplicationRepository developerApplicationRepository;
@@ -44,12 +47,14 @@ public class IntroCourseService {
 
     @Autowired
     public IntroCourseService(final IntroCourseParticipationRepository introCourseParticipationRepository,
+                              final IntroCourseAbsenceRepository introCourseAbsenceRepository,
                               final CourseIterationRepository courseIterationRepository,
                               final StudentRepository studentRepository,
                               final DeveloperApplicationRepository developerApplicationRepository,
                               final TutorApplicationRepository tutorApplicationRepository,
                               final MailingService mailingService) {
         this.introCourseParticipationRepository = introCourseParticipationRepository;
+        this.introCourseAbsenceRepository = introCourseAbsenceRepository;
         this.courseIterationRepository = courseIterationRepository;
         this.studentRepository = studentRepository;
         this.developerApplicationRepository = developerApplicationRepository;
@@ -206,10 +211,66 @@ public class IntroCourseService {
                                 .toLocalDate()))
                 .findFirst()
                 .ifPresent(absence -> {
-                    throw new ResourceInvalidParametersException(
+                    throw new ResourceConflictException(
                             String.format("Intro course absence for date %s already exists.",
                                     introCourseAbsence.getDate()));
                 });
+        introCourseAbsence.setSelfReported(false);
+        introCourseAbsence.accept();
+        introCourseParticipation.getAbsences().add(introCourseAbsence);
+
+        return introCourseParticipationRepository.save(introCourseParticipation);
+    }
+
+    public IntroCourseAbsence updateIntroCourseAbsence(final UUID introCourseAbsenceId, final JsonPatch introCourseAbsencePatch)
+            throws JsonPatchException, JsonProcessingException {
+        final IntroCourseAbsence existingIntroCourseAbsence = introCourseAbsenceRepository.findById(introCourseAbsenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course absence with id  %s not found.", introCourseAbsenceId)));
+
+        final IntroCourseAbsence patchedIntroCourseAbsence = applyIntroCourseAbsencePatch(introCourseAbsencePatch, existingIntroCourseAbsence);
+        return introCourseAbsenceRepository.save(patchedIntroCourseAbsence);
+    }
+
+    public IntroCourseAbsence acceptIntroCourseAbsence(final UUID introCourseAbsenceId) {
+        final IntroCourseAbsence existingIntroCourseAbsence = introCourseAbsenceRepository.findById(introCourseAbsenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course absence with id  %s not found.", introCourseAbsenceId)));
+
+        existingIntroCourseAbsence.accept();
+        return introCourseAbsenceRepository.save(existingIntroCourseAbsence);
+    }
+
+    public IntroCourseAbsence rejectIntroCourseAbsence(final UUID introCourseAbsenceId) {
+        final IntroCourseAbsence existingIntroCourseAbsence = introCourseAbsenceRepository.findById(introCourseAbsenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course absence with id  %s not found.", introCourseAbsenceId)));
+
+        existingIntroCourseAbsence.reject();
+        return introCourseAbsenceRepository.save(existingIntroCourseAbsence);
+    }
+
+    public IntroCourseParticipation createIntroCourseAbsenceReport(final String semesterName,
+                                                             final String tumId,
+                                                             final IntroCourseAbsence introCourseAbsence) {
+        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration %s not found.", semesterName)));
+
+        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository.findByStudentTumIdAndCourseIterationId(tumId, courseIteration.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student wuth tum ID  %s not found.", tumId)));
+        introCourseParticipation.getAbsences()
+                .stream()
+                .filter(absence -> absence.getDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .isEqual(introCourseAbsence.getDate().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()))
+                .findFirst()
+                .ifPresent(absence -> {
+                    throw new ResourceConflictException(
+                            String.format("Intro course absence for date %s already exists.",
+                                    introCourseAbsence.getDate()));
+                });
+        introCourseAbsence.setSelfReported(true);
+        introCourseAbsence.pend();
         introCourseParticipation.getAbsences().add(introCourseAbsence);
 
         return introCourseParticipationRepository.save(introCourseParticipation);
@@ -339,6 +400,13 @@ public class IntroCourseService {
     private IntroCourseParticipation findById(final UUID introCourseParticipationId) {
         return introCourseParticipationRepository.findById(introCourseParticipationId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation with id %s not found.", introCourseParticipationId)));
+    }
+
+    private IntroCourseAbsence applyIntroCourseAbsencePatch(
+            JsonPatch patch, IntroCourseAbsence targetIntroCourseAbsence) throws JsonPatchException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetIntroCourseAbsence, JsonNode.class));
+        return objectMapper.treeToValue(patched, IntroCourseAbsence.class);
     }
 
     private IntroCourseParticipation applyPatch(
