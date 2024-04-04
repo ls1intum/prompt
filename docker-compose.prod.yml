@@ -6,6 +6,7 @@ services:
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=prompt-network"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
@@ -21,6 +22,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
+    networks:
+      - prompt-network
 
   server:
     image: "ghcr.io/ls1intum/prompt/prompt-server:${SERVER_IMAGE_TAG}"
@@ -61,6 +64,8 @@ services:
       - KEYCLOAK_JWK_SET_URI
       - IOS_SENDER_MAIL
       - CHAIR_MEMBER_RECIPIENTS
+    networks:
+      - prompt-network
 
   db:
     image: "postgres:15.2-alpine"
@@ -75,6 +80,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - prompt-network
 
   client:
     image: "ghcr.io/ls1intum/prompt/prompt-client:${CLIENT_IMAGE_TAG}"
@@ -90,6 +97,8 @@ services:
       - "80"
     depends_on:
       - server
+    networks:
+      - prompt-network
 
   postfix:
     image: ghcr.io/ls1admin/postfix:latest
@@ -98,3 +107,10 @@ services:
     volumes:
       - ./postfix-config:/config
     hostname: ${SERVER_HOST}
+    networks:
+      - prompt-network
+
+networks:
+  prompt-network:
+    name: prompt-network
+    driver: bridge
