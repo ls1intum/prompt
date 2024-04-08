@@ -176,6 +176,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
+      setSelectedProjectTeam(undefined)
     },
   })
 
@@ -277,7 +278,6 @@ export const ProjectTeamsManager = (): JSX.Element => {
             if (selectedProjectTeam) {
               deleteProjectTeam.mutate(selectedProjectTeam.id)
               setProjectTeamDeletionConfirmationOpen(false)
-              setSelectedProjectTeam(undefined)
             }
           }}
         />
