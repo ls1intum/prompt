@@ -66,6 +66,8 @@ const ProjectTeamCreationModal = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
+      form.reset()
+      onClose()
     },
   })
 
@@ -75,6 +77,8 @@ const ProjectTeamCreationModal = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
+      form.reset()
+      onClose()
     },
   })
 
@@ -126,8 +130,6 @@ const ProjectTeamCreationModal = ({
               } else {
                 createProjectTeam.mutate()
               }
-              form.reset()
-              onClose()
             }
           }}
         >
