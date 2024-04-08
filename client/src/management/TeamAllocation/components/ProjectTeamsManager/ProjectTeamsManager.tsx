@@ -25,7 +25,11 @@ import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { notifications } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { patchProjectTeam, postProjectTeam } from '../../../../network/projectTeam'
+import {
+  deleteProjectTeam,
+  patchProjectTeam,
+  postProjectTeam,
+} from '../../../../network/projectTeam'
 import { Query } from '../../../../state/query'
 import { useProjectTeamStore } from '../../../../state/zustand/useProjectTeamStore'
 import { Patch } from '../../../../network/configService'
@@ -170,13 +174,14 @@ export const ProjectTeamsManager = (): JSX.Element => {
       ),
   })
 
-  const deleteProjectTeam = useMutation({
+  const removeProjectTeam = useMutation({
     mutationFn: (projectTeamId: string) => {
       return deleteProjectTeam(projectTeamId)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.PROJECT_TEAM] })
       setSelectedProjectTeam(undefined)
+      setProjectTeamDeletionConfirmationOpen(false)
     },
   })
 
@@ -276,8 +281,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
           text={`Are you sure you want to delete the project team ${selectedProjectTeam.name}?`}
           onConfirm={() => {
             if (selectedProjectTeam) {
-              deleteProjectTeam.mutate(selectedProjectTeam.id)
-              setProjectTeamDeletionConfirmationOpen(false)
+              removeProjectTeam.mutate(selectedProjectTeam.id)
             }
           }}
         />
