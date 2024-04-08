@@ -57,6 +57,7 @@ public class TeaseStudentMapper {
             }
             if (introCourseParticipation.get().getSupervisorAssessment() != null) {
                 teaseStudent.setSupervisorAssessment(introCourseParticipation.get().getSupervisorAssessment().getValue());
+                teaseStudent.setIntroCourseProficiency(introCourseParticipation.get().getSupervisorAssessment().getValue());
             }
 
             if (introCourseParticipation.get().getStudentComments() != null &&
