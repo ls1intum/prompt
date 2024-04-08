@@ -111,6 +111,7 @@ services:
       - prompt-network
 
 networks:
+  # Create network manually in advance: docker network create prompt-network
   prompt-network:
     name: prompt-network
-    driver: bridge
+    external: true
