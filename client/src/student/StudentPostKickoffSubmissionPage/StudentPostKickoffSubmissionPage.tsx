@@ -169,8 +169,10 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   }, [projectTeams])
 
   useEffect(() => {
-    console.log(projectTeams)
-  }, [projectTeams])
+    if (!studentId) {
+      setStudentVerificationDialogOpened(true)
+    }
+  }, [studentId])
 
   return (
     <div style={{ margin: '5vh' }}>
