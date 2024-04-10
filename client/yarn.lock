@@ -782,12 +782,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-text-align@npm:^2.1.12":
-  version: 2.1.12
-  resolution: "@tiptap/extension-text-align@npm:2.1.12"
+"@tiptap/extension-text-align@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@tiptap/extension-text-align@npm:2.3.0"
   peerDependencies:
     "@tiptap/core": ^2.0.0
-  checksum: 10c0/85db0c70556ea12aef04b6f9d0aee4ba0e314554d94f52e6221c813c2bfd8d2b24939810c1772b56c864f2d25924c527ca842b94cc182eef0a596afccb12dbbc
+  checksum: 10c0/ab2b73df0e91cd8eb507ed69a8ffcd93c7320a053d7e1ecb2c4bd23f6cff8cf7bfc93a1a9c09398de185de6b058397da1d9724996129da6c3f92da3f37abdfae
   languageName: node
   linkType: hard
 
@@ -2381,7 +2381,7 @@ __metadata:
     "@tiptap/extension-link": "npm:^2.1.12"
     "@tiptap/extension-subscript": "npm:^2.1.12"
     "@tiptap/extension-superscript": "npm:^2.1.12"
-    "@tiptap/extension-text-align": "npm:^2.1.12"
+    "@tiptap/extension-text-align": "npm:^2.3.0"
     "@tiptap/extension-underline": "npm:^2.1.12"
     "@tiptap/pm": "npm:^2.2.2"
     "@tiptap/react": "npm:^2.2.2"
