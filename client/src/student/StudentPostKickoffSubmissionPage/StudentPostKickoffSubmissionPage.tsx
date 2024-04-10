@@ -159,18 +159,24 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
         }
       }),
     })
-  }, [form, skills])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skills])
 
   useEffect(() => {
     rightSideStateHandlers.setState(shuffleProjectTeams(projectTeams))
     leftSideStateHandlers.setState([])
-  }, [leftSideStateHandlers, projectTeams, rightSideStateHandlers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectTeams])
 
   useEffect(() => {
     if (!studentId) {
       setStudentVerificationDialogOpened(true)
     }
   }, [studentId])
+
+  useEffect(() => {
+    console.log(projectTeams)
+  }, [projectTeams])
 
   return (
     <div style={{ margin: '5vh' }}>
