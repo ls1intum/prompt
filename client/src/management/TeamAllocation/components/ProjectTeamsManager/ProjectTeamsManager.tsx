@@ -38,6 +38,7 @@ import { Application, ApplicationType } from '../../../../interface/application'
 import { getApplications } from '../../../../network/application'
 import { ProjectTeam } from '../../../../interface/projectTeam'
 import { postInvitationsToPostKickOffSubmissions } from '../../../../network/postKickOffSubmission'
+import { useApplicationStore } from '../../../../state/zustand/useApplicationStore'
 
 interface ProjectTeamCreationModalProps {
   opened: boolean
@@ -150,6 +151,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
   const { projectTeams } = useProjectTeamStore()
   const [invitationSendOutConfirmationModalOpened, setInvitationSendOutConfirmationModalOpened] =
     useState(false)
+  const { setDeveloperApplications } = useApplicationStore()
   const [projectTeamCreationModalOpen, setProjectTeamCreationModalOpen] = useState(false)
   const [projectTeamEditModalOpen, setProjectTeamEditOpen] = useState(false)
   const [projectTeamMemberListModalOpen, setProjectTeamMemberListModalOpen] = useState(false)
@@ -166,6 +168,7 @@ export const ProjectTeamsManager = (): JSX.Element => {
 
   const { data: developerApplications = [], isLoading } = useQuery<Application[]>({
     queryKey: [Query.DEVELOPER_APPLICATION],
+    enabled: !!selectedCourseIteration,
     queryFn: () =>
       getApplications(
         ApplicationType.DEVELOPER,
@@ -173,6 +176,12 @@ export const ProjectTeamsManager = (): JSX.Element => {
         'INTRO_COURSE_PASSED',
       ),
   })
+
+  useEffect(() => {
+    if (developerApplications && developerApplications.length > 0) {
+      setDeveloperApplications(developerApplications)
+    }
+  }, [developerApplications, setDeveloperApplications])
 
   const removeProjectTeam = useMutation({
     mutationFn: (projectTeamId: string) => {
