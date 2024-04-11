@@ -50,7 +50,9 @@ public class TeaseStudentMapper {
         teaseStudent.setLanguages(new LanguageProficiency[]{ germanLanguageProficiency, englishLanguageProficiency });
 
         final Optional<IntroCourseParticipation> introCourseParticipation =
-                introCourseParticipationRepository.findByStudentId(developerApplication.getStudent().getId());
+                introCourseParticipationRepository.findByStudentIdAndCourseIterationId(
+                        developerApplication.getStudent().getId(),
+                        developerApplication.getCourseIterationId());
         if (introCourseParticipation.isPresent()) {
             if (introCourseParticipation.get().getSelfAssessment() != null) {
                 teaseStudent.setIntroSelfAssessment(introCourseParticipation.get().getSelfAssessment().getValue());

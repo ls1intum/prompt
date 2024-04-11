@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface IntroCourseParticipationRepository extends JpaRepository<IntroCourseParticipation, UUID> {
 
-    Optional<IntroCourseParticipation> findByStudentId(final UUID studentId);
+    Optional<IntroCourseParticipation> findByStudentIdAndCourseIterationId(final UUID studentId, final UUID courseIterationId);
 
     @Transactional
     Optional<IntroCourseParticipation> findByCourseIterationIdAndStudentId(final UUID courseIterationId, final UUID studentId);
