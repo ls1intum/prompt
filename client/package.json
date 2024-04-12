@@ -33,7 +33,7 @@
     "@tiptap/starter-kit": "^2.2.2",
     "axios": "^1.6.7",
     "classnames": "^2.5.1",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.0",
     "css-loader": "^6.8.1",
     "dayjs": "^1.11.10",
     "file-loader": "^6.2.0",
