@@ -63,7 +63,7 @@ const navigationContents = [
   {
     label: 'TEASE',
     icon: IconAbacus,
-    link: '/tease',
+    link: '/tease/',
     permission: [Permission.PM],
   },
   {
