@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  Anchor,
   Button,
   Card,
   Center,
@@ -95,25 +96,65 @@ export const StudentTechnicalDetailsSubmissionPage = (): JSX.Element => {
               />
               <Group grow>
                 <TextInput
-                  label='MacBook Device ID'
-                  placeholder='MacBook Device ID'
+                  label='MacBook UUID'
+                  description={
+                    <Anchor
+                      href='https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Collect-device-identifiers-macOS'
+                      target='_blank'
+                      c='blue'
+                      fz='sm'
+                    >
+                      How to get it?
+                    </Anchor>
+                  }
+                  placeholder='MacBook UUID'
                   {...form.getInputProps('macBookDeviceId')}
                 />
                 <TextInput
-                  label='iPhone Device ID'
-                  placeholder='iPhone Device ID'
+                  label='iPhone UDID'
+                  description={
+                    <Anchor
+                      href='https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Collect-device-identifiers-iOS-iPadOS-tvOS-watchOS'
+                      target='_blank'
+                      c='blue'
+                      fz='sm'
+                    >
+                      How to get it?
+                    </Anchor>
+                  }
+                  placeholder='iPhone UDID'
                   {...form.getInputProps('iPhoneDeviceId')}
                 />
               </Group>
               <Group grow>
                 <TextInput
-                  label='iPad Device ID'
-                  placeholder='iPad Device ID'
+                  label='iPad UDID'
+                  description={
+                    <Anchor
+                      href='https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Collect-device-identifiers-iOS-iPadOS-tvOS-watchOS'
+                      target='_blank'
+                      c='blue'
+                      fz='sm'
+                    >
+                      How to get it?
+                    </Anchor>
+                  }
+                  placeholder='iPad UDID'
                   {...form.getInputProps('iPadDeviceId')}
                 />
                 <TextInput
-                  label='Apple Watch Device ID'
-                  placeholder='Apple Watch Device ID'
+                  label='Apple Watch UDID'
+                  description={
+                    <Anchor
+                      href='https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Collect-device-identifiers-iOS-iPadOS-tvOS-watchOS'
+                      target='_blank'
+                      c='blue'
+                      fz='sm'
+                    >
+                      How to get it?
+                    </Anchor>
+                  }
+                  placeholder='Apple Watch UDID'
                   {...form.getInputProps('appleWatchDeviceId')}
                 />
               </Group>
