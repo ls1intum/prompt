@@ -28,7 +28,7 @@
     "@tiptap/extension-superscript": "^2.3.0",
     "@tiptap/extension-text-align": "^2.3.0",
     "@tiptap/extension-underline": "^2.3.0",
-    "@tiptap/pm": "^2.2.2",
+    "@tiptap/pm": "^2.3.0",
     "@tiptap/react": "^2.2.2",
     "@tiptap/starter-kit": "^2.2.2",
     "axios": "^1.6.7",
