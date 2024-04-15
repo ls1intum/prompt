@@ -4,13 +4,12 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
-import prompt.ls1.model.IntroCourseParticipation;
+import prompt.ls1.model.DevelopmentProfile;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentPostKickoffSubmission;
@@ -70,7 +69,7 @@ public class StudentPostKickoffSubmissionService {
                 });
     }
 
-    public StudentTechnicalDetails verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
+    public DevelopmentProfile verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
         final CourseIteration courseIteration = courseIterationRepository.findWithKickoffSubmissionPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
 
@@ -93,19 +92,11 @@ public class StudentPostKickoffSubmissionService {
             throw new ResourceConflictException("Developer post kickoff submission already exists.");
         }
 
-        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository.findByCourseIterationIdAndStudentId(
+        introCourseParticipationRepository.findByCourseIterationIdAndStudentId(
                 courseIteration.getId(), student.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student with id %s not found.", student.getId())));
 
-        final StudentTechnicalDetails technicalDetails = new StudentTechnicalDetails();
-        technicalDetails.setStudentId(student.getId().toString());
-        technicalDetails.setAppleId(introCourseParticipation.getAppleId());
-        technicalDetails.setMacBookDeviceId(introCourseParticipation.getMacBookDeviceId());
-        technicalDetails.setIPhoneDeviceId(introCourseParticipation.getIPhoneDeviceId());
-        technicalDetails.setIPadDeviceId(introCourseParticipation.getIPadDeviceId());
-        technicalDetails.setAppleWatchDeviceId(introCourseParticipation.getAppleWatchDeviceId());
-
-        return technicalDetails;
+        return student.getDevelopmentProfile();
     }
 
     public List<StudentPostKickoffSubmission> getByCourseIteration(final String courseIterationName) {

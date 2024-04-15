@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
+import prompt.ls1.model.DevelopmentProfile;
 import prompt.ls1.model.StudentPostKickoffSubmission;
 import prompt.ls1.service.StudentPostKickoffSubmissionService;
 
@@ -45,8 +45,8 @@ public class KickoffSubmissionController {
     }
 
     @PostMapping("/verify-student/{studentPublicId}")
-    public ResponseEntity<StudentTechnicalDetails> verifyStudentFormAccess(@PathVariable final String studentPublicId,
-                                                                           @RequestBody final String studentMatriculationNumber) {
+    public ResponseEntity<DevelopmentProfile> verifyStudentFormAccess(@PathVariable final String studentPublicId,
+                                                                      @RequestBody final String studentMatriculationNumber) {
         return ResponseEntity.ok(studentPostKickoffSubmissionService.verifyStudentFormAccess(studentPublicId, studentMatriculationNumber));
     }
 

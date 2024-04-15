@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
+import prompt.ls1.model.DevelopmentProfile;
 import prompt.ls1.model.IntroCourseAbsence;
 import prompt.ls1.model.IntroCourseParticipation;
 import prompt.ls1.model.Student;
@@ -355,29 +355,15 @@ public class IntroCourseService {
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 
-    public IntroCourseParticipation saveStudentTechnicalDetails(final String semesterName,
-                                                                    final UUID studentId,
-                                                                    final StudentTechnicalDetails studentTechnicalDetails) {
-        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("No course iteration with semester name %s found.", semesterName)));
-
+    public Student saveDevelopmentProfile(final UUID studentId,
+                                          final DevelopmentProfile developmentProfile) {
         final Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.",
                         studentId)));
 
-        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository
-                .findByCourseIterationIdAndStudentId(courseIteration.getId(), student.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student with id %s not found.",
-                        student.getId())));
+        student.setDevelopmentProfile(developmentProfile);
 
-        introCourseParticipation.setAppleId(studentTechnicalDetails.getAppleId());
-        introCourseParticipation.setMacBookDeviceId(studentTechnicalDetails.getMacBookDeviceId());
-        introCourseParticipation.setIPhoneDeviceId(studentTechnicalDetails.getIPhoneDeviceId());
-        introCourseParticipation.setIPadDeviceId(studentTechnicalDetails.getIPadDeviceId());
-        introCourseParticipation.setAppleWatchDeviceId(studentTechnicalDetails.getAppleWatchDeviceId());
-
-        return introCourseParticipationRepository.save(introCourseParticipation);
+        return studentRepository.save(student);
     }
 
     public void sendInvitationsForStudentTechnicalDetailsSubmission(final UUID courseIterationId) {
