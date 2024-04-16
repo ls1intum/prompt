@@ -10,7 +10,7 @@
     "build": "webpack --mode production"
   },
   "dependencies": {
-    "@formkit/auto-animate": "^0.8.1",
+    "@formkit/auto-animate": "^0.8.2",
     "@mantine/core": "^7.5.2",
     "@mantine/dates": "^7.5.2",
     "@mantine/dropzone": "^7.8.0",
