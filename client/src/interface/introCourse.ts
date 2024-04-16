@@ -15,15 +15,6 @@ export interface IntroCourseAbsence {
   status: keyof typeof IntroCourseAbsenceReportStatus
 }
 
-export interface TechnicalDetails {
-  studentId?: string
-  appleId: string
-  macBookDeviceId?: string
-  iPhoneDeviceId?: string
-  iPadDeviceId?: string
-  appleWatchDeviceId?: string
-}
-
 export interface IntroCourseParticipation {
   id: string
   tutorId?: string

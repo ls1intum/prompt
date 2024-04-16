@@ -15,7 +15,6 @@ import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
-import prompt.ls1.model.DevelopmentProfile;
 import prompt.ls1.model.IntroCourseAbsence;
 import prompt.ls1.model.IntroCourseParticipation;
 import prompt.ls1.model.Student;
@@ -276,28 +275,6 @@ public class IntroCourseService {
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 
-    public UUID verifyStudentFormAccess(final String semesterName, final String studentPublicId, final String studentMatriculationNumber) {
-        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("No course iteration with semester name %s found.", semesterName)));
-
-        final Student student = studentRepository.findByPublicId(UUID.fromString(studentPublicId))
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentPublicId)));
-
-        if (!student.getMatriculationNumber().equals(studentMatriculationNumber)) {
-            throw new ResourceInvalidParametersException("The public id provided does not match with the matriculation number.");
-        }
-
-        final DeveloperApplication developerApplication = developerApplicationRepository
-                .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
-
-        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED)) {
-            throw new ResourceInvalidParametersException("No enrolled developer application with provided parameters found.");
-        }
-
-        return student.getId();
-    }
-
     public IntroCourseParticipation markAsDroppedOut(final UUID introCourseParticipationId, final Boolean droppedOut) {
         final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
         final DeveloperApplication developerApplication = developerApplicationRepository
@@ -353,17 +330,6 @@ public class IntroCourseService {
         introCourseParticipation.setPassed(true);
 
         return introCourseParticipationRepository.save(introCourseParticipation);
-    }
-
-    public Student saveDevelopmentProfile(final UUID studentId,
-                                          final DevelopmentProfile developmentProfile) {
-        final Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.",
-                        studentId)));
-
-        student.setDevelopmentProfile(developmentProfile);
-
-        return studentRepository.save(student);
     }
 
     public void sendInvitationsForStudentTechnicalDetailsSubmission(final UUID courseIterationId) {

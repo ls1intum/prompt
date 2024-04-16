@@ -82,7 +82,6 @@ public class ThesisApplicationService {
         Optional<Student> existingStudent = findStudent(student.getTumId(), student.getMatriculationNumber(), student.getEmail());
 
         if (existingStudent.isEmpty()) {
-            student.setPublicId(UUID.randomUUID());
             studentRepository.save(student);
         } else {
             thesisApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), thesisApplication.getStudent()));

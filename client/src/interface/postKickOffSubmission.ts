@@ -43,12 +43,6 @@ export interface StudentProjectTeamPreference {
 export interface StudentPostKickoffSubmission {
   id?: string
   student?: Student
-  appleId: string
-  macBookDeviceId?: string
-  iPhoneDeviceId?: string
-  iPadDeviceId?: string
-  appleWatchDeviceId?: string
-  gitlabUsername?: string
   studentProjectTeamPreferences: StudentProjectTeamPreference[]
   reasonForFirstChoice: string
   reasonForLastChoice: string

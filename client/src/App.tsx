@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ManagementConsole, ManagementRoot } from './management/ManagementConsole'
 import { StudentApplicationOverview } from './management/ApplicationsOverview/ApplicationOverview'
 import { ApplicationSubmissionPage } from './student/StudentApplicationSubmissionPage/ApplicationSubmissionPage'
-import { StudentTeamPostKickoffSubmissionPage } from './student/StudentPostKickoffSubmissionPage/StudentPostKickoffSubmissionPage'
+import { PostKickoffSubmission } from './student/PostKickoffSubmission/PostKickoffSubmission'
 import { TeamAllocationConsole } from './management/TeamAllocation/TeamAllocationConsole'
 import { InfrastructureManagement } from './management/InfrastructureManagement/InstrastructureManagement'
 import { Notifications } from '@mantine/notifications'
@@ -18,7 +18,7 @@ import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './management/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
 import { ThesisApplicationsManagementConsole } from './management/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
-import { StudentTechnicalDetailsSubmissionPage } from './student/StudentTechnicalDetailsSubmissionPage/StudentTechnicalDetailsSubmissionPage'
+import { DevelopmentProfileSubmission } from './student/DevelopmentProfileSubmission/DevelopmentProfileSubmission'
 import { MailingManagementConsole } from './management/MailingManagement/MailingManagementConsole'
 import { GradingManagementConsole } from './management/Grading/GradingManagementConsole'
 import { ContextMenuProvider } from 'mantine-contextmenu'
@@ -35,7 +35,8 @@ import 'mantine-datatable/styles.layer.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Permission } from './interface/authentication'
-import { StudentIntroCourseAbsenceSelfReportPage } from './student/StudentIntroCourseAbsenceSelfReportPage/StudentIntroCourseAbsenceSelfReportPage'
+import { IntroCourseAbsenceSelfReport } from './student/IntroCourseAbsenceSelfReport/IntroCourseAbsenceSelfReport'
+import { StudentConsole } from './student/StudentConsole/StudentConsole'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -180,18 +181,29 @@ export const App = (): JSX.Element => {
                 }
               />
               <Route
-                path='/kick-off/:studentPublicId'
-                element={<StudentTeamPostKickoffSubmissionPage />}
+                path='/kick-off/:semesterName'
+                element={
+                  <StudentConsole
+                    onKeycloakValueChange={setKeycloakValue}
+                    child={<PostKickoffSubmission />}
+                  />
+                }
               />
               <Route
-                path='/intro-course/:semesterName/technical-details/:studentPublicId'
-                element={<StudentTechnicalDetailsSubmissionPage />}
+                path='/intro-course/development-profile'
+                element={
+                  <StudentConsole
+                    onKeycloakValueChange={setKeycloakValue}
+                    child={<DevelopmentProfileSubmission />}
+                  />
+                }
               />
               <Route
                 path='/intro-course/:semesterName/absences'
                 element={
-                  <StudentIntroCourseAbsenceSelfReportPage
+                  <StudentConsole
                     onKeycloakValueChange={setKeycloakValue}
+                    child={<IntroCourseAbsenceSelfReport />}
                   />
                 }
               />

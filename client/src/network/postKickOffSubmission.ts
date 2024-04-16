@@ -21,12 +21,11 @@ export const getPostKickOffSubmissions = async (
 }
 
 export const postPostKickoffSubmission = async (
-  studentId: string,
   studentPostKickoffSubmission: StudentPostKickoffSubmission,
 ): Promise<StudentPostKickoffSubmission | undefined> => {
   try {
     const response = await axiosInstance.post(
-      `/api/post-kickoff-submissions/${studentId}`,
+      `/api/post-kickoff-submissions`,
       studentPostKickoffSubmission,
     )
     notifications.show({
