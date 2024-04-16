@@ -65,6 +65,17 @@ export interface Student {
   suggestedAsTutor: boolean
   blockedByPm: boolean
   reasonForBlockedByPm: string
+  developmentProfile?: DevelopmentProfile
+}
+
+export interface DevelopmentProfile {
+  id: string
+  gitlabUsername: string
+  appleId: string
+  macBookDeviceId?: string
+  iPhoneDeviceId?: string
+  iPadDeviceId?: string
+  appleWatchDeviceId?: string
 }
 
 export enum ApplicationStatus {

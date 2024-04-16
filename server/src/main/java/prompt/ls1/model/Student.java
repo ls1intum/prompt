@@ -6,22 +6,18 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import prompt.ls1.model.enums.Gender;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.UUID;
 
 @Data
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "public_id" }),
-        @UniqueConstraint(columnNames = { "email" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = { "email" }) })
 public class Student implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @Column(name = "public_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID publicId;
 
     @Column(length = 50)
     @Length(max = 50)
@@ -60,4 +56,9 @@ public class Student implements Serializable {
     private Boolean blockedByPm;
 
     private String reasonForBlockedByPm;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @Nullable
+    @JoinColumn(name = "development_profile_id")
+    private DevelopmentProfile developmentProfile;
 }

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
@@ -276,28 +275,6 @@ public class IntroCourseService {
         return introCourseParticipationRepository.save(introCourseParticipation);
     }
 
-    public UUID verifyStudentFormAccess(final String semesterName, final String studentPublicId, final String studentMatriculationNumber) {
-        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("No course iteration with semester name %s found.", semesterName)));
-
-        final Student student = studentRepository.findByPublicId(UUID.fromString(studentPublicId))
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentPublicId)));
-
-        if (!student.getMatriculationNumber().equals(studentMatriculationNumber)) {
-            throw new ResourceInvalidParametersException("The public id provided does not match with the matriculation number.");
-        }
-
-        final DeveloperApplication developerApplication = developerApplicationRepository
-                .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
-
-        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.ENROLLED)) {
-            throw new ResourceInvalidParametersException("No enrolled developer application with provided parameters found.");
-        }
-
-        return student.getId();
-    }
-
     public IntroCourseParticipation markAsDroppedOut(final UUID introCourseParticipationId, final Boolean droppedOut) {
         final IntroCourseParticipation introCourseParticipation = findById(introCourseParticipationId);
         final DeveloperApplication developerApplication = developerApplicationRepository
@@ -351,31 +328,6 @@ public class IntroCourseService {
         developerApplicationRepository.save(developerApplication);
 
         introCourseParticipation.setPassed(true);
-
-        return introCourseParticipationRepository.save(introCourseParticipation);
-    }
-
-    public IntroCourseParticipation saveStudentTechnicalDetails(final String semesterName,
-                                                                    final UUID studentId,
-                                                                    final StudentTechnicalDetails studentTechnicalDetails) {
-        final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(semesterName)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("No course iteration with semester name %s found.", semesterName)));
-
-        final Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.",
-                        studentId)));
-
-        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository
-                .findByCourseIterationIdAndStudentId(courseIteration.getId(), student.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student with id %s not found.",
-                        student.getId())));
-
-        introCourseParticipation.setAppleId(studentTechnicalDetails.getAppleId());
-        introCourseParticipation.setMacBookDeviceId(studentTechnicalDetails.getMacBookDeviceId());
-        introCourseParticipation.setIPhoneDeviceId(studentTechnicalDetails.getIPhoneDeviceId());
-        introCourseParticipation.setIPadDeviceId(studentTechnicalDetails.getIPadDeviceId());
-        introCourseParticipation.setAppleWatchDeviceId(studentTechnicalDetails.getAppleWatchDeviceId());
 
         return introCourseParticipationRepository.save(introCourseParticipation);
     }

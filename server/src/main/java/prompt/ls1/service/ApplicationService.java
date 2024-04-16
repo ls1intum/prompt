@@ -158,7 +158,6 @@ public class ApplicationService {
                 developerApplication.getStudent().getMatriculationNumber(), developerApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
-            developerApplication.getStudent().setPublicId(UUID.randomUUID());
             studentRepository.save(developerApplication.getStudent());
         } else {
             developerApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), developerApplication.getStudent()));
@@ -182,7 +181,6 @@ public class ApplicationService {
                 tutorApplication.getStudent().getMatriculationNumber(), tutorApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
-            tutorApplication.getStudent().setPublicId(UUID.randomUUID());
             studentRepository.save(tutorApplication.getStudent());
         } else {
             tutorApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), tutorApplication.getStudent()));
@@ -206,7 +204,6 @@ public class ApplicationService {
                 coachApplication.getStudent().getMatriculationNumber(), coachApplication.getStudent().getEmail());
 
         if (existingStudent.isEmpty()) {
-            coachApplication.getStudent().setPublicId(UUID.randomUUID());
             studentRepository.save(coachApplication.getStudent());
         } else {
             coachApplication.setStudent(checkAndUpdateStudent(existingStudent.get(), coachApplication.getStudent()));

@@ -4,10 +4,9 @@ import {
   IntroCourseParticipation,
   Seat,
   SeatPlanAssignment,
-  TechnicalDetails,
 } from '../interface/introCourse'
 import { Patch, axiosInstance } from './configService'
-import { Student } from '../interface/application'
+import { DevelopmentProfile, Student } from '../interface/application'
 import { AxiosError } from 'axios'
 
 export const getIntroCourseParticipations = async (
@@ -378,25 +377,19 @@ export const postNotPassedIntroCourseParticipation = async (
   }
 }
 
-export const postTechnicalDetails = async ({
-  semesterName,
-  studentId,
-  technicalDetails,
-}: {
-  semesterName: string
-  studentId: string
-  technicalDetails: TechnicalDetails
-}): Promise<IntroCourseParticipation | undefined> => {
+export const postDevelopmentProfile = async (
+  developmentProfile: DevelopmentProfile,
+): Promise<DevelopmentProfile | undefined> => {
   try {
     const response = await axiosInstance.post(
-      `/api/intro-course/${semesterName}/technical-details/${studentId}`,
-      technicalDetails,
+      `/api/students/development-profile`,
+      developmentProfile,
     )
     notifications.show({
       color: 'green',
       autoClose: 5000,
       title: 'Success',
-      message: `Your technical details were successfully submitted!`,
+      message: `Your technical profile was successfully submitted!`,
     })
     return response.data
   } catch (err) {

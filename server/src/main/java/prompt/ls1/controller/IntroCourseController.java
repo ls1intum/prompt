@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prompt.ls1.controller.payload.Seat;
 import prompt.ls1.controller.payload.SeatPlanAssignment;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.IntroCourseAbsence;
 import prompt.ls1.model.IntroCourseParticipation;
@@ -122,13 +121,6 @@ public class IntroCourseController {
         return ResponseEntity.ok(introCourseService.createIntroCourseAbsenceReport(semesterName, tumId, introCourseAbsence));
     }
 
-    @PostMapping("/{semesterName}/verify-student/{studentPublicId}")
-    public ResponseEntity<UUID> verifyStudentFormAccess(@PathVariable final String semesterName,
-                                                        @PathVariable final String studentPublicId,
-                                                        @RequestBody final String studentMatriculationNumber) {
-        return ResponseEntity.ok(introCourseService.verifyStudentFormAccess(semesterName, studentPublicId, studentMatriculationNumber));
-    }
-
     @PostMapping("/{introCourseParticipationId}/dropped-out")
     @PreAuthorize("hasRole('ipraktikum-pm') || hasRole('ipraktikum-tutor')")
     public ResponseEntity<IntroCourseParticipation> markAsDroppedOut(@PathVariable final UUID introCourseParticipationId) {
@@ -150,14 +142,6 @@ public class IntroCourseController {
     @PostMapping("/{introCourseParticipationId}/passed")
     public ResponseEntity<IntroCourseParticipation> markAsPassed(@PathVariable final UUID introCourseParticipationId) {
         return ResponseEntity.ok(introCourseService.markAsPassed(introCourseParticipationId));
-    }
-
-    @PostMapping("/{semesterName}/technical-details/{studentId}")
-    public ResponseEntity<IntroCourseParticipation> saveStudentTechnicalDetails(
-            @PathVariable final String semesterName,
-            @PathVariable final UUID studentId,
-            @RequestBody @NotNull final StudentTechnicalDetails studentTechnicalDetails) {
-        return ResponseEntity.ok(introCourseService.saveStudentTechnicalDetails(semesterName, studentId, studentTechnicalDetails));
     }
 
     @PostMapping("/{courseIterationId}/technical-details-invitation")

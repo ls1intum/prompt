@@ -46,11 +46,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/course-iterations/**").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/project-teams").permitAll().and()
                 .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/intro-course/*/verify-student/**").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/intro-course/*/technical-details/**").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/post-kickoff-submissions/**").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/v1/students").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/v1/skills").permitAll().and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/v1/allocation").permitAll()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/intro-course/*/technical-details/**").permitAll()
                 .anyRequest().authenticated().and().oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         http.oauth2ResourceServer()
                 .jwt()

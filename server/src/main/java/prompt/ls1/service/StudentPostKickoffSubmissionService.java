@@ -4,13 +4,11 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.exception.ResourceConflictException;
 import prompt.ls1.exception.ResourceInvalidParametersException;
 import prompt.ls1.exception.ResourceNotFoundException;
 import prompt.ls1.model.CourseIteration;
 import prompt.ls1.model.DeveloperApplication;
-import prompt.ls1.model.IntroCourseParticipation;
 import prompt.ls1.model.ProjectTeam;
 import prompt.ls1.model.Student;
 import prompt.ls1.model.StudentPostKickoffSubmission;
@@ -23,7 +21,6 @@ import prompt.ls1.repository.StudentRepository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -70,44 +67,6 @@ public class StudentPostKickoffSubmissionService {
                 });
     }
 
-    public StudentTechnicalDetails verifyStudentFormAccess(final String studentPublicId, final String studentMatriculationNumber) {
-        final CourseIteration courseIteration = courseIterationRepository.findWithKickoffSubmissionPeriodIncludes(new Date())
-                .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
-
-        final Student student = studentRepository.findByPublicId(UUID.fromString(studentPublicId))
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentPublicId)));
-
-        if (!student.getMatriculationNumber().equals(studentMatriculationNumber)) {
-            throw new ResourceInvalidParametersException("The public id provided does not match with the matriculation number.");
-        }
-
-        final DeveloperApplication developerApplication = developerApplicationRepository
-                .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Developer application for student with id %s not found.", student.getId())));
-
-        if (!developerApplication.getAssessment().getStatus().equals(ApplicationStatus.INTRO_COURSE_PASSED)) {
-            throw new ResourceInvalidParametersException("No developer application with passed intro course challenge and provided parameters found.");
-        }
-
-        if (developerApplication.getStudentPostKickOffSubmission() != null) {
-            throw new ResourceConflictException("Developer post kickoff submission already exists.");
-        }
-
-        final IntroCourseParticipation introCourseParticipation = introCourseParticipationRepository.findByCourseIterationIdAndStudentId(
-                courseIteration.getId(), student.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intro course participation for student with id %s not found.", student.getId())));
-
-        final StudentTechnicalDetails technicalDetails = new StudentTechnicalDetails();
-        technicalDetails.setStudentId(student.getId().toString());
-        technicalDetails.setAppleId(introCourseParticipation.getAppleId());
-        technicalDetails.setMacBookDeviceId(introCourseParticipation.getMacBookDeviceId());
-        technicalDetails.setIPhoneDeviceId(introCourseParticipation.getIPhoneDeviceId());
-        technicalDetails.setIPadDeviceId(introCourseParticipation.getIPadDeviceId());
-        technicalDetails.setAppleWatchDeviceId(introCourseParticipation.getAppleWatchDeviceId());
-
-        return technicalDetails;
-    }
-
     public List<StudentPostKickoffSubmission> getByCourseIteration(final String courseIterationName) {
         final CourseIteration courseIteration = courseIterationRepository.findBySemesterName(courseIterationName)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Course iteration with name %s not found.", courseIterationName)));
@@ -123,13 +82,14 @@ public class StudentPostKickoffSubmissionService {
                 }).toList();
     }
 
-    public StudentPostKickoffSubmission create(final String studentId,
+    public StudentPostKickoffSubmission create(final String tumId,
                                                StudentPostKickoffSubmission studentPostKickOffSubmission) {
         final CourseIteration courseIteration = courseIterationRepository.findWithKickoffSubmissionPeriodIncludes(new Date())
                 .orElseThrow(() -> new ResourceNotFoundException("No course iteration with open preferences submission period found."));
 
-        final Student student = studentRepository.findById(UUID.fromString(studentId))
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %s not found.", studentId)));
+        final Student student = studentRepository.findByTumId(tumId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Student with TUM id %s not found.", tumId)));
 
         final DeveloperApplication application = developerApplicationRepository
                 .findByStudentAndCourseIteration(student.getId(), courseIteration.getId())

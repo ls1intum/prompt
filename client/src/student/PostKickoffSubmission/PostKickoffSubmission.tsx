@@ -27,10 +27,8 @@ import {
   Textarea,
   Title,
 } from '@mantine/core'
-import { ProjectTeamPreferencesSubmissionCodeModal } from './components/ProjectTeamPreferencesSubmissionCodeModal'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { KickOffCourseAgreement } from '../../forms/KickOffCourseAgreement'
-import { notifications } from '@mantine/notifications'
 import { useProjectTeamStore } from '../../state/zustand/useProjectTeamStore'
 import { useQuery } from '@tanstack/react-query'
 import { getProjectTeams } from '../../network/projectTeam'
@@ -47,6 +45,9 @@ import {
   StudentPostKickoffSubmission,
 } from '../../interface/postKickOffSubmission'
 import { postPostKickoffSubmission } from '../../network/postKickOffSubmission'
+import { DevelopmentProfile } from '../../interface/application'
+import { getDevelopmentProfile } from '../../network/student'
+import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
 
 const shuffleProjectTeams = (array: ProjectTeam[]): ProjectTeam[] => {
   const shuffledArray = [...array]
@@ -80,21 +81,14 @@ const SuccessfulSubmission = ({ title, text }: SuccessfulSubmissionProps): JSX.E
   )
 }
 
-export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
-  const [studentId, setStudentId] = useState('')
+export const PostKickoffSubmission = (): JSX.Element => {
+  const { user } = useAuthenticationStore()
   const { projectTeams, setProjectTeams } = useProjectTeamStore()
   const { skills, setSkills } = useSkillStore()
   const [leftSideState, leftSideStateHandlers] = useListState<ProjectTeam>([])
   const [rightSideState, rightSideStateHandlers] = useListState<ProjectTeam>([])
-  const [studentVerificationDialogOpened, setStudentVerificationDialogOpened] = useState(false)
-  const form = useForm<StudentPostKickoffSubmission>({
+  const postKickOffSubmissionForm = useForm<StudentPostKickoffSubmission>({
     initialValues: {
-      appleId: '',
-      macBookDeviceId: '',
-      iPhoneDeviceId: '',
-      iPadDeviceId: '',
-      appleWatchDeviceId: '',
-      gitlabUsername: '',
       selfReportedExperienceLevel: SkillProficiency.NOVICE,
       studentProjectTeamPreferences: [],
       reasonForFirstChoice: '',
@@ -102,11 +96,25 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       studentSkills: [],
     },
     validate: {
-      appleId: isNotEmpty('Please provide a valid Apple ID.'),
-      gitlabUsername: isNotEmpty('Please provide a GitLab username.'),
       selfReportedExperienceLevel: isNotEmpty('Please state your experience level.'),
       reasonForFirstChoice: isNotEmpty('Please state the reason behind your first choice.'),
       reasonForLastChoice: isNotEmpty('Please state the reason behind your last choice.'),
+    },
+    validateInputOnBlur: true,
+  })
+  const developmentProfileForm = useForm<DevelopmentProfile>({
+    initialValues: {
+      id: '',
+      appleId: '',
+      macBookDeviceId: '',
+      iPhoneDeviceId: '',
+      iPadDeviceId: '',
+      appleWatchDeviceId: '',
+      gitlabUsername: '',
+    },
+    validate: {
+      appleId: isNotEmpty('Please provide a valid Apple ID.'),
+      gitlabUsername: isNotEmpty('Please provide a GitLab username.'),
     },
     validateInputOnBlur: true,
   })
@@ -132,12 +140,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     enabled: !!courseIteration,
   })
 
-  useEffect(() => {
-    if (fetchedProjectTeams) {
-      setProjectTeams(fetchedProjectTeams)
-    }
-  }, [fetchedProjectTeams, setProjectTeams])
-
   const { data: fetchedSkills } = useQuery<Skill[]>({
     queryKey: [Query.SKILL],
     queryFn: () => getSkills(courseIteration?.id ?? ''),
@@ -145,12 +147,30 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
   })
 
   useEffect(() => {
+    ;(async () => {
+      if (user) {
+        const developmentProfile = await getDevelopmentProfile()
+        if (developmentProfile) {
+          developmentProfileForm.setValues(developmentProfile)
+        }
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  useEffect(() => {
+    if (fetchedProjectTeams) {
+      setProjectTeams(fetchedProjectTeams)
+    }
+  }, [fetchedProjectTeams, setProjectTeams])
+
+  useEffect(() => {
     setSkills(fetchedSkills ?? [])
   }, [fetchedSkills, setSkills])
 
   useEffect(() => {
-    form.setValues({
-      ...form.values,
+    postKickOffSubmissionForm.setValues({
+      ...postKickOffSubmissionForm.values,
       studentSkills: skills.map((skill) => {
         return {
           skill,
@@ -168,12 +188,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectTeams])
 
-  useEffect(() => {
-    if (!studentId) {
-      setStudentVerificationDialogOpened(true)
-    }
-  }, [studentId])
-
   return (
     <div style={{ margin: '5vh' }}>
       {formSubmitted && (
@@ -184,29 +198,6 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
       )}
       {!formSubmitted && (
         <>
-          <ProjectTeamPreferencesSubmissionCodeModal
-            open={studentVerificationDialogOpened}
-            onClose={() => {
-              setStudentVerificationDialogOpened(false)
-            }}
-            onSubmit={(technicalDetails) => {
-              if (technicalDetails.studentId) {
-                setStudentId(technicalDetails.studentId)
-              } else {
-                notifications.show({
-                  title: 'Error',
-                  message:
-                    'The response from the server does not contain the student id. Please contact the administrator.',
-                  color: 'red',
-                })
-              }
-
-              form.setValues({
-                ...form.values,
-                ...technicalDetails,
-              })
-            }}
-          />
           <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
             <Title order={2}>Kickoff Submission Form</Title>
           </Center>
@@ -217,30 +208,37 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                 placeholder='Apple ID'
                 required
                 withAsterisk
-                {...form.getInputProps('appleId')}
+                {...developmentProfileForm.getInputProps('appleId')}
+              />
+              <TextInput
+                label='GitLab Username'
+                placeholder='GitLab Username'
+                required
+                withAsterisk
+                {...developmentProfileForm.getInputProps('gitlabUsername')}
               />
               <Group grow>
                 <TextInput
                   label='MacBook Device ID'
                   placeholder='MacBook Device ID'
-                  {...form.getInputProps('macBookDeviceId')}
+                  {...developmentProfileForm.getInputProps('macBookDeviceId')}
                 />
                 <TextInput
                   label='iPhone Device ID'
                   placeholder='iPhone Device ID'
-                  {...form.getInputProps('iPhoneDeviceId')}
+                  {...developmentProfileForm.getInputProps('iPhoneDeviceId')}
                 />
               </Group>
               <Group grow>
                 <TextInput
                   label='iPad Device ID'
                   placeholder='iPad Device ID'
-                  {...form.getInputProps('iPadDeviceId')}
+                  {...developmentProfileForm.getInputProps('iPadDeviceId')}
                 />
                 <TextInput
                   label='Apple Watch Device ID'
                   placeholder='Apple Watch Device ID'
-                  {...form.getInputProps('appleWatchDeviceId')}
+                  {...developmentProfileForm.getInputProps('appleWatchDeviceId')}
                 />
               </Group>
               <TextInput
@@ -248,7 +246,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                 placeholder='GitLab username'
                 required
                 withAsterisk
-                {...form.getInputProps('gitlabUsername')}
+                {...postKickOffSubmissionForm.getInputProps('gitlabUsername')}
               />
               <Select
                 withAsterisk
@@ -262,7 +260,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                     value: key,
                   }
                 })}
-                {...form.getInputProps('selfReportedExperienceLevel')}
+                {...postKickOffSubmissionForm.getInputProps('selfReportedExperienceLevel')}
               />
               {skills.map((skill, idx) => (
                 <Select
@@ -277,7 +275,9 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                       value: key,
                     }
                   })}
-                  {...form.getInputProps('studentSkills.' + idx.toString() + '.skillProficiency')}
+                  {...postKickOffSubmissionForm.getInputProps(
+                    'studentSkills.' + idx.toString() + '.skillProficiency',
+                  )}
                 />
               ))}
               <Divider
@@ -443,7 +443,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                 label='Reason for the First Choice'
                 placeholder='Reason for high priority'
                 required
-                {...form.getInputProps('reasonForFirstChoice')}
+                {...postKickOffSubmissionForm.getInputProps('reasonForFirstChoice')}
               />
               <Textarea
                 autosize
@@ -452,7 +452,7 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
                 label='Reason for the Last Choice'
                 placeholder='Reason for low priority'
                 required
-                {...form.getInputProps('reasonForLastChoice')}
+                {...postKickOffSubmissionForm.getInputProps('reasonForLastChoice')}
               />
             </Stack>
             <Checkbox
@@ -475,33 +475,31 @@ export const StudentTeamPostKickoffSubmissionPage = (): JSX.Element => {
               variant='filled'
               disabled={
                 !courseIteration ||
-                !form.isValid() ||
+                !postKickOffSubmissionForm.isValid() ||
                 !consentForm.isValid() ||
                 leftSideState.length !== projectTeams.length
               }
               onClick={() => {
                 void (async () => {
-                  if (studentId) {
-                    const preferencesMap = new Map()
-                    leftSideState.forEach((preference, index) => {
-                      preferencesMap.set(preference.id, index)
-                    })
+                  const preferencesMap = new Map()
+                  leftSideState.forEach((preference, index) => {
+                    preferencesMap.set(preference.id, index)
+                  })
 
-                    if (courseIteration) {
-                      const response = await postPostKickoffSubmission(studentId, {
-                        ...form.values,
-                        studentProjectTeamPreferences: leftSideState.map(
-                          (projectTeam, priorityScore) => {
-                            return {
-                              projectTeamId: projectTeam.id,
-                              priorityScore,
-                            }
-                          },
-                        ),
-                      })
-                      if (response) {
-                        setFormSubmitted(true)
-                      }
+                  if (courseIteration) {
+                    const response = await postPostKickoffSubmission({
+                      ...postKickOffSubmissionForm.values,
+                      studentProjectTeamPreferences: leftSideState.map(
+                        (projectTeam, priorityScore) => {
+                          return {
+                            projectTeamId: projectTeam.id,
+                            priorityScore,
+                          }
+                        },
+                      ),
+                    })
+                    if (response) {
+                      setFormSubmitted(true)
                     }
                   }
                 })()

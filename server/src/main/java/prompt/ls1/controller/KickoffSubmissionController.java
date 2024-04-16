@@ -3,15 +3,14 @@ package prompt.ls1.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import prompt.ls1.controller.payload.StudentTechnicalDetails;
 import prompt.ls1.model.StudentPostKickoffSubmission;
 import prompt.ls1.service.StudentPostKickoffSubmissionService;
 
@@ -44,20 +43,12 @@ public class KickoffSubmissionController {
         return ResponseEntity.ok(studentPostKickoffSubmissionService.getByCourseIteration(courseIterationName));
     }
 
-    @PostMapping("/verify-student/{studentPublicId}")
-    public ResponseEntity<StudentTechnicalDetails> verifyStudentFormAccess(@PathVariable final String studentPublicId,
-                                                                           @RequestBody final String studentMatriculationNumber) {
-        return ResponseEntity.ok(studentPostKickoffSubmissionService.verifyStudentFormAccess(studentPublicId, studentMatriculationNumber));
-    }
-
-    @PostMapping("/{studentId}")
-    public ResponseEntity<StudentPostKickoffSubmission> createStudentPostKickoffsSubmissionForStudent(
-            @PathVariable final String studentId,
-            @RequestBody final StudentPostKickoffSubmission studentPostKickOffSubmission
+    @PostMapping
+    public ResponseEntity<StudentPostKickoffSubmission> createPostKickoffsSubmission(
+            @RequestBody final StudentPostKickoffSubmission studentPostKickOffSubmission,
+            JwtAuthenticationToken token
     ) {
-        return ResponseEntity.ok(studentPostKickoffSubmissionService.create(
-                studentId,
-                studentPostKickOffSubmission));
+        return ResponseEntity.ok(studentPostKickoffSubmissionService.create(token.getName(), studentPostKickOffSubmission));
     }
 
     @DeleteMapping("/project-team-preferences")

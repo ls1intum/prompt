@@ -465,7 +465,6 @@ public class MailingService {
 
     private String fillStudentPlaceholders(final String template, final Student student) {
         return template
-                .replace("{{student.publicId}}", student.getPublicId().toString())
                 .replace("{{student.firstName}}", student.getFirstName())
                 .replace("{{student.lastName}}", student.getLastName())
                 .replace("{{student.email}}", student.getEmail())

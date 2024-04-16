@@ -12,8 +12,7 @@ import java.util.UUID;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, UUID> {
 
-    @Transactional
-    Optional<Student> findByPublicId(final UUID publicId);
+    Optional<Student> findByTumId(final String tumId);
 
     Optional<Student> findByEmail(final String email);
 
