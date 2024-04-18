@@ -30,7 +30,7 @@
     "@tiptap/extension-underline": "^2.3.0",
     "@tiptap/pm": "^2.3.0",
     "@tiptap/react": "^2.3.0",
-    "@tiptap/starter-kit": "^2.2.2",
+    "@tiptap/starter-kit": "^2.3.0",
     "axios": "^1.6.7",
     "classnames": "^2.5.1",
     "clsx": "^2.1.0",
