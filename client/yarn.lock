@@ -1185,13 +1185,12 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:*, @types/react@npm:^18":
-  version: 18.2.56
-  resolution: "@types/react@npm:18.2.56"
+  version: 18.2.79
+  resolution: "@types/react@npm:18.2.79"
   dependencies:
     "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/a6dab9569799538a9e01d340a721ef1a6f5532bd11cae8d8ab9af00dab2edcafaa00950f7bf2f9ae5bbb1839d890e9ac6eb1ea1186200894b7178dde7b503269
+  checksum: 10c0/c8a8a005d8830a48cc1ef93c3510c4935a2a03e5557dbecaa8f1038450cbfcb18eb206fa7fba7077d54b8da21faeb25577e897a333392770a7797f625b62c78a
   languageName: node
   linkType: hard
 
@@ -1199,13 +1198,6 @@ __metadata:
   version: 0.12.2
   resolution: "@types/retry@npm:0.12.2"
   checksum: 10c0/07481551a988cc90b423351919928b9ddcd14e3f5591cac3ab950851bb20646e55a10e89141b38bc3093d2056d4df73700b22ff2612976ac86a6367862381884
-  languageName: node
-  linkType: hard
-
-"@types/scheduler@npm:*":
-  version: 0.16.5
-  resolution: "@types/scheduler@npm:0.16.5"
-  checksum: 10c0/625b63cd5dcaf6fb88fe03aa7c797f28cb121f03584126d4811b2d03f39bc3e238ce52cf7685ad8adfe8445d679934e6be47347723a6771ca2058c01f0c33760
   languageName: node
   linkType: hard
 
