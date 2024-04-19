@@ -303,15 +303,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/form@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "@mantine/form@npm:7.5.2"
+"@mantine/form@npm:^7.8.0":
+  version: 7.8.0
+  resolution: "@mantine/form@npm:7.8.0"
   dependencies:
     fast-deep-equal: "npm:^3.1.3"
     klona: "npm:^2.0.6"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10c0/8d0da39434e08d823a299a76058b17cf240288a039d505d1d5683165088b8405d2209804761f6cb0fcd68e286056fba4caf451c5c2df33e61f39fedad3c72a71
+  checksum: 10c0/8d6aadda11eb7e99d13ec3df1490c1261f02c01ae68a08d3bfb98daf0da254ad7666c821af62b82e2527bebbfb4280f277f6b81773a39df97127bb4c9cdd3612
   languageName: node
   linkType: hard
 
@@ -2508,7 +2508,7 @@ __metadata:
     "@mantine/core": "npm:^7.5.2"
     "@mantine/dates": "npm:^7.5.2"
     "@mantine/dropzone": "npm:^7.8.0"
-    "@mantine/form": "npm:^7.5.2"
+    "@mantine/form": "npm:^7.8.0"
     "@mantine/hooks": "npm:^7.5.2"
     "@mantine/notifications": "npm:^7.5.3"
     "@mantine/tiptap": "npm:^7.5.2"
