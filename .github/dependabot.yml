@@ -14,3 +14,11 @@ updates:
     reviewers:
       - "airelawaleria"
     open-pull-requests-limit: 10
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "robertjndw"
+    reviewers:
+      - "robertjndw"
