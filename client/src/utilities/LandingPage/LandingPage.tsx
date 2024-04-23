@@ -1,7 +1,7 @@
 import { Button, Card, Group, Stack, Title } from '@mantine/core'
 import { IconBrandSwift, IconLogin, IconSchool, IconUsersGroup } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
-import styles from './LandingPage.module.scss'
+import * as styles from './LandingPage.module.scss'
 
 export const LandingPage = (): JSX.Element => {
   const navigate = useNavigate()
