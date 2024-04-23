@@ -27,7 +27,7 @@ import {
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import styles from './NavigationLayout.module.scss'
+import * as styles from './NavigationLayout.module.scss'
 import classNames from 'classnames'
 import useDeviceDetection from '../hooks/useDeviceDetection'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
