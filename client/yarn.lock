@@ -2173,13 +2173,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base64-js@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "base64-js@npm:1.5.1"
-  checksum: 10c0/f23823513b63173a001030fae4f2dabe283b99a9d324ade3ad3d148e218134676f1ee8568c877cd79ec1c53158dcf2d2ba527a97c606618928ba99dd930102bf
-  languageName: node
-  linkType: hard
-
 "batch@npm:0.6.1":
   version: 0.6.1
   resolution: "batch@npm:0.6.1"
@@ -2545,7 +2538,7 @@ __metadata:
     html-webpack-plugin: "npm:^5.6.0"
     i18n-iso-countries: "npm:^7.11.0"
     jwt-decode: "npm:^4.0.0"
-    keycloak-js: "npm:^22.0.5"
+    keycloak-js: "npm:^24.0.3"
     mantine-contextmenu: "npm:^7.8.0"
     mantine-datatable: "npm:^7.8.1"
     moment: "npm:^2.30.1"
@@ -5215,10 +5208,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-sha256@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "js-sha256@npm:0.9.0"
-  checksum: 10c0/f20b9245f6ebe666f42ca05536f777301132fb1aa7fbc22f10578fa302717a6cca507344894efdeaf40a011256eb2f7d517b94ac7105bd5cf087fa61551ad634
+"js-sha256@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "js-sha256@npm:0.11.0"
+  checksum: 10c0/90980fe01ca01fbd166751fb16c4caa09c1ab997e8bf77c0764cc05c772c6044946f4c1b3bad266ce78357280d2131d3dc0cf2dd7646e78272996bd4d590aa4f
   languageName: node
   linkType: hard
 
@@ -5314,13 +5307,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycloak-js@npm:^22.0.5":
-  version: 22.0.5
-  resolution: "keycloak-js@npm:22.0.5"
+"keycloak-js@npm:^24.0.3":
+  version: 24.0.3
+  resolution: "keycloak-js@npm:24.0.3"
   dependencies:
-    base64-js: "npm:^1.5.1"
-    js-sha256: "npm:^0.9.0"
-  checksum: 10c0/d377d8f3bb062d052e10c119f4eacdb9f34b9aedc76a1050c1d9201bcbf78dc8e089e6609af4c4dc6e9118969236ca7e4f458224f89d1273937b5b27b128c9c5
+    js-sha256: "npm:^0.11.0"
+    jwt-decode: "npm:^4.0.0"
+  checksum: 10c0/10b1ca92699115123e595631c855510ca256d289121e14a9d73438ab45521ec8daa742d81f1af9a9ce5da8a7e91b5192c3e6aa3fd450fcbec7039959cd725ca5
   languageName: node
   linkType: hard
 
