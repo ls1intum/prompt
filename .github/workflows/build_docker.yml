@@ -46,18 +46,9 @@ jobs:
         with:
           files: server/**
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ matrix.image }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=pr
-
       - name: Build and push Docker Image
         uses: ls1intum/.github/.github/build-and-push-docker@composite-action
+        id: meta
         if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true' && matrix.path == 'client') || (steps.changed-files-server-folder.outputs.any_changed == 'true' && matrix.path == 'server') }}
         with:
           docker-context: ${{ matrix.context }}
@@ -70,7 +61,7 @@ jobs:
       - id: output-tag-client
         run: |
           if [[ "${{ matrix.path }}" == "client" ]] && [[ "${{ steps.changed-files-client-folder.outputs.any_changed }}" == "true" ]]; then
-            echo "client_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "client_image_tag=${{ steps.meta.outputs.tags }}" >> "$GITHUB_OUTPUT"
           elif [[ "${{ matrix.path }}" == "client" ]]; then
             echo "client_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi
@@ -78,7 +69,7 @@ jobs:
       - id: output-tag-server
         run: |
           if [[ "${{ matrix.path }}" == "server" ]] && [[ "${{ steps.changed-files-server-folder.outputs.any_changed }}" == "true" ]]; then
-            echo "server_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "server_image_tag=${{ steps.meta.outputs.tags }}" >> "$GITHUB_OUTPUT"
           elif [[ "${{ matrix.path }}" == "server" ]]; then
             echo "server_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi
