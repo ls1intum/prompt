@@ -46,25 +46,6 @@ jobs:
         with:
           files: server/**
 
-      - name: Log in to the Container registry
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up QEMU
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
-
-      - name: Install Docker Buildx
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        id: buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -76,14 +57,11 @@ jobs:
             type=ref,event=pr
 
       - name: Build and push Docker Image
-        uses: docker/build-push-action@v5
+        uses: ls1intum/.github/.github/build-and-push-docker@composite-action
         if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true' && matrix.path == 'client') || (steps.changed-files-server-folder.outputs.any_changed == 'true' && matrix.path == 'server') }}
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          docker-context: ${{ matrix.context }}
+          docker-file: ${{ matrix.dockerfile }}
           build-args: |
             "SERVER_HOST=${{ vars.SERVER_HOST }}"
             "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
