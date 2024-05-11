@@ -10,15 +10,23 @@ export interface Patch {
   value: string
 }
 
-const axiosInstance = axios.create({
+const authenticatedAxiosInstance = axios.create({
   baseURL: serverBaseUrl,
 })
 
-axiosInstance.interceptors.request.use((config) => {
+authenticatedAxiosInstance.interceptors.request.use((config) => {
   if (!!localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== '') {
     config.headers['Authorization'] = `Bearer ${localStorage.getItem('jwt_token') ?? ''}`
   }
   return config
 })
 
-export { axiosInstance }
+const notAuthenticatedAxiosInstance = axios.create({
+  baseURL: serverBaseUrl,
+})
+
+notAuthenticatedAxiosInstance.interceptors.request.use((config) => {
+  return config
+})
+
+export { authenticatedAxiosInstance as axiosInstance, notAuthenticatedAxiosInstance }

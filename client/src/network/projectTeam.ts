@@ -1,10 +1,14 @@
 import { notifications } from '@mantine/notifications'
-import { Patch, axiosInstance } from './configService'
+import { Patch, axiosInstance, notAuthenticatedAxiosInstance } from './configService'
 import { ProjectTeam } from '../interface/projectTeam'
 
 export const getProjectTeams = async (courseIteration: string): Promise<ProjectTeam[]> => {
   try {
-    return (await axiosInstance.get(`/api/project-teams?courseIteration=${courseIteration}`)).data
+    return (
+      await notAuthenticatedAxiosInstance.get(
+        `/api/project-teams?courseIteration=${courseIteration}`,
+      )
+    ).data
   } catch (err) {
     notifications.show({
       color: 'red',

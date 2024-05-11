@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications'
-import { axiosInstance } from './configService'
+import { axiosInstance, notAuthenticatedAxiosInstance } from './configService'
 import { ThesisAdvisor, ThesisApplication } from '../interface/thesisApplication'
 import { AxiosError } from 'axios'
 import { ApplicationStatus } from '../interface/application'
@@ -40,11 +40,15 @@ export const postThesisApplication = async ({
     if (bachelorReport) {
       formData.append('bachelorReport', bachelorReport)
     }
-    const response = await axiosInstance.post(`/api/thesis-applications`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await notAuthenticatedAxiosInstance.post(
+      `/api/thesis-applications`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    })
+    )
     if (response.status >= 200 && response.status < 300) {
       notifications.show({
         color: 'green',
