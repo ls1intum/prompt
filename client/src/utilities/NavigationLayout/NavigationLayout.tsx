@@ -27,7 +27,7 @@ import {
 import type Keycloak from 'keycloak-js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import * as styles from './NavigationLayout.module.scss'
+import styles from './NavigationLayout.module.scss'
 import classNames from 'classnames'
 import useDeviceDetection from '../hooks/useDeviceDetection'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
@@ -63,7 +63,7 @@ const navigationContents = [
   {
     label: 'TEASE',
     icon: IconAbacus,
-    link: '/tease/',
+    link: `${window.location.origin}/tease`,
     permission: [Permission.PM],
   },
   {
