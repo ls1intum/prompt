@@ -25,7 +25,7 @@ import {
   IconUsers,
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import * as styles from './NavigationLayout.module.scss'
 import classNames from 'classnames'
@@ -63,7 +63,7 @@ const navigationContents = [
   {
     label: 'TEASE',
     icon: IconAbacus,
-    link: '/tease/',
+    link: '/tease',
     permission: [Permission.PM],
   },
   {
@@ -197,12 +197,13 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
         </AppShell.Section>
         <AppShell.Section>
           {navigationRoutes.map((item) => (
-            <a
+            <Link
               className={classNames(styles.navEntry, {
                 [styles.navEntryActive]: item.link === active,
               })}
-              href={item.link}
+              to={item.link}
               key={item.label}
+              reloadDocument
               onClick={(event) => {
                 event.preventDefault()
                 if (isMobileDevice) {
@@ -213,7 +214,7 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
             >
               <item.icon stroke={1.5} />
               <span>{item.label}</span>
-            </a>
+            </Link>
           ))}
         </AppShell.Section>
       </AppShell.Navbar>
