@@ -37,7 +37,7 @@
     "css-loader": "^7.1.1",
     "dayjs": "^1.11.10",
     "file-loader": "^6.2.0",
-    "i18n-iso-countries": "^7.11.0",
+    "i18n-iso-countries": "^7.11.1",
     "jwt-decode": "^4.0.0",
     "keycloak-js": "^22.0.5",
     "mantine-contextmenu": "^7.8.0",
