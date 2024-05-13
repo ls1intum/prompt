@@ -1,6 +1,7 @@
-import { Alert, Stack, Tabs } from '@mantine/core'
+import { Alert, Button, Stack, Tabs } from '@mantine/core'
 import { ProjectTeamsManager } from './components/ProjectTeamsManager/ProjectTeamsManager'
 import {
+  IconAbacus,
   IconAlertCircle,
   IconChartArrowsVertical,
   IconListNumbers,
@@ -75,6 +76,14 @@ export const TeamAllocationConsole = (): JSX.Element => {
           console and specify the dates!
         </Alert>
       )}
+      <Button
+        leftSection={<IconAbacus />}
+        component='a'
+        href={window.location.origin + '/tease'}
+        target='_blank'
+      >
+        TEASE
+      </Button>
       <Tabs defaultValue='teams'>
         <Tabs.List grow>
           <Tabs.Tab value='teams' leftSection={<IconUsers />}>

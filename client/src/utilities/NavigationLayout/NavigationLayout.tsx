@@ -12,7 +12,6 @@ import {
   useMantineColorScheme,
 } from '@mantine/core'
 import {
-  IconAbacus,
   IconAppsFilled,
   IconDeviceDesktop,
   IconLogout,
@@ -58,12 +57,6 @@ const navigationContents = [
     label: 'Team Allocation',
     icon: IconUsers,
     link: '/management/team-allocation',
-    permission: [Permission.PM],
-  },
-  {
-    label: 'TEASE',
-    icon: IconAbacus,
-    link: '/tease',
     permission: [Permission.PM],
   },
   {
