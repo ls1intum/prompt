@@ -3,6 +3,7 @@ import { Configuration, EnvironmentPlugin } from 'webpack'
 // eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin'
 import 'webpack-dev-server'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 
 const config: Configuration = {
   mode: (process.env.NODE_ENV as 'production' | 'development' | undefined) ?? 'development',
@@ -56,7 +57,7 @@ const config: Configuration = {
     ],
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
   },
@@ -64,6 +65,7 @@ const config: Configuration = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
+    new HtmlWebpackPlugin(),
     new CopyPlugin({
       patterns: [{ from: 'public' }],
     }),
