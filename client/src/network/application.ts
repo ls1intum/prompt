@@ -7,7 +7,7 @@ import {
   ApplicationStatus,
   Grade,
 } from '../interface/application'
-import { Patch, axiosInstance } from './configService'
+import { Patch, axiosInstance, notAuthenticatedAxiosInstance } from './configService'
 import { AxiosError } from 'axios'
 
 export const getApplications = async (
@@ -94,7 +94,7 @@ export const postApplication = async (
   courseIteration: string,
 ): Promise<Application | undefined> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await notAuthenticatedAxiosInstance.post(
       `/api/applications/${applicationType}?courseIteration=${courseIteration}`,
       application,
     )

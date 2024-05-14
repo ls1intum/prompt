@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications'
-import { Patch, axiosInstance } from './configService'
+import { Patch, axiosInstance, notAuthenticatedAxiosInstance } from './configService'
 import { CourseIteration, CourseIterationRequest } from '../interface/courseIteration'
 import { ApplicationType } from '../interface/application'
 
@@ -21,7 +21,7 @@ export const getCourseIterationsWithOpenKickOffPeriod = async (): Promise<
   CourseIteration | undefined
 > => {
   try {
-    return (await axiosInstance.get(`/api/course-iterations/open/kick-off`)).data
+    return (await notAuthenticatedAxiosInstance.get(`/api/course-iterations/open/kick-off`)).data
   } catch (err) {
     return undefined
   }
@@ -31,7 +31,9 @@ export const getCourseIterationsWithOpenApplicationPeriod = async (
   applicationType: ApplicationType,
 ): Promise<CourseIteration | undefined> => {
   try {
-    return (await axiosInstance.get(`/api/course-iterations/open/${applicationType}`)).data
+    return (
+      await notAuthenticatedAxiosInstance.get(`/api/course-iterations/open/${applicationType}`)
+    ).data
   } catch (err) {
     return undefined
   }

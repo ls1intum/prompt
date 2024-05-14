@@ -38,6 +38,7 @@ export enum Device {
   IPHONE = 'IPhone',
   IPAD = 'IPad',
   APPLE_WATCH = 'Watch',
+  VISION_PRO = 'Vision Pro',
   RASPBERRY_PI = 'Raspberry PI',
 }
 
