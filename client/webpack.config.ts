@@ -65,7 +65,9 @@ const config: Configuration = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'public/template.html',
+    }),
     new CopyPlugin({
       patterns: [{ from: 'public' }],
     }),
