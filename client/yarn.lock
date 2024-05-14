@@ -722,15 +722,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-link@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@tiptap/extension-link@npm:2.3.0"
+"@tiptap/extension-link@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "@tiptap/extension-link@npm:2.3.2"
   dependencies:
     linkifyjs: "npm:^4.1.0"
   peerDependencies:
     "@tiptap/core": ^2.0.0
     "@tiptap/pm": ^2.0.0
-  checksum: 10c0/4d6f28e18dcffa6dc280317f02ba69468d5e1b2faecb81c35db1fcd82ef2c906b8c941e982b01c4f26c15aabd06cbaa49fc4fd68321b54ca11f4903219289415
+  checksum: 10c0/12e28cd326946f75867176d46eee73e2d0f5dfaa7b390004ca8cfa6982903b6a442c9d35ebae53322d57fe6ba9865e4a8811160fbf4c213bbdfb60585a22490d
   languageName: node
   linkType: hard
 
@@ -2559,7 +2559,7 @@ __metadata:
     "@tanstack/react-query-devtools": "npm:^5.36.0"
     "@tiptap/core": "npm:^2.3.0"
     "@tiptap/extension-highlight": "npm:^2.3.0"
-    "@tiptap/extension-link": "npm:^2.3.0"
+    "@tiptap/extension-link": "npm:^2.3.2"
     "@tiptap/extension-subscript": "npm:^2.3.0"
     "@tiptap/extension-superscript": "npm:^2.3.0"
     "@tiptap/extension-text-align": "npm:^2.3.2"
