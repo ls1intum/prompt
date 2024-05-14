@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum Device {
     MACBOOK("Mac"), IPHONE("IPhone"), IPAD("IPad"), APPLE_WATCH("Watch"),
-    RASPBERRY_PI("Raspberry Pi");
+    VISION_PRO("Vision Pro"), RASPBERRY_PI("Raspberry Pi");
 
     private String value;
 }

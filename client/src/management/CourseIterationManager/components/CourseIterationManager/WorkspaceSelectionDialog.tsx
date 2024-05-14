@@ -78,8 +78,8 @@ export const CourseIterationCreationModal = ({
   })
 
   const createCourseIteration = useMutation({
-    mutationFn: () => {
-      return postCourseIteration(form.values)
+    mutationFn: (courseIteration: CourseIteration) => {
+      return postCourseIteration(courseIteration)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.COURSE_ITERATION] })
@@ -229,7 +229,7 @@ export const CourseIterationCreationModal = ({
                 })
                 updateCourseIteration.mutate(courseIterationPatchObjectArray)
               } else {
-                createCourseIteration.mutate()
+                createCourseIteration.mutate(form.values)
               }
               form.reset()
               onClose()

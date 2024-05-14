@@ -9,6 +9,7 @@ import { CourseIteration } from '../../../../interface/courseIteration'
 import { deleteCourseIteration } from '../../../../network/courseIteration'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Query } from '../../../../state/query'
+import { ConfirmationModal } from '../../../../utilities/ConfirmationModal'
 
 export const CourseIterationManager = (): JSX.Element => {
   const queryClient = useQueryClient()
@@ -18,6 +19,7 @@ export const CourseIterationManager = (): JSX.Element => {
   const [tablePage, setTablePage] = useState(1)
   const [creationModalOpen, setCreationModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [selectedCourseIteration, setSelectedCourseIteration] = useState<
     CourseIteration | undefined
   >(undefined)
@@ -51,6 +53,21 @@ export const CourseIterationManager = (): JSX.Element => {
             setSelectedCourseIteration(undefined)
           }}
           courseIteration={selectedCourseIteration}
+        />
+      )}
+      {selectedCourseIteration && (
+        <ConfirmationModal
+          opened={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false)
+            setSelectedCourseIteration(undefined)
+          }}
+          onConfirm={() => {
+            removeCourseIteration.mutate(selectedCourseIteration.id)
+            setDeleteModalOpen(false)
+          }}
+          title={'Delete Course Iteration'}
+          text={`Are You sure You want to permanetly delete the course iteration ${selectedCourseIteration.semesterName} ?`}
         />
       )}
       <div style={{ display: 'flex', justifyContent: 'right', margin: '2vh 0' }}>
@@ -149,7 +166,8 @@ export const CourseIterationManager = (): JSX.Element => {
                   <ActionIcon
                     variant='transparent'
                     color='blue'
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation()
                       setSelectedCourseIteration(courseIteration)
                       setEditModalOpen(true)
                     }}
@@ -161,8 +179,10 @@ export const CourseIterationManager = (): JSX.Element => {
                   <ActionIcon
                     variant='transparent'
                     color='red'
-                    onClick={() => {
-                      removeCourseIteration.mutate(courseIteration.id)
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedCourseIteration(courseIteration)
+                      setDeleteModalOpen(true)
                     }}
                   >
                     <IconTrash size={16} />
