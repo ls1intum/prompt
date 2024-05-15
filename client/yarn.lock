@@ -815,9 +815,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/pm@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@tiptap/pm@npm:2.3.0"
+"@tiptap/pm@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@tiptap/pm@npm:2.4.0"
   dependencies:
     prosemirror-changeset: "npm:^2.2.1"
     prosemirror-collab: "npm:^1.3.1"
@@ -837,7 +837,7 @@ __metadata:
     prosemirror-trailing-node: "npm:^2.0.7"
     prosemirror-transform: "npm:^1.8.0"
     prosemirror-view: "npm:^1.32.7"
-  checksum: 10c0/e6b44ac0bedad201de826f52af936703d4f4ef6977fdf0377dc0ca1faa767037ff46b991ef57717093a972bc8f12db832e2f55553c0771f39465fc9c18d26741
+  checksum: 10c0/7d83f4c8b56ef3eb67b7123b410fcda2bf972c8b4cf54a323c7adb2c9c67c7391051e84766e740b179967d0c8bb3d27c756a88ed9202cab3b688a4fd0d3d4d41
   languageName: node
   linkType: hard
 
@@ -2564,7 +2564,7 @@ __metadata:
     "@tiptap/extension-superscript": "npm:^2.3.0"
     "@tiptap/extension-text-align": "npm:^2.3.2"
     "@tiptap/extension-underline": "npm:^2.3.2"
-    "@tiptap/pm": "npm:^2.3.0"
+    "@tiptap/pm": "npm:^2.4.0"
     "@tiptap/react": "npm:^2.3.0"
     "@tiptap/starter-kit": "npm:^2.3.2"
     "@types/copy-webpack-plugin": "npm:^10.1.0"
