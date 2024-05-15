@@ -77,7 +77,7 @@ export const DeveloperApplicationForm = ({
             ? null
             : 'This is not a valid TUM ID',
         matriculationNumber: (value, values) =>
-          /^[0-9]+$/.test(value ?? '') || values.student?.isExchangeStudent
+          /^\d{8}$/.test(value ?? '') || values.student?.isExchangeStudent
             ? null
             : 'This is not a valid matriculation number.',
         firstName: isNotEmpty('Please state your first name.'),
