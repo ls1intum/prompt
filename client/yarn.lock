@@ -483,21 +483,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tabler/icons-react@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@tabler/icons-react@npm:3.4.0"
+"@tabler/icons-react@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@tabler/icons-react@npm:3.5.0"
   dependencies:
-    "@tabler/icons": "npm:3.4.0"
+    "@tabler/icons": "npm:3.5.0"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/7f51b09d4e7759e79f60be0efc1c1706e748b4472528170b6653a0e545484f9789d46a67c05df547a927ffffb1d71814a8b92b3241721a68bfb581a9b484950f
+  checksum: 10c0/9669d26e2ab4654d3d1c124a5ffd42c276d5a7ebc83b81ecb200e1f89dc3e9271557cf6eccc78bdd0ebdd0536fa4cd566e2b638ab4407e9415457c28ef05786e
   languageName: node
   linkType: hard
 
-"@tabler/icons@npm:3.4.0":
-  version: 3.4.0
-  resolution: "@tabler/icons@npm:3.4.0"
-  checksum: 10c0/c2dc1ff41f8e57c69f800d8315842154d47b05c4456797d94752383dbd0f10ccda3f9164c7b3335687fc5310633d4d8542c09a74ebe2bee5754a44d3aea37041
+"@tabler/icons@npm:3.5.0":
+  version: 3.5.0
+  resolution: "@tabler/icons@npm:3.5.0"
+  checksum: 10c0/0d6b15266e116dcf56bca417d013f1027b57404e5ed7f9a2a14e216eabdd04980ff971129491b666ffdc11953107c0b4540033c92d611fa74e127fc9d443fc4f
   languageName: node
   linkType: hard
 
@@ -2498,7 +2498,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.9.2"
     "@mantine/notifications": "npm:^7.9.2"
     "@mantine/tiptap": "npm:^7.9.2"
-    "@tabler/icons-react": "npm:^3.4.0"
+    "@tabler/icons-react": "npm:^3.5.0"
     "@tanstack/eslint-plugin-query": "npm:^5.35.6"
     "@tanstack/react-query": "npm:^5.37.1"
     "@tanstack/react-query-devtools": "npm:^5.37.1"
