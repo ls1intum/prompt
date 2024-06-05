@@ -526,15 +526,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query-devtools@npm:^5.39.0":
-  version: 5.39.0
-  resolution: "@tanstack/react-query-devtools@npm:5.39.0"
+"@tanstack/react-query-devtools@npm:^5.40.1":
+  version: 5.40.1
+  resolution: "@tanstack/react-query-devtools@npm:5.40.1"
   dependencies:
     "@tanstack/query-devtools": "npm:5.37.1"
   peerDependencies:
-    "@tanstack/react-query": ^5.39.0
+    "@tanstack/react-query": ^5.40.1
     react: ^18 || ^19
-  checksum: 10c0/7f383293ad8cdbe0b0368e27bcbb753e091714e576a965411e78af6acce9672a981c3e9169eee4a886ab1851434588f80264ba0455bb3e8fbfa578929c93841d
+  checksum: 10c0/3cc9b5cc90e82c787cef25f73ee55e67df842b63e0c7e57a27d3ed15d8e3c2a8395e80fe6174bd71a5723fa066e40288f3cbf9791d243b485ea2003aaca36d3a
   languageName: node
   linkType: hard
 
@@ -2501,7 +2501,7 @@ __metadata:
     "@tabler/icons-react": "npm:^3.5.0"
     "@tanstack/eslint-plugin-query": "npm:^5.35.6"
     "@tanstack/react-query": "npm:^5.39.0"
-    "@tanstack/react-query-devtools": "npm:^5.39.0"
+    "@tanstack/react-query-devtools": "npm:^5.40.1"
     "@tiptap/core": "npm:^2.4.0"
     "@tiptap/extension-highlight": "npm:^2.4.0"
     "@tiptap/extension-link": "npm:^2.4.0"
