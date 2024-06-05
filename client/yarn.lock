@@ -296,17 +296,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/dropzone@npm:^7.10.0":
-  version: 7.10.0
-  resolution: "@mantine/dropzone@npm:7.10.0"
+"@mantine/dropzone@npm:^7.10.1":
+  version: 7.10.1
+  resolution: "@mantine/dropzone@npm:7.10.1"
   dependencies:
     react-dropzone-esm: "npm:15.0.1"
   peerDependencies:
-    "@mantine/core": 7.10.0
-    "@mantine/hooks": 7.10.0
+    "@mantine/core": 7.10.1
+    "@mantine/hooks": 7.10.1
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/54b4ad62ef20ba2fa6f430c2750fc8295a6798fc71d8c6ca70b44e021400c7d845fee62601fa9cac030212029347e3dc11c375cbcb1eb4759fc2db760614188e
+  checksum: 10c0/0ad6a3247fce7ca847393ea503877a03fc4b6f3e407668b4fa91a352170eb43256c0c571b7ef36873aa7a69fb70d7014d9705c06d25a05c174fa9cc1c09e3ee7
   languageName: node
   linkType: hard
 
@@ -2507,7 +2507,7 @@ __metadata:
     "@formkit/auto-animate": "npm:^0.8.2"
     "@mantine/core": "npm:^7.10.0"
     "@mantine/dates": "npm:^7.10.0"
-    "@mantine/dropzone": "npm:^7.10.0"
+    "@mantine/dropzone": "npm:^7.10.1"
     "@mantine/form": "npm:^7.10.1"
     "@mantine/hooks": "npm:^7.10.0"
     "@mantine/notifications": "npm:^7.10.0"
