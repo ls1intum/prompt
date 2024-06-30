@@ -487,8 +487,8 @@ export const IntroCourseEntryModal = ({
             introCourseAssessmentForm.values.passed
               ? 'Passed'
               : introCourseAssessmentForm.values.passed === false
-              ? 'Not Passed'
-              : null
+                ? 'Not Passed'
+                : null
           }
           onChange={(value) => {
             if (value === 'Passed') {
