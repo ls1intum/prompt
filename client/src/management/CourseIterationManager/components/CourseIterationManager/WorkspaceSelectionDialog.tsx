@@ -78,9 +78,7 @@ export const CourseIterationCreationModal = ({
   })
 
   const createCourseIteration = useMutation({
-    mutationFn: (courseIteration: CourseIteration) => {
-      return postCourseIteration(courseIteration)
-    },
+    mutationFn: (iteration: CourseIteration) => postCourseIteration(iteration),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [Query.COURSE_ITERATION] })
     },

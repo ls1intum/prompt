@@ -16,9 +16,8 @@ export const BitbucketProjectsCreationForm = ({
     projectNames.map((p) => ({ label: p, value: p })),
   )
   const [projectNamesToCreate, setProjectNamesToCreate] = useState(projectNameSuggestions)
-  const [createProjectsWithRepositories, setCreateProjectsWithRepositories] = useState(
-    !!defaultWithRepository,
-  )
+  const [createProjectsWithRepositories, setCreateProjectsWithRepositories] =
+    useState(!!defaultWithRepository)
 
   return (
     <Stack>

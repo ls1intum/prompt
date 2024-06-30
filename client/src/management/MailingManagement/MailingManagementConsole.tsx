@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default */
 import { RichTextEditor, Link } from '@mantine/tiptap'
 import { useEditor, BubbleMenu } from '@tiptap/react'
 import Highlight from '@tiptap/extension-highlight'
