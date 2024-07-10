@@ -15,6 +15,12 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=valeryia.andraichuk@tum.de"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--experimental.plugins.jwt.moduleName=github.com/traefik-plugins/traefik-jwt-plugin"
+      - "--experimental.plugins.jwt.version=v0.7.1"
+    labels:
+      - "traefik.http.middlewares.jwt-middleware.plugin.jwt.JwtQueryKey=token"
+      - "traefik.http.middlewares.jwt-middleware.plugin.jwt.PayloadFields=exp"
+      - "traefik.http.middlewares.jwt-middleware.plugin.jwt.Keys=`${KEYCLOAK_CLIENT_SECRET}`"
     restart: unless-stopped
     ports:
       - "80:80"
