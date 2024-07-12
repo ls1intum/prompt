@@ -20,7 +20,7 @@ services:
     labels:
       - "traefik.http.middlewares.jwt-middleware.plugin.jwt.JwtQueryKey=token"
       - "traefik.http.middlewares.jwt-middleware.plugin.jwt.PayloadFields=exp"
-      - "traefik.http.middlewares.jwt-middleware.plugin.jwt.Keys=`${KEYCLOAK_CLIENT_SECRET}`"
+      - "traefik.http.middlewares.jwt-middleware.plugin.jwt.Keys=${KEYCLOAK_HOST}/realms/${KEYCLOAK_REALM_NAME}/protocol/openid-connect/certs"
     restart: unless-stopped
     ports:
       - "80:80"
