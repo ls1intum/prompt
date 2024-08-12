@@ -106,7 +106,8 @@ jobs:
 
             echo "SERVER_HOST=${{ vars.SERVER_HOST }}" >> .env.prod
             echo "CLIENT_HOST=${{ vars.CLIENT_HOST }}" >> .env.prod
-
+            echo "THESIS_HOST=${{ vars.THESIS_HOST }}" >> .env.prod
+            
             echo "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}" >> .env.prod
             echo "KEYCLOAK_ISSUER_URI=${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}" >> .env.prod
             echo "KEYCLOAK_JWK_SET_URI=${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}/protocol/openid-connect/certs" >> .env.prod
