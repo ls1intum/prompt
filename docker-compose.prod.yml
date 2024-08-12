@@ -98,7 +98,7 @@ services:
       - "traefik.http.middlewares.client-compress.compress=true"
       - "traefik.http.middlewares.redirect-to-thesis-track.redirectregex.regex=^https?://[^/]+/(applications/thesis|management/thesis-applications)(.*)"
       - "traefik.http.middlewares.redirect-to-thesis-track.redirectregex.replacement=${THESIS_HOST}/$$1"
-      - "traefik.http.routers.client.middlewares=client-compress"
+      - "traefik.http.routers.client.middlewares=client-compress,redirect-to-thesis-track"
     expose:
       - "80"
     depends_on:
