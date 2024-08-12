@@ -97,6 +97,13 @@ services:
       - "traefik.http.routers.client.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.client-compress.compress=true"
       - "traefik.http.routers.client.middlewares=client-compress"
+      - "traefik.http.routers.redirect-applications.rule=Host(`${SERVER_HOST}`) && PathPrefix(`/applications`)"
+      - "traefik.http.routers.redirect-management.rule=Host(`${SERVER_HOST}`) && PathPrefix(`/management/thesis-applications`)"
+      - "traefik.http.middlewares.redirect-to-thesis-track.redirectregex.regex=^https?://[^/]+/(applications|management/thesis-applications)(.*)"
+      - "traefik.http.middlewares.redirect-to-thesis-track.redirectregex.replacement=${THESIS_HOST}/$1$2"
+      - "traefik.http.middlewares.redirect-to-thesis-track.redirectregex.permanent=true"
+      - "traefik.http.routers.redirect-applications.middlewares=redirect-to-thesis-track"
+      - "traefik.http.routers.redirect-management.middlewares=redirect-to-thesis-track"
     expose:
       - "80"
     depends_on:
