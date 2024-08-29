@@ -64,7 +64,7 @@
     "@types/copy-webpack-plugin": "^10.1.0",
     "@types/dotenv-webpack": "^7.0.7",
     "@types/eslint": "^8.56.10",
-    "@types/node": "^20.12.12",
+    "@types/node": "^22.5.1",
     "@types/papaparse": "^5",
     "@types/react": "^18",
     "@types/react-beautiful-dnd": "^13",
