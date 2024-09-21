@@ -43,7 +43,6 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./thesis_uploads:/thesis_application_uploads
       - ./mailing_templates:/mailing_templates
     expose:
       - "8080"
