@@ -31,6 +31,25 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             {gender === Gender.OTHER ? 'Unknown Gender' : gender}
           </Chip>
         ))}
+        {filters.status.map((status) => (
+          <Chip
+            key={status}
+            icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
+            color='blue'
+            variant='filled'
+            defaultChecked
+            onClick={() => {
+              setFilters((oldFilters: Filters) => {
+                return {
+                  ...oldFilters,
+                  status: oldFilters.status.filter((s) => s !== status),
+                }
+              })
+            }}
+          >
+            {status}
+          </Chip>
+        ))}
         {filters.assessment.maxScore < 100 && (
           <Chip
             key='maxScore'
@@ -45,7 +64,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
                   assessment: {
                     ...oldFilters.assessment,
                     maxScore: 100,
-                    notEvaluated: false,
+                    noScore: false,
                   },
                 }
               })
@@ -76,7 +95,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             Min Score: {filters.assessment.minScore}
           </Chip>
         )}
-        {filters.assessment.notEvaluated && (
+        {filters.assessment.noScore && (
           <Chip
             key='minScore'
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
@@ -88,7 +107,8 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
                 return {
                   ...oldFilters,
                   assessment: {
-                    notEvaluated: false,
+                    ...oldFilters.assessment,
+                    noScore: false,
                     minScore: 0,
                     maxScore: 100,
                   },
@@ -96,7 +116,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
               })
             }}
           >
-            Not Evaluated
+            No Score
           </Chip>
         )}
       </Group>

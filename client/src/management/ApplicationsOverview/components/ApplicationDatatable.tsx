@@ -178,7 +178,7 @@ export const ApplicationDatatable = ({
           const assessmentScore = application.assessment?.assessmentScore
 
           // if notEvaluated is selected, the range does have no effect
-          if (filters.assessment.notEvaluated) {
+          if (filters.assessment.noScore) {
             if (assessmentScore == null) {
               return true
             } else {

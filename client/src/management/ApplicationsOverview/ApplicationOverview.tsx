@@ -25,7 +25,7 @@ export interface Filters {
   gender: Gender[]
   status: string[]
   assessment: {
-    notEvaluated: boolean
+    noScore: boolean
     minScore: number
     maxScore: number
   }
@@ -50,7 +50,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
     gender: [],
     status: [],
     assessment: {
-      notEvaluated: false,
+      noScore: false,
       minScore: 0,
       maxScore: 100,
     },
@@ -225,8 +225,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
             <Menu.Label>Assessment</Menu.Label>
             <Menu.Item>
               <Checkbox
-                label='Not Evaluated'
-                checked={filters.assessment.notEvaluated}
+                label='No Score'
+                checked={filters.assessment.noScore}
                 onChange={(e) => {
                   setFilters((oldFilters: Filters) => {
                     return {
@@ -234,7 +234,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                       assessment: {
                         minScore: 0,
                         maxScore: 100,
-                        notEvaluated: e.currentTarget.checked,
+                        noScore: e.currentTarget.checked,
                       },
                     }
                   })
@@ -255,8 +255,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
                         ...oldFilters,
                         assessment: {
                           minScore: +value,
-                          notEvaluated: +value > 0 ? false : oldFilters.assessment.notEvaluated,
-                          maxScore: oldFilters.assessment.notEvaluated
+                          noScore: +value > 0 ? false : oldFilters.assessment.noScore,
+                          maxScore: oldFilters.assessment.noScore
                             ? 100
                             : oldFilters.assessment.maxScore,
                         },
@@ -289,7 +289,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                         assessment: {
                           ...oldFilters.assessment,
                           maxScore: +value,
-                          notEvaluated: +value > 0 ? false : oldFilters.assessment.notEvaluated,
+                          noScore: +value > 0 ? false : oldFilters.assessment.noScore,
                         },
                       }
                     })
@@ -319,7 +319,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                       ...oldFilters,
                       gender: [],
                       assessment: {
-                        notEvaluated: false,
+                        noScore: false,
                         minScore: 0,
                         maxScore: 100,
                       },
@@ -332,6 +332,10 @@ export const StudentApplicationOverview = (): JSX.Element => {
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
+
+
+
+
         <Menu withArrow>
           <Menu.Target>
             <Button>Actions</Button>
