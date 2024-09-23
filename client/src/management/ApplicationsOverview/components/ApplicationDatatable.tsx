@@ -156,7 +156,6 @@ export const ApplicationDatatable = ({
           // Filter logic for each gender filter
           const isFemaleSelected = filters.gender.includes(Gender.FEMALE)
           const isMaleSelected = filters.gender.includes(Gender.MALE)
-          const isPreferNotToSaySelected = filters.gender.includes(Gender.PREFER_NOT_TO_SAY)
           const isOtherSelected = filters.gender.includes(Gender.OTHER)
 
           // Check the current student's gender against the selected filters
@@ -165,9 +164,10 @@ export const ApplicationDatatable = ({
               return true
             } else if (isMaleSelected && studentGender === Gender.MALE) {
               return true
-            } else if (isOtherSelected && studentGender === Gender.OTHER) {
-              return true
-            } else if (isPreferNotToSaySelected && studentGender === Gender.PREFER_NOT_TO_SAY) {
+            } else if (
+              isOtherSelected &&
+              (studentGender === Gender.OTHER || studentGender === Gender.PREFER_NOT_TO_SAY)
+            ) {
               return true
             }
           }
@@ -177,8 +177,13 @@ export const ApplicationDatatable = ({
         .filter((application) => {
           const assessmentScore = application.assessment?.assessmentScore
 
-          if (!assessmentScore && filters.assessment.includeNotAssessed) {
-            return true
+          // if notEvaluated is selected, the range does have no effect
+          if (filters.assessment.notEvaluated) {
+            if (assessmentScore == null) {
+              return true
+            } else {
+              return false
+            }
           }
 
           const minScore = filters.assessment.minScore ?? 0

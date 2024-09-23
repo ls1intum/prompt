@@ -1,4 +1,13 @@
-import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip, NumberInput } from '@mantine/core'
+import {
+  Group,
+  TextInput,
+  Checkbox,
+  Stack,
+  Button,
+  Menu,
+  Tooltip,
+  NumberInput,
+} from '@mantine/core'
 import { IconAdjustments, IconSearch } from '@tabler/icons-react'
 import { useState, useMemo, useEffect } from 'react'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
@@ -10,12 +19,13 @@ import { Application, ApplicationType, Gender } from '../../interface/applicatio
 import { Query } from '../../state/query'
 import { getApplications } from '../../network/application'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
+import { FilterChips } from './components/FilterChips'
 
 export interface Filters {
   gender: Gender[]
   status: string[]
   assessment: {
-    includeNotAssessed: boolean
+    notEvaluated: boolean
     minScore: number
     maxScore: number
   }
@@ -40,7 +50,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
     gender: [],
     status: [],
     assessment: {
-      includeNotAssessed: false,
+      notEvaluated: false,
       minScore: 0,
       maxScore: 100,
     },
@@ -204,11 +214,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
                   setFilters((currFilters) => ({
                     ...currFilters,
                     gender: e.currentTarget.checked
-                      ? [...currFilters.gender, Gender.PREFER_NOT_TO_SAY, Gender.OTHER]
-                      : currFilters.gender.filter(
-                          (gender) =>
-                            gender !== Gender.PREFER_NOT_TO_SAY && gender !== Gender.OTHER,
-                        ),
+                      ? [...currFilters.gender, Gender.OTHER]
+                      : currFilters.gender.filter((gender) => gender !== Gender.OTHER),
                   }))
                 }}
               />
@@ -219,15 +226,15 @@ export const StudentApplicationOverview = (): JSX.Element => {
             <Menu.Item>
               <Checkbox
                 label='Not Evaluated'
-                checked={filters.assessment.includeNotAssessed}
+                checked={filters.assessment.notEvaluated}
                 onChange={(e) => {
                   setFilters((oldFilters: Filters) => {
                     return {
                       ...oldFilters,
                       assessment: {
-                        minScore: e.currentTarget.checked ? 0 : 0,
-                        maxScore: e.currentTarget.checked ? 0 : 100,
-                        includeNotAssessed: e.currentTarget.checked,
+                        minScore: 0,
+                        maxScore: 100,
+                        notEvaluated: e.currentTarget.checked,
                       },
                     }
                   })
@@ -248,9 +255,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
                         ...oldFilters,
                         assessment: {
                           minScore: +value,
-                          includeNotAssessed:
-                            +value > 0 ? false : oldFilters.assessment.includeNotAssessed,
-                          maxScore: oldFilters.assessment.includeNotAssessed
+                          notEvaluated: +value > 0 ? false : oldFilters.assessment.notEvaluated,
+                          maxScore: oldFilters.assessment.notEvaluated
                             ? 100
                             : oldFilters.assessment.maxScore,
                         },
@@ -283,8 +289,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                         assessment: {
                           ...oldFilters.assessment,
                           maxScore: +value,
-                          includeNotAssessed:
-                            +value > 0 ? false : oldFilters.assessment.includeNotAssessed,
+                          notEvaluated: +value > 0 ? false : oldFilters.assessment.notEvaluated,
                         },
                       }
                     })
@@ -314,7 +319,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                       ...oldFilters,
                       gender: [],
                       assessment: {
-                        includeNotAssessed: false,
+                        notEvaluated: false,
                         minScore: 0,
                         maxScore: 100,
                       },
@@ -380,6 +385,9 @@ export const StudentApplicationOverview = (): JSX.Element => {
           />
         )}
       </Group>
+
+      <FilterChips filters={filters} setFilters={setFilters} />
+
       <ApplicationDatatable
         developerApplications={developerApplications}
         coachApplications={coachApplications}
