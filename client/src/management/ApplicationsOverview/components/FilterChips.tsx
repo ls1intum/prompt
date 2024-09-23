@@ -1,7 +1,7 @@
 import { Chip, Group, rem } from '@mantine/core'
 import { Filters } from '../ApplicationOverview'
 import { IconX } from '@tabler/icons-react'
-import { Gender } from '../../../interface/application'
+import { ApplicationStatus, Gender } from '../../../interface/application'
 
 interface FilterChipsProps {
   filters: Filters
@@ -28,7 +28,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
               })
             }}
           >
-            {gender === Gender.OTHER ? 'Unknown Gender' : gender}
+            Gender: {gender === Gender.OTHER ? 'Unknown Gender' : gender}
           </Chip>
         ))}
         {filters.status.map((status) => (
@@ -47,7 +47,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
               })
             }}
           >
-            {status}
+            Status: {ApplicationStatus[status]}
           </Chip>
         ))}
         {filters.assessment.maxScore < 100 && (
@@ -97,7 +97,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
         )}
         {filters.assessment.noScore && (
           <Chip
-            key='minScore'
+            key='no Score assigned'
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
             color='blue'
             variant='filled'

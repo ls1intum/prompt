@@ -15,7 +15,12 @@ import { ApplicationDatatable } from './components/ApplicationDatatable'
 import { MatchingResultsUploadModal } from './components/MatchingResultsUploadModal'
 import { useApplicationStore } from '../../state/zustand/useApplicationStore'
 import { useQuery } from '@tanstack/react-query'
-import { Application, ApplicationType, Gender } from '../../interface/application'
+import {
+  Application,
+  ApplicationStatus,
+  ApplicationType,
+  Gender,
+} from '../../interface/application'
 import { Query } from '../../state/query'
 import { getApplications } from '../../network/application'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
@@ -56,6 +61,17 @@ export const StudentApplicationOverview = (): JSX.Element => {
     },
     applicationType: [ApplicationType.DEVELOPER],
   })
+
+  const applicationStatusOptions = Object.values(ApplicationStatus)
+
+  const handleStatusFilterChange = (status: string, checked: boolean) => {
+    setFilters((currFilters) => ({
+      ...currFilters,
+      status: checked
+        ? [...currFilters.status, status]
+        : currFilters.status.filter((existingStatus) => existingStatus !== status.toString()),
+    }))
+  }
 
   const { data: fetchedDeveloperApplications, isLoading: isLoadingDeveloperApplications } =
     useQuery<Application[]>({
@@ -309,6 +325,18 @@ export const StudentApplicationOverview = (): JSX.Element => {
             </Menu.Item>
 
             <Menu.Divider />
+            <Menu.Label>Assessment</Menu.Label>
+            {Object.keys(ApplicationStatus).map((status) => (
+              <Menu.Item key={status}>
+                <Checkbox
+                  label={ApplicationStatus[status]}
+                  checked={filters.status.includes(status)}
+                  onChange={(e) => handleStatusFilterChange(status, e.currentTarget.checked)}
+                />
+              </Menu.Item>
+            ))}
+
+            <Menu.Divider />
             <Menu.Item>
               <Button
                 variant='light'
@@ -318,6 +346,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
                     return {
                       ...oldFilters,
                       gender: [],
+                      status: [],
                       assessment: {
                         noScore: false,
                         minScore: 0,
@@ -332,9 +361,6 @@ export const StudentApplicationOverview = (): JSX.Element => {
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-
-
-
 
         <Menu withArrow>
           <Menu.Target>
