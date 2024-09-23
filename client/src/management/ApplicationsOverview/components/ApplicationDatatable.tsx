@@ -145,16 +145,51 @@ export const ApplicationDatatable = ({
             filters.status.length === 0 ||
             filters.status.includes(application.assessment?.status ?? 'NOT_ASSESSED'),
         )
-        .filter((application) =>
-          filters.female && application.student.gender
-            ? Gender[application.student.gender] === Gender.FEMALE
-            : true,
-        )
-        .filter((application) =>
-          filters.male && application.student.gender
-            ? Gender[application.student.gender] === Gender.MALE
-            : true,
-        ),
+        .filter((application) => {
+          const studentGender = application.student.gender
+            ? Gender[application.student.gender]
+            : null
+
+          // If no gender filter is selected, don't filter by gender
+          if (filters.gender.length === 0) return true
+
+          // Filter logic for each gender filter
+          const isFemaleSelected = filters.gender.includes(Gender.FEMALE)
+          const isMaleSelected = filters.gender.includes(Gender.MALE)
+          const isPreferNotToSaySelected = filters.gender.includes(Gender.PREFER_NOT_TO_SAY)
+          const isOtherSelected = filters.gender.includes(Gender.OTHER)
+
+          // Check the current student's gender against the selected filters
+          if (studentGender) {
+            if (isFemaleSelected && studentGender === Gender.FEMALE) {
+              return true
+            } else if (isMaleSelected && studentGender === Gender.MALE) {
+              return true
+            } else if (isOtherSelected && studentGender === Gender.OTHER) {
+              return true
+            } else if (isPreferNotToSaySelected && studentGender === Gender.PREFER_NOT_TO_SAY) {
+              return true
+            }
+          }
+          // If no gender is set, return false
+          return false
+        })
+        .filter((application) => {
+          const assessmentScore = application.assessment?.assessmentScore
+
+          if (!assessmentScore && filters.assessment.includeNotAssessed) {
+            return true
+          }
+
+          const minScore = filters.assessment.minScore ?? 0
+          const maxScore = filters.assessment.maxScore ?? 100
+
+          if (assessmentScore !== undefined) {
+            return assessmentScore >= minScore && assessmentScore <= maxScore
+          }
+
+          return false
+        }),
       sortStatus.columnAccessor === 'fullName'
         ? ['student.firstName', 'student.lastName']
         : sortStatus.columnAccessor,

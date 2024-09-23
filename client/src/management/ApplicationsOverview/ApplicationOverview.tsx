@@ -1,4 +1,4 @@
-import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip } from '@mantine/core'
+import { Group, TextInput, Checkbox, Stack, Button, Menu, Tooltip, NumberInput } from '@mantine/core'
 import { IconAdjustments, IconSearch } from '@tabler/icons-react'
 import { useState, useMemo, useEffect } from 'react'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
@@ -6,15 +6,19 @@ import { ApplicationDatatable } from './components/ApplicationDatatable'
 import { MatchingResultsUploadModal } from './components/MatchingResultsUploadModal'
 import { useApplicationStore } from '../../state/zustand/useApplicationStore'
 import { useQuery } from '@tanstack/react-query'
-import { Application, ApplicationType } from '../../interface/application'
+import { Application, ApplicationType, Gender } from '../../interface/application'
 import { Query } from '../../state/query'
 import { getApplications } from '../../network/application'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 
 export interface Filters {
-  male: boolean
-  female: boolean
+  gender: Gender[]
   status: string[]
+  assessment: {
+    includeNotAssessed: boolean
+    minScore: number
+    maxScore: number
+  }
   applicationType: ApplicationType[]
 }
 
@@ -33,9 +37,13 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const [matchingResultsUploadModalOpened, setMatchingResultsUploadModalOpened] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<Filters>({
-    male: false,
-    female: false,
+    gender: [],
     status: [],
+    assessment: {
+      includeNotAssessed: false,
+      minScore: 0,
+      maxScore: 100,
+    },
     applicationType: [ApplicationType.DEVELOPER],
   })
 
@@ -156,23 +164,166 @@ export const StudentApplicationOverview = (): JSX.Element => {
             <IconAdjustments />
           </Menu.Target>
           <Menu.Dropdown>
+            <Menu.Label>Gender</Menu.Label>
             <Menu.Item>
               <Checkbox
                 label='Male'
-                checked={filters.male}
+                checked={filters.gender.includes(Gender.MALE)}
                 onChange={(e) => {
-                  setFilters({ ...filters, male: e.currentTarget.checked })
+                  setFilters((currFilters) => ({
+                    ...currFilters,
+                    gender: e.currentTarget.checked
+                      ? [...currFilters.gender, Gender.MALE]
+                      : currFilters.gender.filter((gender) => gender !== Gender.MALE),
+                  }))
                 }}
               />
             </Menu.Item>
             <Menu.Item>
               <Checkbox
                 label='Female'
-                checked={filters.female}
+                checked={filters.gender.includes(Gender.FEMALE)}
                 onChange={(e) => {
-                  setFilters({ ...filters, female: e.currentTarget.checked })
+                  setFilters((currFilters) => ({
+                    ...currFilters,
+                    gender: e.currentTarget.checked
+                      ? [...currFilters.gender, Gender.FEMALE]
+                      : currFilters.gender.filter((gender) => gender !== Gender.FEMALE),
+                  }))
                 }}
               />
+            </Menu.Item>
+            <Menu.Item>
+              <Checkbox
+                label='Unkown / Other'
+                checked={
+                  filters.gender.includes(Gender.PREFER_NOT_TO_SAY) ||
+                  filters.gender.includes(Gender.OTHER)
+                }
+                onChange={(e) => {
+                  setFilters((currFilters) => ({
+                    ...currFilters,
+                    gender: e.currentTarget.checked
+                      ? [...currFilters.gender, Gender.PREFER_NOT_TO_SAY, Gender.OTHER]
+                      : currFilters.gender.filter(
+                          (gender) =>
+                            gender !== Gender.PREFER_NOT_TO_SAY && gender !== Gender.OTHER,
+                        ),
+                  }))
+                }}
+              />
+            </Menu.Item>
+
+            <Menu.Divider />
+            <Menu.Label>Assessment</Menu.Label>
+            <Menu.Item>
+              <Checkbox
+                label='Not Evaluated'
+                checked={filters.assessment.includeNotAssessed}
+                onChange={(e) => {
+                  setFilters((oldFilters: Filters) => {
+                    return {
+                      ...oldFilters,
+                      assessment: {
+                        minScore: e.currentTarget.checked ? 0 : 0,
+                        maxScore: e.currentTarget.checked ? 0 : 100,
+                        includeNotAssessed: e.currentTarget.checked,
+                      },
+                    }
+                  })
+                }}
+              />
+            </Menu.Item>
+            <Menu.Item>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <NumberInput
+                  description='Min Score'
+                  placeholder='0'
+                  value={filters.assessment.minScore}
+                  min={0}
+                  max={100}
+                  onChange={(value) => {
+                    setFilters((oldFilters: Filters) => {
+                      return {
+                        ...oldFilters,
+                        assessment: {
+                          minScore: +value,
+                          includeNotAssessed:
+                            +value > 0 ? false : oldFilters.assessment.includeNotAssessed,
+                          maxScore: oldFilters.assessment.includeNotAssessed
+                            ? 100
+                            : oldFilters.assessment.maxScore,
+                        },
+                      }
+                    })
+                  }}
+                  style={{
+                    width: '6rem',
+                  }}
+                  styles={{
+                    input: {
+                      color: filters.assessment.minScore === 0 ? 'darkgray' : 'black',
+                      opacity: filters.assessment.minScore === 0 ? 0.8 : 1,
+                    },
+                    description: {
+                      color: 'black',
+                    },
+                  }}
+                />
+                <NumberInput
+                  description='Max Score'
+                  placeholder='100'
+                  value={filters.assessment.maxScore}
+                  min={0}
+                  max={100}
+                  onChange={(value) => {
+                    setFilters((oldFilters: Filters) => {
+                      return {
+                        ...oldFilters,
+                        assessment: {
+                          ...oldFilters.assessment,
+                          maxScore: +value,
+                          includeNotAssessed:
+                            +value > 0 ? false : oldFilters.assessment.includeNotAssessed,
+                        },
+                      }
+                    })
+                  }}
+                  style={{ width: '6rem' }}
+                  styles={{
+                    input: {
+                      color: filters.assessment.maxScore === 100 ? 'darkgray' : 'black',
+                      opacity: filters.assessment.maxScore === 100 ? 0.8 : 1,
+                    },
+                    description: {
+                      color: 'black',
+                    },
+                  }}
+                />
+              </div>
+            </Menu.Item>
+
+            <Menu.Divider />
+            <Menu.Item>
+              <Button
+                variant='light'
+                fullWidth
+                onClick={() => {
+                  setFilters((oldFilters: Filters) => {
+                    return {
+                      ...oldFilters,
+                      gender: [],
+                      assessment: {
+                        includeNotAssessed: false,
+                        minScore: 0,
+                        maxScore: 100,
+                      },
+                    }
+                  })
+                }}
+              >
+                Reset Filters
+              </Button>
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
