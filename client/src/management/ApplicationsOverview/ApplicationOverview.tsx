@@ -1,4 +1,13 @@
-import { Group, TextInput, Stack, Button, Menu, Tooltip } from '@mantine/core'
+import {
+  Group,
+  TextInput,
+  Stack,
+  Button,
+  Menu,
+  Tooltip,
+  SegmentedControl,
+  Center,
+} from '@mantine/core'
 import { IconSearch } from '@tabler/icons-react'
 import { useState, useMemo, useEffect } from 'react'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
@@ -21,7 +30,7 @@ export interface Filters {
     minScore: number
     maxScore: number
   }
-  applicationType: ApplicationType[]
+  applicationType: ApplicationType
 }
 
 export const StudentApplicationOverview = (): JSX.Element => {
@@ -46,7 +55,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
       minScore: 0,
       maxScore: 100,
     },
-    applicationType: [ApplicationType.DEVELOPER],
+    applicationType: ApplicationType.DEVELOPER,
   })
 
   const { data: fetchedDeveloperApplications, isLoading: isLoadingDeveloperApplications } =
@@ -103,19 +112,19 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   const tumIdToApplicationMap = useMemo(() => {
     const map = new Map<string, string>()
-    if (filters.applicationType.includes(ApplicationType.DEVELOPER)) {
+    if (filters.applicationType === ApplicationType.DEVELOPER) {
       developerApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
         }
       })
-    } else if (filters.applicationType.includes(ApplicationType.COACH)) {
+    } else if (filters.applicationType === ApplicationType.COACH) {
       coachApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
         }
       })
-    } else if (filters.applicationType.includes(ApplicationType.TUTOR)) {
+    } else if (filters.applicationType === ApplicationType.TUTOR) {
       tutorApplications.forEach((application) => {
         if (application.student.tumId) {
           map.set(application.student.tumId, application.id)
@@ -127,19 +136,19 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
   const matriculationNumberToApplicationMap = useMemo(() => {
     const map = new Map<string, string>()
-    if (filters.applicationType.includes(ApplicationType.DEVELOPER)) {
+    if (filters.applicationType === ApplicationType.DEVELOPER) {
       developerApplications.forEach((application) => {
         if (application.student.matriculationNumber) {
           map.set(application.student.matriculationNumber, application.id)
         }
       })
-    } else if (filters.applicationType.includes(ApplicationType.COACH)) {
+    } else if (filters.applicationType === ApplicationType.COACH) {
       coachApplications.forEach((application) => {
         if (application.student.matriculationNumber) {
           map.set(application.student.matriculationNumber, application.id)
         }
       })
-    } else if (filters.applicationType.includes(ApplicationType.TUTOR)) {
+    } else if (filters.applicationType === ApplicationType.TUTOR) {
       tutorApplications.forEach((application) => {
         if (application.student.matriculationNumber) {
           map.set(application.student.matriculationNumber, application.id)
@@ -171,7 +180,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
 
           <Menu.Dropdown>
             <Menu.Item
-              disabled={filters.applicationType.length !== 1}
+              //disabled={filters.applicationType.length !== 1}
               onClick={() => {
                 setMatchingResultsUploadModalOpened(true)
               }}
@@ -185,10 +194,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
             technical challenge score, please select solely 'Developer' sorting filter"
             >
               <Menu.Item
-                disabled={
-                  filters.applicationType.length > 1 ||
-                  !filters.applicationType.includes(ApplicationType.DEVELOPER)
-                }
+                disabled={filters.applicationType !== ApplicationType.DEVELOPER}
                 onClick={() => {
                   setTechnicalChallengeAssessmentModalOpened(true)
                 }}
@@ -205,20 +211,41 @@ export const StudentApplicationOverview = (): JSX.Element => {
           }}
           tumIdToDeveloperApplicationMap={tumIdToApplicationMap}
         />
-        {filters.applicationType.length === 1 && (
-          <MatchingResultsUploadModal
-            opened={matchingResultsUploadModalOpened}
-            onClose={() => {
-              setMatchingResultsUploadModalOpened(false)
-            }}
-            tumIdToApplicationMap={tumIdToApplicationMap}
-            matriculationNumberToApplicationMap={matriculationNumberToApplicationMap}
-            applicationType={filters.applicationType[0]}
-          />
-        )}
+        <MatchingResultsUploadModal
+          opened={matchingResultsUploadModalOpened}
+          onClose={() => {
+            setMatchingResultsUploadModalOpened(false)
+          }}
+          tumIdToApplicationMap={tumIdToApplicationMap}
+          matriculationNumberToApplicationMap={matriculationNumberToApplicationMap}
+          applicationType={filters.applicationType}
+        />
       </Group>
 
       <FilterChips filters={filters} setFilters={setFilters} />
+
+      <SegmentedControl
+        value={filters.applicationType.toUpperCase() as keyof typeof ApplicationType}
+        onChange={(selectedApplication) =>
+          setFilters((oldFilters) => {
+            return {
+              ...oldFilters,
+              applicationType: ApplicationType[selectedApplication],
+            }
+          })
+        }
+        data={Object.keys(ApplicationType).map((applicationKey) => ({
+          value: applicationKey.toString(),
+          label: (
+            <Center style={{ gap: 10 }}>
+              <span>
+                {ApplicationType[applicationKey].charAt(0).toUpperCase() +
+                  ApplicationType[applicationKey].slice(1).toLowerCase()}
+              </span>
+            </Center>
+          ),
+        }))}
+      />
 
       <ApplicationDatatable
         developerApplications={developerApplications}

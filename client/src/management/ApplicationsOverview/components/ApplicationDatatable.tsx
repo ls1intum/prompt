@@ -121,13 +121,13 @@ export const ApplicationDatatable = ({
     const to = from + tablePageSize
 
     const applications: Application[] = []
-    if (filters.applicationType.includes(ApplicationType.DEVELOPER)) {
+    if (filters.applicationType === ApplicationType.DEVELOPER) {
       applications.push(...developerApplications)
     }
-    if (filters.applicationType.includes(ApplicationType.COACH)) {
+    if (filters.applicationType === ApplicationType.COACH) {
       applications.push(...coachApplications)
     }
-    if (filters.applicationType.includes(ApplicationType.TUTOR)) {
+    if (filters.applicationType === ApplicationType.TUTOR) {
       applications.push(...tutorApplications)
     }
 
@@ -434,68 +434,19 @@ export const ApplicationDatatable = ({
         }}
         columns={[
           {
-            accessor: 'type',
-            textAlign: 'center',
-            filter: (
-              <MultiSelect
-                label='Type'
-                description='Show all applications with these types'
-                data={[
-                  {
-                    label: 'Developer',
-                    value: ApplicationType.DEVELOPER,
-                  },
-                  { label: 'Coach', value: ApplicationType.COACH },
-                  { label: 'Tutor', value: ApplicationType.TUTOR },
-                ]}
-                value={filters.applicationType}
-                placeholder='Search types...'
-                onChange={(value) => {
-                  setFilters({
-                    ...filters,
-                    applicationType: value as ApplicationType[],
-                  })
-                }}
-                leftSection={<IconSearch size={16} />}
-                clearable
-                searchable
-                comboboxProps={{ withinPortal: false }}
-              />
-            ),
-            filtering: filters.applicationType.length > 0,
-            render: ({ type }) => {
-              return `${type.charAt(0)}${type.toLowerCase().slice(1)}`
-            },
+            accessor: 'fullName',
+            title: 'Full name',
+            sortable: true,
+            render: (developerApplication) =>
+              `${developerApplication.student.firstName ?? ''} ${
+                developerApplication.student.lastName ?? ''
+              }`,
           },
           {
             accessor: 'assessment.status',
             title: 'Status',
             textAlign: 'center',
-            filter: (
-              <MultiSelect
-                label='Status'
-                description='Show all applications having status in'
-                data={Object.keys(ApplicationStatus).map((key) => {
-                  return {
-                    label: ApplicationStatus[key as keyof typeof ApplicationStatus],
-                    value: key,
-                  }
-                })}
-                value={filters.status}
-                placeholder='Search status...'
-                onChange={(value) => {
-                  setFilters({
-                    ...filters,
-                    status: value,
-                  })
-                }}
-                leftSection={<IconSearch size={16} />}
-                clearable
-                searchable
-                comboboxProps={{ withinPortal: false }}
-              />
-            ),
-            filtering: filters.applicationType.length > 0,
+            sortable: true,
             render: (application) => getAssessmentBadge(application),
           },
           {
@@ -518,15 +469,6 @@ export const ApplicationDatatable = ({
             accessor: 'student.email',
             title: 'Email',
             sortable: true,
-          },
-          {
-            accessor: 'fullName',
-            title: 'Full name',
-            sortable: true,
-            render: (developerApplication) =>
-              `${developerApplication.student.firstName ?? ''} ${
-                developerApplication.student.lastName ?? ''
-              }`,
           },
           {
             accessor: 'actions',
