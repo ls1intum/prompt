@@ -17,7 +17,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             key={gender}
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
             color='blue'
-            variant='filled'
+            variant='light'
             defaultChecked
             onClick={() => {
               setFilters((oldFilters: Filters) => {
@@ -36,7 +36,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             key={status}
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
             color='blue'
-            variant='filled'
+            variant='light'
             defaultChecked
             onClick={() => {
               setFilters((oldFilters: Filters) => {
@@ -55,7 +55,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             key='maxScore'
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
             color='blue'
-            variant='filled'
+            variant='light'
             defaultChecked
             onClick={() => {
               setFilters((oldFilters: Filters) => {
@@ -78,7 +78,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             key='minScore'
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
             color='blue'
-            variant='filled'
+            variant='light'
             defaultChecked
             onClick={() => {
               setFilters((oldFilters: Filters) => {
@@ -100,7 +100,7 @@ export const FilterChips = ({ filters, setFilters }: FilterChipsProps): JSX.Elem
             key='no Score assigned'
             icon={<IconX style={{ width: rem(16), height: rem(16) }} />}
             color='blue'
-            variant='filled'
+            variant='light'
             defaultChecked
             onClick={() => {
               setFilters((oldFilters: Filters) => {

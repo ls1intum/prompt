@@ -1,14 +1,5 @@
-import {
-  Group,
-  TextInput,
-  Stack,
-  Button,
-  Menu,
-  Tooltip,
-  SegmentedControl,
-  Center,
-} from '@mantine/core'
-import { IconSearch } from '@tabler/icons-react'
+import { Group, TextInput, Stack, Button, Menu, Tooltip, Tabs, Flex } from '@mantine/core'
+import { IconPlus, IconSearch, IconUpload } from '@tabler/icons-react'
 import { useState, useMemo, useEffect } from 'react'
 import { TechnicalChallengeAssessmentModal } from './components/TechnicalChallengeAssessmentModal'
 import { ApplicationDatatable } from './components/ApplicationDatatable'
@@ -161,49 +152,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
   return (
     <Stack>
       <Group>
-        <TextInput
-          style={{ margin: '1vh 0', width: '40vw' }}
-          placeholder='Search applications...'
-          leftSection={<IconSearch size={16} />}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.currentTarget.value)
-          }}
-        />
+        <h1>Student Applications</h1>
 
-        <FilterMenu filters={filters} setFilters={setFilters} />
-
-        <Menu withArrow>
-          <Menu.Target>
-            <Button>Actions</Button>
-          </Menu.Target>
-
-          <Menu.Dropdown>
-            <Menu.Item
-              //disabled={filters.applicationType.length !== 1}
-              onClick={() => {
-                setMatchingResultsUploadModalOpened(true)
-              }}
-            >
-              Upload Matching Results
-            </Menu.Item>
-            <Tooltip
-              withArrow
-              color='blue'
-              label="To start automatic assessment of developer applications based on the 
-            technical challenge score, please select solely 'Developer' sorting filter"
-            >
-              <Menu.Item
-                disabled={filters.applicationType !== ApplicationType.DEVELOPER}
-                onClick={() => {
-                  setTechnicalChallengeAssessmentModalOpened(true)
-                }}
-              >
-                Technical Challenge Assessment
-              </Menu.Item>
-            </Tooltip>
-          </Menu.Dropdown>
-        </Menu>
         <TechnicalChallengeAssessmentModal
           opened={technicalChallengeAssessmentModalOpened}
           onClose={() => {
@@ -222,30 +172,81 @@ export const StudentApplicationOverview = (): JSX.Element => {
         />
       </Group>
 
-      <FilterChips filters={filters} setFilters={setFilters} />
-
-      <SegmentedControl
+      <Tabs
+        defaultValue='DEVELOPER'
         value={filters.applicationType.toUpperCase() as keyof typeof ApplicationType}
-        onChange={(selectedApplication) =>
+        onChange={(selectedApplication) => {
+          if (selectedApplication === 'button') {
+            return // ignore button clicks in the tabs
+          }
           setFilters((oldFilters) => {
             return {
               ...oldFilters,
-              applicationType: ApplicationType[selectedApplication],
+              applicationType: ApplicationType[selectedApplication ?? 'DEVELOPER'],
             }
           })
-        }
-        data={Object.keys(ApplicationType).map((applicationKey) => ({
-          value: applicationKey.toString(),
-          label: (
-            <Center style={{ gap: 10 }}>
-              <span>
-                {ApplicationType[applicationKey].charAt(0).toUpperCase() +
-                  ApplicationType[applicationKey].slice(1).toLowerCase()}
-              </span>
-            </Center>
-          ),
-        }))}
-      />
+        }}
+      >
+        <Tabs.List>
+          {Object.keys(ApplicationType).map((applicationKey) => (
+            <Tabs.Tab key={applicationKey} value={applicationKey}>
+              {ApplicationType[applicationKey].charAt(0).toUpperCase() +
+                ApplicationType[applicationKey].slice(1).toLowerCase()}
+            </Tabs.Tab>
+          ))}
+
+          <Flex ml='auto' justify='flex-end' gap='12px' mb='12px'>
+            <TextInput
+              placeholder='Search applications...'
+              leftSection={<IconSearch size={16} />}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.currentTarget.value)
+              }}
+            />
+            <FilterMenu filters={filters} setFilters={setFilters} />
+            {/**This menu will be re-designed in the very near future */}
+            <Menu withArrow>
+              <Menu.Target>
+                <Button leftSection={<IconUpload size={18} />} variant='default'>
+                  Upload
+                </Button>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item
+                  //disabled={filters.applicationType.length !== 1}
+                  onClick={() => {
+                    setMatchingResultsUploadModalOpened(true)
+                  }}
+                >
+                  Upload Matching Results
+                </Menu.Item>
+                <Tooltip
+                  withArrow
+                  color='blue'
+                  label="To start automatic assessment of developer applications based on the 
+            technical challenge score, please select solely 'Developer' sorting filter"
+                >
+                  <Menu.Item
+                    disabled={filters.applicationType !== ApplicationType.DEVELOPER}
+                    onClick={() => {
+                      setTechnicalChallengeAssessmentModalOpened(true)
+                    }}
+                  >
+                    Technical Challenge Assessment
+                  </Menu.Item>
+                </Tooltip>
+              </Menu.Dropdown>
+            </Menu>
+            <Button leftSection={<IconPlus size={18} />} variant='light'>
+              Add Student
+            </Button>
+          </Flex>
+        </Tabs.List>
+      </Tabs>
+
+      <FilterChips filters={filters} setFilters={setFilters} />
 
       <ApplicationDatatable
         developerApplications={developerApplications}
