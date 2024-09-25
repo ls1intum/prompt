@@ -204,7 +204,7 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
           ))}
         </AppShell.Section>
 
-        <AppShell.Section className={styles.navbarBottom}>
+        <AppShell.Section className={styles.navbar} style={{ marginTop: 'auto', padding: '0' }}>
           <Menu width='target' closeOnItemClick={false}>
             <MenuTarget>
               <Button
@@ -218,7 +218,7 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
                       lastName={user?.lastName}
                       email={user?.email ?? ''}
                       imgSize={150} // Adjust avatar size
-                      avatarSize='lg'
+                      avatarSize='3rem'
                     />
                     {user !== undefined && (
                       <div style={{ textAlign: 'left', marginLeft: '0.5rem' }}>
@@ -238,7 +238,7 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
                 style={{
                   padding: '8px 8px',
                   borderRadius: '8px',
-                  height: '4.5rem',
+                  height: '4rem',
                   width: '100%',
                 }}
               />
