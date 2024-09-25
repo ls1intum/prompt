@@ -94,7 +94,6 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
   const { user } = useAuthenticationStore()
   const navigate = useNavigate()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const [navigationRoutes, setNavigationRoutes] = useState(navigationContents)
   const { selectedCourseIteration, courseIterations, setSelectedCourseIteration } =
     useCourseIterationStore()
@@ -130,15 +129,6 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
               <Group h='100%'>
                 <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
               </Group>
-              <Switch
-                checked={colorScheme === 'dark'}
-                onChange={() => {
-                  toggleColorScheme()
-                }}
-                size='md'
-                onLabel={<IconSun color='white' size={20} stroke={1.5} />}
-                offLabel={<IconMoonStars color='gray' size={20} stroke={1.5} />}
-              />
             </Group>
             <Menu>
               <Menu.Target>
@@ -221,7 +211,7 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
           <Menu width='target' closeOnItemClick={false}>
             <MenuTarget>
               <Button
-                //justify='space-between'
+                justify='space-between'
                 fullWidth
                 rightSection={<IconSelector />}
                 leftSection={
