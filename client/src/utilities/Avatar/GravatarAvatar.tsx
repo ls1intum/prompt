@@ -13,9 +13,9 @@ const getGravatarUrl = (email, imgSize) => {
 interface GravatarAvatarProps {
   imgSize?: number
   avatarSize?: string
-  email: string
-  firstName: string
-  lastName: string
+  email?: string
+  firstName?: string
+  lastName?: string
 }
 
 export const GravatarAvatar = ({
@@ -28,6 +28,10 @@ export const GravatarAvatar = ({
   const [imageError, setImageError] = useState(false)
 
   const initials = `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`
+
+  if (!email) {
+    setImageError(true)
+  }
 
   return (
     <Avatar

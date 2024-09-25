@@ -3,8 +3,10 @@ import {
   AppShell,
   Avatar,
   Burger,
+  Button,
   Group,
   Menu,
+  MenuTarget,
   Select,
   Switch,
   Text,
@@ -19,6 +21,7 @@ import {
   IconMoonStars,
   IconNews,
   IconSchool,
+  IconSelector,
   IconStairs,
   IconSun,
   IconUsers,
@@ -34,6 +37,7 @@ import { useAuthenticationStore } from '../../state/zustand/useAuthenticationSto
 import { Permission } from '../../interface/authentication'
 import { useQueryClient } from '@tanstack/react-query'
 import { GravatarAvatar } from '../Avatar/GravatarAvatar'
+import { AppearanceSelector } from './components/AppearanceSelector'
 
 const navigationContents = [
   {
@@ -214,24 +218,62 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
         </AppShell.Section>
 
         <AppShell.Section className={styles.navbarBottom}>
-          {user && (
-            <Group align='center'>
-              <GravatarAvatar
-                firstName={user.firstName}
-                lastName={user.lastName}
-                email={user.email}
+          <Menu width='target' closeOnItemClick={false}>
+            <MenuTarget>
+              <Button
+                //justify='space-between'
+                fullWidth
+                rightSection={<IconSelector />}
+                leftSection={
+                  <>
+                    <GravatarAvatar
+                      firstName={user?.firstName}
+                      lastName={user?.lastName}
+                      email={user?.email ?? ''}
+                      imgSize={150} // Adjust avatar size
+                      avatarSize='lg'
+                    />
+                    {user !== undefined && (
+                      <div style={{ textAlign: 'left', marginLeft: '0.5rem' }}>
+                        <Text fw={700}>
+                          {user.firstName} {user.lastName}
+                        </Text>
+                        <Text c='dimmed' size='xs'>
+                          {user.email}
+                        </Text>
+                      </div>
+                    )}
+                  </>
+                }
+                variant='default'
+                size='xl'
+                mt='md'
+                style={{
+                  padding: '6px 6px',
+                  borderRadius: '8px',
+                  height: '4rem',
+                  width: '100%',
+                }}
               />
+            </MenuTarget>
 
-              <div>
-                <Text fw={500}>
-                  {user.firstName} {user.lastName}
-                </Text>
-                <Text c='dimmed' size='xs'>
-                  {user.email}
-                </Text>
-              </div>
-            </Group>
-          )}
+            <Menu.Dropdown>
+              <Menu.Label>Appearance</Menu.Label>
+              <AppearanceSelector />
+
+              <Menu.Divider />
+              <Menu.Item
+                variant='outline'
+                color='red'
+                leftSection={<IconLogout size={18} />}
+                onClick={() => {
+                  void keycloak.logout({ redirectUri: window.location.origin + '/management' })
+                }}
+              >
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
