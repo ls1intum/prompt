@@ -9,6 +9,7 @@ import {
 import { IconFilter } from '@tabler/icons-react'
 import { Filters } from '../ApplicationOverview'
 import { ApplicationStatus, Gender } from '../../../interface/application'
+import { MenuItemCheckbox } from './MenuItemCheckbox'
 
 interface FilterMenuProps {
   filters: Filters
@@ -28,6 +29,10 @@ export const FilterMenu = ({ filters, setFilters }: FilterMenuProps): JSX.Elemen
   const { colorScheme } = useMantineColorScheme()
   const theme = useMantineTheme()
 
+  function getTextColor(isTextActive: boolean) {
+    return isTextActive ? 'darkgray' : colorScheme === 'dark' ? theme.colors.dark[0] : theme.black
+  }
+
   return (
     <Menu withArrow closeOnItemClick={false}>
       <Menu.Target>
@@ -37,73 +42,65 @@ export const FilterMenu = ({ filters, setFilters }: FilterMenuProps): JSX.Elemen
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Label>Gender</Menu.Label>
-        <Menu.Item>
-          <Checkbox
-            label='Male'
-            checked={filters.gender.includes(Gender.MALE)}
-            onChange={(e) => {
-              setFilters((currFilters) => ({
-                ...currFilters,
-                gender: e.currentTarget.checked
-                  ? [...currFilters.gender, Gender.MALE]
-                  : currFilters.gender.filter((gender) => gender !== Gender.MALE),
-              }))
-            }}
-          />
-        </Menu.Item>
-        <Menu.Item>
-          <Checkbox
-            label='Female'
-            checked={filters.gender.includes(Gender.FEMALE)}
-            onChange={(e) => {
-              setFilters((currFilters) => ({
-                ...currFilters,
-                gender: e.currentTarget.checked
-                  ? [...currFilters.gender, Gender.FEMALE]
-                  : currFilters.gender.filter((gender) => gender !== Gender.FEMALE),
-              }))
-            }}
-          />
-        </Menu.Item>
-        <Menu.Item>
-          <Checkbox
-            label='Unkown / Other'
-            checked={
-              filters.gender.includes(Gender.PREFER_NOT_TO_SAY) ||
-              filters.gender.includes(Gender.OTHER)
-            }
-            onChange={(e) => {
-              setFilters((currFilters) => ({
-                ...currFilters,
-                gender: e.currentTarget.checked
-                  ? [...currFilters.gender, Gender.OTHER]
-                  : currFilters.gender.filter((gender) => gender !== Gender.OTHER),
-              }))
-            }}
-          />
-        </Menu.Item>
+        <MenuItemCheckbox
+          label='Male'
+          checked={filters.gender.includes(Gender.MALE)}
+          onChange={(e) => {
+            setFilters((currFilters) => ({
+              ...currFilters,
+              gender: e.currentTarget.checked
+                ? [...currFilters.gender, Gender.MALE]
+                : currFilters.gender.filter((gender) => gender !== Gender.MALE),
+            }))
+          }}
+        />
+        <MenuItemCheckbox
+          label='Female'
+          checked={filters.gender.includes(Gender.FEMALE)}
+          onChange={(e) => {
+            setFilters((currFilters) => ({
+              ...currFilters,
+              gender: e.currentTarget.checked
+                ? [...currFilters.gender, Gender.FEMALE]
+                : currFilters.gender.filter((gender) => gender !== Gender.FEMALE),
+            }))
+          }}
+        />
+        <MenuItemCheckbox
+          label='Unkown / Other'
+          checked={
+            filters.gender.includes(Gender.PREFER_NOT_TO_SAY) ||
+            filters.gender.includes(Gender.OTHER)
+          }
+          onChange={(e) => {
+            setFilters((currFilters) => ({
+              ...currFilters,
+              gender: e.currentTarget.checked
+                ? [...currFilters.gender, Gender.OTHER]
+                : currFilters.gender.filter((gender) => gender !== Gender.OTHER),
+            }))
+          }}
+        />
 
         <Menu.Divider />
         <Menu.Label>Assessment</Menu.Label>
-        <Menu.Item>
-          <Checkbox
-            label='No Score'
-            checked={filters.assessment.noScore}
-            onChange={(e) => {
-              setFilters((oldFilters: Filters) => {
-                return {
-                  ...oldFilters,
-                  assessment: {
-                    minScore: 0,
-                    maxScore: 100,
-                    noScore: e.currentTarget.checked,
-                  },
-                }
-              })
-            }}
-          />
-        </Menu.Item>
-        <Menu.Item>
+        <MenuItemCheckbox
+          label='No Score'
+          checked={filters.assessment.noScore}
+          onChange={(e) => {
+            setFilters((oldFilters: Filters) => {
+              return {
+                ...oldFilters,
+                assessment: {
+                  minScore: 0,
+                  maxScore: 100,
+                  noScore: e.currentTarget.checked,
+                },
+              }
+            })
+          }}
+        />
+        <Menu.Item component='div'>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <NumberInput
               description='Min Score'
@@ -130,12 +127,7 @@ export const FilterMenu = ({ filters, setFilters }: FilterMenuProps): JSX.Elemen
               }}
               styles={{
                 input: {
-                  color:
-                    filters.assessment.minScore === 0
-                      ? 'darkgray'
-                      : colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
+                  color: getTextColor(filters.assessment.minScore === 0),
                   opacity: filters.assessment.minScore === 0 ? 0.8 : 1,
                 },
               }}
@@ -177,17 +169,16 @@ export const FilterMenu = ({ filters, setFilters }: FilterMenuProps): JSX.Elemen
         <Menu.Divider />
         <Menu.Label>Assessment</Menu.Label>
         {Object.keys(ApplicationStatus).map((status) => (
-          <Menu.Item key={status}>
-            <Checkbox
-              label={ApplicationStatus[status]}
-              checked={filters.status.includes(status)}
-              onChange={(e) => handleStatusFilterChange(status, e.currentTarget.checked)}
-            />
-          </Menu.Item>
+          <MenuItemCheckbox
+            key={status}
+            label={ApplicationStatus[status]}
+            checked={filters.status.includes(status)}
+            onChange={(e) => handleStatusFilterChange(status, e.currentTarget.checked)}
+          />
         ))}
 
         <Menu.Divider />
-        <Menu.Item>
+        <div style={{ padding: '0.5rem ' }}>
           <Button
             variant='light'
             fullWidth
@@ -208,7 +199,7 @@ export const FilterMenu = ({ filters, setFilters }: FilterMenuProps): JSX.Elemen
           >
             Reset Filters
           </Button>
-        </Menu.Item>
+        </div>
       </Menu.Dropdown>
     </Menu>
   )
