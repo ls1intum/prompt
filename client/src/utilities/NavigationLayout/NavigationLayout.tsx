@@ -8,22 +8,19 @@ import {
   Menu,
   MenuTarget,
   Select,
-  Switch,
+  Stack,
   Text,
   rem,
-  useMantineColorScheme,
 } from '@mantine/core'
 import {
   IconAppsFilled,
   IconDeviceDesktop,
   IconLogout,
   IconMail,
-  IconMoonStars,
   IconNews,
   IconSchool,
   IconSelector,
   IconStairs,
-  IconSun,
   IconUsers,
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
@@ -239,9 +236,9 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
                 size='xl'
                 mt='md'
                 style={{
-                  padding: '6px 6px',
+                  padding: '8px 8px',
                   borderRadius: '8px',
-                  height: '4rem',
+                  height: '4.5rem',
                   width: '100%',
                 }}
               />
@@ -252,16 +249,20 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
               <AppearanceSelector />
 
               <Menu.Divider />
-              <Menu.Item
-                variant='outline'
-                color='red'
-                leftSection={<IconLogout size={18} />}
-                onClick={() => {
-                  void keycloak.logout({ redirectUri: window.location.origin + '/management' })
-                }}
-              >
-                Logout
-              </Menu.Item>
+              <Stack gap='xs' style={{ padding: '8px' }}>
+                <Menu.Item
+                  variant='outline'
+                  color='red'
+                  onClick={() => {
+                    void keycloak.logout({ redirectUri: window.location.origin + '/management' })
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <IconLogout size={18} style={{ marginRight: '8px' }} />
+                    <Text fz='sm'>Logout</Text>
+                  </div>
+                </Menu.Item>
+              </Stack>
             </Menu.Dropdown>
           </Menu>
         </AppShell.Section>

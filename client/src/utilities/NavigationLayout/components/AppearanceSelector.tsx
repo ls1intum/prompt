@@ -1,4 +1,4 @@
-import { MantineColorScheme, Radio, Stack, useMantineColorScheme } from '@mantine/core'
+import { MantineColorScheme, Radio, Stack, Text, useMantineColorScheme } from '@mantine/core'
 import { IconDeviceDesktop, IconMoon, IconSun } from '@tabler/icons-react'
 import * as styles from './AppearanceSelector.module.scss'
 
@@ -9,11 +9,16 @@ interface AppearanceRadioCardProps {
 }
 
 const AppearanceRadioCard = ({ value, icon, label }: AppearanceRadioCardProps) => (
-  <Radio.Card radius='md' style={{ border: 'none', padding: '8px' }} className={styles.root} value={value}>
+  <Radio.Card
+    radius='md'
+    style={{ border: 'none', padding: '8px' }}
+    className={styles.root}
+    value={value}
+  >
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {icon}
-        {label}
+        <Text fz='sm'>{label}</Text>
       </div>
       <Radio.Indicator />
     </div>
