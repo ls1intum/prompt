@@ -19,7 +19,7 @@ export const StudentCreationModal = ({
   opened,
   onClose,
 }: MatchingResultsUploadModalProps): JSX.Element => {
-  const [applicationType, setApplicationType] = useState<ApplicationType | null>(null)
+  const [applicationType, setApplicationType] = useState<ApplicationType | undefined>(undefined)
   const { selectedCourseIteration, courseIterations } = useCourseIterationStore()
   const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const [formSelectedCourseIteration, setFormSelectedCourseIteration] = useState<
@@ -27,7 +27,7 @@ export const StudentCreationModal = ({
   >(selectedCourseIteration)
 
   const defaultForm = useDefaultApplicationForm(
-    undefined,  // undefined initial values
+    undefined, // undefined initial values
     ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING, // required for form validation
   )
 
@@ -74,8 +74,14 @@ export const StudentCreationModal = ({
         <Select
           label='Application Type'
           value={applicationType}
-          onChange={(value) => setApplicationType(value ? ApplicationType[value] : null)}
-          data={Object.values(ApplicationType)}
+          onChange={(value) => {
+            console.log(value)
+            setApplicationType(value as ApplicationType)
+          }}
+          data={Object.values(ApplicationType).map((type) => ({
+            value: type,
+            label: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter
+          }))}
         />
 
         <DefaultApplicationForm
@@ -85,19 +91,17 @@ export const StudentCreationModal = ({
         />
         <Group align='right' mt='md'>
           <Button
-            disabled={!defaultForm.isValid() || applicationType === null}
+            disabled={!defaultForm.isValid() || applicationType === undefined}
             type='submit'
             onClick={() => {
               if (
                 defaultForm.isValid() &&
-                applicationType !== null &&
+                applicationType !== undefined &&
                 formSelectedCourseIteration !== undefined
               ) {
                 postApplication(
                   applicationType,
-                  {
-                    ...defaultForm.values,
-                  },
+                  defaultForm.values,
                   formSelectedCourseIteration.semesterName,
                 )
                   .then((response) => {
