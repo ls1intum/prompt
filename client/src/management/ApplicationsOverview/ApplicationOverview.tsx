@@ -12,6 +12,7 @@ import { getApplications } from '../../network/application'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 import { FilterChips } from './components/FilterChips'
 import { FilterMenu } from './components/FilterMenu'
+import { StudentCreationModal } from './components/StudentCreationModal'
 
 export interface Filters {
   gender: Gender[]
@@ -37,6 +38,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
     useState(false)
   const [matchingResultsUploadModalOpened, setMatchingResultsUploadModalOpened] = useState(false)
+  const [studentCreationModalOpened, setStudentCreationModalOpened] = useState(false)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<Filters>({
     gender: [],
@@ -170,6 +173,12 @@ export const StudentApplicationOverview = (): JSX.Element => {
           matriculationNumberToApplicationMap={matriculationNumberToApplicationMap}
           applicationType={filters.applicationType}
         />
+        <StudentCreationModal
+          opened={studentCreationModalOpened}
+          onClose={() => {
+            setStudentCreationModalOpened(false)
+          }}
+        />
       </Group>
 
       <Tabs
@@ -239,7 +248,13 @@ export const StudentApplicationOverview = (): JSX.Element => {
                 </Tooltip>
               </Menu.Dropdown>
             </Menu>
-            <Button leftSection={<IconPlus size={18} />} variant='light'>
+            <Button
+              leftSection={<IconPlus size={18} />}
+              variant='light'
+              onClick={() => {
+                setStudentCreationModalOpened(true)
+              }}
+            >
               Add Student
             </Button>
           </Flex>

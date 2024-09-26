@@ -1,7 +1,13 @@
 import { useForm, isEmail, isNotEmpty } from '@mantine/form'
 import { type Application } from '../../interface/application'
+import { ApplicationFormAccessMode } from '../DefaultApplicationForm'
 
-export const useDefaultApplicationForm = (initalValueApplication?: Application) => {
+export const useDefaultApplicationForm = (
+  initalValueApplication?: Application,
+  accessMode?: ApplicationFormAccessMode,
+) => {
+  const manualMode = accessMode === ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING
+
   return useForm<Partial<Application>>({
     initialValues: initalValueApplication
       ? {
@@ -51,14 +57,20 @@ export const useDefaultApplicationForm = (initalValueApplication?: Application) 
         gender: isNotEmpty('Please state your gender.'),
         nationality: isNotEmpty('Please state your nationality.'),
       },
-      studyDegree: isNotEmpty('Please state your study degree.'),
-      studyProgram: isNotEmpty('Please state your study program.'),
+      studyDegree: manualMode ? undefined : isNotEmpty('Please state your study degree.'),
+      studyProgram: manualMode ? undefined : isNotEmpty('Please state your study program.'),
       currentSemester: (value) => {
+        if (manualMode) {
+          return null
+        }
         return !value || value.length === 0 || !/\b([1-9]|[1-9][0-9])\b/.test(value)
           ? 'Please state your current semester.'
           : null
       },
       motivation: (value) => {
+        if (manualMode) {
+          return null
+        }
         if (!value || !isNotEmpty(value)) {
           return 'Please state your motivation for the course participation.'
         } else if (value.length > 500) {
@@ -66,14 +78,21 @@ export const useDefaultApplicationForm = (initalValueApplication?: Application) 
         }
       },
       experience: (value) => {
+        if (manualMode) {
+          return null
+        }
         if (!value || !isNotEmpty(value)) {
           return 'Please state your experience prior to the course participation.'
         } else if (value.length > 500) {
           return 'The maximum allowed number of characters is 500.'
         }
       },
-      englishLanguageProficiency: isNotEmpty('Please state your English language proficiency.'),
-      germanLanguageProficiency: isNotEmpty('Please state your German language proficiency.'),
+      englishLanguageProficiency: manualMode
+        ? undefined
+        : isNotEmpty('Please state your English language proficiency.'),
+      germanLanguageProficiency: manualMode
+        ? undefined
+        : isNotEmpty('Please state your German language proficiency.'),
     },
   })
 }
