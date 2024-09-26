@@ -52,20 +52,25 @@ export const StudentApplicationOverview = (): JSX.Element => {
     applicationType: ApplicationType.DEVELOPER,
   })
 
-  const { data: fetchedDeveloperApplications, isLoading: isLoadingDeveloperApplications } =
-    useQuery<Application[]>({
-      queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
-      queryFn: () =>
-        getApplications(ApplicationType.DEVELOPER, selectedCourseIteration?.semesterName ?? ''),
-      enabled: !!selectedCourseIteration,
-      select: (applications) =>
-        applications.map((application) => {
-          return { ...application, type: ApplicationType.DEVELOPER }
-        }),
-    })
-  const { data: fetchedCoachApplications, isLoading: isLoadingCoachApplications } = useQuery<
-    Application[]
-  >({
+  const {
+    data: fetchedDeveloperApplications,
+    isLoading: isLoadingDeveloperApplications,
+    refetch: refetchDeveloperApplications,
+  } = useQuery<Application[]>({
+    queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
+    queryFn: () =>
+      getApplications(ApplicationType.DEVELOPER, selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+    select: (applications) =>
+      applications.map((application) => {
+        return { ...application, type: ApplicationType.DEVELOPER }
+      }),
+  })
+  const {
+    data: fetchedCoachApplications,
+    isLoading: isLoadingCoachApplications,
+    refetch: refetchCoachApplications,
+  } = useQuery<Application[]>({
     queryKey: [Query.COACH_APPLICATION, selectedCourseIteration?.semesterName],
     queryFn: () =>
       getApplications(ApplicationType.COACH, selectedCourseIteration?.semesterName ?? ''),
@@ -75,9 +80,11 @@ export const StudentApplicationOverview = (): JSX.Element => {
         return { ...application, type: ApplicationType.COACH }
       }),
   })
-  const { data: fetchedTutorApplications, isLoading: isLoadingTutorApplications } = useQuery<
-    Application[]
-  >({
+  const {
+    data: fetchedTutorApplications,
+    isLoading: isLoadingTutorApplications,
+    refetch: refetchTutorApplications,
+  } = useQuery<Application[]>({
     queryKey: [Query.TUTOR_APPLICATION, selectedCourseIteration?.semesterName],
     queryFn: () =>
       getApplications(ApplicationType.TUTOR, selectedCourseIteration?.semesterName ?? ''),
@@ -127,6 +134,12 @@ export const StudentApplicationOverview = (): JSX.Element => {
     }
     return map
   }, [filters.applicationType, developerApplications, coachApplications, tutorApplications])
+
+  const refetchApplications = () => {
+    refetchDeveloperApplications()
+    refetchCoachApplications()
+    refetchTutorApplications()
+  }
 
   const matriculationNumberToApplicationMap = useMemo(() => {
     const map = new Map<string, string>()
@@ -178,6 +191,7 @@ export const StudentApplicationOverview = (): JSX.Element => {
           onClose={() => {
             setStudentCreationModalOpened(false)
           }}
+          onSuccess={refetchApplications}
         />
       </Group>
 

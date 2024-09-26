@@ -13,15 +13,16 @@ import { postApplication } from '../../../network/application'
 interface MatchingResultsUploadModalProps {
   opened: boolean
   onClose: () => void
+  onSuccess: () => void
 }
 
 export const StudentCreationModal = ({
   opened,
   onClose,
+  onSuccess
 }: MatchingResultsUploadModalProps): JSX.Element => {
   const [applicationType, setApplicationType] = useState<ApplicationType | undefined>(undefined)
   const { selectedCourseIteration, courseIterations } = useCourseIterationStore()
-  const [applicationSuccessfullySubmitted, setApplicationSuccessfullySubmitted] = useState(false)
   const [formSelectedCourseIteration, setFormSelectedCourseIteration] = useState<
     CourseIteration | undefined
   >(selectedCourseIteration)
@@ -106,10 +107,11 @@ export const StudentCreationModal = ({
                 )
                   .then((response) => {
                     if (response) {
-                      setApplicationSuccessfullySubmitted(true)
+                      onSuccess()
                     }
                   })
                   .catch(() => {})
+                onSuccess()
                 onClose()
               }
             }}
