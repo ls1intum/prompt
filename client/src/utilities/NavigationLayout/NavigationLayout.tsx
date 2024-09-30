@@ -3,24 +3,24 @@ import {
   AppShell,
   Avatar,
   Burger,
+  Button,
   Group,
   Menu,
+  MenuTarget,
   Select,
-  Switch,
+  Stack,
   Text,
   rem,
-  useMantineColorScheme,
 } from '@mantine/core'
 import {
   IconAppsFilled,
   IconDeviceDesktop,
   IconLogout,
   IconMail,
-  IconMoonStars,
   IconNews,
   IconSchool,
+  IconSelector,
   IconStairs,
-  IconSun,
   IconUsers,
 } from '@tabler/icons-react'
 import type Keycloak from 'keycloak-js'
@@ -33,6 +33,8 @@ import { useCourseIterationStore } from '../../state/zustand/useCourseIterationS
 import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
 import { Permission } from '../../interface/authentication'
 import { useQueryClient } from '@tanstack/react-query'
+import { GravatarAvatar } from '../Avatar/GravatarAvatar'
+import { AppearanceSelector } from './components/AppearanceSelector'
 
 const navigationContents = [
   {
@@ -89,8 +91,6 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
   const { user } = useAuthenticationStore()
   const navigate = useNavigate()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme()
   const [navigationRoutes, setNavigationRoutes] = useState(navigationContents)
   const { selectedCourseIteration, courseIterations, setSelectedCourseIteration } =
     useCourseIterationStore()
@@ -110,60 +110,53 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
 
   return (
     <AppShell
+      layout='alt'
       header={{ height: 60 }}
       navbar={{
         width: 300,
         breakpoint: 'sm',
-        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+        collapsed: { mobile: !mobileOpened }, // on desktop it is opened by default
       }}
       padding='md'
     >
-      <AppShell.Header>
-        <Group h='100%' px='md' justify='space-between'>
-          <Group h='100%'>
+      {isMobileDevice && (
+        <AppShell.Header>
+          <Group h='100%' px='md' justify='space-between'>
             <Group h='100%'>
-              <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
-              <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom='sm' size='sm' />
+              <Group h='100%'>
+                <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
+              </Group>
             </Group>
-            <Switch
-              checked={colorScheme === 'dark'}
-              onChange={() => {
-                toggleColorScheme()
-              }}
-              size='md'
-              onLabel={<IconSun color='white' size={20} stroke={1.5} />}
-              offLabel={<IconMoonStars color='gray' size={20} stroke={1.5} />}
-            />
+            <Menu>
+              <Menu.Target>
+                {user && (
+                  <Group className={styles.avatar}>
+                    <Avatar color='blue' radius='xl'>{`${user.firstName.at(0) ?? ''}${
+                      user.lastName.at(0) ?? ''
+                    }`}</Avatar>
+                    {!isMobileDevice && (
+                      <Text c='dimmed' fw={500}>
+                        {user.firstName} {user.lastName}
+                      </Text>
+                    )}
+                  </Group>
+                )}
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  color='red'
+                  leftSection={<IconLogout style={{ width: rem(14), height: rem(14) }} />}
+                  onClick={() => {
+                    void keycloak.logout({ redirectUri: window.location.origin + '/management' })
+                  }}
+                >
+                  Logout
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Group>
-          <Menu>
-            <Menu.Target>
-              {user && (
-                <Group className={styles.avatar}>
-                  <Avatar color='blue' radius='xl'>{`${user.firstName.at(0) ?? ''}${
-                    user.lastName.at(0) ?? ''
-                  }`}</Avatar>
-                  {!isMobileDevice && (
-                    <Text c='dimmed' fw={500}>
-                      {user.firstName} {user.lastName}
-                    </Text>
-                  )}
-                </Group>
-              )}
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                color='red'
-                leftSection={<IconLogout style={{ width: rem(14), height: rem(14) }} />}
-                onClick={() => {
-                  void keycloak.logout({ redirectUri: window.location.origin + '/management' })
-                }}
-              >
-                Logout
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-      </AppShell.Header>
+        </AppShell.Header>
+      )}
       <AppShell.Navbar p='md' className={styles.navbar}>
         <AppShell.Section>
           <Select
@@ -209,6 +202,69 @@ export const NavigationLayout = ({ keycloak, children }: NavigationLayoutProps):
               <span>{item.label}</span>
             </Link>
           ))}
+        </AppShell.Section>
+
+        <AppShell.Section className={styles.navbar} style={{ marginTop: 'auto', padding: '0' }}>
+          <Menu width='target' closeOnItemClick={false}>
+            <MenuTarget>
+              <Button
+                justify='space-between'
+                fullWidth
+                rightSection={<IconSelector />}
+                leftSection={
+                  <>
+                    <GravatarAvatar
+                      firstName={user?.firstName}
+                      lastName={user?.lastName}
+                      email={user?.email ?? ''}
+                      imgSize={150} // Adjust avatar size
+                      avatarSize='3rem'
+                    />
+                    {user !== undefined && (
+                      <div style={{ textAlign: 'left', marginLeft: '0.5rem' }}>
+                        <Text fw={700}>
+                          {user.firstName} {user.lastName}
+                        </Text>
+                        <Text c='dimmed' size='xs'>
+                          {user.email}
+                        </Text>
+                      </div>
+                    )}
+                  </>
+                }
+                variant='default'
+                size='xl'
+                mt='md'
+                style={{
+                  padding: '8px 8px',
+                  borderRadius: '8px',
+                  height: '4rem',
+                  width: '100%',
+                }}
+              />
+            </MenuTarget>
+
+            <Menu.Dropdown>
+              <Menu.Label>Appearance</Menu.Label>
+              <AppearanceSelector />
+
+              <Menu.Divider />
+              <Stack gap='xs' style={{ padding: '8px' }}>
+                <Menu.Item
+                  variant='outline'
+                  color='red'
+                  onClick={() => {
+                    void keycloak.logout({ redirectUri: window.location.origin + '/management' })
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <IconLogout size={18} style={{ marginRight: '8px' }} />
+                    <Text fz='sm'>Logout</Text>
+                  </div>
+                </Menu.Item>
+              </Stack>
+            </Menu.Dropdown>
+          </Menu>
         </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>

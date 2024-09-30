@@ -1,0 +1,14 @@
+.root {
+  position: relative;
+  padding: var(--mantine-spacing-md);
+  transition: border-color 150ms ease;
+
+  &[data-checked] {
+    border-color: var(--mantine-primary-color-filled);
+  }
+
+  &:hover {
+    background-color: var(--mantine-color-default-hover);
+    color: var(--mantine-color-default-color);
+  }
+}
