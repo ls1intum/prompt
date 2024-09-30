@@ -19,7 +19,7 @@ interface MatchingResultsUploadModalProps {
 export const StudentCreationModal = ({
   opened,
   onClose,
-  onSuccess
+  onSuccess,
 }: MatchingResultsUploadModalProps): JSX.Element => {
   const [applicationType, setApplicationType] = useState<ApplicationType | undefined>(undefined)
   const { selectedCourseIteration, courseIterations } = useCourseIterationStore()
@@ -32,11 +32,18 @@ export const StudentCreationModal = ({
     ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING, // required for form validation
   )
 
+  const handleClose = () => {
+    setFormSelectedCourseIteration(selectedCourseIteration)
+    setApplicationType(undefined)
+    defaultForm.reset()
+    onClose()
+  }
+
   return (
     <Modal
       centered
       opened={opened}
-      onClose={onClose}
+      onClose={handleClose}
       size='80%'
       title={
         <Text c='dimmed' fz='sm'>
@@ -50,47 +57,59 @@ export const StudentCreationModal = ({
           flexDirection: 'column',
           maxWidth: '95%',
           gap: '2vh',
+          paddingBottom: '2rem',
         }}
         mx='auto'
       >
-        <Select
-          label='Course Iteration'
-          value={formSelectedCourseIteration?.id.toString()}
-          onChange={(changedCourseIterationId) => {
-            const changedCourseIteration = courseIterations.find(
-              (as) => as.id.toString() === changedCourseIterationId,
-            )
-            if (changedCourseIteration) {
-              setFormSelectedCourseIteration(changedCourseIteration)
-            }
-          }}
-          data={courseIterations.map((courseIteration) => {
-            return {
-              value: courseIteration.id.toString(),
-              label: courseIteration.semesterName,
-            }
-          })}
-        />
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Select
+            label='Course Iteration'
+            value={formSelectedCourseIteration?.id.toString()}
+            onChange={(changedCourseIterationId) => {
+              const changedCourseIteration = courseIterations.find(
+                (as) => as.id.toString() === changedCourseIterationId,
+              )
+              if (changedCourseIteration) {
+                setFormSelectedCourseIteration(changedCourseIteration)
+              }
+            }}
+            data={courseIterations.map((courseIteration) => {
+              return {
+                value: courseIteration.id.toString(),
+                label: courseIteration.semesterName,
+              }
+            })}
+            withAsterisk
+          />
 
-        <Select
-          label='Application Type'
-          value={applicationType}
-          onChange={(value) => {
-            console.log(value)
-            setApplicationType(value as ApplicationType)
-          }}
-          data={Object.values(ApplicationType).map((type) => ({
-            value: type,
-            label: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter
-          }))}
-        />
+          <Select
+            label='Application Type'
+            value={applicationType}
+            onChange={(value) => {
+              console.log(value)
+              setApplicationType(value as ApplicationType)
+            }}
+            data={Object.values(ApplicationType).map((type) => ({
+              value: type,
+              label: type.charAt(0).toUpperCase() + type.slice(1),
+            }))}
+            withAsterisk
+          />
+        </div>
 
-        <DefaultApplicationForm
-          accessMode={ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
-          form={defaultForm}
-          title='Application for Agile Project Management Practical Course'
-        />
-        <Group align='right' mt='md'>
+        {applicationType && (
+          <DefaultApplicationForm
+            accessMode={ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
+            form={defaultForm}
+            title='Application for Agile Project Management Practical Course'
+          />
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button variant='outline' onClick={handleClose}>
+            Cancel
+          </Button>
+
           <Button
             disabled={!defaultForm.isValid() || applicationType === undefined}
             type='submit'
@@ -118,7 +137,7 @@ export const StudentCreationModal = ({
           >
             Submit
           </Button>
-        </Group>
+        </div>
       </Box>
     </Modal>
   )
