@@ -17,6 +17,7 @@ import {
 } from '@mantine/core'
 import {
   IconBrandApple,
+  IconBrandGitlab,
   IconDeviceLaptop,
   IconDeviceMobile,
   IconDeviceTablet,
@@ -445,12 +446,26 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             title: 'Devices',
             textAlign: 'center',
             render: ({ student }) => {
-              const { appleId, iPhoneDeviceId, iPadDeviceId, appleWatchDeviceId, macBookDeviceId } =
-                student.developmentProfile ?? {}
+              const {
+                gitlabUsername,
+                appleId,
+                iPhoneDeviceId,
+                iPadDeviceId,
+                appleWatchDeviceId,
+                macBookDeviceId,
+              } = student.developmentProfile ?? {}
 
               return (
                 <>
                   <Stack>
+                    {!!gitlabUsername && (
+                      <Group>
+                        <IconBrandGitlab color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {gitlabUsername}
+                        </Text>
+                      </Group>
+                    )}
                     {!!appleId && (
                       <Group>
                         <IconBrandApple color='#2B70BE' />
