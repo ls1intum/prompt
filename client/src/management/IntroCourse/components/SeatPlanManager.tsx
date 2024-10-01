@@ -248,6 +248,7 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 tutorName: `${tutor?.firstName ?? '-'} ${tutor?.lastName ?? '-'}`,
                 seat: participation.seat,
                 needsChairDevice: participation.chairDevice ?? '-',
+                gitlabUsername: participation.student.developmentProfile?.gitlabUsername,
                 appleId: participation.student.developmentProfile?.appleId,
                 iPhoneDeviceId: participation.student.developmentProfile?.iPhoneDeviceId,
                 iPadDeviceId: participation.student.developmentProfile?.iPadDeviceId,
