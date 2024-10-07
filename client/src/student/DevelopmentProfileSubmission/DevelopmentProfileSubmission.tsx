@@ -1,11 +1,31 @@
 import { useEffect, useState } from 'react'
-import { Anchor, Button, Center, Container, Group, Stack, TextInput, Title } from '@mantine/core'
-import { isNotEmpty, useForm } from '@mantine/form'
+import {
+  Anchor,
+  Button,
+  Center,
+  Container,
+  Group,
+  Stack,
+  TextInput,
+  Title,
+  Text,
+} from '@mantine/core'
+import { isEmail, isNotEmpty, useForm } from '@mantine/form'
 import { postDevelopmentProfile } from '../../network/introCourse'
 import { DevelopmentProfile } from '../../interface/application'
 import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
 import { getDevelopmentProfile } from '../../network/student'
 import { GitLabInstructionModal } from './GitLabInstructionModal'
+
+const validateGitLabUsername = (value: string) => {
+  if (value.includes('http')) {
+    return 'Please make sure to only enter the username without the GitLab URL.'
+  }
+  if (value.includes('@')) {
+    return 'Username should be entered without "@".'
+  }
+  return null
+}
 
 export const DevelopmentProfileSubmission = (): JSX.Element => {
   const { user } = useAuthenticationStore()
@@ -20,8 +40,13 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
       appleWatchDeviceId: '',
     },
     validate: {
-      appleId: isNotEmpty('Please provide a valid Apple ID.'),
-      gitlabUsername: isNotEmpty('Please provide a GitLab username.'),
+      appleId: isEmail('Please enter a valid email address'),
+      gitlabUsername: (value) => {
+        if (!value) {
+          return 'Please provide a GitLab username.'
+        }
+        return validateGitLabUsername(value)
+      },
     },
     validateInputOnChange: true,
   })
@@ -59,6 +84,20 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
             required
             withAsterisk
             {...form.getInputProps('appleId')}
+            description={
+              <div className='flex flex-col'>
+                <Text fz='sm'> If you do not have one you MUST create one.</Text>
+                <Anchor
+                  c='blue'
+                  fz='sm'
+                  href='https://support.apple.com/en-us/108647'
+                  target='_blank'
+                >
+                  How to create an Apple ID?
+                </Anchor>
+              </div>
+            }
+            error={form.errors.appleId && 'Please enter a valid email address'}
           />
           <TextInput
             label='LRZ GitLab Username'
