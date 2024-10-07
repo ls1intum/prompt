@@ -24,14 +24,10 @@ import { IconEyeCheck, IconHtml, IconInfoCircle } from '@tabler/icons-react'
 import {
   StudentAndCourseIterationInstructions,
   StudentAndCourseIterationAndDeveloperApplicationInstructions,
-  ThesisApplicationAndStudentAndThesisAdvisorInstructions,
-  ThesisApplicationAndStudentInstructions,
   StudentAndCourseIterationAndCoachApplicationInstructions,
   StudentAndCourseIterationAndTutorApplicationInstructions,
   fillMockStudentPlaceholders,
   fillMockCourseIterationPlaceholders,
-  fillMockThesisAdvisorPlaceholders,
-  fillMockThesisApplicationPlaceholders,
   fillDeveloperApplicationPlaceholders,
   fillMockCoachApplicationPlaceholders,
   fillMockTutorApplicationPlaceholders,
@@ -71,21 +67,6 @@ export const MailingManagementConsole = (): JSX.Element => {
     if (activeTab === 'preview') {
       let preview = fillMockStudentPlaceholders(editor?.getHTML() ?? '')
       preview = fillMockCourseIterationPlaceholders(preview)
-      if (
-        MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-          MailTemplate.THESIS_APPLICATION_CONFIRMATION ||
-        MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-          MailTemplate.THESIS_APPLICATION_CREATED ||
-        MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-          MailTemplate.THESIS_APPLICATION_ACCEPTANCE ||
-        MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-          MailTemplate.THESIS_APPLICATION_REJECTION ||
-        MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-          MailTemplate.THESIS_APPLICATION_ACCEPTANCE_NO_ADVISOR
-      ) {
-        preview = fillMockThesisAdvisorPlaceholders(preview)
-        preview = fillMockThesisApplicationPlaceholders(preview)
-      }
       if (
         MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
           MailTemplate.DEVELOPER_APPLICATION_CONFIRMATION ||
@@ -189,20 +170,6 @@ export const MailingManagementConsole = (): JSX.Element => {
           {MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
             MailTemplate.TUTOR_APPLICATION_CONFIRMATION && (
             <StudentAndCourseIterationAndTutorApplicationInstructions />
-          )}
-          {(MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-            MailTemplate.THESIS_APPLICATION_ACCEPTANCE_NO_ADVISOR ||
-            MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-              MailTemplate.THESIS_APPLICATION_REJECTION ||
-            MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-              MailTemplate.THESIS_APPLICATION_CONFIRMATION ||
-            MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-              MailTemplate.THESIS_APPLICATION_CREATED) && (
-            <ThesisApplicationAndStudentInstructions />
-          )}
-          {MailTemplate[activeTemplate as keyof typeof MailTemplate] ===
-            MailTemplate.THESIS_APPLICATION_ACCEPTANCE && (
-            <ThesisApplicationAndStudentAndThesisAdvisorInstructions />
           )}
         </Card>
       </Collapse>

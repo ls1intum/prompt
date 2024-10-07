@@ -22,13 +22,13 @@ public class MailingController {
     }
 
     @GetMapping("/templates/{filename}")
-    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin') || hasRole('ipraktikum-pm')")
     public ResponseEntity<String> getMailTemplate(@PathVariable final String filename) {
         return ResponseEntity.ok(mailingService.getMailTemplate(filename));
     }
 
     @PostMapping("/templates/{filename}")
-    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin')")
+    @PreAuthorize("hasRole('chair-member') || hasRole('prompt-admin') || hasRole('ipraktikum-pm')")
     public ResponseEntity<String> updateMailTemplate(@PathVariable final String filename,
                                                      @RequestBody final String template) {
         mailingService.updateMailTemplate(filename, template);
