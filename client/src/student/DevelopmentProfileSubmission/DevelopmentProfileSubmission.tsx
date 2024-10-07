@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Anchor, Button, Center, Container, Group, Stack, TextInput, Title } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { postDevelopmentProfile } from '../../network/introCourse'
 import { DevelopmentProfile } from '../../interface/application'
 import { useAuthenticationStore } from '../../state/zustand/useAuthenticationStore'
 import { getDevelopmentProfile } from '../../network/student'
+import { GitLabInstructionModal } from './GitLabInstructionModal'
 
 export const DevelopmentProfileSubmission = (): JSX.Element => {
   const { user } = useAuthenticationStore()
@@ -25,6 +26,8 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
     validateInputOnChange: true,
   })
 
+  const [gitLabInstructionModalOpen, setgitLabInstructionModalOpen] = useState(false)
+
   useEffect(() => {
     ;(async () => {
       if (user) {
@@ -40,6 +43,11 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
 
   return (
     <div style={{ margin: '5vh' }}>
+      <GitLabInstructionModal
+        gitLabInstructionModalOpen={gitLabInstructionModalOpen}
+        setgitLabInstructionModalOpen={setgitLabInstructionModalOpen}
+      />
+
       <Center style={{ display: 'flex', flexDirection: 'column', gap: '3vh' }}>
         <Title order={2}>Development Profile Submission</Title>
       </Center>
@@ -53,11 +61,16 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
             {...form.getInputProps('appleId')}
           />
           <TextInput
-            label='GitLab Username'
-            placeholder='GitLab Username'
+            label='LRZ GitLab Username'
+            placeholder='LRZ GitLab Username'
             required
             withAsterisk
             {...form.getInputProps('gitlabUsername')}
+            description={
+              <Anchor c='blue' fz='sm' onClick={() => setgitLabInstructionModalOpen(true)}>
+                How to get it?
+              </Anchor>
+            }
           />
           <Group grow>
             <TextInput
