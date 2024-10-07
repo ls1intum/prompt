@@ -11,7 +11,8 @@
     "moduleResolution": "node",
     "strict": true,
     "skipLibCheck": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "typeRoots": ["./node_modules/@types", "./@types"],
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }

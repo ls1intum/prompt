@@ -17,6 +17,7 @@ import {
 } from '@mantine/core'
 import {
   IconBrandApple,
+  IconBrandGitlab,
   IconDeviceLaptop,
   IconDeviceMobile,
   IconDeviceTablet,
@@ -248,11 +249,12 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
                 tutorName: `${tutor?.firstName ?? '-'} ${tutor?.lastName ?? '-'}`,
                 seat: participation.seat,
                 needsChairDevice: participation.chairDevice ?? '-',
-                appleId: participation.appleId,
-                iPhoneDeviceId: participation.iphoneDeviceId,
-                iPadDeviceId: participation.ipadDeviceId,
-                macBookDeviceId: participation.macBookDeviceId,
-                appleWatchDeviceId: participation.appleWatchDeviceId,
+                gitlabUsername: participation.student.developmentProfile?.gitlabUsername,
+                appleId: participation.student.developmentProfile?.appleId,
+                iPhoneDeviceId: participation.student.developmentProfile?.iPhoneDeviceId,
+                iPadDeviceId: participation.student.developmentProfile?.iPadDeviceId,
+                macBookDeviceId: participation.student.developmentProfile?.macBookDeviceId,
+                appleWatchDeviceId: participation.student.developmentProfile?.appleWatchDeviceId,
               }
             })}
             filename='seat_plan.csv'
@@ -443,58 +445,71 @@ export const SeatPlanManager = ({ keycloak }: SeatPlanManagerProps): JSX.Element
             accessor: 'devices',
             title: 'Devices',
             textAlign: 'center',
-            render: ({
-              appleId,
-              iphoneDeviceId,
-              ipadDeviceId,
-              appleWatchDeviceId,
-              macBookDeviceId,
-            }) => (
-              <>
-                <Stack>
-                  {!!appleId && (
-                    <Group>
-                      <IconBrandApple color='#2B70BE' />
-                      <Text c='dimmed' fw='500' fz='sm'>
-                        {appleId}
-                      </Text>
-                    </Group>
-                  )}
-                  {!!macBookDeviceId && (
-                    <Group>
-                      <IconDeviceLaptop color='#2B70BE' />
-                      <Text c='dimmed' fw='500' fz='sm'>
-                        {macBookDeviceId}
-                      </Text>
-                    </Group>
-                  )}
-                  {!!iphoneDeviceId && (
-                    <Group>
-                      <IconDeviceMobile color='#2B70BE' />
-                      <Text c='dimmed' fw='500' fz='sm'>
-                        {iphoneDeviceId}
-                      </Text>
-                    </Group>
-                  )}
-                  {!!ipadDeviceId && (
-                    <Group>
-                      <IconDeviceTablet color='#2B70BE' />
-                      <Text c='dimmed' fw='500' fz='sm'>
-                        {ipadDeviceId}
-                      </Text>
-                    </Group>
-                  )}
-                  {!!appleWatchDeviceId && (
-                    <Group>
-                      <IconDeviceWatch color='#2B70BE' />
-                      <Text c='dimmed' fw='500' fz='sm'>
-                        {appleWatchDeviceId}
-                      </Text>
-                    </Group>
-                  )}
-                </Stack>
-              </>
-            ),
+            render: ({ student }) => {
+              const {
+                gitlabUsername,
+                appleId,
+                iPhoneDeviceId,
+                iPadDeviceId,
+                appleWatchDeviceId,
+                macBookDeviceId,
+              } = student.developmentProfile ?? {}
+
+              return (
+                <>
+                  <Stack>
+                    {!!gitlabUsername && (
+                      <Group>
+                        <IconBrandGitlab color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {gitlabUsername}
+                        </Text>
+                      </Group>
+                    )}
+                    {!!appleId && (
+                      <Group>
+                        <IconBrandApple color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {appleId}
+                        </Text>
+                      </Group>
+                    )}
+                    {!!macBookDeviceId && (
+                      <Group>
+                        <IconDeviceLaptop color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {macBookDeviceId}
+                        </Text>
+                      </Group>
+                    )}
+                    {!!iPhoneDeviceId && (
+                      <Group>
+                        <IconDeviceMobile color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {iPhoneDeviceId}
+                        </Text>
+                      </Group>
+                    )}
+                    {!!iPadDeviceId && (
+                      <Group>
+                        <IconDeviceTablet color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {iPadDeviceId}
+                        </Text>
+                      </Group>
+                    )}
+                    {!!appleWatchDeviceId && (
+                      <Group>
+                        <IconDeviceWatch color='#2B70BE' />
+                        <Text c='dimmed' fw='500' fz='sm'>
+                          {appleWatchDeviceId}
+                        </Text>
+                      </Group>
+                    )}
+                  </Stack>
+                </>
+              )
+            },
           },
           {
             accessor: 'seat',

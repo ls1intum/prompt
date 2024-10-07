@@ -19,11 +19,6 @@ export interface IntroCourseParticipation {
   id: string
   tutorId?: string
   student: Student
-  appleId?: string
-  macBookDeviceId?: string
-  iphoneDeviceId?: string
-  ipadDeviceId?: string
-  appleWatchDeviceId?: string
   seat?: string
   chairDevice?: string
   absences: IntroCourseAbsence[]
