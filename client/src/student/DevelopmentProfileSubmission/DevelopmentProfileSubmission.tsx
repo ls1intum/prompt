@@ -40,7 +40,7 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
       appleWatchDeviceId: '',
     },
     validate: {
-      appleId: isEmail('Please enter a valid email address'),
+      appleId: isEmail('Please enter a valid Apple ID.'),
       gitlabUsername: (value) => {
         if (!value) {
           return 'Please provide a GitLab username.'
