@@ -97,7 +97,7 @@ export const DevelopmentProfileSubmission = (): JSX.Element => {
                 </Anchor>
               </div>
             }
-            error={form.errors.appleId && 'Please enter a valid email address'}
+            error={form.errors.appleId && 'Please enter a valid Apple ID'}
           />
           <TextInput
             label='LRZ GitLab Username'
