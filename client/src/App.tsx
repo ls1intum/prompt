@@ -1,5 +1,5 @@
 import { MantineProvider } from '@mantine/core'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ManagementConsole, ManagementRoot } from './management/ManagementConsole'
 import { StudentApplicationOverview } from './management/ApplicationsOverview/ApplicationOverview'
@@ -38,6 +38,8 @@ import { Permission } from './interface/authentication'
 import { IntroCourseAbsenceSelfReport } from './student/IntroCourseAbsenceSelfReport/IntroCourseAbsenceSelfReport'
 import { StudentConsole } from './student/StudentConsole/StudentConsole'
 
+const RemoteApp = React.lazy(() => import('app2/App'))
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -58,8 +60,12 @@ export const App = (): JSX.Element => {
           <BrowserRouter>
             <Routes>
               <Route
-                path='/management/thesis-applications/:applicationId?'
-                element={<ThesisApplicationsManagementConsole />}
+                path='/mod-fed'
+                element={
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <RemoteApp />
+                  </React.Suspense>
+                }
               />
               <Route
                 path='/management/course-iterations'

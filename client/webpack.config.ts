@@ -1,5 +1,5 @@
 import path from 'path'
-import { Configuration, DefinePlugin } from 'webpack'
+import { Configuration, container, DefinePlugin } from 'webpack'
 import CompressionPlugin from 'compression-webpack-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import 'webpack-dev-server'
@@ -8,6 +8,7 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
+// TODO: specify the version for react in shared dependencies
 const config: (env: Record<string, string>) => Configuration = (env) => {
   const getVariable = (name: string) => env[name] ?? process.env[name]
 
@@ -18,7 +19,7 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
     target: 'web',
     mode: IS_DEV ? 'production' : 'development',
     devtool: IS_DEV ? 'source-map' : undefined,
-    entry: './src/index.tsx',
+    entry: './src/index.js',
     devServer: {
       static: {
         directory: path.join(__dirname, 'public'),
@@ -75,6 +76,16 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },
     plugins: [
+      new container.ModuleFederationPlugin({
+        name: 'app1',
+        remotes: {
+          app2: 'app2@http://localhost:3002/remoteEntry.js',
+        },
+        shared: {
+          react: { singleton: true },
+          'react-dom': { singleton: true },
+        },
+      }),
       new HtmlWebpackPlugin({
         template: 'public/template.html',
         minify: {

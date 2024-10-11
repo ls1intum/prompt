@@ -14,5 +14,5 @@
     "noImplicitAny": false,
     "typeRoots": ["./node_modules/@types", "./@types"],
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "src/index.js"]
 }
