@@ -25,6 +25,7 @@ import { useCourseIterationStore } from '../state/zustand/useCourseIterationStor
 import { CourseIteration } from '../interface/courseIteration'
 import { getCourseIterations } from '../network/courseIteration'
 import { useAuthenticationStore } from '../state/zustand/useAuthenticationStore'
+import { Permission } from '../interface/authentication'
 
 export const ManagementRoot = (): JSX.Element => {
   const [greetingMounted, setGreetingsMounted] = useState(false)
@@ -86,7 +87,7 @@ export const ManagementConsole = ({
   onKeycloakValueChange,
 }: ManagmentConsoleProps): JSX.Element => {
   const [scroll, scrollTo] = useWindowScroll()
-  const { user, setUser, setPermissions } = useAuthenticationStore()
+  const { user, permissions, setUser, setPermissions } = useAuthenticationStore()
   const [authenticated, setAuthenticated] = useState(false)
   const {
     selectedCourseIteration,
@@ -102,8 +103,20 @@ export const ManagementConsole = ({
   })
 
   useEffect(() => {
-    setCourseIterations(fetchedCourseIterations ?? [])
-  }, [fetchedCourseIterations, setCourseIterations])
+    let restrictedCourseIterations = fetchedCourseIterations
+    if (
+      user &&
+      permissions.includes(Permission.TUTOR.toString()) &&
+      !permissions.includes(Permission.PM.toString())
+    ) {
+      restrictedCourseIterations = fetchedCourseIterations?.filter((courseIteration) => {
+        const introCourseEnd = new Date(courseIteration.introCourseEnd)
+        // Only show course iterations to Tutors that have not ended yet
+        return introCourseEnd.getTime() > Date.now()
+      })
+    }
+    setCourseIterations(restrictedCourseIterations ?? [])
+  }, [fetchedCourseIterations, permissions, setCourseIterations, user])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const keycloak = new Keycloak({
