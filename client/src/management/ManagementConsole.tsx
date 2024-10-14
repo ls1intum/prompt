@@ -104,7 +104,11 @@ export const ManagementConsole = ({
 
   useEffect(() => {
     let restrictedCourseIterations = fetchedCourseIterations
-    if (user && permissions.includes(Permission.TUTOR.toString())) {
+    if (
+      user &&
+      permissions.includes(Permission.TUTOR.toString()) &&
+      !permissions.includes(Permission.PM.toString())
+    ) {
       restrictedCourseIterations = fetchedCourseIterations?.filter((courseIteration) => {
         const introCourseEnd = new Date(courseIteration.introCourseEnd)
         // Only show course iterations to Tutors that have not ended yet
