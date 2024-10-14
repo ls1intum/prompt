@@ -7,6 +7,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import packageJson from './package.json'
 
 // TODO: specify the version for react in shared dependencies
 const config: (env: Record<string, string>) => Configuration = (env) => {
@@ -14,6 +15,7 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
 
   const IS_DEV = getVariable('NODE_ENV') !== 'production'
   const IS_PERF = getVariable('BUNDLE_SIZE') === 'true'
+  const deps = packageJson.dependencies
 
   return {
     target: 'web',
@@ -82,8 +84,8 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
           app2: 'app2@http://localhost:3002/remoteEntry.js',
         },
         shared: {
-          react: { singleton: true },
-          'react-dom': { singleton: true },
+          react: { singleton: true, requiredVersion: deps.react },
+          'react-dom': { singleton: true, requiredVersion: deps['react-dom'] },
         },
       }),
       new HtmlWebpackPlugin({
