@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "2.0.0",
-  "main": "src/index.tsx",
+  "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "dev": "webpack serve --open --mode development",

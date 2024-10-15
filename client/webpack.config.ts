@@ -81,7 +81,7 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
       new container.ModuleFederationPlugin({
         name: 'app1',
         remotes: {
-          app2: 'app2@http://localhost:3002/remoteEntry.js',
+          sample_component: 'sample_component@http://localhost:3002/remoteEntry.js',
         },
         shared: {
           react: { singleton: true, requiredVersion: deps.react },

@@ -38,7 +38,7 @@ import { Permission } from './interface/authentication'
 import { IntroCourseAbsenceSelfReport } from './student/IntroCourseAbsenceSelfReport/IntroCourseAbsenceSelfReport'
 import { StudentConsole } from './student/StudentConsole/StudentConsole'
 
-const RemoteApp = React.lazy(() => import('app2/App'))
+const SampleComponent = React.lazy(() => import('sample_component/App'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,7 +63,7 @@ export const App = (): JSX.Element => {
                 path='/mod-fed'
                 element={
                   <React.Suspense fallback={<div>Loading...</div>}>
-                    <RemoteApp />
+                    <SampleComponent />
                   </React.Suspense>
                 }
               />
