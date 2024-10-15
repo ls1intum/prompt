@@ -8,7 +8,6 @@ import {
   StudyProgram,
 } from '../../../interface/application'
 import moment from 'moment'
-import { FocusTopic, ResearchArea } from '../../../interface/thesisApplication'
 
 const mockStudent = {
   publicId: '9002767c-3247-49bc-9cc9-aadb1bbbc9ca',
@@ -41,28 +40,6 @@ const mockCourseIteration = {
   introCourseStart: '2023-11-01',
   introCourseEnd: '2023-11-14',
   kickoffSubmissionPeriodStart: '2023-11-17',
-}
-
-const mockThesisAdvisor = {
-  firstName: 'Max',
-  lastName: 'Mustermann',
-  email: 'max.mustermann@example.com',
-  tumId: 'aa11aaa',
-}
-
-const mockThesisApplication = {
-  currentSemester: '4',
-  studyDegree: StudyDegree.BACHELOR,
-  studyProgram: StudyProgram.COMPUTER_SCIENCE,
-  thesisTitle: 'Exploring Applications of Artificial Intelligence in Web Development',
-  desiredThesisStart: '2023-09-01',
-  interests: 'Artificial Intelligence, Web Development, Machine Learning',
-  projects: 'Developed a chatbot using Python, Implemented a web application using React',
-  specialSkills: 'Python, JavaScript, React, Machine Learning',
-  motivation:
-    'I am deeply interested in exploring how AI can be leveraged to enhance user experience on the web.',
-  researchAreas: [ResearchArea.EDUCATION_TECHNOLOGIES, ResearchArea.ROBOTIC],
-  focusTopics: [FocusTopic.ADAPTIVE_LEARNING, FocusTopic.COMMUNICATION],
 }
 
 const mockDeveloperApplication = {
@@ -175,34 +152,6 @@ export const fillMockCourseIterationPlaceholders = (template: string): string =>
       /{{course.kickoffSubmissionPeriodStart}}/g,
       moment(mockCourseIteration.kickoffSubmissionPeriodStart).format(pattern),
     )
-}
-
-export const fillMockThesisAdvisorPlaceholders = (template: string): string => {
-  return template
-    .replace(/{{advisor.firstName}}/g, mockThesisAdvisor.firstName)
-    .replace(/{{advisor.lastName}}/g, mockThesisAdvisor.lastName)
-    .replace(/{{advisor.email}}/g, mockThesisAdvisor.email)
-    .replace(/{{advisor.tumId}}/g, mockThesisAdvisor.tumId)
-}
-
-export const fillMockThesisApplicationPlaceholders = (template: string): string => {
-  const pattern = 'DD. MMM YYYY'
-
-  return template
-    .replace(/{{application.studyProgram}}/g, mockThesisApplication.studyProgram)
-    .replace(/{{application.studyDegree}}/g, mockThesisApplication.studyDegree)
-    .replace(/{{application.currentSemester}}/g, mockThesisApplication.currentSemester.toString())
-    .replace(
-      /{{application.desiredThesisStart}}/g,
-      moment(mockThesisApplication.desiredThesisStart).format(pattern),
-    )
-    .replace(/{{application.specialSkills}}/g, mockThesisApplication.specialSkills)
-    .replace(/{{application.motivation}}/g, mockThesisApplication.motivation)
-    .replace(/{{application.interests}}/g, mockThesisApplication.interests)
-    .replace(/{{application.projects}}/g, mockThesisApplication.projects)
-    .replace(/{{application.thesisTitle}}/g, mockThesisApplication.thesisTitle)
-    .replace(/{{application.researchAreas}}/g, mockThesisApplication.researchAreas.join(', '))
-    .replace(/{{application.focusTopics}}/g, mockThesisApplication.focusTopics.join(', '))
 }
 
 export const fillDeveloperApplicationPlaceholders = (template: string): string => {
@@ -324,60 +273,6 @@ const studentElements = [
   },
 ]
 
-const thesisAdvisorElements = [
-  { accessor: 'advisor.firstName', description: "Advisor's first name" },
-  { accessor: 'advisor.lastName', description: "Advisor's last name" },
-  { accessor: 'advisor.email', description: "Advisor's email" },
-  { accessor: 'advisor.tumId', description: "Advisors's TUM ID" },
-]
-
-const thesisApplicationElements = [
-  {
-    accessor: 'application.currentSemester',
-    description: 'Current semester in which the referred student submitted the application',
-  },
-  {
-    accessor: 'application.studyDegree',
-    description: "Student's study degree",
-  },
-  {
-    accessor: 'application.studyProgram',
-    description: "Student's study program",
-  },
-  {
-    accessor: 'application.thesisTitle',
-    description: 'Thesis title suggestion',
-  },
-  {
-    accessor: 'application.desiredThesisStart',
-    description: 'Desired start date of the thesis',
-  },
-  {
-    accessor: 'application.interests',
-    description: 'Interests stated by the referred student',
-  },
-  {
-    accessor: 'application.projects',
-    description: 'Projects the referred student states to have been working on',
-  },
-  {
-    accessor: 'application.specialSkills',
-    description: "Student's special skills",
-  },
-  {
-    accessor: 'application.motivation',
-    description: 'Motivation for the thesis application',
-  },
-  {
-    accessor: 'application.researchAreas',
-    description: 'Research areas stated by the referred student',
-  },
-  {
-    accessor: 'application.focusTopics',
-    description: 'Focus topics stated by the referred student',
-  },
-]
-
 const developerApplicationElements = [
   {
     accessor: 'application.currentSemester',
@@ -485,50 +380,6 @@ const tutorApplicationElements = [
     description: 'Reason for being a good tutor candidate as perceived by the referred student',
   },
 ]
-
-export const ThesisApplicationAndStudentInstructions = (): JSX.Element => {
-  const rows = [...studentElements, ...thesisApplicationElements].map((element) => (
-    <tr key={element.accessor}>
-      <td>{element.accessor}</td>
-      <td>{element.description}</td>
-    </tr>
-  ))
-
-  return (
-    <Table verticalSpacing='xs' fz='xs'>
-      <thead>
-        <tr>
-          <th>Accessor</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
-  )
-}
-
-export const ThesisApplicationAndStudentAndThesisAdvisorInstructions = (): JSX.Element => {
-  const rows = [...studentElements, ...thesisApplicationElements, ...thesisAdvisorElements].map(
-    (element) => (
-      <tr key={element.accessor}>
-        <td>{element.accessor}</td>
-        <td>{element.description}</td>
-      </tr>
-    ),
-  )
-
-  return (
-    <Table verticalSpacing='xs' fz='xs'>
-      <thead>
-        <tr>
-          <th>Accessor</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
-  )
-}
 
 export const StudentAndCourseIterationInstructions = (): JSX.Element => {
   const rows = [...studentElements, ...courseIterationElements].map((element) => (
