@@ -1,44 +1,85 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { ModuleFederationPlugin } = require('webpack').container;
-const path = require('path');
+import path from 'path'
+import { Configuration, container, DefinePlugin } from 'webpack'
+import CompressionPlugin from 'compression-webpack-plugin'
+import 'webpack-dev-server'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import packageJson from './package.json'
 
-module.exports = {
-  entry: './src/index.js',
-  mode: 'development',
-  devServer: {
-    static: path.join(__dirname, 'dist'),
-    port: 3002,
-  },
-  output: {
-    publicPath: 'auto',
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
+const config: (env: Record<string, string>) => Configuration = (env) => {
+  const getVariable = (name: string) => env[name] ?? process.env[name]
+
+  const IS_DEV = getVariable('NODE_ENV') !== 'production'
+  const IS_PERF = getVariable('BUNDLE_SIZE') === 'true'
+  const deps = packageJson.dependencies
+
+  return {
+    target: 'web',
+    mode: IS_DEV ? 'development' : 'production',
+    devtool: IS_DEV ? 'source-map' : undefined,
+    entry: './src/index.js',
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'public'),
       },
-    ],
-  },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
-  },
-  plugins: [
-    // To learn more about the usage of this plugin, please visit https://webpack.js.org/plugins/module-federation-plugin/
-    new ModuleFederationPlugin({
-      name: 'sample_component',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './App': './src/App',
+      compress: true,
+      hot: true,
+      historyApiFallback: true,
+      port: 3002,
+      client: {
+        progress: true,
       },
-      shared: { 
-        react: { singleton: true }, 
-        'react-dom': { singleton: true },
-     },
-    }),
-    new HtmlWebpackPlugin({
-      template: './public/template.html',
-    }),
-  ],
-};
+      open: false,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    output: {
+      filename: '[name].[contenthash].js',
+      path: path.resolve(__dirname, 'build'),
+      publicPath: 'auto', //auto is required for module federation
+    },
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    },
+    plugins: [
+      new container.ModuleFederationPlugin({
+        name: 'sample_component',
+        filename: 'remoteEntry.js',
+        exposes: {
+          './App': './src/App',
+        },
+        shared: {
+          react: { singleton: true, requiredVersion: deps.react },
+          'react-dom': { singleton: true, requiredVersion: deps['react-dom'] },
+        },
+      }),
+      new HtmlWebpackPlugin({
+        template: 'public/template.html',
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true,
+          removeEmptyAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          keepClosingSlash: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyURLs: true,
+        },
+      }),
+    ].filter(Boolean),
+    cache: {
+      type: 'filesystem',
+    },
+  }
+}
+
+export default config
