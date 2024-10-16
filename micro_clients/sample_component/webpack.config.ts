@@ -1,10 +1,9 @@
 import path from 'path'
-import { Configuration, container, DefinePlugin } from 'webpack'
-import CompressionPlugin from 'compression-webpack-plugin'
+import { Configuration, container } from 'webpack'
 import 'webpack-dev-server'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import packageJson from './package.json'
+import sharedLibraryPackageJson from '../shared-library/package.json'
 
 const config: (env: Record<string, string>) => Configuration = (env) => {
   const getVariable = (name: string) => env[name] ?? process.env[name]
@@ -47,6 +46,9 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      alias: {
+        'shared-library': path.resolve(__dirname, '../shared-library'),
+      },
     },
     plugins: [
       new container.ModuleFederationPlugin({
@@ -58,6 +60,9 @@ const config: (env: Record<string, string>) => Configuration = (env) => {
         shared: {
           react: { singleton: true, requiredVersion: deps.react },
           'react-dom': { singleton: true, requiredVersion: deps['react-dom'] },
+          'shared-library': {
+            requiredVersion: sharedLibraryPackageJson.version,
+          },
         },
       }),
       new HtmlWebpackPlugin({

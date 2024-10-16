@@ -37,6 +37,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Permission } from './interface/authentication'
 import { IntroCourseAbsenceSelfReport } from './student/IntroCourseAbsenceSelfReport/IntroCourseAbsenceSelfReport'
 import { StudentConsole } from './student/StudentConsole/StudentConsole'
+import { SampleInputContextProvider } from 'shared-library'
 
 const SampleComponent = React.lazy(() => import('sample_component/App'))
 
@@ -63,7 +64,9 @@ export const App = (): JSX.Element => {
                 path='/mod-fed'
                 element={
                   <React.Suspense fallback={<div>Loading...</div>}>
-                    <SampleComponent />
+                    <SampleInputContextProvider>
+                      <SampleComponent />
+                    </SampleInputContextProvider>
                   </React.Suspense>
                 }
               />
