@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.2'
+	id 'org.springframework.boot' version '3.2.11'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'org.liquibase.gradle' version '2.2.0'
 }
@@ -35,7 +35,7 @@ dependencies {
 	implementation 'com.github.fge:json-patch:1.7'
 	implementation 'com.konghq:unirest-java:3.14.2'
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
-	implementation 'org.eclipse.jgit:org.eclipse.jgit:3.0.3.201309161630-r'
+	implementation 'org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r'
 	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
 
 	// Liquibase
