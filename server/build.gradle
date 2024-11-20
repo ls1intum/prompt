@@ -32,7 +32,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	implementation 'com.github.fge:json-patch:1.7'
+	implementation 'com.github.fge:json-patch:1.13'
 	implementation 'com.konghq:unirest-java:3.14.2'
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r'
@@ -40,13 +40,17 @@ dependencies {
 
 	// Liquibase
 	implementation 'org.liquibase:liquibase-core:4.23.0'
-	implementation 'org.liquibase:liquibase-groovy-dsl:2.1.1'
+	implementation 'org.liquibase:liquibase-groovy-dsl:4.0.0'
 
 	// Authentication
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.keycloak:keycloak-admin-client:21.1.1'
+	implementation 'commons-io:commons-io:2.14.0' // manually add a safer version of commons-io due to security issue
+	implementation('org.keycloak:keycloak-admin-client:26.0.2') {
+		exclude group: 'com.github.java-json-tools', module: 'json-patch'
+		exclude group: 'commons-io', module: 'commons-io'
+	}
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
