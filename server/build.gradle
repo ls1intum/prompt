@@ -6,8 +6,11 @@ plugins {
 }
 
 group = 'prompt.ls1'
-version = '0.0.1'
-sourceCompatibility = '17'
+version = '1.0.0'
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
 
 apply plugin: "org.liquibase.gradle"
 
@@ -19,9 +22,6 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven {
-		url "https://packages.atlassian.com/maven/repository/public"
-	}
 }
 
 dependencies {
@@ -32,7 +32,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	implementation 'com.github.fge:json-patch:1.13'
+	implementation 'com.github.java-json-tools:json-patch:1.13'
 	implementation 'com.konghq:unirest-java:3.14.2'
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r'
