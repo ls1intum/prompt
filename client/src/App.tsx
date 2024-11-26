@@ -14,10 +14,8 @@ import { ApplicationFormAccessMode } from './forms/DefaultApplicationForm'
 import { CoachApplicationForm } from './forms/CoachApplicationForm'
 import { TutorApplicationForm } from './forms/TutorApplicationForm'
 import { LandingPage } from './utilities/LandingPage/LandingPage'
-import { ThesisApplicationForm } from './forms/ThesisApplicationForm'
 import { IntroCourseConsole } from './management/IntroCourse/IntroCourseConsole'
 import type Keycloak from 'keycloak-js'
-import { ThesisApplicationsManagementConsole } from './management/ThesisApplicationsManagement/ThesisApplicationsManagementConsole'
 import { DevelopmentProfileSubmission } from './student/DevelopmentProfileSubmission/DevelopmentProfileSubmission'
 import { MailingManagementConsole } from './management/MailingManagement/MailingManagementConsole'
 import { GradingManagementConsole } from './management/Grading/GradingManagementConsole'
@@ -57,10 +55,6 @@ export const App = (): JSX.Element => {
           <Notifications limit={5} />
           <BrowserRouter>
             <Routes>
-              <Route
-                path='/management/thesis-applications/:applicationId?'
-                element={<ThesisApplicationsManagementConsole />}
-              />
               <Route
                 path='/management/course-iterations'
                 element={
@@ -204,14 +198,6 @@ export const App = (): JSX.Element => {
                   <StudentConsole
                     onKeycloakValueChange={setKeycloakValue}
                     child={<IntroCourseAbsenceSelfReport />}
-                  />
-                }
-              />
-              <Route
-                path='/applications/thesis'
-                element={
-                  <ApplicationSubmissionPage
-                    child={<ThesisApplicationForm accessMode={ApplicationFormAccessMode.STUDENT} />}
                   />
                 }
               />

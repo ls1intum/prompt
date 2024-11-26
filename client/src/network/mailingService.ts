@@ -14,11 +14,6 @@ export enum MailTemplate {
   TUTOR_INTERVIEW_INVITATION = 'tutor-interview-invitation',
   TECHNICAL_DETAILS_SUBMISSION_INVIATION = 'technical-details-submission-invitation',
   KICK_OFF_SUBMISSION_INVITATION = 'kick-off-submission-invitation',
-  THESIS_APPLICATION_CONFIRMATION = 'thesis-application-confirmation',
-  THESIS_APPLICATION_CREATED = 'thesis-application-created',
-  THESIS_APPLICATION_ACCEPTANCE = 'thesis-application-acceptance',
-  THESIS_APPLICATION_ACCEPTANCE_NO_ADVISOR = 'thesis-application-acceptance-no-advisor',
-  THESIS_APPLICATION_REJECTION = 'thesis-application-rejection',
 }
 
 export const fetchMailTemplate = async (template: any): Promise<string | undefined> => {
