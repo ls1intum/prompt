@@ -37,6 +37,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Permission } from './interface/authentication'
 import { IntroCourseAbsenceSelfReport } from './student/IntroCourseAbsenceSelfReport/IntroCourseAbsenceSelfReport'
 import { StudentConsole } from './student/StudentConsole/StudentConsole'
+import { PrivacyPage } from './utilities/LegalPages/PrivacyPage'
+import { ImprintPage } from './utilities/LegalPages/ImprintPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -215,6 +217,8 @@ export const App = (): JSX.Element => {
                   />
                 }
               />
+              <Route path='/privacy' element={<PrivacyPage />} />
+              <Route path='/imprint' element={<ImprintPage />} />
               <Route path='/' element={<LandingPage />} />
               <Route path='*' element={<Fallback />} />
             </Routes>
