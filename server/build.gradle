@@ -37,6 +37,7 @@ dependencies {
 	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
 	implementation 'org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r'
 	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// Liquibase
 	implementation 'org.liquibase:liquibase-core:4.23.0'
@@ -54,4 +55,8 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+}
+
+springBoot {
+	buildInfo()
 }

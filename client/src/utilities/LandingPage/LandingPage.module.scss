@@ -1,5 +1,14 @@
 .root {
-  margin: 5vh 5vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 5vh 5vw;
+}
+
+.content {
+  flex: 1;
+  position: relative;
 }
 
 .menu {
@@ -7,4 +16,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
 }
