@@ -12,6 +12,7 @@ import { getApplications } from '../../network/application'
 import { useCourseIterationStore } from '../../state/zustand/useCourseIterationStore'
 import { FilterChips } from './components/FilterChips'
 import { FilterMenu } from './components/FilterMenu'
+import { StudentCreationModal } from './components/StudentCreationModal'
 
 export interface Filters {
   gender: Gender[]
@@ -37,6 +38,8 @@ export const StudentApplicationOverview = (): JSX.Element => {
   const [technicalChallengeAssessmentModalOpened, setTechnicalChallengeAssessmentModalOpened] =
     useState(false)
   const [matchingResultsUploadModalOpened, setMatchingResultsUploadModalOpened] = useState(false)
+  const [studentCreationModalOpened, setStudentCreationModalOpened] = useState(false)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<Filters>({
     gender: [],
@@ -49,20 +52,25 @@ export const StudentApplicationOverview = (): JSX.Element => {
     applicationType: ApplicationType.DEVELOPER,
   })
 
-  const { data: fetchedDeveloperApplications, isLoading: isLoadingDeveloperApplications } =
-    useQuery<Application[]>({
-      queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
-      queryFn: () =>
-        getApplications(ApplicationType.DEVELOPER, selectedCourseIteration?.semesterName ?? ''),
-      enabled: !!selectedCourseIteration,
-      select: (applications) =>
-        applications.map((application) => {
-          return { ...application, type: ApplicationType.DEVELOPER }
-        }),
-    })
-  const { data: fetchedCoachApplications, isLoading: isLoadingCoachApplications } = useQuery<
-    Application[]
-  >({
+  const {
+    data: fetchedDeveloperApplications,
+    isLoading: isLoadingDeveloperApplications,
+    refetch: refetchDeveloperApplications,
+  } = useQuery<Application[]>({
+    queryKey: [Query.DEVELOPER_APPLICATION, selectedCourseIteration?.semesterName],
+    queryFn: () =>
+      getApplications(ApplicationType.DEVELOPER, selectedCourseIteration?.semesterName ?? ''),
+    enabled: !!selectedCourseIteration,
+    select: (applications) =>
+      applications.map((application) => {
+        return { ...application, type: ApplicationType.DEVELOPER }
+      }),
+  })
+  const {
+    data: fetchedCoachApplications,
+    isLoading: isLoadingCoachApplications,
+    refetch: refetchCoachApplications,
+  } = useQuery<Application[]>({
     queryKey: [Query.COACH_APPLICATION, selectedCourseIteration?.semesterName],
     queryFn: () =>
       getApplications(ApplicationType.COACH, selectedCourseIteration?.semesterName ?? ''),
@@ -72,9 +80,11 @@ export const StudentApplicationOverview = (): JSX.Element => {
         return { ...application, type: ApplicationType.COACH }
       }),
   })
-  const { data: fetchedTutorApplications, isLoading: isLoadingTutorApplications } = useQuery<
-    Application[]
-  >({
+  const {
+    data: fetchedTutorApplications,
+    isLoading: isLoadingTutorApplications,
+    refetch: refetchTutorApplications,
+  } = useQuery<Application[]>({
     queryKey: [Query.TUTOR_APPLICATION, selectedCourseIteration?.semesterName],
     queryFn: () =>
       getApplications(ApplicationType.TUTOR, selectedCourseIteration?.semesterName ?? ''),
@@ -125,6 +135,12 @@ export const StudentApplicationOverview = (): JSX.Element => {
     return map
   }, [filters.applicationType, developerApplications, coachApplications, tutorApplications])
 
+  const refetchApplications = () => {
+    refetchDeveloperApplications()
+    refetchCoachApplications()
+    refetchTutorApplications()
+  }
+
   const matriculationNumberToApplicationMap = useMemo(() => {
     const map = new Map<string, string>()
     if (filters.applicationType === ApplicationType.DEVELOPER) {
@@ -169,6 +185,13 @@ export const StudentApplicationOverview = (): JSX.Element => {
           tumIdToApplicationMap={tumIdToApplicationMap}
           matriculationNumberToApplicationMap={matriculationNumberToApplicationMap}
           applicationType={filters.applicationType}
+        />
+        <StudentCreationModal
+          opened={studentCreationModalOpened}
+          onClose={() => {
+            setStudentCreationModalOpened(false)
+          }}
+          onSuccess={refetchApplications}
         />
       </Group>
 
@@ -239,7 +262,13 @@ export const StudentApplicationOverview = (): JSX.Element => {
                 </Tooltip>
               </Menu.Dropdown>
             </Menu>
-            <Button leftSection={<IconPlus size={18} />} variant='light'>
+            <Button
+              leftSection={<IconPlus size={18} />}
+              variant='light'
+              onClick={() => {
+                setStudentCreationModalOpened(true)
+              }}
+            >
               Add Student
             </Button>
           </Flex>

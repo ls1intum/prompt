@@ -27,6 +27,7 @@ import {
 export enum ApplicationFormAccessMode {
   INSTRUCTOR,
   STUDENT,
+  INSTRUCTOR_MANUAL_ADDING,
 }
 
 interface DefaultApplicationFormProps {
@@ -80,7 +81,11 @@ export const DefaultApplicationForm = ({
         <Checkbox
           mt='md'
           disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-          label='Are you an exchange student?'
+          label={
+            accessMode === ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING
+              ? 'Is exchange student?'
+              : 'Are you an exchange student?'
+          }
           {...form.getInputProps('student.isExchangeStudent', {
             type: 'checkbox',
           })}
@@ -188,9 +193,9 @@ export const DefaultApplicationForm = ({
             onWheel={(e) => {
               e.currentTarget.blur()
             }}
-            withAsterisk
+            withAsterisk={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
-            required
+            required={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
             type='number'
             min={0}
             max={99}
@@ -201,8 +206,8 @@ export const DefaultApplicationForm = ({
         </Group>
         <Group grow>
           <Select
-            required
-            withAsterisk
+            required={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
+            withAsterisk={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             data={Object.keys(LanguageProficiency).map((key) => {
               return {
@@ -215,8 +220,8 @@ export const DefaultApplicationForm = ({
             {...form.getInputProps('englishLanguageProficiency')}
           />
           <Select
-            required
-            withAsterisk
+            required={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
+            withAsterisk={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
             disabled={accessMode === ApplicationFormAccessMode.INSTRUCTOR}
             data={Object.keys(LanguageProficiency).map((key) => {
               return {
@@ -260,8 +265,8 @@ export const DefaultApplicationForm = ({
             autosize
             minRows={5}
             placeholder='Why do you want to participate in iPraktikum?'
-            withAsterisk
-            required
+            withAsterisk={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
+            required={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
             {...form.getInputProps('motivation')}
           />
           {!form.errors.motivation && (
@@ -275,8 +280,8 @@ export const DefaultApplicationForm = ({
             autosize
             minRows={5}
             placeholder='What is your experience with Swift?'
-            withAsterisk
-            required
+            withAsterisk={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
+            required={accessMode !== ApplicationFormAccessMode.INSTRUCTOR_MANUAL_ADDING}
             {...form.getInputProps('experience')}
           />
           {!form.errors.experience && (
