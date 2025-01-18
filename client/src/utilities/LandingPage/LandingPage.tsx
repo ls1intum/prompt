@@ -1,5 +1,5 @@
-import { Button, Card, Group, Stack, Title } from '@mantine/core'
-import { IconBrandSwift, IconLogin, IconSchool, IconUsersGroup } from '@tabler/icons-react'
+import { Button, Card, Group, Stack, Text, Title } from '@mantine/core'
+import { IconDirection, IconDirections, IconLogin } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 import * as styles from './LandingPage.module.scss'
 import { Footer } from './components/Footer'
@@ -16,34 +16,20 @@ export const LandingPage = (): JSX.Element => {
           </Button>
         </Group>
         <div className={styles.menu}>
-          <Card withBorder p='xl'>
-            <Stack>
-              <Title order={5}>
-                Please select the practical course you want to apply for from the list below.
+          <Card withBorder shadow='sm' radius='md' p='xl' mb='xl'>
+            <Stack align='center'>
+              <IconDirections size={64} color='gray' />
+              <Title order={4} className={styles.cardTitle} ta='center'>
+                Looking to apply for courses at the Research Group for Applied Education
+                Technologies?
               </Title>
+              <Text className={styles.cardText}>We have moved to our new application tool.</Text>
               <Button
-                onClick={() => {
-                  navigate('/applications/developer')
-                }}
-                leftSection={<IconBrandSwift />}
+                size='lg'
+                onClick={() => (window.location.href = 'https://prompt.aet.cit.tum.de')}
+                className={styles.cardButton}
               >
-                iPraktikum
-              </Button>
-              <Button
-                onClick={() => {
-                  navigate('/applications/coach')
-                }}
-                leftSection={<IconUsersGroup />}
-              >
-                Agile Project Management
-              </Button>
-              <Button
-                onClick={() => {
-                  navigate('/applications/tutor')
-                }}
-                leftSection={<IconSchool />}
-              >
-                Teaching iOS
+                Go to the New Application Tool
               </Button>
             </Stack>
           </Card>
